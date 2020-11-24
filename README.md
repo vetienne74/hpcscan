@@ -1,14 +1,14 @@
 
-===========================================================
-=                                                         =
-=                  WELCOME TO HPCSCAN!                    =
-=                                                         =
-=   Version 1.0                                           =
-=   Contact: Vincent Etienne                              =
-=            Saudi Aramco / EXPEC ARC / GPT               =
-=            vetienne@rocketmail.com                      =
-=                                                         =
-===========================================================
+**                                                       ** 
+**                                                       **
+**                 WELCOME TO HPCSCAN!                   **
+**                                                       **
+**  Version 1.0                                          **
+**  Contact: Vincent Etienne                             **
+**           Saudi Aramco / EXPEC ARC / GPT              **
+**           vetienne@rocketmail.com                     **
+**                                                       **
+**
 
 # Description
 
@@ -62,6 +62,6 @@ Go to ./script
 
 TO BE UPDATED...
 
-===========================================================
-=                  H A V E    F U N !                     =
-===========================================================
+**                                                         **
+**                  H A V E    F U N !                     **
+**                                                         **
