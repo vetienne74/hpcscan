@@ -55,9 +55,9 @@ All parameters are placed on the command line
 
 ./bin/hpcscan -h
 
-**Example to run the Comm test case**
+**Example to run the Memory test case**
 
-mpirun ./bin/hpcscan -testCase Comm
+mpirun -n 1 ../bin/hpcscan -testCase Memory
 
 # Run performance test cases
 
