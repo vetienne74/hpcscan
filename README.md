@@ -57,19 +57,18 @@ All parameters are placed on the command line
 
 **Example to run the Memory test case**
 
-mpirun -n 1 ../bin/hpcscan -testCase Memory
+mpirun -n 1 ./bin/hpcscan -testCase Memory
 
 # Run performance test cases
 
 These tests are intended to measure various bandwidths
 
-They are intensive tests that require to run on HPC platforms 
+**They are intensive tests that require to run on HPC platforms**
 
-To run all test cases
+Performance measurements and scripts to reproduce results can be found in ./doc/TestCases/TestCases.pdf
 
-Go to ./script
+# HAVE FUN!
 
-TO BE UPDATED...
+Please share and send your feedbacks to vetienne@rocketmail.com
 
-# H A V E    F U N !
 
