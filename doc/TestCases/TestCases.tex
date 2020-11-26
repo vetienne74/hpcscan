@@ -161,7 +161,7 @@
 
   Compiling hpcscan
   
-  go to \texttt{/build} and \texttt{make} (by default compilation with single precision float)
+  go to \texttt{./build} and \texttt{make} (by default compilation with single precision float)
 
   To compile with double precision float, \texttt{make precision=double}
 
@@ -254,7 +254,7 @@
   
   {\scriptsize
   \begin{table}
-    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Sep 11, 2020}} }
+    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Nov 26, 2020}} }
     \label{table_memory}
     \begin{tabular}{@{}cccccc}
       \# threads & Fill & Copy & Add & Multiply & Add+Update \\
@@ -288,7 +288,7 @@
   
   {\scriptsize
   \begin{table}
-    \caption{\scriptsize Bandwidth GPoint/s \footnote{\scriptsize \textcolor{blue}{Updated Sep 11, 2020}} }
+    \caption{\scriptsize Bandwidth GPoint/s \footnote{\scriptsize \textcolor{blue}{Updated Nov 26, 2020}} }
     \label{table_memory}
     \begin{tabular}{@{}cccccc}
       \# threads & Fill & Copy & Add & Multiply & Add+Update \\
@@ -320,7 +320,6 @@
   \item Measured memory BW between 91 to 122 GB/s (67-90 \% of peak BW)
   \item Low BW 59 GB/s for Fill (43 \% of peak BW)
   \item Multiply (= imaging condition) performs at 7.6 Gpoint/s
-  \item Add+Update at 10 Gpoint/s (= pressure update in acoustic wave propagator without FD)
   \end{itemize}
 
 }
@@ -341,6 +340,7 @@
   \item L1 err. grid W
   \item Get min. grid W
   \item Get max. grid W
+  \item Update pressure (used in propagator)
   \item Small Grid size 500 MB (500 x 500 x 500 points)
   \item Medium Grid size 4 GB (1000 x 1000 x 1000 points)
   \end{itemize}
@@ -359,13 +359,13 @@
   
   {\scriptsize
   \begin{table}
-    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Sep 11, 2020}} }
+    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Nov 26, 2020}} }
     \label{table_memory}
-    \begin{tabular}{@{}cccccc}
-      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. \\
+    \begin{tabular}{@{}ccccccc}
+      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. & Update Pres. \\
       \hline
-      Small  & 58   & 72        & 122     & 125      & 125      \\
-      Medium & 54   & 91        & 124     & 127      & 127      \\
+      Small  & 58   & 72        & 122     & 125      & 125      & 119 \\
+      Medium & 54   & 91        & 124     & 127      & 127      & 120 \\
     \end{tabular}
   \end{table}
   }
@@ -374,24 +374,20 @@
   \begin{table}
     \caption{\scriptsize Bandwidth GPoints/s}
     \label{table_memory}
-    \begin{tabular}{@{}cccccc}
-      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. \\
+    \begin{tabular}{@{}ccccccc}
+      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. & Update Pres. \\
       \hline
-      Small  & 14.4  & 9.0      & 15.2    & 31.3     & 31.2    \\
-      Medium & 13.4  & 11.4     & 15.5    & 31.8     & 31.8     \\
+      Small  & 14.4  & 9.0      & 15.2    & 31.3     & 31.2    & 6.0 \\
+      Medium & 13.4  & 11.4     & 15.5    & 31.8     & 31.8    & 6.0 \\
     \end{tabular}
   \end{table}
   }
 
   Reproduce results with \texttt{./script/testCase\_Grid/runSmallGridShaheen.sh}
+  and \texttt{./script/testCase\_Grid/runMediumGridShaheen.sh}
+  
+  Elapsed time 5 and 7 sec.
 
-  Elapsed time 5 sec.
-
-  \vspace{0.5 cm}
-
-  Reproduce results with \texttt{./script/testCase\_Grid/runMediumGridShaheen.sh}
-
-  Elapsed time 7 sec.
 }
 
 %-------------------------------------------------------------------------------------
@@ -401,8 +397,9 @@
   {\bf Machine: Shaheen}
   \begin{itemize}
   \item L1 Err., Get Min \& Max: 125 GB/s close to peak BW (92 \% Peak Mem. BW)
-  \item {\bf Low perf for Fill: 54-58 GB/s (40-43 \% Peak Mem. BW)}
+  \item {Low perf for Fill: 54-58 GB/s (40-43 \% Peak Mem. BW)}
   \item Max Err. 72-91 GB/s (53-67 \% Peak Mem. BW)
+    \item Pressure update 6 GPoint/s (120 GB/s, 88 \% Peak Mem. BW)
   \end{itemize}
 }
 
@@ -546,8 +543,8 @@
   \item {\bf machine Shaheen}
   \item 1 to 8 nodes with 32 threads/node
   \item Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
-  \item Strong scalaibity: Grid 1000 x 1000 x 1000 (4 GB)
-  \item Weak scalaibity: Grids from 4 GB (1 proc) to 32 GB (8 proc)
+  \item Strong scalabity: Grid 1000 x 1000 x 1000 (4 GB)
+  \item Weak scalabity: Grids from 4 GB (1 proc) to 32 GB (8 proc)
   \item 3D Laplacian O8
   \end{itemize}
 
@@ -575,7 +572,7 @@
     \item {\scriptsize $\Delta$ O8  BW = 7-9 GPoint/s}
     \item {\scriptsize $\Delta$ O12 BW = 3-5 GPoint/s}
     \end{itemize}
-  \item Parallel efficiency with 8 VEs 55 to 86 \% (depends on workload on Shaheen)
+  \item Parallel efficiency with 8 nodes 55 to 86 \% (depends on workload on Shaheen)
   \end{itemize}
 }
 
