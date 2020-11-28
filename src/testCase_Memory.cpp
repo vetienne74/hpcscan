@@ -21,10 +21,10 @@
 namespace hpcscan {
 
 TestCase_Memory::TestCase_Memory(void)
-{
+						{
 	testCaseName    = "Memory" ;
 	testCaseVersion = "Standard implementation" ;
-}
+						}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -59,6 +59,11 @@ Rtn_code TestCase_Memory::run(void)
 	Myfloat * const u = Ugrid.grid_3d ;
 	Myfloat * const v = Vgrid.grid_3d ;
 	Myfloat * const w = Wgrid.grid_3d ;
+
+	// for perf log
+	Myfloat FillGridGB=0, FillGridGpoint=0, CopyGridGB=0, CopyGridGpoint=0 ;
+	Myfloat AddGridGB=0, AddGridGpoint=0, MultiplyGridGB=0, MultiplyGridGpoint=0 ;
+	Myfloat AddUpdateGridGB=0, AddUpdateGridGpoint=0 ;
 
 	// one block per case
 	{
@@ -104,10 +109,10 @@ Rtn_code TestCase_Memory::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(nGridPoint*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPoint/testCase_time_best/1.e9)) ;
+		FillGridGB = Myfloat(nGridPoint*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		FillGridGpoint = Myfloat(nGridPoint/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", FillGridGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", FillGridGpoint) ;
 	}
 
 	{
@@ -152,10 +157,10 @@ Rtn_code TestCase_Memory::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(nGridPoint*2*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPoint/testCase_time_best/1.e9)) ;
+		CopyGridGB = Myfloat(nGridPoint*2*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		CopyGridGpoint = Myfloat(nGridPoint/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", CopyGridGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", CopyGridGpoint) ;
 	}
 
 	{
@@ -202,10 +207,10 @@ Rtn_code TestCase_Memory::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(nGridPoint*3*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPoint/testCase_time_best/1.e9)) ;
+		AddGridGB = Myfloat(nGridPoint*3*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		AddGridGpoint = Myfloat(nGridPoint/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", AddGridGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", AddGridGpoint) ;
 	}
 
 	{
@@ -252,10 +257,10 @@ Rtn_code TestCase_Memory::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(nGridPoint*3*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPoint/testCase_time_best/1.e9)) ;
+		MultiplyGridGB = Myfloat(nGridPoint*3*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		MultiplyGridGpoint = Myfloat(nGridPoint/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", MultiplyGridGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", MultiplyGridGpoint) ;
 	}
 
 	{
@@ -301,10 +306,23 @@ Rtn_code TestCase_Memory::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(nGridPoint*3*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPoint/testCase_time_best/1.e9)) ;
+		AddUpdateGridGB = Myfloat(nGridPoint*3*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		AddUpdateGridGpoint = Myfloat(nGridPoint/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", AddUpdateGridGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", AddUpdateGridGpoint) ;
+	}
+
+	// log perf
+	if (myid_world == 0)
+	{
+		perfLogFile
+		// 10, 11, 12, 13
+		<< FillGridGB << " " << FillGridGpoint << " " << CopyGridGB << " " << CopyGridGpoint << " "
+		// 14, 15, 16, 17
+		<< AddGridGB << " " << AddGridGpoint << " " << MultiplyGridGB << " " << MultiplyGridGpoint << " "
+		// 18, 19
+		<< AddUpdateGridGB << " " << AddUpdateGridGpoint << " "
+		<< "\n" ;
 	}
 
 	this->finalize() ;

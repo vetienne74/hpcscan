@@ -21,10 +21,10 @@
 namespace hpcscan {
 
 TestCase_Grid::TestCase_Grid(void)
-{
+								{
 	testCaseName    = "Grid" ;
 	testCaseVersion = "Standard implementation" ;
-}
+								}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -60,6 +60,12 @@ Rtn_code TestCase_Grid::run(void)
 	printInfo(MASTER, " Inner pts (Glob.)", nGridPointGlob) ;
 
 	Myint ntry = Config::Instance()->ntry ;
+
+	// for perf log
+	Myfloat FillGB=0, FillGpoint=0, MaxErrGB=0, MaxErrGpoint=0, L1ErrGB=0, L1ErrGpoint=0 ;
+	Myfloat GetSumAbsGB=0, GetSumAbsGpoint=0, GetSumAbsDiffGB=0, GetSumAbsDiffGpoint=0 ;
+	Myfloat GetMaxGB=0, GetMaxGpoint=0, GetMinGB=0, GetMinGpoint=0 ;
+	Myfloat UpdatePressureGB=0, UpdatePressureGpoint=0, ApplyBoundaryConditionGB=0, ApplyBoundaryConditionGpoint=0 ;
 
 	{
 		//============================================
@@ -98,10 +104,10 @@ Rtn_code TestCase_Grid::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		FillGB     = Myfloat(nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		FillGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", FillGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", FillGpoint) ;
 	}
 
 	// initialize grids
@@ -145,10 +151,10 @@ Rtn_code TestCase_Grid::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(2*nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		MaxErrGB = Myfloat(2*nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		MaxErrGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", MaxErrGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", MaxErrGpoint) ;
 	}
 
 	{
@@ -185,10 +191,10 @@ Rtn_code TestCase_Grid::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(2*nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		L1ErrGB = Myfloat(2*nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		L1ErrGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", L1ErrGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", L1ErrGpoint) ;
 	}
 
 	{
@@ -222,10 +228,10 @@ Rtn_code TestCase_Grid::run(void)
 			}
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(1*nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		GetSumAbsGB = Myfloat(1*nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		GetSumAbsGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", GetSumAbsGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", GetSumAbsGpoint) ;
 	}
 
 	{
@@ -259,10 +265,10 @@ Rtn_code TestCase_Grid::run(void)
 			}
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(2*nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		GetSumAbsDiffGB = Myfloat(2*nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		GetSumAbsDiffGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", GetSumAbsDiffGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", GetSumAbsDiffGpoint) ;
 	}
 
 	{
@@ -297,10 +303,10 @@ Rtn_code TestCase_Grid::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		GetMaxGB = Myfloat(nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		GetMaxGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", GetMaxGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", GetMaxGpoint) ;
 	}
 
 	{
@@ -335,10 +341,10 @@ Rtn_code TestCase_Grid::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		GetMinGB = Myfloat(nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		GetMinGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", GetMinGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", GetMinGpoint) ;
 	}
 
 	{
@@ -395,10 +401,10 @@ Rtn_code TestCase_Grid::run(void)
 
 		}
 
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(5 * nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		UpdatePressureGB = Myfloat(5 * nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		UpdatePressureGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", UpdatePressureGB) ;
+		printInfo(MASTER, " Best achieved GPoint/s", UpdatePressureGpoint) ;
 	}
 
 	{
@@ -476,14 +482,30 @@ Rtn_code TestCase_Grid::run(void)
 
 		// we multiply by 2 the number of point to get an approximate of the bytes
 		// this number is not exact
-		printInfo(MASTER, " Best achieved GByte/s",
-				Myfloat(2 * nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9)) ;
+		ApplyBoundaryConditionGB = Myfloat(2 * nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GByte/s", ApplyBoundaryConditionGB) ;
 
 		// Number of point is exact
-		printInfo(MASTER, " Best achieved GPoint/s",
-				Myfloat(nGridPointGlob/testCase_time_best/1.e9)) ;
+		ApplyBoundaryConditionGpoint = Myfloat(nGridPointGlob/testCase_time_best/1.e9) ;
+		printInfo(MASTER, " Best achieved GPoint/s", ApplyBoundaryConditionGpoint) ;
 	}
 
+	// log perf
+	if (myid_world == 0)
+	{
+		perfLogFile
+		// 10, 11, 12, 13
+		<< FillGB << " " << FillGpoint << " " << MaxErrGB << " " << MaxErrGpoint << " "
+		// 14, 15, 16, 17
+		<< L1ErrGB << " " << L1ErrGpoint << " " << GetSumAbsGB << " " << GetSumAbsGpoint << " "
+		// 18, 19, 20, 21
+		<< GetSumAbsDiffGB << " " << GetSumAbsDiffGpoint << " " << GetMaxGB << " " << GetMaxGpoint << " "
+		// 22, 23, 24, 25
+		<< GetMinGB << " " << GetMinGpoint << " " << UpdatePressureGB << " " << UpdatePressureGpoint << " "
+		// 26, 27
+		<< ApplyBoundaryConditionGB << " " << ApplyBoundaryConditionGpoint << " "
+		<< "\n" ;
+	}
 
 	this->finalize() ;
 
