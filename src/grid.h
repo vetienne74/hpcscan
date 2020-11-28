@@ -33,7 +33,7 @@ public:
 	void write(string) ;
 
 	// L1 error between this grid and another
-	Myfloat L1Err(Point_type, const Grid&) const ;
+	virtual Myfloat L1Err(Point_type pointType, const Grid& gridIn) const ;
 
 	// collective (all MPI process) L1 error between this grid and another
 	Myfloat allProcL1Err(Point_type, const Grid&) const ;
@@ -83,10 +83,10 @@ public:
 	bool sameSize(const Grid&) const ;
 
 	// fill grid with constant value
-	void fill(Point_type, Myfloat) ;
+	virtual void fill(Point_type pointType, Myfloat val) ;
 
 	// fill grid with predefined functions
-	void fill(Point_type pType, Func_type t1,  Func_type t2, Func_type t3,
+	virtual void fill(Point_type pType, Func_type t1,  Func_type t2, Func_type t3,
 			Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp) ;
 
 	// define unit grid

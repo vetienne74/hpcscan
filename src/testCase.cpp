@@ -36,9 +36,12 @@ Rtn_code TestCase::initialize(void)
 
 		if ((Config::Instance()->testMode.compare("Baseline") != 0)
 				&& (Config::Instance()->testMode.compare("CacheBlk") != 0)
+				&& (Config::Instance()->testMode.compare("GPU1") != 0)
+				&& (Config::Instance()->testMode.compare("GPU2") != 0)
+				&& (Config::Instance()->testMode.compare("GPU3") != 0)
 				&& (Config::Instance()->testMode.compare("NEC_SCA") != 0))
 		{
-			printError("Invalid testMode") ;
+			printError("In TestCase::initialize, Invalid testMode") ;
 			return(RTN_CODE_KO) ;
 		}
 

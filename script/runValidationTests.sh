@@ -17,6 +17,9 @@ sh testDriver.sh Baseline
 # run all tests with -testMode CacheBlk
 sh testDriver.sh CacheBlk
 
+# run all tests with -testMode GPU1
+sh testDriver.sh GPU1
+
 # run all tests with -testMode NEC_SCA
 if [ -z ${__NEC__} ]
 then
