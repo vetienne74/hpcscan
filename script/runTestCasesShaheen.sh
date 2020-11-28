@@ -17,6 +17,7 @@ start_time=$(date)
 testCase1='testCase_Comm'
 cd ${rep}/${testCase1}
 script1='runTestShaheen'
+mkdir -p results
 sh ${script1}.sh | tee ./results/${script1}.out
 cd -
 
@@ -24,6 +25,7 @@ cd -
 testCase2='testCase_FD_D2'
 cd ${rep}/${testCase2}
 script2='runSmallGridShaheen'
+mkdir -p results
 sh ${script2}.sh | tee ./results/${script2}.out
 script2b='runMediumGridShaheen'
 sh ${script2b}.sh | tee ./results/${script2b}.out
@@ -37,6 +39,7 @@ cd -
 testCase3='testCase_Grid'
 cd ${rep}/${testCase3}
 script3='runSmallGridShaheen'
+mkdir -p results
 sh ${script3}.sh | tee ./results/${script3}.out
 script3b='runMediumGridShaheen'
 sh ${script3b}.sh | tee ./results/${script3b}.out
@@ -46,6 +49,7 @@ cd -
 testCase4='testCase_Memory'
 script4='runTestShaheen'
 cd ${rep}/${testCase4}
+mkdir -p results
 sh ${script4}.sh | tee ./results/${script4}.out
 cd -
 

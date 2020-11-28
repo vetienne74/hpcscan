@@ -10,15 +10,15 @@ start_time=$(date)
 
 # 32 threads
 export KMP_AFFINITY=scatter,1,0,granularity=fine
-export OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=32
 mpirun -n 1 ../../bin/hpcscan -testCase Grid -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -testMode Baseline
 mpirun -n 1 ../../bin/hpcscan -testCase Grid -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -testMode GPU1
 mpirun -n 1 ../../bin/hpcscan -testCase Grid -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -testMode GPU2
 mpirun -n 1 ../../bin/hpcscan -testCase Grid -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -testMode GPU3
 
-cp hpcscan.perf.Grid.log runMediumGridMars.out
+cp hpcscan.perf.Grid.log runMediumGridShaheen.out
 
-cat runMediumGridMars.out
+cat runMediumGridShaheen.out
 
 end_time=$(date)
 

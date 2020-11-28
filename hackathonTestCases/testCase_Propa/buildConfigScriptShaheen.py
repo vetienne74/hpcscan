@@ -1,19 +1,20 @@
 
 script_template = 'templateScript.sh'
 
-n1Range=['500','600','700','800','900','1000','1000']
+#n1Range=['500','600','700','800','900','1000']
+n1Range=['500','600','700']
 fdOrderRange=['4','8']
 #fdOrderRange=['4','8','12']
 #tmax='2.0'
-tmax='0.2'
+tmax='0.1'
 snapDt='0.01'
 dt='0.0'
 nmode='130'
-dim='2'
+dim='3'
 # performance measurements on Shaheen
 ntry='3'
-#ratioCFLRange=['1.0','0.5','0.1']
-ratioCFLRange=['1.0','0.5']
+ratioCFLRange=['1.0','0.5','0.1']
+#ratioCFLRange=['1.0']
 #testModeRange=['Baseline','NEC_SCA']
 testModeRange=['CacheBlk','GPU1']
 propaNameRange=['Ac2Standard']

@@ -1,6 +1,6 @@
 
 export KMP_AFFINITY=scatter,1,0,granularity=fine 
-export OMP_NUM_THREADS=1
+export OMP_NUM_THREADS=32
 
 start_time=$(date)
 
