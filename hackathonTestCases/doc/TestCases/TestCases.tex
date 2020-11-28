@@ -1,0 +1,539 @@
+%%% Local Variables: 
+%%% mode: latexTeX-master: t
+%%% End: 
+\documentclass{beamer}
+\usepackage{graphicx}
+\usepackage{natbib}
+%\usepackage[latin1]{inputenc}
+%\usepackage[french]{babel}
+%\usepackage[T1]{fontenc}
+%\usepackage{verbatim}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+%\usepackage{beamerthemeMadrid}
+%\usecolortheme{albatross}
+%\usepackage{beamerthemeBoadilla} %pas mal du tout
+%\usetheme{JuanLesPins}
+\usetheme{Madrid}
+%\usetheme{Bergen}
+\DeclareMathAlphabet{\mathsl}{OT1}{cmss}{m}{sl}
+\usepackage{color}
+\usepackage{multicol}
+%\usepackage{algorithms/algorithm}
+%\usepackage{algorithms/algorithmic}
+\usepackage{epsfig}
+\usepackage{natbib}
+\usepackage{graphicx}              % image
+%\usepackage{here}                  % positionement facile des figures
+%\usepackage[latin1]{inputenc}      % pour les caracteres accentuÃ©s
+%\usepackage[utf8x]{inputenc}
+%\usepackage[francais]{babel}
+%\usepackage[cyr]{aeguill}  %package permettant la cesure des mots franÃ§ais
+%avec utilisation de font T1 avec bon rendu en pdf
+%\usepackage[T1]{fontenc}
+%\usepackage{lmodern}
+\usepackage{fancyhdr}              %gestion entete /pied de pages
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%include pdf page
+\usepackage{pdfpages}
+\usepackage{fancybox}
+\usepackage{pifont}
+%\usepackage{multirow}
+
+\definecolor{brique}{rgb}{0.5,0.2,0.4} 
+\definecolor{highlight}{rgb}{1.,0.4,0.}
+
+\newcommand{\RR}{\hbox{\cal I\hspace{-2pt}R}}
+\newcommand{\ket}{\right\rangle}       
+\newcommand{\bra}{\left\langle}
+
+%\setbeamerfont{frametitle}{series=\bfseries,size=\large,fg=white}
+\setbeamerfont{frametitle}{series=\bfseries,size=\large}
+\setbeamercolor{structure}{bg=white, fg=brique}
+
+%-------------------------------------------------------------------------------------
+
+\title[Hackathon KAUST GPU 2020]{Hackathon KAUST GPU 2020}
+%\subtitle{}
+\author[Marcin, Suha \& Vincent]{Marcin Rogowski, Suha Kayum \& Vincent Etienne}
+\institute[]{KAUST \& Saudi Aramco}
+
+\date[Nov 2020] {\scriptsize{November 2020 }}
+
+%-------------------------------------------------------------------------------------
+
+\bibliographystyle{apalike}
+
+
+\AtBeginSection[ ]
+{
+\begin{frame}<beamer>
+\frametitle{Content}
+\tableofcontents[currentsection]
+\end{frame}
+}
+
+%\AtBeginSubsection[ ]
+%{
+%\begin{frame}<beamer>
+%\frametitle{Content}
+%\tableofcontents[currentsection,currentsubsection]
+%\end{frame}
+%}
+
+%\titlegraphic{\vspace{-0.75cm} \center
+%\pgfimage[height=2.cm]{logo/logo_complet.pdf}}
+
+\begin{document}
+\scriptsize
+
+\maketitle 
+
+\clearpage
+
+\frame{
+\frametitle{Content}
+\tableofcontents }
+
+
+%*************************************************************************************
+
+\section{hpcscan}
+
+%*************************************************************************************
+
+%=====================================================================================
+\subsection{Overview}
+%=====================================================================================
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Overview}
+
+  hpcscan is a C++ code for benchmarking HPC kernels (mainly for solving PDEs with FDM)
+
+  \begin{itemize}
+  \item Simple code struture based on individual test cases
+  \item Easy to add new test cases
+  \item Main class is Grid: multi-dimension (1, 2 \& 3D) Cartesian grid
+  \item Hybrid MPI/OpenMP parallelism
+  \item All configuration parameters on command line
+  \item Support single and double precision computation
+  \item Compilation with standard Makefile
+  \item No external librairies
+  \item Follows C++ Google style code
+  \end{itemize}
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Overview}
+
+  {\bf hpcscan embeds several test cases}
+  \vspace{0.5cm}
+
+  Current version 1.0
+  \begin{itemize}
+  \item General operations on grids
+  \item Memory operations
+  \item MPI communication
+  \item FD computation 
+  \item Basic wave propagator
+  \end{itemize}
+  
+  Possible additions for future versions
+  \begin{itemize}
+  \item Operations on matrices full and sparse
+  \item FFT
+  \item IO
+  \item Compression
+  \end{itemize}
+}
+
+%=====================================================================================
+\subsection{Compilation and validation}
+%=====================================================================================
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Compilation and validation}
+
+  Compiling hpcscan
+  
+  go to \texttt{./build} and \texttt{make} (by default compilation with single precision float)
+
+  To compile with double precision float, \texttt{make precision=double}
+
+  \vspace{0.5cm}
+  Validating hpcscan
+
+  go to \texttt{./script} and \texttt{sh runValidationTests.sh}
+
+   {\tiny
+  \begin{table}
+    \caption{\scriptsize \texttt{runValidationTests.sh} \footnote{\scriptsize \textcolor{blue}{Updated Nov 25, 2020}} }
+    \label{table_runAllTestCases}
+    \begin{tabular}{@{}cccc}
+      Machine & Compiler & Single prec. & Double prec. \\
+      \hline
+      Mars & g++ 9.3.0          & 764 PASS / 0 FAIL / 0 ERR / 20 WARN & 764 PASS / 0 FAIL / 0 ERR / 20 WARN \\
+      Shaheen & icpc 19.0.5.281 & 764 PASS / 0 FAIL / 0 ERR / 20 WARN & 764 PASS / 0 FAIL / 0 ERR / 20 WARN \\
+    \end{tabular}
+  \end{table}
+   }
+
+   Numbers can differ due to availability of features depending on the platforms
+}
+
+%*************************************************************************************
+
+\section{Test platforms}
+
+%*************************************************************************************
+
+%=====================================================================================
+\subsection{Shaheen II (KAUST)}
+%=====================================================================================
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test platform - Shaheen II (KAUST)}
+
+  {\bf Machine Shaheen II / Cray XC40}
+  \begin{itemize}
+  \item Computing nodes Intel Haswell 2.3 Ghz dual socket (16 cores / socket)
+  \item RAM 128 GB with Peak memory BW 136.5 GB/s
+  \item Peak performance Single Prec. 2.36 TFLOP/s / Double Prec. 1.18 TFLOP/s
+  \item Interconnect Cray Aries with Dragonfly topology
+    \begin{itemize}
+    \item \scriptsize 60 GB/s optical links between groups
+    \item \scriptsize 8.5 GB/s copper links between chassis
+    \item \scriptsize 3.5 GB/s backplane within a chassis
+    \item \scriptsize 5 GB/s PCIe from node to Aries router
+    \end{itemize}
+  \end{itemize}
+
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=0.6 \textwidth]{./Images/Shaheen-II.png}
+    \end{center}
+  \end{figure}
+}
+
+%*************************************************************************************
+
+\section{Test Case Grid}
+
+%*************************************************************************************
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Grid - Description}
+
+  \begin{itemize}
+  \item Fill grid (W = coef)
+  \item Max. err. grid W
+  \item L1 err. grid W
+  \item Get min. grid W
+  \item Get max. grid W
+  \item Update pressure (used in propagator)
+  \item Small Grid size 500 MB (500 x 500 x 500 points)
+  \item Medium Grid size 4 GB (1000 x 1000 x 1000 points)
+  \end{itemize}
+  
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Grid - Results}
+
+  \begin{itemize}
+  \item {\bf Machine: shaheen}
+  \item 1 node / 32 threads
+  \item Baseline kernel
+  \end{itemize}
+  
+  {\scriptsize
+  \begin{table}
+    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Nov 26, 2020}} }
+    \label{table_memory}
+    \begin{tabular}{@{}ccccccc}
+      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. & Update Pres. \\
+      \hline
+      Small  & 58   & 72        & 122     & 125      & 125      & 119 \\
+      Medium & 54   & 91        & 124     & 127      & 127      & 120 \\
+    \end{tabular}
+  \end{table}
+  }
+
+  {\scriptsize
+  \begin{table}
+    \caption{\scriptsize Bandwidth GPoints/s}
+    \label{table_memory}
+    \begin{tabular}{@{}ccccccc}
+      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. & Update Pres. \\
+      \hline
+      Small  & 14.4  & 9.0      & 15.2    & 31.3     & 31.2    & 6.0 \\
+      Medium & 13.4  & 11.4     & 15.5    & 31.8     & 31.8    & 6.0 \\
+    \end{tabular}
+  \end{table}
+  }
+
+  Reproduce results with \texttt{./script/testCase\_Grid/runSmallGridShaheen.sh}
+  and \texttt{./script/testCase\_Grid/runMediumGridShaheen.sh}
+  
+  Elapsed time 5 and 7 sec.
+
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Grid - Summary}
+
+  {\bf Machine: Shaheen}
+  \begin{itemize}
+  \item L1 Err., Get Min \& Max: 125 GB/s close to peak BW (92 \% Peak Mem. BW)
+  \item {Low perf for Fill: 54-58 GB/s (40-43 \% Peak Mem. BW)}
+  \item Max Err. 72-91 GB/s (53-67 \% Peak Mem. BW)
+    \item Pressure update 6 GPoint/s (120 GB/s, 88 \% Peak Mem. BW)
+  \end{itemize}
+}
+
+%*************************************************************************************
+
+\section{Test Case Comm}
+
+%*************************************************************************************
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Comm - Description}
+
+  {\bf Measure MPI communication bandwidth}
+  
+  \vspace{0.5cm}
+  MPI point to point communication
+  \begin{itemize}
+  \item Send with MPI\_Send from proc X to proc 0 (Half-duplex BW)
+  \item Send and receive with MPI\_Sendrecv between proc X and proc 0 (Full-duplex BW)
+  \end{itemize}
+
+  MPI collective communication
+  \begin{itemize}
+  \item Exhange of halos used in FD kernel with MPI\_Sendrecv
+  \item Grid size 1000 x 1000 x 1000
+  \item Domain decomposition with N1 x N2 x N3 subdomains
+  \end{itemize}
+  
+}
+
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Comm - Results}
+
+  \begin{itemize}
+  \item {\bf Machine: Shaheen}
+  \item 8 MPI processes (1 per computing node)
+  \item Baseline kernel
+  \end{itemize}
+  
+  {\tiny
+  \begin{table}
+    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Sep 19, 2020}} }
+    \label{table_comm}
+    \begin{tabular}{@{}ccccccc}
+      MPI\#1 & MPI\#2 & Send & Sendrecv & Halo exch. & Comm. size & Subdomains \\
+      \hline
+      0 & 1 & 8.5 & 15.3 & -    & 47 MB  & - \\
+      0 & 2 & 8.3 & 15.3 & -    & 47 MB  & - \\
+      0 & 3 & 8.6 & 15.3 & -    & 47 MB  & - \\
+      0 & 4 & 8.5 & 15.3 & -    & 47 MB  & - \\
+      0 & 5 & 8.2 & 15.3 & -    & 47 MB  & - \\
+      0 & 6 & 8.5 & 15.3 & -    & 47 MB  & - \\
+      0 & 7 & 8.6 & 15.3 & -    & 47 MB  & - \\
+      All & All & -    & -   & 5.0  & 128 MB & 1 4 2 \\
+      All & All & -    & -   & 5.1  & 128 MB & 1 2 4 \\
+      All & All & -    & -   & 2.0  & 96 MB  & 2 2 2 \\
+    \end{tabular}
+  \end{table}
+  }
+
+  Reproduce results with \texttt{./script/testCase\_Comm/runTestShaheen.sh}
+
+  Elapsed time 9 seconds
+}
+
+%*************************************************************************************
+
+\section{Test Case FD\_D2}
+
+%*************************************************************************************
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case FD\_D2 - Description}
+
+  \begin{itemize}
+  \item Computation of second order derivatives with finite-differnce stencil
+  \item Directionnal derivatives
+    \begin{itemize}
+    \item {\scriptsize Axis 1 $W = \partial^2_{x1} (U)$}
+    \item {\scriptsize Axis 2 $W = \partial^2_{x2} (U)$}
+    \item {\scriptsize Axis 3 $W = \partial^2_{x3} (U)$}
+    \end{itemize}
+  \item Laplacian
+    \begin{itemize}
+    \item {\scriptsize For 2D grids $W = \Delta (U) =\partial^2_{x1} (U) + \partial^2_{x2} (U)$}
+    \item {\scriptsize For 3D grids $W = \Delta (U) =\partial^2_{x1} (U) + \partial^2_{x2} (U) + \partial^2_{x3} (U)$}
+    \end{itemize}
+  \item Stencil order 2, 4, 8, 12 \& 16
+  \item Grid size
+    \begin{itemize}
+    \item {\scriptsize Small 500 x 500 x 500}
+    \item {\scriptsize Medium 1000 x 1000 x 1000}
+    \end{itemize}
+  \end{itemize}
+  
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case FD\_D2 - Results}
+
+  \begin{itemize}
+  \item {\bf machine Shaheen} /  1 node with 32 threads / Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
+  \item \texttt{./script/testCase\_FD\_D2/runSmallGridShaheen.sh} \& \texttt{runMediumGridShaheen.sh}
+  \end{itemize}
+
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=0.85 \textwidth]{./Figures/FD_D2_ONE_PROC_SHAHEEN.jpg}
+    \end{center}
+  \end{figure}
+
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case FD\_D2 - Results}
+
+  \begin{itemize}
+  \item {\bf machine Shaheen} /  1 node with 32 threads / Cache blocking kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
+  \item \texttt{./script/testCase\_FD\_D2/runSmallGridShaheen.sh} \& \texttt{runMediumGridShaheen.sh}
+  \end{itemize}
+
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=0.85 \textwidth]{./Figures/FD_D2_ONE_PROC_SHAHEEN_CACHEBLK.jpg}
+    \end{center}
+  \end{figure}
+  
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case FD\_D2 - Results}
+
+  \begin{itemize}
+  \item {\bf machine Shaheen}
+  \item 1 to 8 nodes with 32 threads/node
+  \item Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
+  \item Strong scalabity: Grid 1000 x 1000 x 1000 (4 GB)
+  \item Weak scalabity: Grids from 4 GB (1 proc) to 32 GB (8 proc)
+  \item 3D Laplacian O8
+  \end{itemize}
+
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=1.0 \textwidth]{./Figures/FD_D2_SCALABILITY_SHAHEEN.jpg}
+    \end{center}
+  \end{figure}
+
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case FD\_D2 - Summary}
+  {\bf machine Shaheen}
+  \begin{itemize}
+  \item Large benefit of cache blocking
+  \item Significant effect of grid dimnsion and index (very bad performance for n3 without cache blocking)
+  \item Min BW 50 GFLOP/s ($\partial^2_{x3}$ O2) = 2 \% peak BW [apparent Mem. BW 150 GB/s]
+  \item Max BW 370 GFLOP/s ($\Delta$ O8) = 16 \% peak BW [apparent Mem. BW 900 GB/s]
+  \item Apparent Mem. BW 150-900 GB/s (110-660 \% Peak Mem. BW) = shows data in-cache effect
+  \item Typical stencils of interest for geophysical applications
+    \begin{itemize}
+    \item {\scriptsize $\Delta$ O4  BW = 8-10 GPoint/s}
+    \item {\scriptsize $\Delta$ O8  BW = 7-9 GPoint/s}
+    \item {\scriptsize $\Delta$ O12 BW = 3-5 GPoint/s}
+    \end{itemize}
+  \item Parallel efficiency with 8 nodes 55 to 86 \% (depends on workload on Shaheen)
+  \end{itemize}
+}
+
+%*************************************************************************************
+
+\section{Test Case PropaAc2}
+
+%*************************************************************************************
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case PropaAc2 - Results}
+  
+  \begin{itemize}
+  \item {\bf machine Mars} / preliminary results \footnote{\scriptsize \textcolor{blue}{Updated Nov 5, 2020}}
+  \item Eigen mode - 1D model
+    \item FD: Black O2, Blue O4, Pink O8, Red O12 / Square=Baseline 
+    \item \texttt{./paramAnalysis/propaAccuracy/runMars.sh} 
+  \end{itemize}
+  
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=0.6 \textwidth]{./Figures/runMars_AccPerf.jpg}
+    \end{center}
+  \end{figure}
+
+}
+
+%*************************************************************************************
+
+\section{Conclusions and next steps}
+
+%*************************************************************************************
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Conclusions and next steps}
+
+  TO DO
+}
+
+%*************************************************************************************
+
+\section{Acknowledgements}
+
+%*************************************************************************************
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Acknowledgements}
+
+  \begin{itemize}
+  \item KAUST ECRC and KSL for access and support on Shaheen II \& Ibex
+  \end{itemize}
+}
+
+%-------------------------------------------------------------------------------------
+%{\tiny{
+%\def\newblock{\hskip .11em plus .33em minus .07em}
+%\bibliographystyle{apalike}
+%\bibliography{./biblioseiscope}
+%}}
+
+%\addtocounter{framenumber}{-4}
+
+\end{document}
+
