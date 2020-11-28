@@ -2,9 +2,9 @@
 close all ;
 clear all ;
 
-DATA = 'runMars'
-%DATA = 'runNEC'
-FILE = sprintf('%s.out', DATA) ;
+%DATA = 'runMars'
+DATA = 'runShaheen'
+FILE = sprintf('%s.out.ref', DATA) ;
 val = importdata(FILE) ;
 
 valTime   = val.data(:,14) ;
@@ -168,7 +168,7 @@ ax.XScale='log'
 ax.YScale='log'
 
 % save figure
-figName = sprintf('%s_AccPerf.tmp.jpg', DATA) ;
+figName = sprintf('%s.tmp.jpg', DATA) ;
 print(figName, '-djpeg')
 
 

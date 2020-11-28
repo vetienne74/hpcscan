@@ -249,7 +249,7 @@
   \begin{itemize}
   \item {\bf Machine: shaheen}
   \item 1 node / 32 threads
-  \item Baseline kernel
+  \item CPU Baseline kernel and GPU kernels
   \end{itemize}
   
   {\scriptsize
@@ -303,199 +303,47 @@
 
 %*************************************************************************************
 
-\section{Test Case Comm}
+\section{Test Case Propa}
 
 %*************************************************************************************
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case Comm - Description}
-
-  {\bf Measure MPI communication bandwidth}
-  
-  \vspace{0.5cm}
-  MPI point to point communication
-  \begin{itemize}
-  \item Send with MPI\_Send from proc X to proc 0 (Half-duplex BW)
-  \item Send and receive with MPI\_Sendrecv between proc X and proc 0 (Full-duplex BW)
-  \end{itemize}
-
-  MPI collective communication
-  \begin{itemize}
-  \item Exhange of halos used in FD kernel with MPI\_Sendrecv
-  \item Grid size 1000 x 1000 x 1000
-  \item Domain decomposition with N1 x N2 x N3 subdomains
-  \end{itemize}
-  
-}
-
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Test Case Comm - Results}
+  \frametitle{Test Case Propa - Description}
 
   \begin{itemize}
-  \item {\bf Machine: Shaheen}
-  \item 8 MPI processes (1 per computing node)
-  \item Baseline kernel
-  \end{itemize}
-  
-  {\tiny
-  \begin{table}
-    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Sep 19, 2020}} }
-    \label{table_comm}
-    \begin{tabular}{@{}ccccccc}
-      MPI\#1 & MPI\#2 & Send & Sendrecv & Halo exch. & Comm. size & Subdomains \\
-      \hline
-      0 & 1 & 8.5 & 15.3 & -    & 47 MB  & - \\
-      0 & 2 & 8.3 & 15.3 & -    & 47 MB  & - \\
-      0 & 3 & 8.6 & 15.3 & -    & 47 MB  & - \\
-      0 & 4 & 8.5 & 15.3 & -    & 47 MB  & - \\
-      0 & 5 & 8.2 & 15.3 & -    & 47 MB  & - \\
-      0 & 6 & 8.5 & 15.3 & -    & 47 MB  & - \\
-      0 & 7 & 8.6 & 15.3 & -    & 47 MB  & - \\
-      All & All & -    & -   & 5.0  & 128 MB & 1 4 2 \\
-      All & All & -    & -   & 5.1  & 128 MB & 1 2 4 \\
-      All & All & -    & -   & 2.0  & 96 MB  & 2 2 2 \\
-    \end{tabular}
-  \end{table}
-  }
-
-  Reproduce results with \texttt{sbatch ./script/testCase\_Comm/runTestCasesShaheen.sbatch}
-
-  Elapsed time 9 seconds
-}
-
-%*************************************************************************************
-
-\section{Test Case FD\_D2}
-
-%*************************************************************************************
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Test Case FD\_D2 - Description}
-
-  \begin{itemize}
-  \item Computation of second order derivatives with finite-differnce stencil
-  \item Directionnal derivatives
-    \begin{itemize}
-    \item {\scriptsize Axis 1 $W = \partial^2_{x1} (U)$}
-    \item {\scriptsize Axis 2 $W = \partial^2_{x2} (U)$}
-    \item {\scriptsize Axis 3 $W = \partial^2_{x3} (U)$}
-    \end{itemize}
-  \item Laplacian
-    \begin{itemize}
-    \item {\scriptsize For 2D grids $W = \Delta (U) =\partial^2_{x1} (U) + \partial^2_{x2} (U)$}
-    \item {\scriptsize For 3D grids $W = \Delta (U) =\partial^2_{x1} (U) + \partial^2_{x2} (U) + \partial^2_{x3} (U)$}
-    \end{itemize}
-  \item Stencil order 2, 4, 8, 12 \& 16
-  \item Grid size
-    \begin{itemize}
-    \item {\scriptsize Small 500 x 500 x 500}
-    \item {\scriptsize Medium 1000 x 1000 x 1000}
-    \end{itemize}
+  \item Seismic wave propagator
+  \item 2nd order acoustic wave equation  
+  \item Time-domain Finite-difference
+  \item Various FD order in space
+  \item 2nd FD order in time
+  \item Various grid size and time steps
+  \item Total 18 configurations
+  \item Comparison against analytical solution (Eigen mode)
   \end{itemize}
   
 }
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case FD\_D2 - Results}
-
-  \begin{itemize}
-  \item {\bf machine Shaheen} /  1 node with 32 threads / Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
-  \item \texttt{./script/testCase\_FD\_D2/runSmallGridShaheen.sh} \& \texttt{runMediumGridShaheen.sh}
-  \end{itemize}
-
-  \begin{figure}
-    \begin{center}
-      \includegraphics[width=0.85 \textwidth]{./Figures/FD_D2_ONE_PROC_SHAHEEN.jpg}
-    \end{center}
-  \end{figure}
-
-}
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Test Case FD\_D2 - Results}
-
-  \begin{itemize}
-  \item {\bf machine Shaheen} /  1 node with 32 threads / Cache blocking kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
-  \item \texttt{./script/testCase\_FD\_D2/runSmallGridShaheen.sh} \& \texttt{runMediumGridShaheen.sh}
-  \end{itemize}
-
-  \begin{figure}
-    \begin{center}
-      \includegraphics[width=0.85 \textwidth]{./Figures/FD_D2_ONE_PROC_SHAHEEN_CACHEBLK.jpg}
-    \end{center}
-  \end{figure}
-  
-}
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Test Case FD\_D2 - Results}
-
-  \begin{itemize}
-  \item {\bf machine Shaheen}
-  \item 1 to 8 nodes with 32 threads/node
-  \item Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
-  \item Strong scalabity: Grid 1000 x 1000 x 1000 (4 GB)
-  \item Weak scalabity: Grids from 4 GB (1 proc) to 32 GB (8 proc)
-  \item 3D Laplacian O8
-  \end{itemize}
-
-  \begin{figure}
-    \begin{center}
-      \includegraphics[width=1.0 \textwidth]{./Figures/FD_D2_SCALABILITY_SHAHEEN.jpg}
-    \end{center}
-  \end{figure}
-
-}
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Test Case FD\_D2 - Summary}
-  {\bf machine Shaheen}
-  \begin{itemize}
-  \item Large benefit of cache blocking
-  \item Significant effect of grid dimnsion and index (very bad performance for n3 without cache blocking)
-  \item Min BW 50 GFLOP/s ($\partial^2_{x3}$ O2) = 2 \% peak BW [apparent Mem. BW 150 GB/s]
-  \item Max BW 370 GFLOP/s ($\Delta$ O8) = 16 \% peak BW [apparent Mem. BW 900 GB/s]
-  \item Apparent Mem. BW 150-900 GB/s (110-660 \% Peak Mem. BW) = shows data in-cache effect
-  \item Typical stencils of interest for geophysical applications
-    \begin{itemize}
-    \item {\scriptsize $\Delta$ O4  BW = 8-10 GPoint/s}
-    \item {\scriptsize $\Delta$ O8  BW = 7-9 GPoint/s}
-    \item {\scriptsize $\Delta$ O12 BW = 3-5 GPoint/s}
-    \end{itemize}
-  \item Parallel efficiency with 8 nodes 55 to 86 \% (depends on workload on Shaheen)
-  \end{itemize}
-}
-
-%*************************************************************************************
-
-\section{Test Case PropaAc2}
-
-%*************************************************************************************
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Test Case PropaAc2 - Results}
+  \frametitle{Test Case Propa - Results}
   
   \begin{itemize}
-  \item {\bf machine Mars} / preliminary results \footnote{\scriptsize \textcolor{blue}{Updated Nov 5, 2020}}
-  \item Eigen mode - 1D model
-    \item FD: Black O2, Blue O4, Pink O8, Red O12 / Square=Baseline 
-    \item \texttt{./paramAnalysis/propaAccuracy/runMars.sh} 
+  \item {\bf Machine: shaheen}
+  \item 1 node / 32 threads
+  \item CPU Baseline kernel and GPU kernels \footnote{\scriptsize \textcolor{blue}{Updated Nov 28, 2020}}
+  \item FD: Black O2, Blue O4, Pink O8, Red O12 / Square=CPU CacheBlk, Cross=GPU 
   \end{itemize}
   
   \begin{figure}
     \begin{center}
-      \includegraphics[width=0.6 \textwidth]{./Figures/runMars_AccPerf.jpg}
+      \includegraphics[width=0.6 \textwidth]{../../testCase_Propa/runShaheen.jpg}
     \end{center}
   \end{figure}
+
+  Reproduce results with \texttt{./hackathonTestCases/testCase\_Propa/runShaheen.sh}
+  
+  Elapsed about an hour.
 
 }
 
