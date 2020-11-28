@@ -233,12 +233,10 @@
 
   \begin{itemize}
   \item Fill grid (W = coef)
-  \item Max. err. grid W
-  \item L1 err. grid W
+  \item L1 error between grid W and R 
   \item Get min. grid W
   \item Get max. grid W
-  \item Update pressure (used in propagator)
-  \item Small Grid size 500 MB (500 x 500 x 500 points)
+  \item Update pressure W = 2*U - W + C*L (used in propagator)
   \item Medium Grid size 4 GB (1000 x 1000 x 1000 points)
   \end{itemize}
   
@@ -256,13 +254,15 @@
   
   {\scriptsize
   \begin{table}
-    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Nov 26, 2020}} }
+    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Nov 28, 2020}} }
     \label{table_memory}
-    \begin{tabular}{@{}ccccccc}
-      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. & Update Pres. \\
+    \begin{tabular}{@{}cccccc}
+      Mode  & Fill & L1 err. & Get max. & Get min. & Update Pres. \\
       \hline
-      Small  & 58   & 72        & 122     & 125      & 125      & 119 \\
-      Medium & 54   & 91        & 124     & 127      & 127      & 120 \\
+      CPU   & 54   & 124     & 126      & 126      & 120 \\
+      GPU1  & 54   & 124     & 126      & 126      & 120 \\
+      GPU2  & 54   & 124     & 126      & 126      & 120 \\
+      GPU3  & 54   & 124     & 126      & 126      & 120 \\
     \end{tabular}
   \end{table}
   }
@@ -271,19 +271,20 @@
   \begin{table}
     \caption{\scriptsize Bandwidth GPoints/s}
     \label{table_memory}
-    \begin{tabular}{@{}ccccccc}
-      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. & Update Pres. \\
+    \begin{tabular}{@{}cccccc}
+      Mode   & Fill & L1 err. & Get max. & Get min. & Update Pres. \\
       \hline
-      Small  & 14.4  & 9.0      & 15.2    & 31.3     & 31.2    & 6.0 \\
-      Medium & 13.4  & 11.4     & 15.5    & 31.8     & 31.8    & 6.0 \\
+      CPU    & 13.5  & 15.5    & 31.5     & 31.5    & 6.0 \\
+      GPU1   & 13.5  & 15.5    & 31.5     & 31.5    & 6.0 \\
+      GPU2   & 13.5  & 15.5    & 31.5     & 31.5    & 6.0 \\
+      GPU3   & 13.5  & 15.5    & 31.5     & 31.5    & 6.0 \\
     \end{tabular}
   \end{table}
   }
 
-  Reproduce results with \texttt{./script/testCase\_Grid/runSmallGridShaheen.sh}
-  and \texttt{./script/testCase\_Grid/runMediumGridShaheen.sh}
+  Reproduce results with \texttt{./hackathonTestCases/testCase\_Grid/runMediumGridShaheen.sh}
   
-  Elapsed time 5 and 7 sec.
+  Elapsed few seconds.
 
 }
 
