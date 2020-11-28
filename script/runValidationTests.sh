@@ -20,6 +20,12 @@ sh testDriver.sh CacheBlk
 # run all tests with -testMode GPU1
 sh testDriver.sh GPU1
 
+# run all tests with -testMode GPU2
+sh testDriver.sh GPU2
+
+# run all tests with -testMode GPU3
+sh testDriver.sh GPU3
+
 # run all tests with -testMode NEC_SCA
 if [ -z ${__NEC__} ]
 then
