@@ -67,12 +67,12 @@ static const Myint     MIN_NPOINT_NSUB        = 20 ;
 //-------------------------------------------------------------------------------------------------------
 
 // Global static pointer used to ensure a single instance of the class.
-Config* Config::m_pInstance = NULL;  
+Config* Config::m_pInstance = NULL;
 
 //-------------------------------------------------------------------------------------------------------
 
-// This function is called to create an instance of the class. 
-// Calling the constructor publicly is not allowed. The constructor 
+// This function is called to create an instance of the class.
+// Calling the constructor publicly is not allowed. The constructor
 // is private and is only called by this Instance function.
 
 Config* Config::Instance()
@@ -856,7 +856,7 @@ Rtn_code Config::initialize(void)
 	if (debug > NO_DEBUG)
 	{
 		string file_name = "hpcscan.debug.proc" + to_string(myid_world) + ".log";
-		debugLogFile = ofstream(file_name) ;
+        debugLogFile.open(file_name);
 	}
 
 	printDebug(MID_DEBUG, "OUT Config::initialize");

@@ -1152,9 +1152,9 @@ Myfloat Grid::L1Err(Point_type pointType, const Grid& gridIn) const
 	printDebug(LIGHT_DEBUG, "sum2", sum2) ;
 	printDebug(LIGHT_DEBUG, "err", err) ;
 
-	if (isnan(err))
+	if (std::isnan(err))
 	{
-		printError("In Grid::L1Err, isnan(err)") ;
+		printError("In Grid::L1Err, std::isnan(err)") ;
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid::L1Err");
@@ -1215,9 +1215,9 @@ Myfloat Grid::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 	printDebug(LIGHT_DEBUG, "sum2", sum2) ;
 	printDebug(LIGHT_DEBUG, "err", err) ;
 
-	if (isnan(err))
+	if (std::isnan(err))
 	{
-		printError("In Grid::allProcL1Err, isnan(err)") ;
+		printError("In Grid::allProcL1Err, std::isnan(err)") ;
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid::allProcL1Err");
@@ -1272,9 +1272,9 @@ Myfloat Grid::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 
 	printDebug(LIGHT_DEBUG, "sum1", sum1) ;
 
-	if (isnan(sum1))
+	if (std::isnan(sum1))
 	{
-		printError("In Grid::getSumAbsDiff, isnan(sum1)") ;
+		printError("In Grid::getSumAbsDiff, std::isnan(sum1)") ;
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid::getSumAbsDiff");
@@ -1322,9 +1322,9 @@ Myfloat Grid::getSumAbs(Point_type pointType) const
 
 	printDebug(LIGHT_DEBUG, "sum2", sum2) ;
 
-	if (isnan(sum2))
+	if (std::isnan(sum2))
 	{
-		printError("In Grid::getSumAbs, isnan(sum2)") ;
+		printError("In Grid::getSumAbs, std::isnan(sum2)") ;
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid::getSumAbs");

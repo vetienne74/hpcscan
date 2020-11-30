@@ -49,7 +49,7 @@ Rtn_code TestCase::initialize(void)
 		if (myid_world == 0)
 		{
 			string file_name = "hpcscan.perf." + testCaseName + ".log";
-			perfLogFile = ofstream(file_name, ios::app) ;
+			perfLogFile.open(file_name, ios::app) ;
 
 			perfLogFile << Config::Instance()->testCaseName << " " ;
 			perfLogFile << Config::Instance()->testMode << " " ;
@@ -112,7 +112,7 @@ Rtn_code TestCase::checkGridL1Err(Point_type pointType, const Grid& gridIn, cons
 
 	// check L1 error
 	Myfloat L1Err = gridIn.L1Err(pointType, gridRef) ;
-	if ((!isnan(L1Err)) && (L1Err >= 0.0) && (L1Err < maxAllowed))
+	if ((!std::isnan(L1Err)) && (L1Err >= 0.0) && (L1Err < maxAllowed))
 	{
 		printInfo(MASTER, " Test PASSED / L1 err.", L1Err) ;
 	}
@@ -138,7 +138,7 @@ Rtn_code TestCase::checkAllProcGridL1Err(Point_type pointType, const Grid& gridI
 
 	MPI_Reduce(&L1ErrLoc, &L1Err, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
 
-	if ((!isnan(L1Err)) && (L1Err >= 0.0) && (L1Err < maxAllowed))
+	if ((!std::isnan(L1Err)) && (L1Err >= 0.0) && (L1Err < maxAllowed))
 	{
 		printInfo(MASTER, " Test PASSED / L1 err.", L1Err) ;
 	}
@@ -163,7 +163,7 @@ Rtn_code TestCase::checkGridMaxErr(Point_type pointType, const Grid& gridIn, con
 	Myfloat maxErr ;
 	MPI_Reduce(&maxErrLoc, &maxErr, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
 
-	if ((!isnan(maxErr)) && (maxErr >= 0.0) && (maxErr < maxAllowed))
+	if ((!std::isnan(maxErr)) && (maxErr >= 0.0) && (maxErr < maxAllowed))
 	{
 		printInfo(MASTER, " Test PASSED / Max err.", maxErr) ;
 	}
@@ -185,7 +185,7 @@ Rtn_code TestCase::checkAllProcGridMaxErr(Point_type pointType, const Grid& grid
 
 	// check Max error
 	Myfloat maxErr = gridIn.maxErr(pointType, gridRef) ;
-	if ((!isnan(maxErr)) && (maxErr >= 0.0) && (maxErr < maxAllowed))
+	if ((!std::isnan(maxErr)) && (maxErr >= 0.0) && (maxErr < maxAllowed))
 	{
 		printInfo(MASTER, " Test PASSED / Max err.", maxErr) ;
 	}

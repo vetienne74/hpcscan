@@ -1,10 +1,10 @@
 #----------------------------------------------------------------#
-#                                                                #  
-# DO NOT FORGET TO CREATE THE INCLUDE FILE "make.MY_HOST.inc"    #  
-# ACCORDING TO THE CONFIGURATION OF YOUR COMPUTING MACHINE       # 
+#                                                                #
+# DO NOT FORGET TO CREATE THE INCLUDE FILE "make.MY_HOST.inc"    #
+# ACCORDING TO THE CONFIGURATION OF YOUR COMPUTING MACHINE       #
 # AND THEN INCLUDE THIS FILE IN THE MAKEFILE AS IT IS DONE BELOW #
 #                                                                #
-#----------------------------------------------------------------# 
+#----------------------------------------------------------------#
 
 
 #======================#
@@ -12,6 +12,7 @@
 #======================#
 
 HOST=$(shell hostname)
+KAUST=${KAUST_FACILITY}
 
 # matches aurora (NEC)
 ifeq ($(findstring aurora,$(HOST)), aurora)
@@ -21,12 +22,12 @@ ifeq ($(findstring robin,$(HOST)), robin)
 include make.nec.inc
 endif
 
-# matches cn (Ibex)
-ifeq ($(findstring cn,$(HOST)), cn)
+# matches (Ibex)
+ifeq ("$(KAUST)", "Ibex")
 include make.ibex.inc
 endif
 
-# matches cdl (Shaheen)                                                                                       
+# matches cdl (Shaheen)
 ifeq ($(findstring cdl,$(HOST)), cdl)
 include make.shaheen.inc
 endif
