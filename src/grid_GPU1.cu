@@ -28,10 +28,57 @@ using namespace std;
 namespace hpcscan {
 
 //-------------------------------------------------------------------------------------------------------
-__global__ void print_from_gpu(void) {
+
+//Macro for checking cuda errors following a cuda launch or api call
+#define cudaCheckError() {                                          \
+	cudaError_t e=cudaGetLastError();                                 \
+	if(e!=cudaSuccess) {                                              \
+	  printf("Cuda failure %s:%d: '%s'\n",__FILE__,__LINE__,cudaGetErrorString(e));           \
+	  exit(0); \
+	}                                                                 \
+   }
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void print_from_gpu(void) 
+{
     printf("Hello World! from thread [%d,%d] \
         From device\n", threadIdx.x,blockIdx.x);
 }
+
+//-------------------------------------------------------------------------------------------------------
+
+// first (wrong) implementation of filling data(0:n1*n2*n3)=val
+// TODO we shouldn't ignore pointType
+// we could replace it with a thrust:: one-liner
+__global__ void cuda_fill_const(Myfloat *data, Myfloat val, int n1, int n2, int n3)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size) 
+    {
+		data[tid] = val;
+		printf("data[%d]=%f\n",tid,val);
+		tid += blockDim.x * gridDim.x;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Grid_GPU1::Grid_GPU1(Grid_type gridTypeIn) : Grid(gridTypeIn)
 														{
@@ -62,6 +109,8 @@ Grid_GPU1::~Grid_GPU1(void)
 	printDebug(MID_DEBUG, "IN Grid_GPU1::~Grid_GPU1");
 
 	//delete[] grid_3d ;
+	cudaFree(d_grid_3d);
+	cudaCheckError();
 
 	printDebug(MID_DEBUG, "OUT Grid_GPU1::~Grid_GPU1");
 }
@@ -119,9 +168,16 @@ void Grid_GPU1::initializeGrid(void)
 	print_from_gpu<<<4,1>>>();
 	print_from_gpu<<<4,1>>>();
 	cudaDeviceSynchronize();
+
+	cudaCheckError();
+
 	printf("test\n");
-	// sleep(1);
-	Grid::initializeGrid() ;
+
+	Grid::initializeGrid() ; // this sets up halos etc.
+	printf("test n1=%d n2=%d n3=%d\n",n1,n2,n3);
+
+	cudaMalloc( (void**)&d_grid_3d, n1*n2*n3*sizeof(Myfloat) );
+	cudaCheckError();
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::initializeGrid") ;
 }
@@ -131,8 +187,9 @@ void Grid_GPU1::fill(Point_type pointType, Myfloat val)
 {
 	printDebug(FULL_DEBUG, "In Grid_GPU1::fill") ;
 
-	// TO DO
-	Grid::fill(pointType, val) ;
+	Grid::fill(pointType, val) ; // fill CPU memory (remove me)
+	cuda_fill_const<<<512,64>>>(d_grid_3d,val,n1,n2,n3);
+	cudaCheckError();
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::fill") ;
 }
