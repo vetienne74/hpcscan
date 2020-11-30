@@ -49,27 +49,38 @@ __global__ void print_from_gpu(void)
 //-------------------------------------------------------------------------------------------------------
 
 // first (wrong) implementation of filling data(0:n1*n2*n3)=val
-// TODO we shouldn't ignore pointType
-// we could replace it with a thrust:: one-liner
+// there is probably an easier way to implement this (3d blocks?)
 __global__ void cuda_fill_const(Myfloat *data, Myfloat val, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
-        Myint64 s1 = i1End - i1Start + 1;
-        Myint64 s2 = i2End - i2Start + 1;
-        Myint64 s3 = i3End - i3Start + 1;
-
-        int size = n1*n2*n3;
-        int size2= s1*s2*s3;
-
-        printf("size1:%d\n",size);
-        printf("size2:%d\n",size2);
+	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
-	while (tid < size) 
-    {
-		data[tid] = val;
-		//printf("data[%d]=%f\n",tid,val);
+	// 1D to 3D index (thanks StackOverflow)
+	// public int[] to3D( int idx ) {
+	// 	final int z = idx / (xMax * yMax);
+	// 	idx -= (z * xMax * yMax);
+	// 	final int y = idx / xMax;
+	// 	final int x = idx % xMax;
+	// 	return new int[]{ x, y, z };
+	// }
+
+	while (tid < size)
+	{
+		int t_i3 = tid / (n1*n2);
+		int idx = tid-t_i3*n1*n2;
+		int t_i2 = idx/n1;
+		int t_i1 = idx%n1;
+
+		if (t_i1 >= i1Start && t_i1 <= i1End &&
+			t_i2 >= i2Start && t_i2 <= i2End &&
+			t_i3 >= i3Start && t_i3 <= i3End   )
+		{
+			data[tid] = val;
+			//printf("data[%d]=%f\n",tid,val);
+		}
+
 		tid += blockDim.x * gridDim.x;
-    }
+	}
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -196,11 +207,11 @@ void Grid_GPU1::fill(Point_type pointType, Myfloat val)
 	printDebug(FULL_DEBUG, "In Grid_GPU1::fill") ;
 
 	Grid::fill(pointType, val) ; // fill CPU memory (remove me)
-        //pointtype
-        Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-        Grid::getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-        printf("test i1=%d i2=%d i3=%d\n",i1End,i2End,i3End);
-        cuda_fill_const<<<512,64>>>(d_grid_3d,val,n1,n2,n3,i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	
+	//pointType
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	Grid::getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	cuda_fill_const<<<512,64>>>(d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	cudaCheckError();
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::fill") ;
