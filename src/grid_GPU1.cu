@@ -23,8 +23,6 @@
 #include "global.h"
 #include "output_report.h"
 
-#include "grid_GPU.cu"
-
 using namespace std;
 
 namespace hpcscan {
