@@ -93,7 +93,10 @@ ALL_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
 	testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
 	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
 
-.SUFFIXES: .o .cpp
+.SUFFIXES: .o .cpp .cu
+
+.cu.o:
+	$(NVCC) -c $<
 .cpp.o:
 	$(CPP) -c $(CFLAGS) $<
 
@@ -101,7 +104,7 @@ all: version hpcscan
 
 hpcscan: $(ALL_OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(CPP) $(CFLAGS) -o $(BIN_DIR)/$@ $(ALL_OBJ) $(LIBS)
+	$(CPP) $(CFLAGS) $(CUDAFLAGS) -o $(BIN_DIR)/$@ $(ALL_OBJ) $(LIBS)
 	@echo $(BUILD_MESSAGE)
 	@$(CPP) --version
 

@@ -23,11 +23,17 @@
 #include "global.h"
 #include "output_report.h"
 
+#include "grid_GPU.cu"
+
 using namespace std;
 
 namespace hpcscan {
 
 //-------------------------------------------------------------------------------------------------------
+__global__ void print_from_gpu(void) {
+    printf("Hello World! from thread [%d,%d] \
+        From device\n", threadIdx.x,blockIdx.x);
+}
 
 Grid_GPU1::Grid_GPU1(Grid_type gridTypeIn) : Grid(gridTypeIn)
 														{
@@ -112,6 +118,11 @@ void Grid_GPU1::initializeGrid(void)
 	printDebug(FULL_DEBUG, "In Grid_GPU1::initializeGrid") ;
 
 	// TO DO
+	print_from_gpu<<<4,1>>>();
+	print_from_gpu<<<4,1>>>();
+	cudaDeviceSynchronize();
+	printf("test\n");
+	// sleep(1);
 	Grid::initializeGrid() ;
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::initializeGrid") ;
