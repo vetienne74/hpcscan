@@ -86,20 +86,10 @@ __global__ void cuda_fill_const(Myfloat *data, Myfloat val, int n1, int n2, int 
 
 __global__ void cuda_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3 )
 {
-	printf("sine %f %f %f %f %f\n",param1,param2,param3,amp,Orig1);
-	Myfloat val = param1;
+	// printf("sine %f %f %f %f %f\n",param1,param2,param3,amp,Orig1);
 
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	// 1D to 3D index (thanks StackOverflow)
-	// public int[] to3D( int idx ) {
-	// 	final int z = idx / (xMax * yMax);
-	// 	idx -= (z * xMax * yMax);
-	// 	final int y = idx / xMax;
-	// 	final int x = idx % xMax;
-	// 	return new int[]{ x, y, z };
-	// }
 
 	while (tid < size)
 	{
@@ -112,6 +102,12 @@ __global__ void cuda_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2
 			t_i2 >= i2Start && t_i2 <= i2End &&
 			t_i3 >= i3Start && t_i3 <= i3End   )
 		{
+			Myfloat64 coord1 = Myfloat64(Orig1 + t_i1 * d1);
+			Myfloat64 coord2 = Myfloat64(Orig2 + t_i2 * d2);
+			Myfloat64 coord3 = Myfloat64(Orig3 + t_i3 * d3);
+
+			Myfloat val = amp * sin(coord1 * param1) * sin(coord2 * param2) * sin(coord3 * param3);
+
 			data[tid] = val;
 			//printf("data[%d]=%f\n",tid,val);
 		}
@@ -124,20 +120,10 @@ __global__ void cuda_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2
 
 __global__ void cuda_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3)
 {
-	printf("linear %f %f %f %f\n",param1,param2,param3,amp);
-	Myfloat val = param1;
+	// printf("linear %f %f %f %f\n",param1,param2,param3,amp);
 
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	// 1D to 3D index (thanks StackOverflow)
-	// public int[] to3D( int idx ) {
-	// 	final int z = idx / (xMax * yMax);
-	// 	idx -= (z * xMax * yMax);
-	// 	final int y = idx / xMax;
-	// 	final int x = idx % xMax;
-	// 	return new int[]{ x, y, z };
-	// }
 
 	while (tid < size)
 	{
@@ -150,6 +136,12 @@ __global__ void cuda_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 para
 			t_i2 >= i2Start && t_i2 <= i2End &&
 			t_i3 >= i3Start && t_i3 <= i3End   )
 		{
+			Myfloat64 coord1 = Myfloat64(Orig1 + t_i1 * d1);
+			Myfloat64 coord2 = Myfloat64(Orig2 + t_i2 * d2);
+			Myfloat64 coord3 = Myfloat64(Orig3 + t_i3 * d3);
+
+			Myfloat val = amp * coord1 * coord2 * coord3;
+
 			data[tid] = val;
 			//printf("data[%d]=%f\n",tid,val);
 		}
