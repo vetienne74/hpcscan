@@ -2,7 +2,7 @@
 # environment for Ibex
 
 module load cuda/11.0.1
-module load cuda/11.0.1
+module load intel/2020 intelmpi/2020
 
 export HPCSCAN_MPI_INVOKER="srun"
 export HPCSCAN_NTHREADS=32
