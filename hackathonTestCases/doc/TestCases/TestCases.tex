@@ -247,23 +247,21 @@
   \frametitle{Test Case Grid - Results}
 
   \begin{itemize}
-  \item {\bf Machine: shaheen}
-  \item 1 node / 32 threads
-  \item CPU Baseline kernel and GPU kernels
+  \item CPU (Intel, no way to get AMD) and GPU kernels (V100)
   \end{itemize}
   
   {\scriptsize
   \begin{table}
     \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Dec 1, 2020}} }
     \label{table_memory}
-    \begin{tabular}{@{}cccccc}
-      Mode          & Fill & L1 err. & Get max. & Get min. & Update Pres. \\
+    \begin{tabular}{@{}ccccccc}
+      Machine       & Algo.    & Fill & L1 err. & Get max. & Get min. & Update Pres. \\
       \hline
-      Shaheen CPU   & 54   & 124     & 126      & 126      & 120 \\
-      Ibex CPU      & 92   & 217     & 224      & 224      & 198 \\
-      Ibex GPU1     & 92   & 217     & 224      & 224      & 198 \\
-      Ibex GPU2     & 92   & 217     & 224      & 224      & 198 \\
-      Ibex GPU3     & 92   & 217     & 224      & 224      & 198 \\
+      Shaheen CPU   & Baseline & 54   & 124     & 126      & 126      & 120 \\
+      Ibex CPU      & Baseline & 92   & 217     & 224      & 224      & 198 \\
+      Ibex GPU1     & Cuda     & 497  & 274     & 700/221  & 700/221  & 673 \\
+      Ibex GPU2     & OpenAcc  & On going    & -       & -        & -        & - \\
+      Ibex GPU3     & OpenMP   & -    & -       & -        & -        & - \\
     \end{tabular}
   \end{table}
   }
@@ -272,22 +270,19 @@
   \begin{table}
     \caption{\scriptsize Bandwidth GPoints/s}
     \label{table_memory}
-    \begin{tabular}{@{}cccccc}
-      Mode        & Fill & L1 err. & Get max. & Get min. & Update Pres. \\
+    \begin{tabular}{@{}ccccccc}
+      Machine     & Algo.    & Fill  & L1 err. & Get max. & Get min. & Update Pres. \\
       \hline
-      Shaheen CPU & 13.5  & 15.5    & 31.5     & 31.5    & 6.0 \\
-      Ibex CPU    & 23.0  & 27.1    & 56.0     & 56.0    & 9.9 \\
-      Ibex GPU1   & 23.0  & 27.1    & 56.0     & 56.0    & 9.9 \\
-      Ibex GPU2   & 23.0  & 27.1    & 56.0     & 56.0    & 9.9 \\
-      Ibex GPU3   & 23.0  & 27.1    & 56.0     & 56.0    & 9.9 \\
+      Shaheen CPU & Baseline & 13.5  & 15.5    & 31.5     & 31.5    & 6.0 \\
+      Ibex CPU    & Baseline & 23.0  & 27.1    & 56.0     & 56.0    & 9.9 \\
+      Ibex GPU1   & Cuda     & 124   & 34.5    & 175/55   & 175/55  & 33.7 \\
+      Ibex GPU2   & OpenAcc  & On going     & -       & -        & -       & - \\
+      Ibex GPU3   & OpenMP   & -     & -       & -        & -       & - \\
     \end{tabular}
   \end{table}
   }
 
-  Reproduce results with \texttt{./hackathonTestCases/testCase\_Grid/runMediumGridShaheen.sh}
-  
-  Elapsed few seconds.
-
+  Reproduce results with \texttt{./hackathonTestCases/testCase\_Grid/}
 }
 
 %-------------------------------------------------------------------------------------
@@ -377,10 +372,10 @@
     \begin{tabular}{@{}cccc}
       Machine       & Algo.    & Time (s) & Speedup \\
       \hline
-      Shaheen CPU   & Baseline & 826      & 0.3 \\
-      Shaheen CPU   & CacheBlk & 388      & 0.7 \\
-      Ibex CPU      & Baseline & 524      & 0.5 \\
-      Ibex CPU      & CacheBlk & 265      & 1.0 \\
+      Shaheen CPU   & Baseline & 826      & 0.5 \\
+      Shaheen CPU   & CacheBlk & 388      & 1.0 \\
+      Ibex CPU      & Baseline & 524      & 0.7 \\
+      Ibex CPU      & CacheBlk & 265      & 1.5 \\
       Ibex GPU1     & Cuda     & XXX      & Y.Y \\
       Ibex GPU2     & OpenACC  & XXX      & Y.Y \\
       Ibex GPU3     & OpenMP   & XXX      & Y.Y \\
