@@ -199,6 +199,7 @@ Rtn_code TestCase_Grid::run(void)
 		printInfo(MASTER, " Best achieved GPoint/s", L1ErrGpoint) ;
 	}
 
+	if (false)
 	{
 		//============================================
 		// GetSumAbs = sum of abs(R)
@@ -236,6 +237,7 @@ Rtn_code TestCase_Grid::run(void)
 		printInfo(MASTER, " Best achieved GPoint/s", GetSumAbsGpoint) ;
 	}
 
+	if (false)
 	{
 		//============================================
 		// GetSumAbs = sum of abs (W-R)

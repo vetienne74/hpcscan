@@ -826,4 +826,16 @@ Rtn_code Grid_GPU1::applyBoundaryCondition(BoundCond_type boundCondType)
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::applyBoundaryCondition") ;
 }
+
+Myfloat Grid_GPU1::getSumAbs(Point_type) const
+{
+	printWarning("getSumAbs not yet implemented on the GPU, so returning 0.1");
+	return 0.1;
+}
+
+Myfloat Grid_GPU1::getSumAbsDiff(Point_type, const Grid&) const
+{
+	printWarning("getSumAbsDiff not yet implemented on the GPU, so returning 0");
+	return 0.0;
+}
 } // namespace hpcscan
