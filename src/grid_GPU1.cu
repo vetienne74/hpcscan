@@ -579,7 +579,7 @@ Rtn_code Grid_GPU1::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 	printDebug(FULL_DEBUG, "In Grid_GPU1::computePressureWithFD") ;
 
 	// TO DO
-	Grid::computePressureWithFD(prcGridIn, coefGridIn, fdOrder) ;
+	// Grid::computePressureWithFD(prcGridIn, coefGridIn, fdOrder) ;
 
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
@@ -792,8 +792,7 @@ Rtn_code Grid_GPU1::applyBoundaryCondition(BoundCond_type boundCondType)
 	printDebug(FULL_DEBUG, "In Grid_GPU1::applyBoundaryCondition") ;
 
 	// TO DO
-	printf("BNDNDNND\n");
-	return(Grid::applyBoundaryCondition(boundCondType)) ;
+	// return(Grid::applyBoundaryCondition(boundCondType)) ;
 
 	if (boundCondType != BOUND_COND_ANTI_MIRROR)
 	{
