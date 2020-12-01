@@ -187,11 +187,7 @@ Rtn_code TestCase_Grid::run(void)
 			{
 				Myfloat64 sum1 = (nGridPointGlob-1) * abs(a2-a1) + abs(2*a2-a1) ;
 				Myfloat64 sum2 = nGridPointGlob * a1 ;
-				printf("ngridpointglob %d * a1=%f = %f\n",nGridPointGlob,a1,nGridPointGlob*a1);
 				Myfloat L1ErrRef = sum1 / sum2 ;
-				printf("l1 err ref=%f %f = %f\n",sum1,sum2,L1ErrRef);
-				printf("l1 errs ref=%f calc=%f \n",L1ErrRef,L1Err);
-				// L1Err=0.125;
 				checkFloatDiff(L1Err, L1ErrRef, MAX_ERR_FLOAT) ;
 			}
 
@@ -304,6 +300,8 @@ Rtn_code TestCase_Grid::run(void)
 			if (itry == 0)
 			{
 				Myfloat maxValRef = 2*a2 ;
+								printf("maxValRef=%f\n",maxValRef);
+
 				checkFloatDiff(maxVal, maxValRef, MAX_ERR_FLOAT) ;
 			}
 
@@ -342,6 +340,7 @@ Rtn_code TestCase_Grid::run(void)
 			if (itry == 0)
 			{
 				Myfloat minValRef = a2 ;
+				printf("a2=%f\n",minValRef);
 				checkFloatDiff(minVal, minValRef, MAX_ERR_FLOAT) ;
 			}
 
