@@ -44,7 +44,7 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 // there is probably an easier way to implement this (3d blocks?)
-__global__ void cuda_fill_const(Myfloat *data, Myfloat val, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void cuda_fill_const(Myfloat *data, Myfloat val, const int n1, const int n2, const int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -70,7 +70,6 @@ __global__ void cuda_fill_const(Myfloat *data, Myfloat val, int n1, int n2, int 
 			i3 >= i3Start && i3 <= i3End   )
 		{
 			data[tid] = val;
-			//printf("data[%d]=%f\n",tid,val);
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -639,12 +638,11 @@ void Grid_GPU1::fill(Point_type pointType, Myfloat val)
 {
 	printDebug(FULL_DEBUG, "In Grid_GPU1::fill") ;
 
-	// Grid::fill(pointType, val) ; // fill CPU memory (remove me)
-	
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	cuda_fill_const<<<1024,128>>>(d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
+	cuda_fill_const<<<2048,128>>>(d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	cudaDeviceSynchronize();
 	cudaCheckError();
 
