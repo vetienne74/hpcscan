@@ -124,10 +124,8 @@ void Grid_GPU2::fill(Point_type pointType, Myfloat val)
  
         Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
         getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-        Myfloat *grid_3d_2 = grid_3d;         
-//#pragma acc declare create(grid_3d_2[0:n1*n2*n2])
-//#pragma acc data copy(grid_3d_2[0:n1*n2*n3])
-#pragma acc data create(grid_3d_2[0:n1*n2*n3])
+        Myfloat *grid_3d_2;         
+#pragma acc enter data create(grid_3d[0:(n1*n2*n3)-1])
 #pragma acc parallel loop collapse(2)// present(grid_3d_2)
         for (Myint64 i3 = i3Start; i3<= i3End; i3++)
         {       
@@ -136,11 +134,11 @@ void Grid_GPU2::fill(Point_type pointType, Myfloat val)
                       for (Myint64 i1 = i1Start; i1<= i1End; i1++)
                       {       
                               Myint64 ii = i1 + i2*n1 + i3*n2*n1 ;
-                              grid_3d_2[ii] = val ;
+                              grid_3d[ii] = val ;
                       }
                 }
         }
-//#pragma acc data copyout(grid_3d_2[0:n1*n2*n3])   
+//#pragma acc exit data delete(grid_3d)
 	printDebug(FULL_DEBUG, "Out Grid_GPU2::fill") ;
 }
 
