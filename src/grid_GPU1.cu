@@ -533,5 +533,19 @@ Rtn_code Grid_GPU1::updatePressure(Point_type pointType, const Grid& prcGrid,
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::updatePressure") ;
 }
+//-------------------------------------------------------------------------------------------------------
+Rtn_code Grid_GPU1::applyBoundaryCondition(BoundCond_type boundCondType)
+{
+printDebug(FULL_DEBUG, "In Grid_GPU1::applyBoundaryCondition") ;
 
+// TO DO
+printf("BNDNDNND\n");
+return(Grid::applyBoundaryCondition(boundCondType)) ;
+
+// cuda_updatePressure<<<1024,256>>>(d_grid_3d, prcGrid.d_grid_3d, coefGrid.d_grid_3d, laplaGrid.d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+
+cudaDeviceSynchronize();
+
+printDebug(FULL_DEBUG, "Out Grid_GPU1::applyBoundaryCondition") ;
+}
 } // namespace hpcscan
