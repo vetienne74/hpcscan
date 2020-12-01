@@ -50,7 +50,7 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Grid::Grid(Grid_type gridTypeIn)
-								{
+{
 	printDebug(MID_DEBUG, "IN Grid::Grid");
 
 	gridMode = "Baseline" ;
@@ -63,7 +63,11 @@ Grid::Grid(Grid_type gridTypeIn)
 	//initializeGrid(gridTypeIn, dimIn, n1InnerIn, n2InnerIn, n3InnerIn) ;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
-								}
+
+	grid_3d = NULL;
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
+}
 
 //-------------------------------------------------------------------------------------------------------
 

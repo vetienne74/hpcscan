@@ -230,13 +230,39 @@ __global__ void cuda_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, 
 
 //-------------------------------------------------------------------------------------------------------
 
+// #pragma omp parallel for collapse(2)
+// for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+// 	for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+// 		for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+// 			prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+// 					coef[i1+i2*n1+i3*n1*n2] * lapla[i1+i2*n1+i3*n1*n2] ;
 
+__global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
+	while (tid < size)
+	{
+		int t_i3 = tid / (n1*n2);
+		int idx = tid-t_i3*n1*n2;
+		int t_i2 = idx/n1;
+		int t_i1 = idx%n1;
 
+		// dataOut[tid]=val;
 
+		if (t_i1 >= i1Start && t_i1 <= i1End &&
+			t_i2 >= i2Start && t_i2 <= i2End &&
+			t_i3 >= i3Start && t_i3 <= i3End   )
+		{
+			prn[tid]=2.0*prc[tid]-prn[tid]+coef[tid]*lapla[tid];
+		}
 
+		tid += blockDim.x * gridDim.x;
+	}
+}
 
-
+//-------------------------------------------------------------------------------------------------------
 
 
 
@@ -311,12 +337,12 @@ void Grid_GPU1::info(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-Rtn_code Grid_GPU1::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder)
+Rtn_code Grid_GPU1::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
 	printDebug(MID_DEBUG, "IN Grid_GPU1::FD_LAPLACIAN");
 
 	// TO DO
-	Grid::FD_LAPLACIAN(pType, Wgrid, fdOrder) ;
+	Grid::FD_LAPLACIAN(pointType, Wgrid, fdOrder) ;
 
 	printDebug(MID_DEBUG, "OUT Grid_GPU1::FD_LAPLACIAN");
 	return(RTN_CODE_OK) ;
@@ -345,12 +371,14 @@ void Grid_GPU1::initializeGrid(void)
 	Grid::initializeGrid() ; // this sets up halos etc.
 	printf("test n1=%d n2=%d n3=%d\n",n1,n2,n3);
 
-	cudaMalloc( (void**)&d_grid_3d, n1*n2*n3*sizeof(Myfloat) );
-	cudaCheckError();
+	if (d_grid_3d == NULL)
+	{
+		cudaMalloc( (void**)&d_grid_3d, n1*n2*n3*sizeof(Myfloat) );
+		cudaCheckError();
 
-	cudaMalloc( (void**)&d_help_3d, n1*n2*n3*sizeof(Myfloat64) );
-	cudaCheckError();
-
+		cudaMalloc( (void**)&d_help_3d, n1*n2*n3*sizeof(Myfloat) );
+		cudaCheckError();
+	}
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::initializeGrid") ;
 }
 
@@ -372,17 +400,17 @@ void Grid_GPU1::fill(Point_type pointType, Myfloat val)
 }
 
 //-------------------------------------------------------------------------------------------------------
-void Grid_GPU1::fill(Point_type pType, Func_type t1,  Func_type t2, Func_type t3,
+void Grid_GPU1::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_type t3,
 		Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp)
 {
 	printDebug(FULL_DEBUG, "In Grid_GPU1::fill") ;
 
-	Grid::fill(pType, t1,  t2, t3, param1, param2, param3, amp) ;
+	Grid::fill(pointType, t1,  t2, t3, param1, param2, param3, amp) ;
 
 
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	// we only use sine and linear for now
 	int ok = 1;
@@ -401,16 +429,16 @@ void Grid_GPU1::fill(Point_type pType, Func_type t1,  Func_type t2, Func_type t3
 }
 
 //-------------------------------------------------------------------------------------------------------
-Myfloat Grid_GPU1::getMin(Point_type pType)
+Myfloat Grid_GPU1::getMin(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_GPU1::getMin") ;
 
 	// TO DO
-	// return(Grid::getMin(pType)) ;
+	// return(Grid::getMin(pointType)) ;
 
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	cuda_mask<<<1024,256>>>(d_grid_3d,d_help_3d,999,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
@@ -424,16 +452,16 @@ Myfloat Grid_GPU1::getMin(Point_type pType)
 }
 
 //-------------------------------------------------------------------------------------------------------
-Myfloat Grid_GPU1::getMax(Point_type pType)
+Myfloat Grid_GPU1::getMax(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_GPU1::getMax") ;
 
 	// TO DO
-	// return(Grid::getMax(pType)) ;
+	// return(Grid::getMax(pointType)) ;
 
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	// cuda_mask<<<1024,256>>>(d_grid_3d,d_help_3d,0,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
@@ -487,13 +515,21 @@ Myfloat Grid_GPU1::L1Err(Point_type pointType, const Grid& gridIn) const
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::L1Err") ;
 }
 //-------------------------------------------------------------------------------------------------------
-Rtn_code Grid_GPU1::updatePressure(Point_type pType, const Grid& prcGrid,
+Rtn_code Grid_GPU1::updatePressure(Point_type pointType, const Grid& prcGrid,
 		const Grid& coefGrid, const Grid& laplaGrid)
 {
 	printDebug(FULL_DEBUG, "In Grid_GPU1::updatePressure") ;
 
 	// TO DO
-	return(Grid::updatePressure(pType, prcGrid, coefGrid, laplaGrid)) ;
+	// return(Grid::updatePressure(pointType, prcGrid, coefGrid, laplaGrid)) ;
+
+	//pointType
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+	cuda_updatePressure<<<1024,256>>>(d_grid_3d, prcGrid.d_grid_3d, coefGrid.d_grid_3d, laplaGrid.d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+
+	cudaDeviceSynchronize();
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::updatePressure") ;
 }
