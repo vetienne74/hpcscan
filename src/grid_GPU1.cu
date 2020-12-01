@@ -685,21 +685,25 @@ Myfloat Grid_GPU1::getMin(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_GPU1::getMin") ;
 
-	// TO DO
-	// return(Grid::getMin(pointType)) ;
-
-	//pointType
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-
-	cuda_mask<<<1024,256>>>(d_grid_3d,d_help_3d,999,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-
-	thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
-	thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::min_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
-	float val = *vptr;
-	// printf("val %f\n",val);
-	return val;
-
+	if (true)
+	{
+		//pointType
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+		cuda_mask<<<1024,256>>>(d_grid_3d,d_help_3d,999,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::min_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+		float val = *vptr;
+		return val;
+	}
+	else
+	{
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_grid_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::min_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+		float val = *vptr;
+		return val;
+	}
+	cudaDeviceSynchronize();
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::getMin") ;
 }
 
@@ -708,21 +712,25 @@ Myfloat Grid_GPU1::getMax(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_GPU1::getMax") ;
 
-	// TO DO
-	// return(Grid::getMax(pointType)) ;
-
-	//pointType
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-
-	// cuda_mask<<<1024,256>>>(d_grid_3d,d_help_3d,0,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-
-	thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_grid_3d);
-	thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::max_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
-	float val = *vptr;
-	// printf("val %f\n",val);
-	return val;
-
+	if (hpcscan::nproc_world > 1)
+	{
+		//pointType
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+		cuda_mask<<<1024,256>>>(d_grid_3d,d_help_3d,0,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::max_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+		float val = *vptr;
+		return val;
+	}
+	else
+	{
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_grid_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::max_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+		float val = *vptr;
+		return val;
+	}
+	cudaDeviceSynchronize();
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::getMax") ;
 }
 
