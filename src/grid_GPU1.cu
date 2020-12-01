@@ -264,11 +264,105 @@ __global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, M
 
 //-------------------------------------------------------------------------------------------------------
 
+__global__ void cuda_applyBoundaryCondition(Myfloat *data, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int t_i3 = tid / (n1*n2);
+		int idx = tid-t_i3*n1*n2;
+		int t_i2 = idx/n1;
+		int t_i1 = idx%n1;
+
+		// dataOut[tid]=val;
+
+		if (t_i1 >= i1Start && t_i1 <= i1End &&
+			t_i2 >= i2Start && t_i2 <= i2End &&
+			t_i3 >= i3Start && t_i3 <= i3End   )
+		{
+			data[tid]=2.0;//*prc[tid]-prn[tid]+coef[tid]*lapla[tid];
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
 
 
+// 	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+// 	  for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+// 	    for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+// 		  prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
+// 			(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+// 		   + FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+// 		   + FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 
+// #define FD_D2_O4_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+// 		(        (FD_D2_O4_A0 *  U[i1   + i2*n1 + i3*n2*n1] \
+// 				+ FD_D2_O4_A1 * (U[i1+1 + i2*n1 + i3*n2*n1] + U[i1-1 + i2*n1 + i3*n2*n1])  \
+// 				+ FD_D2_O4_A2 * (U[i1+2 + i2*n1 + i3*n2*n1] + U[i1-2 + i2*n1 + i3*n2*n1])) \
+// 				* inv2_d1)
 
+// #define FD_D2_O4_N2(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+// 		(        (FD_D2_O4_A0 *  U[i1 + i2    *n1 + i3*n2*n1] \
+// 				+ FD_D2_O4_A1 * (U[i1 + (i2+1)*n1 + i3*n2*n1] + U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+// 				+ FD_D2_O4_A2 * (U[i1 + (i2+2)*n1 + i3*n2*n1] + U[i1 + (i2-2)*n1 + i3*n2*n1])) \
+// 				* inv2_d2)
 
+// #define FD_D2_O4_N3(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+// 		(        (FD_D2_O4_A0 *  U[i1 + i2*n1 + i3    *n2*n1] \
+// 				+ FD_D2_O4_A1 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+// 				+ FD_D2_O4_A2 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])) \
+// 				* inv2_d3)
+
+__global__ void cuda_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	const Myfloat FD_D2_O4_A0   =  -5./2. ;
+	const Myfloat FD_D2_O4_A1   =  4./3. ;
+	const Myfloat FD_D2_O4_A2   =  -1./12. ;
+	
+
+	while (tid < size)
+	{
+		int t_i3 = tid / (n1*n2);
+		int idx = tid-t_i3*n1*n2;
+		int t_i2 = idx/n1;
+		int t_i1 = idx%n1;
+
+		// dataOut[tid]=val;
+
+		if (t_i1 >= i1Start && t_i1 <= i1End &&
+			t_i2 >= i2Start && t_i2 <= i2End &&
+			t_i3 >= i3Start && t_i3 <= i3End   )
+		{
+			prn[t_i1+t_i2*n1+t_i3*n1*n2] = 2.0 * prc[t_i1+t_i2*n1+t_i3*n1*n2] - prn[t_i1+t_i2*n1+t_i3*n1*n2] + coef[t_i1+t_i2*n1+t_i3*n1*n2] *
+			(((FD_D2_O4_A0 *  prc[t_i1   + t_i2*n1 + t_i3*n2*n1]
+			 + FD_D2_O4_A1 * (prc[t_i1+1 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-1 + t_i2*n1 + t_i3*n2*n1]) 
+			 + FD_D2_O4_A2 * (prc[t_i1+2 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-2 + t_i2*n1 + t_i3*n2*n1]))
+			 * inv2_d1)
+			+((FD_D2_O4_A0 *  prc[t_i1 +  t_i2   *n1 + t_i3*n2*n1] 
+			 + FD_D2_O4_A1 * (prc[t_i1 + (t_i2+1)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-1)*n1 + t_i3*n2*n1])  
+			 + FD_D2_O4_A2 * (prc[t_i1 + (t_i2+2)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-2)*n1 + t_i3*n2*n1])) 
+			 * inv2_d2)
+			+((FD_D2_O4_A0 *  prc[t_i1 + t_i2*n1 +  t_i3   *n2*n1] 
+			 + FD_D2_O4_A1 * (prc[t_i1 + t_i2*n1 + (t_i3+1)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-1)*n2*n1])  
+			 + FD_D2_O4_A2 * (prc[t_i1 + t_i2*n1 + (t_i3+2)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-2)*n2*n1])) 
+			 * inv2_d3));
+
+			// data[tid]=2.0;//*prc[tid]-prn[tid]+coef[tid]*lapla[tid];
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
 
 
 
@@ -357,6 +451,34 @@ Rtn_code Grid_GPU1::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 
 	// TO DO
 	Grid::computePressureWithFD(prcGridIn, coefGridIn, fdOrder) ;
+
+	//pointType
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	Grid::getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+	if (fdOrder != 4 && fdOrder != 8)
+	{
+		printError("CUDA: only FD order 4/8 implemented");
+	}
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	if (fdOrder == 4)
+	{
+		cuda_computePressureWithFD_O4<<<1024,128>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
+	else if (fdOrder == 8)
+	{
+		// TODO make it 8
+		cuda_computePressureWithFD_O4<<<1024,128>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
+
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::computePressureWithFD") ;
 	return(RTN_CODE_OK) ;
@@ -536,16 +658,21 @@ Rtn_code Grid_GPU1::updatePressure(Point_type pointType, const Grid& prcGrid,
 //-------------------------------------------------------------------------------------------------------
 Rtn_code Grid_GPU1::applyBoundaryCondition(BoundCond_type boundCondType)
 {
-printDebug(FULL_DEBUG, "In Grid_GPU1::applyBoundaryCondition") ;
+	printDebug(FULL_DEBUG, "In Grid_GPU1::applyBoundaryCondition") ;
 
-// TO DO
-printf("BNDNDNND\n");
-return(Grid::applyBoundaryCondition(boundCondType)) ;
+	// TO DO
+	printf("BNDNDNND\n");
+	return(Grid::applyBoundaryCondition(boundCondType)) ;
 
-// cuda_updatePressure<<<1024,256>>>(d_grid_3d, prcGrid.d_grid_3d, coefGrid.d_grid_3d, laplaGrid.d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	if (boundCondType != BOUND_COND_ANTI_MIRROR)
+	{
+		printError("CUDA: only BOUND_COND_ANTI_MIRROR boundary condition for now");
+	}
 
-cudaDeviceSynchronize();
+	// cuda_applyBoundaryCondition<<<1024,256>>>(d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
-printDebug(FULL_DEBUG, "Out Grid_GPU1::applyBoundaryCondition") ;
+	cudaDeviceSynchronize();
+
+	printDebug(FULL_DEBUG, "Out Grid_GPU1::applyBoundaryCondition") ;
 }
 } // namespace hpcscan
