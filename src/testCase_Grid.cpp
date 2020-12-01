@@ -300,8 +300,6 @@ Rtn_code TestCase_Grid::run(void)
 			if (itry == 0)
 			{
 				Myfloat maxValRef = 2*a2 ;
-								printf("maxValRef=%f\n",maxValRef);
-
 				checkFloatDiff(maxVal, maxValRef, MAX_ERR_FLOAT) ;
 			}
 
@@ -340,7 +338,6 @@ Rtn_code TestCase_Grid::run(void)
 			if (itry == 0)
 			{
 				Myfloat minValRef = a2 ;
-				printf("a2=%f\n",minValRef);
 				checkFloatDiff(minVal, minValRef, MAX_ERR_FLOAT) ;
 			}
 
