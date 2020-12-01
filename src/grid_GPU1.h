@@ -54,6 +54,9 @@ public:
 	virtual Rtn_code updatePressure(Point_type pType, const Grid& prcGrid,
 			const Grid& coefGrid, const Grid& laplaGrid) ;
 
+	// apply boundary condition
+	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;
+
 protected:
 
 } ;

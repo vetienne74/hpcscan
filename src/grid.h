@@ -141,7 +141,7 @@ public:
 	// 3D grid array
 	Myfloat * grid_3d ;   // this will be allocated by Grid::initializeGrid on the CPU (we should remove it soon)
 	Myfloat * d_grid_3d ; // this will be a pointer to device (GPU) memory
-
+	Myfloat * d_help_3d ; // this will be a pointer to device (GPU) memory
 
 	// Grid size (local)
 	Myint n1, n2, n3 ;
