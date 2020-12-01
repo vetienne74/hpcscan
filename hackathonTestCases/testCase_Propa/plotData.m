@@ -3,7 +3,8 @@ close all ;
 clear all ;
 
 %DATA = 'runMars'
-DATA = 'runShaheen'
+%DATA = 'runShaheen'
+DATA = 'runIbexCpu'
 FILE = sprintf('%s.out.ref', DATA) ;
 val = importdata(FILE) ;
 
@@ -25,6 +26,7 @@ hold on; grid on;
 xlabel('N1')
 ylabel('Error')
 title('Error vs N1', 'FontSize', 12)
+
 for ii=1:nConfig
     if strcmp(val.textdata(ii,2), 'CacheBlk')
         if valOrder(ii) == 2
@@ -57,6 +59,9 @@ ax.XScale='log'
 ax.YScale='log'
 
 % plot Error versus Time
+TotTimeBaseline = 0 ;
+TotTimeCacheBlk = 0 ;
+
 subplot(2,2,2)
 hold on; grid on;
 xlabel('Time (s)')
@@ -64,6 +69,7 @@ ylabel('Error')
 title('Error vs Compute Time', 'FontSize', 12)
 for ii=1:nConfig
     if strcmp(val.textdata(ii,2), 'CacheBlk')
+        TotTimeCacheBlk = TotTimeCacheBlk + valTime(ii) ;
         if valOrder(ii) == 2
             plot(valTime(ii), valError(ii), 'sw', 'MarkerEdgeColor', 'k', 'MarkerSize', 10, 'LineWidth', 2)
         elseif valOrder(ii) == 4
@@ -76,6 +82,7 @@ for ii=1:nConfig
             plot(valTime(ii), valError(ii), 'sw', 'MarkerEdgeColor', 'g', 'MarkerSize', 10, 'LineWidth', 2)
         end
     else
+        TotTimeBaseline = TotTimeBaseline + valTime(ii) ;
         if valOrder(ii) == 2
             plot(valTime(ii), valError(ii), '+', 'MarkerEdgeColor', 'k', 'MarkerSize', 15, 'LineWidth', 2)
         elseif valOrder(ii) == 4
@@ -171,5 +178,8 @@ ax.YScale='log'
 figName = sprintf('%s.tmp.jpg', DATA) ;
 print(figName, '-djpeg')
 
+% output total time
+TotTimeBaseline
+TotTimeCacheBlk
 
 % END

@@ -333,8 +333,8 @@
   \begin{itemize}
   \item {\bf Machine: shaheen}
   \item 1 node / 32 threads
-  \item CPU Baseline kernel and GPU kernels \footnote{\scriptsize \textcolor{blue}{Updated Nov 28, 2020}}
-  \item FD: Black O2, Blue O4, Pink O8, Red O12 / Square=CPU CacheBlk, Cross=GPU 
+  \item CPU Baseline \& cache blocking kernels \footnote{\scriptsize \textcolor{blue}{Updated Nov 28, 2020}}
+  \item FD: Black O2, Blue O4, Pink O8, Red O12 / Square=CPU CacheBlk, Cross=Baseline
   \end{itemize}
   
   \begin{figure}
@@ -344,8 +344,49 @@
   \end{figure}
 
   Reproduce results with \texttt{./hackathonTestCases/testCase\_Propa/runShaheen.sh}
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Propa - Results}
   
-  Elapsed about an hour.
+  \begin{itemize}
+  \item {\bf Machine: Ibex Cpu}
+  \item 1 node / 32 threads
+  \item CPU Baseline \& cache blocking kernels \footnote{\scriptsize \textcolor{blue}{Updated Dec 1, 2020}}
+  \item FD: Black O2, Blue O4, Pink O8, Red O12 / Square=CPU CacheBlk, Cross=Baseline
+  \end{itemize}
+  
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=0.6 \textwidth]{../../testCase_Propa/runIbexCpu.jpg}
+    \end{center}
+  \end{figure}
+
+  Reproduce results with \texttt{./hackathonTestCases/testCase\_Propa/runIbexCpu.sh}
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Propa - Results}
+
+  {\scriptsize
+  \begin{table}
+    \caption{\scriptsize Best total time for 18 configurations \footnote{\scriptsize \textcolor{blue}{Updated Dec 1, 2020}} }
+    \label{compute_time}
+    \begin{tabular}{@{}cccc}
+      Machine       & Algo.    & Time (s) & Speedup \\
+      \hline
+      Shaheen CPU   & Baseline & 826      & 0.3 \\
+      Shaheen CPU   & CacheBlk & 388      & 0.7 \\
+      Ibex CPU      & Baseline & 524      & 0.5 \\
+      Ibex CPU      & CacheBlk & 265      & 1.0 \\
+      Ibex GPU1     & Cuda     & XXX      & Y.Y \\
+      Ibex GPU2     & OpenACC  & XXX      & Y.Y \\
+      Ibex GPU3     & OpenMP   & XXX      & Y.Y \\
+       \end{tabular}
+  \end{table}
+  }
 
 }
 
