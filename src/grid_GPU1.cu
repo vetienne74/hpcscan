@@ -600,12 +600,11 @@ Rtn_code Grid_GPU1::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 
 	if (fdOrder == 4)
 	{
-		cuda_computePressureWithFD_O4<<<1024,128>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cuda_computePressureWithFD_O4<<<1024,256>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	else if (fdOrder == 8)
 	{
-		// TODO make it 8
-		cuda_computePressureWithFD_O4<<<1024,128>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cuda_computePressureWithFD_O8<<<1024,256>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	
 	cudaCheckError();
