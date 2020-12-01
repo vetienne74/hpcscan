@@ -60,14 +60,14 @@ __global__ void cuda_fill_const(Myfloat *data, Myfloat val, int n1, int n2, int 
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
 			data[tid] = val;
 			//printf("data[%d]=%f\n",tid,val);
@@ -88,18 +88,18 @@ __global__ void cuda_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
-			Myfloat64 coord1 = Myfloat64(Orig1 + t_i1 * d1);
-			Myfloat64 coord2 = Myfloat64(Orig2 + t_i2 * d2);
-			Myfloat64 coord3 = Myfloat64(Orig3 + t_i3 * d3);
+			Myfloat64 coord1 = Myfloat64(Orig1 + i1 * d1);
+			Myfloat64 coord2 = Myfloat64(Orig2 + i2 * d2);
+			Myfloat64 coord3 = Myfloat64(Orig3 + i3 * d3);
 
 			Myfloat val = amp * sin(coord1 * param1) * sin(coord2 * param2) * sin(coord3 * param3);
 
@@ -122,18 +122,18 @@ __global__ void cuda_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 para
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
-			Myfloat64 coord1 = Myfloat64(Orig1 + t_i1 * d1);
-			Myfloat64 coord2 = Myfloat64(Orig2 + t_i2 * d2);
-			Myfloat64 coord3 = Myfloat64(Orig3 + t_i3 * d3);
+			Myfloat64 coord1 = Myfloat64(Orig1 + i1 * d1);
+			Myfloat64 coord2 = Myfloat64(Orig2 + i2 * d2);
+			Myfloat64 coord3 = Myfloat64(Orig3 + i3 * d3);
 
 			Myfloat val = amp * coord1 * coord2 * coord3;
 
@@ -156,16 +156,16 @@ __global__ void cuda_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut, int 
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
 		dataOut[tid]=0;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
 			dataOut[tid] = fabsf(data1[tid]-data2[tid]);
 		}
@@ -183,16 +183,16 @@ __global__ void cuda_fabsf(Myfloat *data, Myfloat *dataOut, int n1, int n2, int 
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
 		dataOut[tid]=0;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
 			dataOut[tid] = fabsf(data[tid]);
 		}
@@ -210,16 +210,16 @@ __global__ void cuda_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, 
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
 		dataOut[tid]=val;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
 			dataOut[tid] = data[tid];
 		}
@@ -244,16 +244,16 @@ __global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, M
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
 		// dataOut[tid]=val;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
 			prn[tid]=2.0*prc[tid]-prn[tid]+coef[tid]*lapla[tid];
 		}
@@ -278,75 +278,75 @@ __global__ void cuda_applyBoundaryCondition(Myfloat *data, int n1, int n2, int n
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
 		// I1HALO1
 		Myint64 iInner = i1halo1_i1End+1;
-		if (tid == iInner+t_i2*n1+t_i3*n1*n2) data[tid] = 0.0 ;
+		if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
 
-		if (t_i1 >= i1halo1_i1Start && t_i1 <= i1halo1_i1End &&
-			t_i2 >= i1halo1_i2Start && t_i2 <= i1halo1_i2End &&
-			t_i3 >= i1halo1_i3Start && t_i3 <= i1halo1_i3End   )
+		if (i1 >= i1halo1_i1Start && i1 <= i1halo1_i1End &&
+			i2 >= i1halo1_i2Start && i2 <= i1halo1_i2End &&
+			i3 >= i1halo1_i3Start && i3 <= i1halo1_i3End   )
 		{
-			data[tid] = -data[(iInner+iInner-t_i1)+t_i2*n1+t_i3*n1*n2];
+			data[tid] = -data[(iInner+iInner-i1)+i2*n1+i3*n1*n2];
 		}
 
 		// I1HALO2
 		iInner = i1halo2_i1Start-1;
-		if (tid == iInner+t_i2*n1+t_i3*n1*n2) data[tid] = 0.0 ;
+		if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
 
-		if (t_i1 >= i1halo2_i1Start && t_i1 <= i1halo2_i1End &&
-			t_i2 >= i1halo2_i2Start && t_i2 <= i1halo2_i2End &&
-			t_i3 >= i1halo2_i3Start && t_i3 <= i1halo2_i3End   )
+		if (i1 >= i1halo2_i1Start && i1 <= i1halo2_i1End &&
+			i2 >= i1halo2_i2Start && i2 <= i1halo2_i2End &&
+			i3 >= i1halo2_i3Start && i3 <= i1halo2_i3End   )
 		{
-			data[tid] = -data[(iInner-(t_i1-iInner))+t_i2*n1+t_i3*n1*n2];
+			data[tid] = -data[(iInner-(i1-iInner))+i2*n1+i3*n1*n2];
 		}
 
 		// I2HALO1
 		iInner = i2halo1_i2End+1;
-		if (tid == t_i1+iInner*n1+t_i3*n1*n2) data[tid] = 0.0 ;
+		if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
 
-		if (t_i1 >= i2halo1_i1Start && t_i1 <= i2halo1_i1End &&
-			t_i2 >= i2halo1_i2Start && t_i2 <= i2halo1_i2End &&
-			t_i3 >= i2halo1_i3Start && t_i3 <= i2halo1_i3End   )
+		if (i1 >= i2halo1_i1Start && i1 <= i2halo1_i1End &&
+			i2 >= i2halo1_i2Start && i2 <= i2halo1_i2End &&
+			i3 >= i2halo1_i3Start && i3 <= i2halo1_i3End   )
 		{
-			data[tid] = -data[t_i1+(iInner+iInner-t_i2)*n1+t_i3*n1*n2];
+			data[tid] = -data[i1+(iInner+iInner-i2)*n1+i3*n1*n2];
 		}
 
 		// I2HALO2
 		iInner = i2halo2_i2Start-1;
-		if (tid == t_i1+iInner*n1+t_i3*n1*n2) data[tid] = 0.0 ;
+		if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
 
-		if (t_i1 >= i2halo2_i1Start && t_i1 <= i2halo2_i1End &&
-			t_i2 >= i2halo2_i2Start && t_i2 <= i2halo2_i2End &&
-			t_i3 >= i2halo2_i3Start && t_i3 <= i2halo2_i3End   )
+		if (i1 >= i2halo2_i1Start && i1 <= i2halo2_i1End &&
+			i2 >= i2halo2_i2Start && i2 <= i2halo2_i2End &&
+			i3 >= i2halo2_i3Start && i3 <= i2halo2_i3End   )
 		{
-			data[tid] = -data[t_i1+(iInner-(t_i2-iInner))*n1+t_i3*n1*n2];
+			data[tid] = -data[i1+(iInner-(i2-iInner))*n1+i3*n1*n2];
 		}
 
 		// I3HALO1
 		iInner = i3halo1_i3End+1;
-		if (tid == t_i1+t_i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
+		if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
 
-		if (t_i1 >= i3halo1_i1Start && t_i1 <= i3halo1_i1End &&
-			t_i2 >= i3halo1_i2Start && t_i2 <= i3halo1_i2End &&
-			t_i3 >= i3halo1_i3Start && t_i3 <= i3halo1_i3End   )
+		if (i1 >= i3halo1_i1Start && i1 <= i3halo1_i1End &&
+			i2 >= i3halo1_i2Start && i2 <= i3halo1_i2End &&
+			i3 >= i3halo1_i3Start && i3 <= i3halo1_i3End   )
 		{
-			data[tid] = -data[t_i1+t_i2*n1+(iInner+iInner-t_i3)*n1*n2];			                  
+			data[tid] = -data[i1+i2*n1+(iInner+iInner-i3)*n1*n2];			                  
 		}
 
 		// I3HALO2
 		iInner = i3halo2_i3Start-1;
-		if (tid == t_i1+t_i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
+		if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
 
-		if (t_i1 >= i3halo2_i1Start && t_i1 <= i3halo2_i1End &&
-			t_i2 >= i3halo2_i2Start && t_i2 <= i3halo2_i2End &&
-			t_i3 >= i3halo2_i3Start && t_i3 <= i3halo2_i3End   )
+		if (i1 >= i3halo2_i1Start && i1 <= i3halo2_i1End &&
+			i2 >= i3halo2_i2Start && i2 <= i3halo2_i2End &&
+			i3 >= i3halo2_i3Start && i3 <= i3halo2_i3End   )
 		{
-			data[tid] = -data[t_i1+t_i2*n1+(iInner-(t_i3-iInner))*n1*n2];
+			data[tid] = -data[i1+i2*n1+(iInner-(i3-iInner))*n1*n2];
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -393,27 +393,27 @@ __global__ void cuda_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloa
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
-			prn[t_i1+t_i2*n1+t_i3*n1*n2] = 2.0 * prc[t_i1+t_i2*n1+t_i3*n1*n2] - prn[t_i1+t_i2*n1+t_i3*n1*n2] + coef[t_i1+t_i2*n1+t_i3*n1*n2] *
-			(((FD_D2_O4_A0 *  prc[t_i1   + t_i2*n1 + t_i3*n2*n1]
-			 + FD_D2_O4_A1 * (prc[t_i1+1 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-1 + t_i2*n1 + t_i3*n2*n1]) 
-			 + FD_D2_O4_A2 * (prc[t_i1+2 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-2 + t_i2*n1 + t_i3*n2*n1]))
+			prn[i1+i2*n1+i3*n1*n2] = 2.0 * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
+			(((FD_D2_O4_A0 *  prc[i1   + i2*n1 + i3*n2*n1]
+			 + FD_D2_O4_A1 * (prc[i1+1 + i2*n1 + i3*n2*n1] + prc[i1-1 + i2*n1 + i3*n2*n1]) 
+			 + FD_D2_O4_A2 * (prc[i1+2 + i2*n1 + i3*n2*n1] + prc[i1-2 + i2*n1 + i3*n2*n1]))
 			 * inv2_d1)
-			+((FD_D2_O4_A0 *  prc[t_i1 +  t_i2   *n1 + t_i3*n2*n1] 
-			 + FD_D2_O4_A1 * (prc[t_i1 + (t_i2+1)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-1)*n1 + t_i3*n2*n1])  
-			 + FD_D2_O4_A2 * (prc[t_i1 + (t_i2+2)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-2)*n1 + t_i3*n2*n1])) 
+			+((FD_D2_O4_A0 *  prc[i1 +  i2   *n1 + i3*n2*n1] 
+			 + FD_D2_O4_A1 * (prc[i1 + (i2+1)*n1 + i3*n2*n1] + prc[i1 + (i2-1)*n1 + i3*n2*n1])  
+			 + FD_D2_O4_A2 * (prc[i1 + (i2+2)*n1 + i3*n2*n1] + prc[i1 + (i2-2)*n1 + i3*n2*n1])) 
 			 * inv2_d2)
-			+((FD_D2_O4_A0 *  prc[t_i1 + t_i2*n1 +  t_i3   *n2*n1] 
-			 + FD_D2_O4_A1 * (prc[t_i1 + t_i2*n1 + (t_i3+1)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-1)*n2*n1])  
-			 + FD_D2_O4_A2 * (prc[t_i1 + t_i2*n1 + (t_i3+2)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-2)*n2*n1])) 
+			+((FD_D2_O4_A0 *  prc[i1 + i2*n1 +  i3   *n2*n1] 
+			 + FD_D2_O4_A1 * (prc[i1 + i2*n1 + (i3+1)*n2*n1] + prc[i1 + i2*n1 + (i3-1)*n2*n1])  
+			 + FD_D2_O4_A2 * (prc[i1 + i2*n1 + (i3+2)*n2*n1] + prc[i1 + i2*n1 + (i3-2)*n2*n1])) 
 			 * inv2_d3));
 		}
 
@@ -459,33 +459,33 @@ __global__ void cuda_computePressureWithFD_O8(Myfloat *prn, Myfloat *prc, Myfloa
 
 	while (tid < size)
 	{
-		int t_i3 = tid / (n1*n2);
-		int idx = tid-t_i3*n1*n2;
-		int t_i2 = idx/n1;
-		int t_i1 = idx%n1;
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
 
-		if (t_i1 >= i1Start && t_i1 <= i1End &&
-			t_i2 >= i2Start && t_i2 <= i2End &&
-			t_i3 >= i3Start && t_i3 <= i3End   )
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 		{
-			prn[t_i1+t_i2*n1+t_i3*n1*n2] = 2.0 * prc[t_i1+t_i2*n1+t_i3*n1*n2] - prn[t_i1+t_i2*n1+t_i3*n1*n2] + coef[t_i1+t_i2*n1+t_i3*n1*n2] *
-				((   (FD_D2_O8_A0 *  prc[t_i1   + t_i2*n1 + t_i3*n2*n1] 
-					+ FD_D2_O8_A1 * (prc[t_i1+1 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-1 + t_i2*n1 + t_i3*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[t_i1+2 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-2 + t_i2*n1 + t_i3*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[t_i1+3 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-3 + t_i2*n1 + t_i3*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[t_i1+4 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-4 + t_i2*n1 + t_i3*n2*n1])) 
+			prn[i1+i2*n1+i3*n1*n2] = 2.0 * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
+				((   (FD_D2_O8_A0 *  prc[i1   + i2*n1 + i3*n2*n1] 
+					+ FD_D2_O8_A1 * (prc[i1+1 + i2*n1 + i3*n2*n1] + prc[i1-1 + i2*n1 + i3*n2*n1])  
+					+ FD_D2_O8_A2 * (prc[i1+2 + i2*n1 + i3*n2*n1] + prc[i1-2 + i2*n1 + i3*n2*n1])  
+					+ FD_D2_O8_A3 * (prc[i1+3 + i2*n1 + i3*n2*n1] + prc[i1-3 + i2*n1 + i3*n2*n1])  
+					+ FD_D2_O8_A4 * (prc[i1+4 + i2*n1 + i3*n2*n1] + prc[i1-4 + i2*n1 + i3*n2*n1])) 
 					* inv2_d1)
-			+(       (FD_D2_O8_A0 *  prc[t_i1 + t_i2    *n1 + t_i3*n2*n1] 
-					+ FD_D2_O8_A1 * (prc[t_i1 + (t_i2+1)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-1)*n1 + t_i3*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[t_i1 + (t_i2+2)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-2)*n1 + t_i3*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[t_i1 + (t_i2+3)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-3)*n1 + t_i3*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[t_i1 + (t_i2+4)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-4)*n1 + t_i3*n2*n1])) 
+			+(       (FD_D2_O8_A0 *  prc[i1 + i2    *n1 + i3*n2*n1] 
+					+ FD_D2_O8_A1 * (prc[i1 + (i2+1)*n1 + i3*n2*n1] + prc[i1 + (i2-1)*n1 + i3*n2*n1])  
+					+ FD_D2_O8_A2 * (prc[i1 + (i2+2)*n1 + i3*n2*n1] + prc[i1 + (i2-2)*n1 + i3*n2*n1])  
+					+ FD_D2_O8_A3 * (prc[i1 + (i2+3)*n1 + i3*n2*n1] + prc[i1 + (i2-3)*n1 + i3*n2*n1])  
+					+ FD_D2_O8_A4 * (prc[i1 + (i2+4)*n1 + i3*n2*n1] + prc[i1 + (i2-4)*n1 + i3*n2*n1])) 
 					* inv2_d2)
-			+(       (FD_D2_O8_A0 *  prc[t_i1 + t_i2*n1 + t_i3    *n2*n1] 
-					+ FD_D2_O8_A1 * (prc[t_i1 + t_i2*n1 + (t_i3+1)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-1)*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[t_i1 + t_i2*n1 + (t_i3+2)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-2)*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[t_i1 + t_i2*n1 + (t_i3+3)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-3)*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[t_i1 + t_i2*n1 + (t_i3+4)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-4)*n2*n1])) 
+			+(       (FD_D2_O8_A0 *  prc[i1 + i2*n1 + i3    *n2*n1] 
+					+ FD_D2_O8_A1 * (prc[i1 + i2*n1 + (i3+1)*n2*n1] + prc[i1 + i2*n1 + (i3-1)*n2*n1])  
+					+ FD_D2_O8_A2 * (prc[i1 + i2*n1 + (i3+2)*n2*n1] + prc[i1 + i2*n1 + (i3-2)*n2*n1])  
+					+ FD_D2_O8_A3 * (prc[i1 + i2*n1 + (i3+3)*n2*n1] + prc[i1 + i2*n1 + (i3-3)*n2*n1])  
+					+ FD_D2_O8_A4 * (prc[i1 + i2*n1 + (i3+4)*n2*n1] + prc[i1 + i2*n1 + (i3-4)*n2*n1])) 
 					* inv2_d3));
 		}
 
