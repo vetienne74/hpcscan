@@ -435,9 +435,9 @@ Myfloat Grid_GPU1::getMax(Point_type pType)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	Grid::getGridIndex(pType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	cuda_mask<<<1024,256>>>(d_grid_3d,d_help_3d,0,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	// cuda_mask<<<1024,256>>>(d_grid_3d,d_help_3d,0,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
-	thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
+	thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_grid_3d);
 	thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::max_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
 	float val = *vptr;
 	// printf("val %f\n",val);
