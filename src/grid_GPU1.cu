@@ -300,10 +300,33 @@ __global__ void cuda_applyBoundaryCondition(Myfloat *data, int n1, int n2, int n
 // 		   + FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 // 		   + FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 
-__global__ void cuda_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv_d1, Myfloat inv_d2, Myfloat inv_d3, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+// #define FD_D2_O4_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+// 		(        (FD_D2_O4_A0 *  U[i1   + i2*n1 + i3*n2*n1] \
+// 				+ FD_D2_O4_A1 * (U[i1+1 + i2*n1 + i3*n2*n1] + U[i1-1 + i2*n1 + i3*n2*n1])  \
+// 				+ FD_D2_O4_A2 * (U[i1+2 + i2*n1 + i3*n2*n1] + U[i1-2 + i2*n1 + i3*n2*n1])) \
+// 				* inv2_d1)
+
+// #define FD_D2_O4_N2(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+// 		(        (FD_D2_O4_A0 *  U[i1 + i2    *n1 + i3*n2*n1] \
+// 				+ FD_D2_O4_A1 * (U[i1 + (i2+1)*n1 + i3*n2*n1] + U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+// 				+ FD_D2_O4_A2 * (U[i1 + (i2+2)*n1 + i3*n2*n1] + U[i1 + (i2-2)*n1 + i3*n2*n1])) \
+// 				* inv2_d2)
+
+// #define FD_D2_O4_N3(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+// 		(        (FD_D2_O4_A0 *  U[i1 + i2*n1 + i3    *n2*n1] \
+// 				+ FD_D2_O4_A1 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+// 				+ FD_D2_O4_A2 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])) \
+// 				* inv2_d3)
+
+__global__ void cuda_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	const Myfloat FD_D2_O4_A0   =  -5./2. ;
+	const Myfloat FD_D2_O4_A1   =  4./3. ;
+	const Myfloat FD_D2_O4_A2   =  -1./12. ;
+	
 
 	while (tid < size)
 	{
@@ -318,6 +341,20 @@ __global__ void cuda_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloa
 			t_i2 >= i2Start && t_i2 <= i2End &&
 			t_i3 >= i3Start && t_i3 <= i3End   )
 		{
+			prn[t_i1+t_i2*n1+t_i3*n1*n2] = 2.0 * prc[t_i1+t_i2*n1+t_i3*n1*n2] - prn[t_i1+t_i2*n1+t_i3*n1*n2] + coef[t_i1+t_i2*n1+t_i3*n1*n2] *
+			(((FD_D2_O4_A0 *  prc[t_i1   + t_i2*n1 + t_i3*n2*n1]
+			 + FD_D2_O4_A1 * (prc[t_i1+1 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-1 + t_i2*n1 + t_i3*n2*n1]) 
+			 + FD_D2_O4_A2 * (prc[t_i1+2 + t_i2*n1 + t_i3*n2*n1] + prc[t_i1-2 + t_i2*n1 + t_i3*n2*n1]))
+			 * inv2_d1)
+			+((FD_D2_O4_A0 *  prc[t_i1 +  t_i2   *n1 + t_i3*n2*n1] 
+			 + FD_D2_O4_A1 * (prc[t_i1 + (t_i2+1)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-1)*n1 + t_i3*n2*n1])  
+			 + FD_D2_O4_A2 * (prc[t_i1 + (t_i2+2)*n1 + t_i3*n2*n1] + prc[t_i1 + (t_i2-2)*n1 + t_i3*n2*n1])) 
+			 * inv2_d2)
+			+((FD_D2_O4_A0 *  prc[t_i1 + t_i2*n1 +  t_i3   *n2*n1] 
+			 + FD_D2_O4_A1 * (prc[t_i1 + t_i2*n1 + (t_i3+1)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-1)*n2*n1])  
+			 + FD_D2_O4_A2 * (prc[t_i1 + t_i2*n1 + (t_i3+2)*n2*n1] + prc[t_i1 + t_i2*n1 + (t_i3-2)*n2*n1])) 
+			 * inv2_d3));
+
 			// data[tid]=2.0;//*prc[tid]-prn[tid]+coef[tid]*lapla[tid];
 		}
 
@@ -434,12 +471,12 @@ Rtn_code Grid_GPU1::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 
 	if (fdOrder == 4)
 	{
-		cuda_computePressureWithFD_O4<<<1024,128>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv_d1,inv_d2,inv_d3,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cuda_computePressureWithFD_O4<<<1024,128>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	else if (fdOrder == 8)
 	{
 		// TODO make it 8
-		cuda_computePressureWithFD_O4<<<1024,128>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv_d1,inv_d2,inv_d3,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cuda_computePressureWithFD_O4<<<1024,128>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 
 
