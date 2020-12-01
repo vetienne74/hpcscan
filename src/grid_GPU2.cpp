@@ -539,8 +539,8 @@ void Grid_GPU2::initializeGrid(void)
 	// allocate grid
 	//--------------
 	npoint = n1 * n2 * n3 ;
-	//grid_3d = new Myfloat[npoint] ;
-#pragma acc enter data create(grid_3d[0:(n1*n2*n3)-1])
+	grid_3d = new Myfloat[npoint] ;
+//#pragma acc enter data create(grid_3d[0:(n1*n2*n3)-1])
 
 	printDebug(FULL_DEBUG, "Out Grid_GPU2::initializeGrid") ;
 }
@@ -552,8 +552,8 @@ void Grid_GPU2::fill(Point_type pointType, Myfloat val)
 
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-	//Myfloat *grid_3d_2;
-#pragma acc enter data create(grid_3d[0:(n1*n2*n3)-1])
+	Myfloat *grid_3d_2;//=grid_3d;
+#pragma acc enter data create(grid_3d_2[0:(n1*n2*n3)])
 #pragma acc parallel loop collapse(2)// present(grid_3d_2)
 	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 	{
@@ -562,7 +562,7 @@ void Grid_GPU2::fill(Point_type pointType, Myfloat val)
 			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 			{
 				Myint64 ii = i1 + i2*n1 + i3*n2*n1 ;
-				grid_3d[ii] = val ;
+				grid_3d_2[ii] = val ;
 			}
 		}
 	}
