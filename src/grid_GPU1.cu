@@ -693,7 +693,7 @@ void Grid_GPU1::initializeGrid(void)
 		cudaMalloc( (void**)&d_grid_3d, n1*n2*n3*sizeof(Myfloat) );
 		cudaCheckError();
 
-		cudaMalloc( (void**)&d_help_3d, n1*n2*n3*sizeof(Myfloat) );
+		cudaMalloc( (void**)&d_help_3d, 1024*sizeof(Myfloat) );
 		cudaCheckError();
 	}
 	printDebug(FULL_DEBUG, "Out Grid_GPU1::initializeGrid") ;

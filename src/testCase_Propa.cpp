@@ -125,7 +125,7 @@ Rtn_code TestCase_Propa::run(void)
 			propa->computeWavefieldNextTimeStep(*prnGrid, *prcGrid) ;
 
 			// check testCase results
-			if (itry == 0)
+			if (false && itry == 0)
 			{
 				if (it%snapInc == 0)
 				{
