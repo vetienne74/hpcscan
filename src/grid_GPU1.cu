@@ -224,6 +224,50 @@ __global__ void cuda_fabsf(Myfloat *data, Myfloat *dataOut, int n1, int n2, int 
 
 //-------------------------------------------------------------------------------------------------------
 
+__global__ void cuda_min(Myfloat *data, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	cg::thread_block cta = cg::this_thread_block();
+	extern __shared__ float sdata[256];
+	sdata[threadIdx.x]=99999;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			Myfloat val = data[tid];
+			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	cg::sync(cta);
+	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1) 
+	{
+		if (threadIdx.x < s) 
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}	
+		cg::sync(cta);
+	  }
+	
+	  // write result for this block to global mem
+	  if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
+}
+
+//-------------------------------------------------------------------------------------------------------
 __global__ void cuda_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
@@ -706,6 +750,21 @@ Myfloat Grid_GPU1::getMin(Point_type pointType)
 	printDebug(FULL_DEBUG, "In Grid_GPU1::getMin") ;
 
 	if (true)
+	{
+		//pointType
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+		
+		const int numBlocks = 1024;
+		cuda_min<<<numBlocks,256>>>(d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cudaCheckError();
+
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::min_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + numBlocks);
+		float val = *vptr;
+		return val;
+	}
+	else if (true)
 	{
 		//pointType
 		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
