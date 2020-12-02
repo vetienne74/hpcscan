@@ -26,6 +26,11 @@
 #include <thrust/device_vector.h>
 #include <thrust/reduce.h>
 
+#include <cooperative_groups.h>
+// #include <cooperative_groups/reduce.h>
+
+namespace cg = cooperative_groups;
+
 using namespace std;
 
 namespace hpcscan {
@@ -153,6 +158,11 @@ __global__ void cuda_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut, int 
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
+	cg::thread_block cta = cg::this_thread_block();
+	extern __shared__ float sdata[256];
+
+	sdata[threadIdx.x]=0;
+
 	while (tid < size)
 	{
 		int i3 = tid / (n1*n2);
@@ -160,17 +170,29 @@ __global__ void cuda_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut, int 
 		int i2 = idx/n1;
 		int i1 = idx%n1;
 
-		dataOut[tid]=0;
 
 		if (i1 >= i1Start && i1 <= i1End &&
 			i2 >= i2Start && i2 <= i2End &&
 			i3 >= i3Start && i3 <= i3End   )
 		{
-			dataOut[tid] = fabsf(data1[tid]-data2[tid]);
+			sdata[threadIdx.x] += fabsf(data1[tid]-data2[tid]);
 		}
 
 		tid += blockDim.x * gridDim.x;
 	}
+
+	cg::sync(cta);
+	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1) 
+	{
+		if (threadIdx.x < s) 
+		{
+		  sdata[threadIdx.x] += sdata[threadIdx.x + s];
+		}	
+		cg::sync(cta);
+	  }
+	
+	  // write result for this block to global mem
+	  if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -746,9 +768,12 @@ Myfloat Grid_GPU1::L1Err(Point_type pointType, const Grid& gridIn) const
 
 	thrust::device_ptr<Myfloat> d_help_3d_ptr;
 
-	cuda_diff<<<1024,256>>>(d_grid_3d,gridIn.d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	const int numBlocks = 1024;
+
+	cuda_diff<<<numBlocks,256>>>(d_grid_3d,gridIn.d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	cudaCheckError();
 	d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
-	double totErr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+	double totErr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + numBlocks);
 
 	double totArr;
 	if (false)
