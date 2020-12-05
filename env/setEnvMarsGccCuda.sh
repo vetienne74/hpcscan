@@ -1,6 +1,9 @@
 
+# Load needed modules
+# no module needed on Mars
+
 # MPI config
-export HPCSCAN_MPI_INVOKER="mpirun --oversubscribe"
+export HPCSCAN_MPI_INVOKER='mpirun --oversubscribe'
 
 # OpenMP config
 export HPCSCAN_NTHREADS=1
