@@ -188,9 +188,11 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, "     Propa           * Propagator") ;
 			printInfo(MASTER, "     Util            * Utility for developers") ;
 			printInfo(MASTER, " -testMode <string>  = test mode") ;
-			printInfo(MASTER, "     Baseline        * Standard without optimization (DEFAULT)") ;
-			printInfo(MASTER, "     CacheBlk        * Use cache blocking techniques") ;
-			printInfo(MASTER, "     NEC_SCA         * Use NEC Stencil Code Accelerator") ;
+			printInfo(MASTER, "     Baseline        * CPU without optimization (DEFAULT)") ;
+			printInfo(MASTER, "     CacheBlk        * CPU with cache blocking techniques") ;
+			printInfo(MASTER, "     Cuda            * GPU with CUDA without optimization") ;
+			printInfo(MASTER, "     NEC_SCA         * NEC with Stencil Code Accelerator") ;
+			printInfo(MASTER, "     OpenAcc         * GPU with OpenAcc without optimization") ;
 			printInfo(MASTER, " -tmax <float>       = max. time (s) for propagator") ;
 			printInfo(MASTER, "     (if specified tmax overrides nt)") ;
 			printInfo(MASTER, " -version or -v      = print version information") ;
