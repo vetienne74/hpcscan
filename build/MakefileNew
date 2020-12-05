@@ -1,4 +1,15 @@
 
+#========================#
+# check env has been set #
+#========================#
+ifeq ($(strip $(HPCSCAN_CPP)),)
+$(info It seems hpcscan environment has not been set.)
+$(info Source one of the env files in ../env or create a new one for your machine.)
+$(error HPCSCAN_CPP is $(HPCSCAN_CPP))
+else
+$(info hpcscan will be compiled with $(HPCSCAN_CPP))
+endif
+
 #=====================#
 #     directories     #
 #=====================#
