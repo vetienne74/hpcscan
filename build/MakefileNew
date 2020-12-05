@@ -1,0 +1,99 @@
+
+#=====================#
+#     directories     #
+#=====================#
+
+# source files
+SRC_DIR        = ../src
+
+# header files
+INC_DIR        = ../src
+
+# executable files
+BIN_DIR        = ../bin
+
+#=====================#
+#       vpaths        #
+#=====================#
+
+VPATH = $(SRC_DIR)
+
+#=====================#
+#       options       #
+#=====================#
+
+# SINGLE / DOUBLE PRECISION
+ifeq ($(findstring double,$(precision)), double)
+HPCSCAN_CPP_FLAGCOMP+=-D_DOUBLE_PRECISION_
+BUILD_MESSAGE='*** BUILD OK (DOUBLE PRECISION) *** '
+else
+BUILD_MESSAGE='*** BUILD OK (SINGLE PRECISION) *** '
+endif
+
+# WITH / WITHOUT CUDA
+ifeq ($(HPCSCAN_CUDA), nvcc)
+HPCSCAN_CPP_FLAGCOMP+=-D__CUDA__
+endif
+$(info HPCSCAN_CPP_FLAGCOMP="$(HPCSCAN_CPP_FLAGCOMP)")
+
+#=====================#
+#     objects         #
+#=====================#
+
+# cpp objects
+CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
+	grid_GPU2.o grid_GPU3.o grid_NEC_SCA.o \
+	main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o \
+	testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
+	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
+
+# cuda objects
+CUDA_OBJ = grid_GPU1.o
+
+# all objects
+ALL_OBJ = ${CPP_OBJ}
+ifeq ($(HPCSCAN_CUDA), nvcc)
+ALL_OBJ += ${CUDA_OBJ}
+endif
+
+.SUFFIXES: .o .cpp .cu
+
+.cu.o:
+	$(HPCSCAN_CUDA) -c $(HPCSCAN_CUDA_FLAGCOMP) $<
+.cpp.o:
+	$(HPCSCAN_CPP) -c $(HPCSCAN_CPP_FLAGCOMP) $<
+
+all: version hpcscan
+
+hpcscan: $(ALL_OBJ)
+	@mkdir -p $(BIN_DIR)
+	$(HPCSCAN_CPP) $(HPCSCAN_CPP_FLAGLINK) $((HPCSCAN_CUDA_FLAGLINK) -o $(BIN_DIR)/$@ $(ALL_OBJ) $(HPCSCAN_CPP_LIB) $(HPCSCAN_CUDA_LIB)
+	@echo $(BUILD_MESSAGE)
+	@$(HPCSCAN_CPP) --version
+
+clean:
+	rm -f *.L *.o *.mod *~ ./version $(BIN_DIR)/hpcscan
+
+version:
+	@if [ ${GIT_VER} ] ; then \
+		./git_info.sh ../ > $@ ;\
+		if test ! -e version ; then \
+			echo "No version found, initialization" ;\
+			cp version $(SRC_DIR)/version_hpcscan.h ; \
+		fi;\
+		if ! diff -q version $(SRC_DIR)/version_hpcscan.h ; then \
+			echo "version has changed, regenerating version info"; \
+			cp version $(SRC_DIR)/version_hpcscan.h ; \
+		else \
+			echo "version info is up to date"; \
+		fi;\
+	fi
+
+
+
+
+
+
+
+
+

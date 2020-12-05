@@ -32,10 +32,12 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	{
 		Rgrid = new Grid_CacheBlk(gridType) ;
 	}
+#ifdef __CUDA__
 	else if (gridMode.compare("GPU1") == 0)
 	{
 		Rgrid = new Grid_GPU1(gridType) ;
 	}
+#endif
 	else if (gridMode.compare("GPU2") == 0)
 	{
 		Rgrid = new Grid_GPU2(gridType) ;
@@ -50,7 +52,7 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	}
 	else
 	{
-		printError("IN Grid_Factory::create, invalid gridMode", gridMode) ;
+		printError("IN Grid_Factory::create, not supported or invalid gridMode", gridMode) ;
 	}
 
 	printDebug(MID_DEBUG, "OUT Grid_Factory::create");
@@ -82,10 +84,12 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	{
 		Rgrid = new Grid_CacheBlk(gridType, dim, n1, n2, n3) ;
 	}
+#ifdef __CUDA__
 	else if (gridMode.compare("GPU1") == 0)
 	{
 		Rgrid = new Grid_GPU1(gridType, dim, n1, n2, n3) ;
 	}
+#endif
 	else if (gridMode.compare("GPU2") == 0)
 	{
 		Rgrid = new Grid_GPU2(gridType, dim, n1, n2, n3) ;
@@ -100,7 +104,7 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	}
 	else
 	{
-		printError("IN Grid_Factory::create, invalid gridMode") ;
+		printError("IN Grid_Factory::create, not supported or invalid gridMode") ;
 	}
 
 	printDebug(MID_DEBUG, "OUT Grid_Factory::create");

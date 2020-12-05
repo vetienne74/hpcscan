@@ -48,6 +48,13 @@ Rtn_code print_header_of_output_report(void)
 #else
 		cout << " Computations in SINGLE PRECISION\n" ;
 #endif
+
+#ifdef __CUDA__
+		cout << " CUDA enabled\n" ;
+#endif
+#ifdef __NEC__
+		cout << " NEC enabled\n" ;
+#endif
 		print_line1() ;
 	}
 
