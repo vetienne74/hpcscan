@@ -8,7 +8,6 @@
 #include "grid_CacheBlk.h"
 #include "grid_GPU1.h"
 #include "grid_GPU2.h"
-#include "grid_GPU3.h"
 #include "grid_NEC_SCA.h"
 #include "output_report.h"
 
@@ -41,10 +40,6 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	else if (gridMode.compare("GPU2") == 0)
 	{
 		Rgrid = new Grid_GPU2(gridType) ;
-	}
-	else if (gridMode.compare("GPU3") == 0)
-	{
-		Rgrid = new Grid_GPU3(gridType) ;
 	}
 	else if (gridMode.compare("NEC_SCA") == 0)
 	{
@@ -93,10 +88,6 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	else if (gridMode.compare("GPU2") == 0)
 	{
 		Rgrid = new Grid_GPU2(gridType, dim, n1, n2, n3) ;
-	}
-	else if (gridMode.compare("GPU3") == 0)
-	{
-		Rgrid = new Grid_GPU3(gridType, dim, n1, n2, n3) ;
 	}
 	else if (gridMode.compare("NEC_SCA") == 0)
 	{
