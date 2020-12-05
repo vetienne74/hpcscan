@@ -53,13 +53,13 @@ $(info HPCSCAN_CPP_FLAGCOMP="$(HPCSCAN_CPP_FLAGCOMP)")
 
 # cpp objects
 CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
-	grid_GPU2.o grid_NEC_SCA.o \
+	grid_OpenAcc.o grid_NEC_SCA.o \
 	main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o \
 	testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
 	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
 
 # cuda objects
-CUDA_OBJ = grid_GPU1.o
+CUDA_OBJ = grid_Cuda.o
 
 # all objects
 ALL_OBJ = ${CPP_OBJ}

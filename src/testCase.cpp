@@ -43,12 +43,12 @@ Rtn_code TestCase::initialize(void)
 
 		}
 #ifdef __CUDA__
-		else if (Config::Instance()->testMode.compare("GPU1") == 0)
+		else if (Config::Instance()->testMode.compare("Cuda") == 0)
 		{
 
 		}
 #endif
-		else if (Config::Instance()->testMode.compare("GPU2") == 0)
+		else if (Config::Instance()->testMode.compare("OpenAcc") == 0)
 		{
 
 		}

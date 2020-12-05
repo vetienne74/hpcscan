@@ -6,9 +6,9 @@
 #include "grid_Factory.h"
 
 #include "grid_CacheBlk.h"
-#include "grid_GPU1.h"
-#include "grid_GPU2.h"
+#include "grid_Cuda.h"
 #include "grid_NEC_SCA.h"
+#include "grid_OpenAcc.h"
 #include "output_report.h"
 
 using namespace std;
@@ -32,14 +32,14 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 		Rgrid = new Grid_CacheBlk(gridType) ;
 	}
 #ifdef __CUDA__
-	else if (gridMode.compare("GPU1") == 0)
+	else if (gridMode.compare("Cuda") == 0)
 	{
-		Rgrid = new Grid_GPU1(gridType) ;
+		Rgrid = new Grid_Cuda(gridType) ;
 	}
 #endif
-	else if (gridMode.compare("GPU2") == 0)
+	else if (gridMode.compare("OpenAcc") == 0)
 	{
-		Rgrid = new Grid_GPU2(gridType) ;
+		Rgrid = new Grid_OpenAcc(gridType) ;
 	}
 	else if (gridMode.compare("NEC_SCA") == 0)
 	{
@@ -80,14 +80,14 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 		Rgrid = new Grid_CacheBlk(gridType, dim, n1, n2, n3) ;
 	}
 #ifdef __CUDA__
-	else if (gridMode.compare("GPU1") == 0)
+	else if (gridMode.compare("Cuda") == 0)
 	{
-		Rgrid = new Grid_GPU1(gridType, dim, n1, n2, n3) ;
+		Rgrid = new Grid_Cuda(gridType, dim, n1, n2, n3) ;
 	}
 #endif
-	else if (gridMode.compare("GPU2") == 0)
+	else if (gridMode.compare("OpenAcc") == 0)
 	{
-		Rgrid = new Grid_GPU2(gridType, dim, n1, n2, n3) ;
+		Rgrid = new Grid_OpenAcc(gridType, dim, n1, n2, n3) ;
 	}
 	else if (gridMode.compare("NEC_SCA") == 0)
 	{
