@@ -22,13 +22,13 @@ using namespace std;
 
 namespace hpcscan {
 
-static const Myint CURRENT_VERSION = 1 ;
+static const string CURRENT_VERSION = "1.1" ;
 
-static const char LINE_REPORT_T1[] = "================================================================================" ;
-static const char LINE_REPORT_T2[] = "--------------------------------------------------------------------------------" ;
-static const char LINE_REPORT_T3[] = "................................................................................" ;
-static const char LINE_REPORT_T4[] = "XxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx" ;
-static const char LINE_REPORT_T5[] = "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*" ;
+static const string LINE_REPORT_T1 = "================================================================================" ;
+static const string LINE_REPORT_T2 = "--------------------------------------------------------------------------------" ;
+static const string LINE_REPORT_T3 = "................................................................................" ;
+static const string LINE_REPORT_T4 = "XxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx" ;
+static const string LINE_REPORT_T5 = "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*" ;
 
 //-------------------------------------------------------------------------------------------------------
 
