@@ -1,7 +1,7 @@
 
 **TABLE OF CONTENTS**
 
-- [Welcome to hpcscan!](#welcome-to-hpcscan)
+- [Welcome to hpcscan](#welcome-to-hpcscan)
 - [Overview](#overview)
   * [Description](#description)
   * [List of test cases](#list-of-test-cases)
@@ -9,22 +9,27 @@
 - [Environment set-up](#environment-set-up)
   * [Basic requirements](#basic-requirements)
   * [Optional requirements](#optional-requirements)
-  * [Environment script](#environment-script)
+  * [Environment script (mandatory)](#environment-script-mandatory)
 - [Compilation](#compilation)
 - [Validation](#validation)
 - [Execution](#execution)
   * [Usage](#usage)
-  * [Run performance benchmarks](#run-performance-benchmarks)
+  * [Input and output](#input-and-output)
+- [Performance benchmarks](#performance-benchmarks)
 - [Versions](#versions)
 - [Have fun!](#have-fun)
 
-# Welcome to hpcscan!
+# Welcome to hpcscan
 
 Version 1.1
 
-Contact: Vincent Etienne (Saudi Aramco / EXPEC ARC / GPT)
+Contact: Vincent Etienne (Saudi Aramco / EXPEC ARC / GPT) / Email: vetienne@rocketmail.com
 
-vetienne@rocketmail.com
+Contributors
+* Vincent Etienne
+* Suha Kayum
+* Marcin Rogowski
+* Laurent Gatineau
 
 # Overview
 
@@ -32,7 +37,7 @@ vetienne@rocketmail.com
 
 hpcscan is a tool for benchmarking scientific computing kernels on various platforms.
 
-It features several categories of test cases aiming to measure memory, computation or interconnect bandwidth.
+It features several categories of test cases aiming to measure memory, computation and interconnect bandwidth.
 
 All cases are validated with embedded reference solutions.
 
@@ -40,7 +45,7 @@ All cases are validated with embedded reference solutions.
 
 Test case name | Description | Remark
 ------------ | ----------- | ------------
-Comm         | Inteconnect MPI communications bandwidth | This case requires at least 2 MPI processes
+Comm         | MPI communications bandwidth | This case requires at least 2 MPI processes
 FD_D2        | Finite-difference computations bandwidth | - 
 Grid         | Grid operations bandwidth | -
 Memory       | Memory operations bandwidth | -
@@ -55,7 +60,7 @@ Test mode name | Description | Remark
 Baseline     | CPU standard implementation | -
 CacheBlk     | CPU with cache blocking optimization techniques | -
 Cuda         | GPU with CUDA without optimization | -
-NEC_SCA      | NEC with Stencil Code Accelerator | -
+NEC_SCA      | NEC Aurora with Stencil Code Accelerator | -
 OpenAcc      | GPU with OpenAcc without optimization | -
 
 # Environment set-up
@@ -71,13 +76,15 @@ OpenAcc      | GPU with OpenAcc without optimization | -
 * CUDA compiler
 * NEC compiler
 
-## Environment script
+## Environment script (mandatory)
 
-source one of the files in ./env such as
+In order to compile and run hpcscan, you need to source one of the files in ./env
+
+Example
 
 `source ./env/setEnvMarsGccCuda.sh`
 
-You would probably need to create a file for your system (take example from one of the existing files)
+> **For a new system, you would need to create a file for your system (take example from one of the existing files)**
 
 
 # Compilation
@@ -85,6 +92,8 @@ You would probably need to create a file for your system (take example from one 
 Go to ./build, and use the command
 
 `make`
+
+> If hpcscan environment has not been set (see [Environment script (mandatory)](#environment-script-mandatory)), compilation will abort.
 
 By default, hpcscan is compiled in single in precision
 
@@ -96,20 +105,18 @@ Executable is ./bin/hpcscan
 
 # Validation
 
-To check good the behavior of hpcscan
-
-Go to ./script and launch
+To check hpcscan has been correctly built and works fine, go to ./script and launch
 
 `sh runValidationTests.sh`
 
-This script runs a set a light test cases within a short time (even on a laptop)
+This script runs a set a light test cases and should complete within few minutes (even on a laptop).
 
 You should get in the ouptput report (displayed on the terminal)
 
 * All tests marked as PASSED
 * No test marked as FAILED
 
-Check the summary at the end of report to have a quick look on this
+Check the summary at the end of report to have a quick look on this.
 
 # Execution
 
@@ -164,7 +171,11 @@ Example
 
 `mpirun -n 1 ../bin/hpcscan -testCase Grid -dim 2 -n1 200 -n2 300`
 
-## Run performance benchmarks
+## Input and output
+
+TO DO
+
+# Performance benchmarks
 
 These tests are intended to measure various bandwidths
 
@@ -176,8 +187,8 @@ Performance measurements and scripts to reproduce results can be found in ./doc/
 
 Version      | Description | Release date
 ------------ | ----------- | ------------
-1.0          | Initial     | Nov 28, 2020
-1.1          | On going porting to Cuda and OpenAcc | Coming soon
+1.0          | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
+1.1          | On going work on test modes OpenAcc and Cuda | Coming soon
 
 # Have fun!
 

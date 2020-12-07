@@ -89,6 +89,16 @@ void printDebug(Debug_level debug_l, char* text)
 
 //-------------------------------------------------------------------------------------------------------
 
+void printDebug(Debug_level debug_l, const char* text)
+{
+	if (debug_l <= debug)
+	{
+		Config::Instance()->debugLogFile << text << "\n" << flush ;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 void printDebug(Debug_level debug_l, char* text, string text2)
 {
 	if (debug_l <= debug)

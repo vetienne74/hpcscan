@@ -32,6 +32,7 @@ void printInfo(Display_type, const char*, string) ;
 void printInfo(Display_type, const char*, const char*) ;
 
 void printDebug(Debug_level, char*) ;
+void printDebug(Debug_level, const char*) ;
 void printDebug(Debug_level, char*, string) ;
 void printDebug(Debug_level, char*, Myint) ;
 void printDebug(Debug_level, char*, Myint, Myint) ;

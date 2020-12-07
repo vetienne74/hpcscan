@@ -874,6 +874,7 @@ Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
 	cudaDeviceSynchronize();
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::updatePressure") ;
+	return(RTN_CODE_OK) ;
 }
 //-------------------------------------------------------------------------------------------------------
 Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
@@ -914,6 +915,7 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 	cudaDeviceSynchronize();
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::applyBoundaryCondition") ;
+	return(RTN_CODE_OK) ;
 }
 
 Myfloat Grid_Cuda::getSumAbs(Point_type) const
