@@ -59,7 +59,7 @@
 \author[Marcin, Suha \& Vincent]{Marcin Rogowski, Suha Kayum \& Vincent Etienne}
 \institute[]{KAUST \& Saudi Aramco}
 
-\date[Nov 2020] {\scriptsize{November 2020 }}
+\date[Dec 2020] {\scriptsize{December 2020 }}
 
 %-------------------------------------------------------------------------------------
 
@@ -364,6 +364,46 @@
 %-------------------------------------------------------------------------------------
 \frame{
   \frametitle{Test Case Propa - Results}
+  
+  \begin{itemize}
+  \item {\bf Machine: Ibex Gpu 1 GPU V100}
+  \item CUDA kernel \footnote{\scriptsize \textcolor{blue}{Updated Dec 2, 2020}}
+  \item FD: Black O2, Blue O4, Pink O8, Red O12 / Cross=CUDA
+  \item {\bf Results not validated (Error NaN)}
+  \end{itemize}
+  
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=0.6 \textwidth]{../../testCase_Propa/runIbexGpuCuda.jpg}
+    \end{center}
+  \end{figure}
+
+  Reproduce results with \texttt{./hackathonTestCases/testCase\_Propa/runIbexGpuCuda.sh}
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Propa - Results}
+  
+  \begin{itemize}
+  \item {\bf Machine: Ibex Gpu 1 GPU V100 and CPU Skylake 32 cores}
+  \item CUDA kernel \footnote{\scriptsize \textcolor{blue}{Updated Dec 2, 2020}}
+  \item FD: Black O2, Blue O4, Pink O8, Red O12 / Cross=CUDA, Square=CPU
+  \item {\bf Results not validated (Error NaN)}
+  \end{itemize}
+  
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=0.6 \textwidth]{../../testCase_Propa/runIbexCpuGpuCuda.jpg}
+    \end{center}
+  \end{figure}
+
+  Reproduce results with \texttt{./hackathonTestCases/testCase\_Propa/runIbexCpuGpuCuda.sh}
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Propa - Results}
 
   {\scriptsize
   \begin{table}
@@ -376,7 +416,7 @@
       Shaheen CPU   & CacheBlk & 388      & 1.0 \\
       Ibex CPU      & Baseline & 524      & 0.7 \\
       Ibex CPU      & CacheBlk & 265      & 1.5 \\
-      Ibex GPU1     & Cuda     & XXX      & Y.Y \\
+      Ibex GPU1     & Cuda     & 291      & 1.3 \\
       Ibex GPU2     & OpenACC  & XXX      & Y.Y \\
       Ibex GPU3     & OpenMP   & XXX      & Y.Y \\
        \end{tabular}

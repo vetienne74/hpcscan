@@ -22,13 +22,13 @@ using namespace std;
 
 namespace hpcscan {
 
-static const Myint CURRENT_VERSION = 1 ;
+static const string CURRENT_VERSION = "1.1" ;
 
-static const char LINE_REPORT_T1[] = "================================================================================" ;
-static const char LINE_REPORT_T2[] = "--------------------------------------------------------------------------------" ;
-static const char LINE_REPORT_T3[] = "................................................................................" ;
-static const char LINE_REPORT_T4[] = "XxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx" ;
-static const char LINE_REPORT_T5[] = "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*" ;
+static const string LINE_REPORT_T1 = "================================================================================" ;
+static const string LINE_REPORT_T2 = "--------------------------------------------------------------------------------" ;
+static const string LINE_REPORT_T3 = "................................................................................" ;
+static const string LINE_REPORT_T4 = "XxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx" ;
+static const string LINE_REPORT_T5 = "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*" ;
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -47,6 +47,13 @@ Rtn_code print_header_of_output_report(void)
 		cout << " Computations in DOUBLE PRECISION\n" ;
 #else
 		cout << " Computations in SINGLE PRECISION\n" ;
+#endif
+
+#ifdef __CUDA__
+		cout << " CUDA enabled\n" ;
+#endif
+#ifdef __NEC__
+		cout << " NEC enabled\n" ;
 #endif
 		print_line1() ;
 	}
@@ -73,6 +80,16 @@ Rtn_code print_end_of_output_report(Rtn_code rtnCode)
 //-------------------------------------------------------------------------------------------------------
 
 void printDebug(Debug_level debug_l, char* text)
+{
+	if (debug_l <= debug)
+	{
+		Config::Instance()->debugLogFile << text << "\n" << flush ;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void printDebug(Debug_level debug_l, const char* text)
 {
 	if (debug_l <= debug)
 	{

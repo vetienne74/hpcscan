@@ -1,6 +1,6 @@
 
-#ifndef HPCSCAN_GRID_GPU3_H_
-#define HPCSCAN_GRID_GPU3_H_
+#ifndef HPCSCAN_GRID_OPENACC_H_
+#define HPCSCAN_GRID_OPENACC_H_
 
 #include <string>
 
@@ -11,18 +11,18 @@
 
 namespace hpcscan {
 
-class Grid_GPU3 : public Grid
+class Grid_OpenAcc : public Grid
 {
 public:
 
 	// constructor
-	Grid_GPU3(Grid_type) ;
+	Grid_OpenAcc(Grid_type) ;
 
 	// constructor
-	Grid_GPU3(Grid_type, Dim_type, Myint64, Myint64, Myint64) ;
+	Grid_OpenAcc(Grid_type, Dim_type, Myint64, Myint64, Myint64) ;
 
 	// destructor
-	~Grid_GPU3(void) ;
+	~Grid_OpenAcc(void) ;
 
 	// compute pressure with FD
 	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;

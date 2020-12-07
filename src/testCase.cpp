@@ -34,14 +34,31 @@ Rtn_code TestCase::initialize(void)
 		printInfo(MASTER, " TestCase version", testCaseVersion) ;
 		printInfo(MASTER, " TestCase mode\t", Config::Instance()->testMode) ;
 
-		if ((Config::Instance()->testMode.compare("Baseline") != 0)
-				&& (Config::Instance()->testMode.compare("CacheBlk") != 0)
-				&& (Config::Instance()->testMode.compare("GPU1") != 0)
-				&& (Config::Instance()->testMode.compare("GPU2") != 0)
-				&& (Config::Instance()->testMode.compare("GPU3") != 0)
-				&& (Config::Instance()->testMode.compare("NEC_SCA") != 0))
+		if (Config::Instance()->testMode.compare("Baseline") == 0)
 		{
-			printError("In TestCase::initialize, Invalid testMode") ;
+
+		}
+		else if (Config::Instance()->testMode.compare("CacheBlk") == 0)
+		{
+
+		}
+#ifdef __CUDA__
+		else if (Config::Instance()->testMode.compare("Cuda") == 0)
+		{
+
+		}
+#endif
+		else if (Config::Instance()->testMode.compare("OpenAcc") == 0)
+		{
+
+		}
+		else if (Config::Instance()->testMode.compare("NEC_SCA") == 0)
+		{
+
+		}
+		else
+		{
+			printError("In TestCase::initialize, Not supported or invalid testMode") ;
 			return(RTN_CODE_KO) ;
 		}
 

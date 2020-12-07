@@ -1,52 +1,13 @@
-#----------------------------------------------------------------#
-#                                                                #
-# DO NOT FORGET TO CREATE THE INCLUDE FILE "make.MY_HOST.inc"    #
-# ACCORDING TO THE CONFIGURATION OF YOUR COMPUTING MACHINE       #
-# AND THEN INCLUDE THIS FILE IN THE MAKEFILE AS IT IS DONE BELOW #
-#                                                                #
-#----------------------------------------------------------------#
 
-
-#======================#
-#     include file     #
-#======================#
-
-HOST=$(shell hostname)
-KAUST=${KAUST_FACILITY}
-
-# matches aurora (NEC)
-ifeq ($(findstring aurora,$(HOST)), aurora)
-include make.nec.inc
-endif
-ifeq ($(findstring robin,$(HOST)), robin)
-include make.nec.inc
-endif
-
-# matches (Ibex)
-ifeq ("$(KAUST)", "Ibex")
-include make.ibex.inc
-endif
-
-# matches cdl (Shaheen)
-ifeq ($(findstring cdl,$(HOST)), cdl)
-include make.shaheen.inc
-endif
-
-# matches gateway (Shaheen)
-ifeq ($(findstring gateway,$(HOST)), gateway)
-include make.shaheen.inc
-endif
-
-# matches jupiter
-ifeq ($(findstring jupiter,$(HOST)), jupiter)
-include make.jupiter.inc
-GIT_VER=1
-endif
-
-# matches mars
-ifeq ($(findstring mars,$(HOST)), mars)
-include make.jupiter.inc
-GIT_VER=1
+#========================#
+# check env has been set #
+#========================#
+ifeq ($(strip $(HPCSCAN_CPP)),)
+$(info It seems hpcscan environment has not been set.)
+$(info Source one of the env files in ../env or create a new one for your machine.)
+$(error HPCSCAN_CPP is $(HPCSCAN_CPP))
+else
+$(info hpcscan will be compiled with $(HPCSCAN_CPP))
 endif
 
 #=====================#
@@ -74,39 +35,52 @@ VPATH = $(SRC_DIR)
 
 # SINGLE / DOUBLE PRECISION
 ifeq ($(findstring double,$(precision)), double)
-COPTION+=-D_DOUBLE_PRECISION_
+HPCSCAN_CPP_FLAGCOMP+=-D_DOUBLE_PRECISION_
 BUILD_MESSAGE='*** BUILD OK (DOUBLE PRECISION) *** '
 else
 BUILD_MESSAGE='*** BUILD OK (SINGLE PRECISION) *** '
 endif
 
-CFLAGS = -I. -I${INC_DIR} $(COPTION)
+# WITH / WITHOUT CUDA
+ifeq ($(HPCSCAN_CUDA), nvcc)
+HPCSCAN_CPP_FLAGCOMP+=-D__CUDA__
+endif
+$(info HPCSCAN_CPP_FLAGCOMP="$(HPCSCAN_CPP_FLAGCOMP)")
 
 #=====================#
 #     objects         #
 #=====================#
 
-# all objects
-ALL_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
-	grid_GPU1.o grid_GPU2.o grid_GPU3.o grid_NEC_SCA.o \
+# cpp objects
+CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
+	grid_OpenAcc.o grid_NEC_SCA.o \
 	main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o \
 	testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
 	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
 
+# cuda objects
+CUDA_OBJ = grid_Cuda.o
+
+# all objects
+ALL_OBJ = ${CPP_OBJ}
+ifeq ($(HPCSCAN_CUDA), nvcc)
+ALL_OBJ += ${CUDA_OBJ}
+endif
+
 .SUFFIXES: .o .cpp .cu
 
 .cu.o:
-	$(NVCC) -c $<
+	$(HPCSCAN_CUDA) -c $(HPCSCAN_CUDA_FLAGCOMP) $<
 .cpp.o:
-	$(CPP) -c $(CFLAGS) $<
+	$(HPCSCAN_CPP) -c $(HPCSCAN_CPP_FLAGCOMP) $<
 
 all: version hpcscan
 
 hpcscan: $(ALL_OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(CPP) $(CFLAGS) $(CUDAFLAGS) -o $(BIN_DIR)/$@ $(ALL_OBJ) $(LIBS)
+	$(HPCSCAN_CPP) $(HPCSCAN_CPP_FLAGLINK) $((HPCSCAN_CUDA_FLAGLINK) -o $(BIN_DIR)/$@ $(ALL_OBJ) $(HPCSCAN_CPP_LIB) $(HPCSCAN_CUDA_LIB)
 	@echo $(BUILD_MESSAGE)
-	@$(CPP) --version
+	@$(HPCSCAN_CPP) --version
 
 clean:
 	rm -f *.L *.o *.mod *~ ./version $(BIN_DIR)/hpcscan

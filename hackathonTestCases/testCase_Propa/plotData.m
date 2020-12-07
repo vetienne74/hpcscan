@@ -4,7 +4,9 @@ clear all ;
 
 %DATA = 'runMars'
 %DATA = 'runShaheen'
-DATA = 'runIbexCpu'
+%DATA = 'runIbexCpu'
+%DATA = 'runIbexGpuCuda'
+DATA = 'runIbexCpuGpuCuda'
 FILE = sprintf('%s.out.ref', DATA) ;
 val = importdata(FILE) ;
 
