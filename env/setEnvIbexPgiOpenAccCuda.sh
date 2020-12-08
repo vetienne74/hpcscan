@@ -17,7 +17,7 @@ export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 # C++ compiler
 export HPCSCAN_CPP=mpic++
 export HPCSCAN_CPP_FLAGCOMP='-w -g -O3 -std=c++11 -acc -ta=tesla:cc70 -mp -Minfo=accel'
-export HPCSCAN_CPP_FLAGLINK=
+export HPCSCAN_CPP_FLAGLINK=$HPCSCAN_CPP_FLAGCOMP
 export HPCSCAN_CPP_LIB=
 
 # CUDA compiler
