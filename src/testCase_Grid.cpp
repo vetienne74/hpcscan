@@ -117,7 +117,6 @@ Rtn_code TestCase_Grid::run(void)
 	// change value of only one point
 	if (myid_world == 0) Wgrid.fill(MIDDLE_POINT, 2*a2) ;
 
-	if (false)
 	{
 		//============================================
 		// maxErr = max of abs(W-R)/R
@@ -172,8 +171,8 @@ Rtn_code TestCase_Grid::run(void)
 		for (Myint itry = 0; itry < ntry; itry++)
 		{
 			double t0 = MPI_Wtime() ;
-			// Myfloat L1Err = Wgrid.allProcL1Err(INNER_POINTS, Rgrid) ;
-			Myfloat L1Err = Wgrid.L1Err(INNER_POINTS, Rgrid) ;
+			Myfloat L1Err = Wgrid.allProcL1Err(INNER_POINTS, Rgrid) ;
+
 			// wait all process completed before ending time
 			MPI_Barrier(MPI_COMM_WORLD) ;
 			double t1 = MPI_Wtime() ;
@@ -199,7 +198,6 @@ Rtn_code TestCase_Grid::run(void)
 		printInfo(MASTER, " Best achieved GPoint/s", L1ErrGpoint) ;
 	}
 
-	if (false)
 	{
 		//============================================
 		// GetSumAbs = sum of abs(R)
@@ -237,7 +235,6 @@ Rtn_code TestCase_Grid::run(void)
 		printInfo(MASTER, " Best achieved GPoint/s", GetSumAbsGpoint) ;
 	}
 
-	if (false)
 	{
 		//============================================
 		// GetSumAbs = sum of abs (W-R)
