@@ -1,4 +1,6 @@
 
+![hpcscan logo](https://github.com/vetienne74/hpcscan/blob/KAUST-GPU2020/misc/hpcscanLogo/hpcscanLogo.jpg)
+
 **TABLE OF CONTENTS**
 
 - [Welcome to hpcscan](#welcome-to-hpcscan)
