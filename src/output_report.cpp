@@ -38,22 +38,35 @@ Rtn_code print_header_of_output_report(void)
 	{
 		print_line1() ;
 		cout << "\t\t\t H P C S C A N - ver " << CURRENT_VERSION << " (2020)\n\n" ;
-		cout << " GIT " << HPCSCAN_GIT_COMMIT << "\n" ;
-		cout << " " << HPCSCAN_GIT_AUTHOR << "\n" ;
-		cout << " " << HPCSCAN_GIT_DATE << "\n" ;
+		printInfo(MASTER, " Git\t", HPCSCAN_GIT_COMMIT) ;
+		printInfo(MASTER, "\t", HPCSCAN_GIT_AUTHOR) ;
+		printInfo(MASTER, "\t", HPCSCAN_GIT_DATE) ;
+		printInfo(MASTER, "") ;
+
+		printInfo(MASTER, " Host name", Config::Instance()->hostName) ;
+		printInfo(MASTER, " User name", Config::Instance()->userName) ;
 
 		// single or double precision
 #ifdef _DOUBLE_PRECISION_
-		cout << " Computations in DOUBLE PRECISION\n" ;
+		printInfo(MASTER, " Computation", "DOUBLE PRECISION") ;
 #else
-		cout << " Computations in SINGLE PRECISION\n" ;
+		printInfo(MASTER, " Computation", "SINGLE PRECISION") ;
 #endif
 
 #ifdef __CUDA__
-		cout << " CUDA enabled\n" ;
+		printInfo(MASTER, " CUDA kernel", "ENABLED") ;
+#else
+		printInfo(MASTER, " CUDA kernel", "DISABLED") ;
+#endif
+#ifdef __OPEN_ACC__
+		printInfo(MASTER, " OpenAcc kernel", "ENABLED") ;
+#else
+		printInfo(MASTER, " OpenAcc kernel", "DISABLED") ;
 #endif
 #ifdef __NEC__
-		cout << " NEC enabled\n" ;
+		printInfo(MASTER, " NEC kernel", "ENABLED") ;
+#else
+		printInfo(MASTER, " NEC kernel", "DISABLED") ;
 #endif
 		print_line1() ;
 	}

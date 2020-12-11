@@ -8,6 +8,7 @@
 
 #include <cstddef> // for NULL
 #include <stdio.h>
+#include <unistd.h> // for hostname and username
 
 #include <omp.h>
 
@@ -124,6 +125,9 @@ Config::Config(void)
 	testMode     = DEFAULT_TEST_MODE ;
 	tmax         = DEFAULT_TMAX ;
 	writeGrid    = DEFAULT_WRITE_GRID ;
+
+	gethostname(hostName, HOST_NAME_MAX);
+	getlogin_r(userName, LOGIN_NAME_MAX);
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -604,7 +608,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 					return(RTN_CODE_KO) ;
 				}
 				param2 = atof(argv[ii]);
-				printInfo(MASTER, " Parameter 1\t", param2) ;
+				printInfo(MASTER, " Parameter 2\t", param2) ;
 			}
 
 			else if (string(argv[ii]) == "-param3")
@@ -616,7 +620,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 					return(RTN_CODE_KO) ;
 				}
 				param3 = atof(argv[ii]);
-				printInfo(MASTER, " Parameter 1\t", param3) ;
+				printInfo(MASTER, " Parameter 3\t", param3) ;
 			}
 
 			else if (string(argv[ii]) == "-param4")
@@ -628,7 +632,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 					return(RTN_CODE_KO) ;
 				}
 				param4 = atof(argv[ii]);
-				printInfo(MASTER, " Parameter 1\t", param4) ;
+				printInfo(MASTER, " Parameter 4\t", param4) ;
 			}
 
 			else if (string(argv[ii]) == "-propaName")
@@ -664,7 +668,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 					return(RTN_CODE_KO) ;
 				}
 				snapInc = atoi(argv[ii]);
-				printInfo(MASTER, " Snapshots increment (steps)", snapInc) ;
+				printInfo(MASTER, " Snapshots inc. (steps)", snapInc) ;
 				if (snapInc <= 0)
 				{
 					printError(" snapInc should be > 0") ;
@@ -681,7 +685,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 					return(RTN_CODE_KO) ;
 				}
 				snapDt = atof(argv[ii]);
-				printInfo(MASTER, " Snapshots increment (sec.)", snapDt) ;
+				printInfo(MASTER, " Snapshots inc. (sec.)", snapDt) ;
 				if (snapDt <= 0.0)
 				{
 					printError(" snapDt should be > 0") ;
@@ -858,7 +862,7 @@ Rtn_code Config::initialize(void)
 	if (debug > NO_DEBUG)
 	{
 		string file_name = "hpcscan.debug.proc" + to_string(myid_world) + ".log";
-        debugLogFile.open(file_name);
+		debugLogFile.open(file_name);
 	}
 
 	printDebug(MID_DEBUG, "OUT Config::initialize");

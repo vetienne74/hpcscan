@@ -115,8 +115,8 @@ Rtn_code Propagator_Ac2::initialize(PropaInit_type propaInitType)
 		// set dt
 		//--------
 
-		// compute stable dt = CFL * h / vmax
-		stableDt = getCFL() * coefGrid->d1 / maxVelocity ;
+		// compute stable dt = CFL * min(h) / vmax
+		stableDt = getCFL() * coefGrid->getMinSpaceSampling() / maxVelocity ;
 
 		// if dt specified in config used that one
 		if (Config::Instance()->dt > 0.0)

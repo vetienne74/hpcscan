@@ -4,6 +4,7 @@
 #ifndef HPCSCAN_CONFIG_H_
 #define HPCSCAN_CONFIG_H_
 
+#include <climits>
 #include <fstream>
 #include <string>
 
@@ -93,6 +94,12 @@ public:
 
 	// write grids
 	bool writeGrid ;
+
+	// host name
+	char hostName[HOST_NAME_MAX];
+
+	// user name
+	char userName[LOGIN_NAME_MAX];
 
 private:
 
