@@ -13,6 +13,9 @@
   * [Optional requirements](#optional-requirements)
   * [Environment script (mandatory)](#environment-script-mandatory)
 - [Compilation](#compilation)
+  * [Makefile](#makefile)
+  * [Enabled test modes](#enabled-test-modes)
+  * [Compilers list](#compilers-list)
 - [Validation](#validation)
 - [Execution](#execution)
   * [Usage](#usage)
@@ -91,6 +94,8 @@ Example
 
 # Compilation
 
+## Makefile
+
 Go to ./build, and use the command
 
 `make`
@@ -104,6 +109,20 @@ To compile in double precision
 `make precision=double`
 
 Executable is ./bin/hpcscan
+
+## Enabled test modes
+
+To check the test modes that are enabled, use the command
+
+`./bin/hpcscan -v`
+
+## Compilers list
+
+hpcscan has been successfully tested on the compilers below
+
+Compiler | Version | Remark
+-------- | ------- | ------
+g++      | X.X.X   | -
 
 # Validation
 
