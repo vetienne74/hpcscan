@@ -120,9 +120,10 @@ To check the test modes that are enabled, use the command
 
 hpcscan has been successfully tested on the operating systems and compilers listed below
 
-Operating system | Compiler  | Remark
----------------- | --------- | ------
-Ubuntu 20.04     | g++ 9.3.0 | -
+Operating system               | Compiler   | Remark
+------------------------------ | ---------- | ------
+Ubuntu 20.04.1 LTS             | g++ 9.3.0  | -
+CentOS Linux release 8.1.1911  | nc++ 3.1.0 | -
 
 # Validation
 
