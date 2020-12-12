@@ -17,21 +17,18 @@ sh testDriver.sh Baseline
 # run all tests with -testMode CacheBlk
 sh testDriver.sh CacheBlk
 
-# run all tests with -testMode GPU1
-#sh testDriver.sh GPU1
+# run all tests with -testMode OpenAcc
+#sh testDriver.sh OpenAcc
 
-# run all tests with -testMode GPU2
-#sh testDriver.sh GPU2
-
-# run all tests with -testMode GPU3
-#sh testDriver.sh GPU3
+# run all tests with -testMode Cuda
+#sh testDriver.sh Cuda
 
 # run all tests with -testMode NEC_SCA
-if [ -z ${__NEC__} ]
+if [ "$HPCSCAN_CPP" == "mpinc++" ]
 then
-    echo 'skip testDriver.sh NEC_SCA'
-else
     sh testDriver.sh NEC_SCA
+else
+    echo 'SKIP testMode NEC_SCA'
 fi
 
 end_time=$(date)
