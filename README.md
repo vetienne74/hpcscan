@@ -15,7 +15,7 @@
 - [Compilation](#compilation)
   * [Makefile](#makefile)
   * [Enabled test modes](#enabled-test-modes)
-  * [Compilers list](#compilers-list)
+  * [Operating systems and compilers](#operating-systems-and-compilers)
 - [Validation](#validation)
 - [Execution](#execution)
   * [Usage](#usage)
@@ -116,13 +116,13 @@ To check the test modes that are enabled, use the command
 
 `./bin/hpcscan -v`
 
-## Compilers list
+## Operating systems and compilers
 
-hpcscan has been successfully tested on the compilers below
+hpcscan has been successfully tested on the operating systems and compilers listed below
 
-Compiler | Version | Remark
--------- | ------- | ------
-g++      | X.X.X   | -
+Operating system | Compiler  | Remark
+---------------- | --------- | ------
+Ubuntu 20.04     | g++ 9.3.0 | -
 
 # Validation
 
@@ -134,7 +134,7 @@ This script runs a set a light test cases and should complete within few minutes
 
 You should get in the ouptput report (displayed on the terminal)
 
-* All tests marked as PASSED
+* All tests marked as PASSED (370 tests passed per test mode enabled)
 * No test marked as FAILED
 
 Check the summary at the end of report to have a quick look on this.
