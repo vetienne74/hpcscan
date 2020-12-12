@@ -136,13 +136,14 @@ Check the summary at the end of report to have a quick look on this.
 
 ## Validated hardware, operating systems and compilers
 
-hpcscan has been successfully tested on the operating systems and compilers listed below
+hpcscan has been successfully tested on the hardware, operating systems and compilers listed below
 
-Hardware | Operating system | Compiler | Baseline | CacheBlk | Cuda | NEC_SCA | OpenAcc
----------| ---------------- | -------- | -------- | -------- | ---- | ------- | -------
-Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | Ubuntu 20.04.1 LTS | gcc version 9.3.0 | OK | OK | - | - | -
-Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | Ubuntu 20.04.1 LTS | gcc version 9.3.0 with nvcc release 10.1 | OK | OK | ON GOING | - | -
-NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | CentOS Linux release 8.1.1911 | nc++ 3.1.0 | OK | OK | - | OK | -
+Operating system | Compiler | Host | Device | Baseline | CacheBlk | Cuda | NEC_SCA | OpenAcc
+|----------------|----------|------|--------|----------|----------|------|---------|--------
+Ubuntu 20.04.1 LTS |  gcc version 9.3.0 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | - | OK | OK | - | - | -
+Ubuntu 20.04.1 LTS |  gcc version 9.3.0 / nvcc release 10.1 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | OK | OK | ON GOING | - | ON GOING
+SUSE Linux Enterprise Server 15 | icpc (ICC) 19.0.5.281 20190815 | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | OK | OK | - | - | -
+CentOS Linux release 8.1.1911 | nc++ (NCC) 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | OK | OK | - | OK | -
 
 # Execution
 
