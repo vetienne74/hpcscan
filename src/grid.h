@@ -140,8 +140,12 @@ public:
 
 	// 3D grid array
 	Myfloat * grid_3d ;   // this will be allocated by Grid::initializeGrid on the CPU (we should remove it soon)
+
+#ifdef __OPENACC__
 #pragma acc declare create(grid_3d) 	
-        Myfloat * d_grid_3d ; // this will be a pointer to device (GPU) memory
+#endif
+
+	Myfloat * d_grid_3d ; // this will be a pointer to device (GPU) memory
 	Myfloat * d_help_3d ; // this will be a pointer to device (GPU) memory
 
 	// Grid size (local)

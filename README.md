@@ -17,7 +17,7 @@
   * [Enabled test modes](#enabled-test-modes)
 - [Validation](#validation)
   * [Validation tests](#validation-tests)
-  * [Validated operating systems and compilers](#validated-operating-systems-and-compilers)
+  * [Validated hardware, operating systems and compilers](#validated-hardware-operating-systems-and-compilers)
 - [Execution](#execution)
   * [Usage](#usage)
   * [Input and output](#input-and-output)
@@ -134,14 +134,15 @@ You should get in the ouptput report (displayed on the terminal)
 
 Check the summary at the end of report to have a quick look on this.
 
-## Validated operating systems and compilers
+## Validated hardware, operating systems and compilers
 
 hpcscan has been successfully tested on the operating systems and compilers listed below
 
-Operating system               | Compiler   | Baseline | CacheBlk | Cuda | NEC_SCA | OpenAcc
------------------------------- | ---------- | -------- | -------- | ---- | ------- | -------
-Ubuntu 20.04.1 LTS             | g++ 9.3.0  | OK       | OK       | -    | -       | -
-CentOS Linux release 8.1.1911  | nc++ 3.1.0 | OK       | OK       | -    | OK      | -
+Hardware | Operating system | Compiler | Baseline | CacheBlk | Cuda | NEC_SCA | OpenAcc
+---------| ---------------- | -------- | -------- | -------- | ---- | ------- | -------
+Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | Ubuntu 20.04.1 LTS | gcc version 9.3.0 | OK | OK | - | - | -
+Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | Ubuntu 20.04.1 LTS | gcc version 9.3.0 with nvcc release 10.1 | OK | OK | ON GOING | - | -
+NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | CentOS Linux release 8.1.1911 | nc++ 3.1.0 | OK | OK | - | OK | -
 
 # Execution
 
