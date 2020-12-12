@@ -31,16 +31,21 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	{
 		Rgrid = new Grid_CacheBlk(gridType) ;
 	}
+
 #ifdef __CUDA__
 	else if (gridMode.compare("Cuda") == 0)
 	{
 		Rgrid = new Grid_Cuda(gridType) ;
 	}
 #endif
+
+#ifdef __OPENACC__
 	else if (gridMode.compare("OpenAcc") == 0)
 	{
 		Rgrid = new Grid_OpenAcc(gridType) ;
 	}
+#endif
+
 	else if (gridMode.compare("NEC_SCA") == 0)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType) ;
@@ -79,16 +84,21 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	{
 		Rgrid = new Grid_CacheBlk(gridType, dim, n1, n2, n3) ;
 	}
+
 #ifdef __CUDA__
 	else if (gridMode.compare("Cuda") == 0)
 	{
 		Rgrid = new Grid_Cuda(gridType, dim, n1, n2, n3) ;
 	}
 #endif
+
+#ifdef __OPENACC__
 	else if (gridMode.compare("OpenAcc") == 0)
 	{
 		Rgrid = new Grid_OpenAcc(gridType, dim, n1, n2, n3) ;
 	}
+#endif
+
 	else if (gridMode.compare("NEC_SCA") == 0)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType, dim, n1, n2, n3) ;

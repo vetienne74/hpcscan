@@ -38,7 +38,7 @@ Rtn_code print_header_of_output_report(void)
 	{
 		print_line1() ;
 		cout << "\t\t\t H P C S C A N - ver " << CURRENT_VERSION << " (2020)\n\n" ;
-		printInfo(MASTER, " Git\t", HPCSCAN_GIT_COMMIT) ;
+		printInfo(MASTER, " Git version", HPCSCAN_GIT_COMMIT) ;
 		printInfo(MASTER, "\t", HPCSCAN_GIT_AUTHOR) ;
 		printInfo(MASTER, "\t", HPCSCAN_GIT_DATE) ;
 		printInfo(MASTER, "") ;
@@ -53,20 +53,25 @@ Rtn_code print_header_of_output_report(void)
 		printInfo(MASTER, " Computation", "SINGLE PRECISION") ;
 #endif
 
+		printInfo(MASTER, " Mode Baseline", "ENABLED") ;
+		printInfo(MASTER, " Mode CacheBlk", "ENABLED") ;
+
 #ifdef __CUDA__
-		printInfo(MASTER, " CUDA kernel", "ENABLED") ;
+		printInfo(MASTER, " Mode Cuda", "ENABLED") ;
 #else
-		printInfo(MASTER, " CUDA kernel", "DISABLED") ;
+		printInfo(MASTER, " Mode Cuda", "DISABLED") ;
 #endif
-#ifdef __OPEN_ACC__
-		printInfo(MASTER, " OpenAcc kernel", "ENABLED") ;
+
+#ifdef __OPENACC__
+		printInfo(MASTER, " Mode OpenAcc", "ENABLED") ;
 #else
-		printInfo(MASTER, " OpenAcc kernel", "DISABLED") ;
+		printInfo(MASTER, " Mode OpenAcc", "DISABLED") ;
 #endif
+
 #ifdef __NEC__
-		printInfo(MASTER, " NEC kernel", "ENABLED") ;
+		printInfo(MASTER, " Mode NEC_SCA", "ENABLED") ;
 #else
-		printInfo(MASTER, " NEC kernel", "DISABLED") ;
+		printInfo(MASTER, " Mode NEC_SCA", "DISABLED") ;
 #endif
 		print_line1() ;
 	}

@@ -99,7 +99,7 @@ Rtn_code TestCase_Grid::run(void)
 			if (itry == 0)
 			{
 				checkAllProcGridL1Err(INNER_POINTS, Wgrid, Rgrid, MAX_ERR_FLOAT) ;
-				// checkAllProcGridMaxErr(INNER_POINTS, Wgrid, Rgrid, MAX_ERR_FLOAT) ;
+				checkAllProcGridMaxErr(INNER_POINTS, Wgrid, Rgrid, MAX_ERR_FLOAT) ;
 			}
 
 		}

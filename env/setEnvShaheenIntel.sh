@@ -12,6 +12,7 @@ export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
 # C++ compiler
 export HPCSCAN_CPP=CC
+export HPCSCAN_CPP_OPENACC_FLAG=
 export HPCSCAN_CPP_FLAGCOMP='-O3 -g -openmp'
 export HPCSCAN_CPP_FLAGLINK=-openmp
 export HPCSCAN_CPP_LIB=

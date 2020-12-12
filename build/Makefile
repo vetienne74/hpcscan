@@ -41,30 +41,43 @@ else
 BUILD_MESSAGE='*** BUILD OK (SINGLE PRECISION) *** '
 endif
 
-# WITH / WITHOUT CUDA
-ifeq ($(HPCSCAN_CUDA), nvcc)
+# WITH CUDA
+ifneq ($(strip $(HPCSCAN_CUDA)),)
 HPCSCAN_CPP_FLAGCOMP+=-D__CUDA__
 endif
+
+# WITH OPENACC
+ifneq ($(strip $(HPCSCAN_CPP_OPENACC_FLAG)),)
+HPCSCAN_CPP_FLAGCOMP+=-D__OPENACC__
+HPCSCAN_CPP_FLAGCOMP+=$(HPCSCAN_CPP_OPENACC_FLAG)
+endif
+
 $(info HPCSCAN_CPP_FLAGCOMP="$(HPCSCAN_CPP_FLAGCOMP)")
 
 #=====================#
 #     objects         #
 #=====================#
 
-# cpp objects
+# cpp standard objects
 CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
-	grid_OpenAcc.o grid_NEC_SCA.o \
+	grid_NEC_SCA.o \
 	main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o \
 	testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
 	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
 
-# cuda objects
+# cpp OpenAcc objects
+CPP_OPENACC_OBJ = grid_OpenAcc.o
+
+# Cuda objects
 CUDA_OBJ = grid_Cuda.o
 
-# all objects
+# build list of needed objects
 ALL_OBJ = ${CPP_OBJ}
-ifeq ($(HPCSCAN_CUDA), nvcc)
+ifneq ($(strip $(HPCSCAN_CUDA)),)
 ALL_OBJ += ${CUDA_OBJ}
+endif
+ifneq ($(strip $(HPCSCAN_CPP_OPENACC_FLAG)),)
+ALL_OBJ += ${CPP_OPENACC_OBJ}
 endif
 
 .SUFFIXES: .o .cpp .cu
