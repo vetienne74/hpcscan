@@ -15,8 +15,9 @@
 - [Compilation](#compilation)
   * [Makefile](#makefile)
   * [Enabled test modes](#enabled-test-modes)
-  * [Operating systems and compilers](#operating-systems-and-compilers)
 - [Validation](#validation)
+  * [Validation tests](#validation-tests)
+  * [Validated operating systems and compilers](#validated-operating-systems-and-compilers)
 - [Execution](#execution)
   * [Usage](#usage)
   * [Input and output](#input-and-output)
@@ -112,20 +113,13 @@ Executable is ./bin/hpcscan
 
 ## Enabled test modes
 
-To check the test modes that are enabled, use the command
+To check the test modes that are enabled in your hpcscan binary, use the command
 
 `./bin/hpcscan -v`
 
-## Operating systems and compilers
-
-hpcscan has been successfully tested on the operating systems and compilers listed below
-
-Operating system               | Compiler   | Remark
------------------------------- | ---------- | ------
-Ubuntu 20.04.1 LTS             | g++ 9.3.0  | -
-CentOS Linux release 8.1.1911  | nc++ 3.1.0 | -
-
 # Validation
+
+## Validation tests
 
 To check hpcscan has been correctly built and works fine, go to ./script and launch
 
@@ -139,6 +133,15 @@ You should get in the ouptput report (displayed on the terminal)
 * No test marked as FAILED
 
 Check the summary at the end of report to have a quick look on this.
+
+## Validated operating systems and compilers
+
+hpcscan has been successfully tested on the operating systems and compilers listed below
+
+Operating system               | Compiler   | Baseline | CacheBlk | Cuda | NEC_SCA | OpenAcc
+------------------------------ | ---------- | -------- | -------- | ---- | ------- | -------
+Ubuntu 20.04.1 LTS             | g++ 9.3.0  | OK       | OK       | -    | -       | -
+CentOS Linux release 8.1.1911  | nc++ 3.1.0 | OK       | OK       | -    | OK      | -
 
 # Execution
 
