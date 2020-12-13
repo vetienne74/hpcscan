@@ -46,6 +46,7 @@
      Baseline        * CPU without optimization (DEFAULT)
      CacheBlk        * CPU with cache blocking techniques
      Cuda            * GPU with CUDA without optimization
+     NEC             * NEC with compiler directives
      NEC_SCA         * NEC with Stencil Code Accelerator
      OpenAcc         * GPU with OpenAcc without optimization
  -tmax <float>       = max. time (s) for propagator

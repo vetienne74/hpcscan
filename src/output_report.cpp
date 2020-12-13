@@ -69,8 +69,10 @@ Rtn_code print_header_of_output_report(void)
 #endif
 
 #ifdef __NEC__
+		printInfo(MASTER, " Mode NEC", "ENABLED") ;
 		printInfo(MASTER, " Mode NEC_SCA", "ENABLED") ;
 #else
+		printInfo(MASTER, " Mode NEC", "DISABLED") ;
 		printInfo(MASTER, " Mode NEC_SCA", "DISABLED") ;
 #endif
 		print_line1() ;

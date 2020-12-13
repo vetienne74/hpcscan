@@ -108,7 +108,7 @@ clean:
 	rm -f *.L *.o *.mod *~ ./version $(BIN_DIR)/hpcscan
 
 version:
-	@if [ ${GIT_VER} ] ; then \
+	@if [ ${HPCSCAN_GIT_VER} ] ; then \
 		./git_info.sh ../ > $@ ;\
 		if test ! -e version ; then \
 			echo "No version found, initialization" ;\

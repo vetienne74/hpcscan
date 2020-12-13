@@ -1,9 +1,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.1 (2020)
 
- Git version	commit 9aeec4c69b37a20ed7803e7bfe230753a8956dcf
+ Git version	commit fe2e355d68dea956fe15b6f1a892b9457c5cfcdb
 		Author: vincent <vetienne@rocketmail.com>
-		Date:   Thu Dec 3 06:58:26 2020 +0300
+		Date:   Sun Dec 13 12:58:47 2020 +0300
 
  Host name	mars
  User name	vincent
@@ -12,6 +12,7 @@
  Mode CacheBlk	ENABLED
  Mode Cuda	ENABLED
  Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
  Mode NEC_SCA	DISABLED
 ================================================================================
 
