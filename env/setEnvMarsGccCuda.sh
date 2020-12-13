@@ -14,13 +14,11 @@ export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 export HPCSCAN_CPP=mpic++
 export HPCSCAN_CPP_OPENACC_FLAG=
 export HPCSCAN_CPP_FLAGCOMP='-w -g -O3 -mavx2 -fopenmp'
-export HPCSCAN_CPP_FLAGLINK=
 export HPCSCAN_CPP_LIB=
 
 # CUDA compiler
 export HPCSCAN_CUDA=nvcc
 export HPCSCAN_CUDA_FLAGCOMP='-I /usr/lib/x86_64-linux-gnu/openmpi/include/'
-export HPCSCAN_CUDA_FLAGLINK=
 export HPCSCAN_CUDA_LIB='-L/usr/local/cuda/lib64 -lcuda -lcudart'
 
 echo HPCSCAN set for Mars with $HPCSCAN_CPP and $HPCSCAN_CUDA.

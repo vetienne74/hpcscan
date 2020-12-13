@@ -86,10 +86,18 @@ Rtn_code print_end_of_output_report(Rtn_code rtnCode)
 	if (myid_world == 0)
 	{
 		cout << "\n" ;
-		print_line1() ;
-		if (rtnCode == RTN_CODE_OK) cout << "\t\t\t HPCSCAN TERMINATED SUCCESSFULLY\n" ;
-		else cout << "\t\t\t HPCSCAN TERMINATED WITH ERROR(S)\n" ;
-		print_line1() ;
+		if (rtnCode == RTN_CODE_OK)
+		{
+			print_line1() ;
+			cout << "\t\t\t HPCSCAN TERMINATED SUCCESSFULLY\n" ;
+			print_line1() ;
+		}
+		else if (rtnCode == RTN_CODE_KO)
+		{
+			print_line1() ;
+			cout << "\t\t\t HPCSCAN TERMINATED WITH ERROR(S)\n" ;
+			print_line1() ;
+		}
 	}
 
 	return(RTN_CODE_OK) ;

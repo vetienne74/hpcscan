@@ -28,7 +28,7 @@ typedef float      Myfloat32 ;
 typedef double     Myfloat64 ;
 
 // Return codes used by all methods
-enum Rtn_code {RTN_CODE_OK=0, RTN_CODE_KO=-1} ;
+enum Rtn_code {RTN_CODE_OK=0, RTN_CODE_KO=-1, RTN_CODE_EXIT=-2} ;
 
 // Debug level
 enum Debug_level {NO_DEBUG=-1, LIGHT_DEBUG, MID_DEBUG, FULL_DEBUG} ;

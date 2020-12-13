@@ -1,5 +1,5 @@
 
-![hpcscan logo](https://github.com/vetienne74/hpcscan/blob/KAUST-GPU2020/misc/hpcscanLogo/hpcscanLogo.jpg)
+![hpcscan logo](misc/hpcscanLogo/hpcscanLogo.jpg)
 
 **TABLE OF CONTENTS**
 
@@ -117,6 +117,8 @@ To check the test modes that are enabled in your hpcscan binary, use the command
 
 `./bin/hpcscan -v`
 
+[Display command output](misc/fileForReadme/version.txt)
+
 # Validation
 
 ## Validation tests
@@ -138,12 +140,13 @@ Check the summary at the end of report to have a quick look on this.
 
 hpcscan has been successfully tested on the hardware, operating systems and compilers listed below
 
-Operating system | Compiler | Host | Device | Baseline | CacheBlk | Cuda | NEC_SCA | OpenAcc
-|----------------|----------|------|--------|----------|----------|------|---------|--------
-Ubuntu 20.04.1 LTS |  gcc version 9.3.0 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | - | OK | OK | - | - | -
-Ubuntu 20.04.1 LTS |  gcc version 9.3.0 / nvcc release 10.1 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | OK | OK | ON GOING | - | ON GOING
-SUSE Linux Enterprise Server 15 | icpc (ICC) 19.0.5.281 20190815 | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | OK | OK | - | - | -
-CentOS Linux release 8.1.1911 | nc++ (NCC) 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | OK | OK | - | OK | -
+Operating system | Compiler | Host (H) | Device (D) | Baseline | CacheBlk | Cuda | NEC_SCA | OpenAcc
+|----------------|----------|----------|------------|----------|----------|------|---------|--------
+Ubuntu 20.04.1 LTS |  gcc version 9.3.0 / nvcc release 10.1 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | ON GOING (D)
+SUSE Linux Enterprise Server 15 | icpc (ICC) 19.0.5.281 20190815 | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | OK (H) | OK (H) | - | - | -
+CentOS Linux release 8.1.1911 | nc++ (NCC) 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | OK (D) | OK (D) | - | OK (D) | -
+Ibex |  Ibex icpc + nvcc | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | V100 **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | -
+Ibex |  Ibex pgi + nvcc | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | V100 **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | ON GOING (D)
 
 # Execution
 
@@ -154,6 +157,8 @@ hpcscan can be launched from a terminal with all configuration parameters within
 **To get help on the parameters**
 
 `./bin/hpcscan -h`
+
+[Display command output](misc/fileForReadme/commandLineParam.txt)
 
 **Execution with a unique MPI process**
 

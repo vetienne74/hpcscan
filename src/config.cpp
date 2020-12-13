@@ -143,7 +143,8 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 		if ((string(argv[ii]) == "-version") ||  (string(argv[ii]) == "-v"))
 		{
 			print_header_of_output_report() ;
-			return(RTN_CODE_KO);
+			// exit
+			return(RTN_CODE_EXIT);
 		}
 		else if ((argc == 1) || (string(argv[ii]) == "-help") || (string(argv[ii]) == "-h"))
 		{
@@ -201,7 +202,9 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, "     (if specified tmax overrides nt)") ;
 			printInfo(MASTER, " -version or -v      = print version information") ;
 			printInfo(MASTER, " -writeGrid          = write grids on disk") ;
-			return(RTN_CODE_KO);
+
+			// exit
+			return(RTN_CODE_EXIT);
 		}
 		ii++ ;
 	}
