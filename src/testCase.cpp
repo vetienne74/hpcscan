@@ -48,14 +48,22 @@ Rtn_code TestCase::initialize(void)
 
 		}
 #endif
+
 		else if (Config::Instance()->testMode.compare("OpenAcc") == 0)
 		{
 
 		}
+
+		else if (Config::Instance()->testMode.compare("NEC") == 0)
+		{
+
+		}
+
 		else if (Config::Instance()->testMode.compare("NEC_SCA") == 0)
 		{
 
 		}
+
 		else
 		{
 			printError("In TestCase::initialize, Not supported or invalid testMode") ;

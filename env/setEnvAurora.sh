@@ -14,8 +14,9 @@ export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 # C++ compiler
 export HPCSCAN_CPP=mpinc++
 export HPCSCAN_CPP_OPENACC_FLAG=
-export HPCSCAN_CPP_FLAGCOMP='-O3 -g -fopenmp -w'
+export HPCSCAN_CPP_FLAGCOMP='-O3 -g -fopenmp -w -fdiag-vector=3 -report-all'
 export HPCSCAN_CPP_LIB=-lsca_openmp
+#export HPCSCAN_CPP_LIB=/home/lgatineau/sca_201111/libsca_openmp.a
 
 # CUDA compiler
 export HPCSCAN_CUDA=

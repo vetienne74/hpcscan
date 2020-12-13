@@ -7,6 +7,7 @@
 
 #include "grid_CacheBlk.h"
 #include "grid_Cuda.h"
+#include "grid_NEC.h"
 #include "grid_NEC_SCA.h"
 #include "grid_OpenAcc.h"
 #include "output_report.h"
@@ -46,10 +47,17 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	}
 #endif
 
+	//#ifdef __NEC__
+	else if (gridMode.compare("NEC") == 0)
+	{
+		Rgrid = new Grid_NEC(gridType) ;
+	}
 	else if (gridMode.compare("NEC_SCA") == 0)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType) ;
 	}
+	//#endif
+
 	else
 	{
 		printError("IN Grid_Factory::create, not supported or invalid gridMode", gridMode) ;
@@ -99,10 +107,17 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	}
 #endif
 
+	//#ifdef __NEC__
+	else if (gridMode.compare("NEC") == 0)
+	{
+		Rgrid = new Grid_NEC(gridType, dim, n1, n2, n3) ;
+	}
 	else if (gridMode.compare("NEC_SCA") == 0)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType, dim, n1, n2, n3) ;
 	}
+	//#endif
+
 	else
 	{
 		printError("IN Grid_Factory::create, not supported or invalid gridMode") ;

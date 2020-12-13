@@ -66,7 +66,8 @@ Test mode name | Description | Remark
 Baseline     | CPU standard implementation | -
 CacheBlk     | CPU with cache blocking optimization techniques | -
 Cuda         | GPU with CUDA without optimization | -
-NEC_SCA      | NEC Aurora with Stencil Code Accelerator | -
+NEC          | NEC with compiler directives | Only available on NEC SX-Aurora TSUBASA
+NEC_SCA      | NEC with Stencil Code Accelerator | Only available on NEC SX-Aurora TSUBASA
 OpenAcc      | GPU with OpenAcc without optimization | -
 
 # Environment set-up
@@ -140,13 +141,13 @@ Check the summary at the end of report to have a quick look on this.
 
 hpcscan has been successfully tested on the hardware, operating systems and compilers listed below
 
-Operating system | Compiler | Host (H) | Device (D) | Baseline | CacheBlk | Cuda | NEC_SCA | OpenAcc
-|----------------|----------|----------|------------|----------|----------|------|---------|--------
-Ubuntu 20.04.1 LTS |  gcc version 9.3.0 / nvcc release 10.1, V10.1.243 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | ON GOING (D)
-SUSE Linux Enterprise Server 15 | icpc (ICC) 19.0.5.281 20190815 | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | OK (H) | OK (H) | - | - | -
-CentOS Linux release 8.1.1911 | nc++ (NCC) 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | OK (D) | OK (D) | - | OK (D) | -
-CentOS Linux release 7.7.1908 |  icpc (ICC) 19.1.0.166 20191121 / nvcc release 11.0, V11.0.167 | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | V100 **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | -
-CentOS Linux release 7.7.1908 |  pgc++ 20.1-0 LLVM 64-bit / nvcc release 11.0, V11.0.167 | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | V100 **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | ON GOING (D)
+Operating system | Compiler | Host (H) | Device (D) | Baseline | CacheBlk | Cuda | NEC | NEC_SCA | OpenAcc
+|----------------|----------|----------|------------|----------|----------|------|-----|---------|--------
+Ubuntu 20.04.1 LTS |  gcc version 9.3.0 / nvcc release 10.1, V10.1.243 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | - | ON GOING (D)
+SUSE Linux Enterprise Server 15 | icpc (ICC) 19.0.5.281 20190815 | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | OK (H) | OK (H) | - | - | - | -
+CentOS Linux release 8.1.1911 | nc++ (NCC) 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | OK (D) | OK (D) | - | OK (D) | ON GOING (D) | -
+CentOS Linux release 7.7.1908 |  icpc (ICC) 19.1.0.166 20191121 / nvcc release 11.0, V11.0.167 | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | V100 **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | - | -
+CentOS Linux release 7.7.1908 |  pgc++ 20.1-0 LLVM 64-bit / nvcc release 11.0, V11.0.167 | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | V100 **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | - | ON GOING (D)
 
 # Execution
 
@@ -220,7 +221,7 @@ Performance measurements and scripts to reproduce results can be found in ./doc/
 Version      | Description | Release date
 ------------ | ----------- | ------------
 1.0          | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
-1.1          | On going work on test modes OpenAcc and Cuda | Coming soon
+1.1          | Added test modes NEC, OpenAcc and Cuda (ON GOING) | Coming soon
 
 # Have fun!
 

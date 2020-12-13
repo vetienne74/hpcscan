@@ -65,7 +65,6 @@ $(info HPCSCAN_CPP_FLAGCOMP="$(HPCSCAN_CPP_FLAGCOMP)")
 
 # cpp standard objects
 CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
-	grid_NEC_SCA.o \
 	main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o \
 	testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
 	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
@@ -76,6 +75,9 @@ CPP_OPENACC_OBJ = grid_OpenAcc.o
 # Cuda objects
 CUDA_OBJ = grid_Cuda.o
 
+# NEC objects
+CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o
+
 # build list of needed objects
 ALL_OBJ = ${CPP_OBJ}
 ifneq ($(strip $(HPCSCAN_CUDA)),)
@@ -84,6 +86,8 @@ endif
 ifneq ($(strip $(HPCSCAN_CPP_OPENACC_FLAG)),)
 ALL_OBJ += ${CPP_OPENACC_OBJ}
 endif
+
+ALL_OBJ += ${CPP_NEC_OBJ}
 
 .SUFFIXES: .o .cpp .cu
 

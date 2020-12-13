@@ -23,6 +23,14 @@ sh testDriver.sh CacheBlk
 # run all tests with -testMode Cuda
 #sh testDriver.sh Cuda
 
+# run all tests with -testMode NEC
+if [ "$HPCSCAN_CPP" == "mpinc++" ]
+then
+    sh testDriver.sh NEC
+else
+    echo 'SKIP testMode NEC'
+fi
+
 # run all tests with -testMode NEC_SCA
 if [ "$HPCSCAN_CPP" == "mpinc++" ]
 then
