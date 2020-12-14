@@ -128,6 +128,8 @@ To check hpcscan has been correctly built and works fine, go to ./script and lau
 
 `sh runValidationTests.sh`
 
+[Display command output](misc/fileForReadme/runValidationTests.txt)
+
 This script runs a set a light test cases and should complete within few minutes (even on a laptop).
 
 You should get in the ouptput report (displayed on the terminal)

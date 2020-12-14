@@ -1,6 +1,6 @@
 
 //-------------------------------------------------------------------------------------------------------
-// Derived class from Grid
+// Derived class from Grid_NEC
 // Optimized for with NEC SCA
 //-------------------------------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ namespace hpcscan {
 
 //-------------------------------------------------------------------------------------------------------
 
-Grid_NEC_SCA::Grid_NEC_SCA(Grid_type gridTypeIn) : Grid(gridTypeIn)
+Grid_NEC_SCA::Grid_NEC_SCA(Grid_type gridTypeIn) : Grid_NEC(gridTypeIn)
 {
 	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::Grid_NEC_SCA");
 
@@ -65,12 +65,12 @@ Grid_NEC_SCA::Grid_NEC_SCA(Grid_type gridTypeIn) : Grid(gridTypeIn)
 //-------------------------------------------------------------------------------------------------------
 
 Grid_NEC_SCA::Grid_NEC_SCA(Grid_type gridTypeIn, Dim_type dimIn,
-		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid(gridTypeIn, dimIn,
+		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid_NEC(gridTypeIn, dimIn,
 				n1InnerIn, n2InnerIn, n3InnerIn)
 {
 	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::Grid_NEC_SCA");
 
-	gridMode = "CacheBlk" ;
+	gridMode = "NEC_SCA" ;
 
 	flag_code_FD_D2_N1  = false ;
 	flag_code_FD_D2_N2  = false ;
@@ -106,7 +106,7 @@ void Grid_NEC_SCA::info(void)
 	printDebug(FULL_DEBUG, "IN Grid_NEC_SCA::info");
 
 	// parent class info
-	Grid::info() ;
+	Grid_NEC::info() ;
 
 	// additional info
 	printInfo(MASTER, " TO BE COMPLETED") ;
@@ -212,284 +212,6 @@ Rtn_code Grid_NEC_SCA::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint f
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC_SCA::FD_LAPLACIAN");
 	return(RTN_CODE_OK) ;
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-Myfloat Grid_NEC_SCA::getMin(Point_type pointType)
-{
-	printDebug(LIGHT_DEBUG, "IN Grid_NEC_SCA::getMin");
-
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-	Myfloat val = FLT_MAX ;
-
-#pragma omp parallel for reduction(min:val)
-	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-	{
-		for (Myint64 i2 = i1Start + i2Start * n1; i2<= i1End + i2End * n1; i2++)
-		{
-			Myint64 ii = i2 + i3*n2*n1 ;
-			Myint64 i1 = (i2 - i1Start) % n1 + i1Start;
-			if (i1 >= i1Start && i1 <= i1End && grid_3d[ii] < val) val = grid_3d[ii] ;
-		}
-	}
-
-	printDebug(LIGHT_DEBUG, "Min val", val);
-
-	printDebug(LIGHT_DEBUG, "OUT Grid_NEC_SCA::getMin");
-	return(val) ;
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-Myfloat Grid_NEC_SCA::getMax(Point_type pointType)
-{
-	printDebug(LIGHT_DEBUG, "IN Grid_NEC_SCA::getMax");
-
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-
-	Myfloat val = -FLT_MAX ;
-
-#pragma omp parallel for reduction(max:val)
-	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-	{
-		for (Myint64 i2 = i1Start + i2Start * n1; i2<= i1End + i2End * n1; i2++)
-		{
-			Myint64 ii = i2 + i3*n2*n1 ;
-			Myint64 i1 = (i2 - i1Start) % n1 + i1Start;
-			if (i1 >= i1Start && i1 <= i1End && grid_3d[ii] > val) val = grid_3d[ii] ;
-		}
-	}
-
-	printDebug(LIGHT_DEBUG, "Max val", val);
-
-	printDebug(LIGHT_DEBUG, "OUT Grid_NEC_SCA::getMax");
-	return(val) ;
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-Myfloat Grid_NEC_SCA::maxErr(Point_type pointType, const Grid& gridIn) const
-{
-	printDebug(FULL_DEBUG, "IN Grid_NEC_SCA::maxErr");
-
-	// check grids have same size
-	if (!(this->sameSize(gridIn)))
-	{
-		printError("Grid_NEC_SCA::maxErr, grids have different size") ;
-		return(-1.0) ;
-	}
-
-	Myfloat err = -FLT_MAX, err2 = 0.0 ;
-
-	Myfloat* u1 = this->grid_3d ;
-	Myfloat* u2 = gridIn.grid_3d ;
-
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-
-#pragma omp parallel for reduction(max:err)
-	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-	{
-		for (Myint64 i2 = i1Start + i2Start * n1; i2<= i1End + i2End * n1; i2++)
-		{
-			Myint64 ii = i2 + i3*n2*n1 ;
-			Myint64 i1 = (i2 - i1Start) % n1 + i1Start;
-			// prevent divide by 0
-			if (fabs(u2[ii]) < MAX_ERR_FLOAT)
-			{
-				err2 = fabs(u1[ii] - u2[ii]) ;
-			}
-			else
-			{
-				err2 = fabs(u1[ii] - u2[ii]) / u2[ii] ;
-			}
-
-			if (i1 >= i1Start && i1 <= i1End && err2 > err)
-			{
-				err = err2 ;
-			}
-		}
-	}
-
-	printDebug(FULL_DEBUG, "OUT Grid_NEC_SCA::maxErr");
-	return(err) ;
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void Grid_NEC_SCA::padGridn1(void)
-{
-	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::padGridn1");
-
-	if (Config::Instance()->autoPad == true)
-	{
-#ifndef __NEC__
-		printWarning("Grid_NEC_SCA::padGridn1, autoPad is not available on your platform") ;
-		i1PadStart = i1Halo2End ;
-		i1PadEnd   = i1Halo2End ;
-#else
-		sca_int_t tmp_n1, tmp_n2, tmp_n3, m1, m2, m3;
-		tmp_n1 = i1Halo2End + 1 ;
-		tmp_n2 = 10;
-		tmp_n3 = 10;
-		sca_utility_optimize_leading(tmp_n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
-		if (tmp_n1 != m1)
-		{
-			i1PadStart = i1Halo2End + 1 ;
-			i1PadEnd   = i1PadStart + (m1 - tmp_n1) - 1 ;
-		}
-		else
-		{
-			i1PadStart = i1Halo2End ;
-			i1PadEnd   = i1Halo2End ;
-		}
-#endif
-	}
-	else if (Config::Instance()->n1AddPad != UNSPECIFIED)
-	{
-		i1PadStart = i1Halo2End + 1 ;
-		i1PadEnd   = i1PadStart + Config::Instance()->n1AddPad - 1 ;
-	}
-	else if (Config::Instance()->n1MulPad != UNSPECIFIED)
-	{
-		i1PadStart = i1Halo2End + 1 ;
-		Myint nTmp = (i1PadStart + 1) / Config::Instance()->n1MulPad ;
-		if ((Config::Instance()->n1MulPad * nTmp) < (i1PadStart))
-		{
-			Myint nTot = (nTmp + 1) * Config::Instance()->n1MulPad ;
-			i1PadEnd = nTot - 1 ;
-		}
-		else
-		{
-			Myint nTot = (nTmp) * Config::Instance()->n1MulPad ;
-			i1PadEnd = nTot - 1 ;
-		}
-	}
-	else
-	{
-		i1PadStart = i1Halo2End ;
-		i1PadEnd   = i1Halo2End ;
-	}
-
-	printDebug(MID_DEBUG, "OUT Grid_NEC_SCA::padGridn1");
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void Grid_NEC_SCA::padGridn2(void)
-{
-	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::padGridn2");
-
-	if (Config::Instance()->autoPad == true)
-	{
-#ifndef __NEC__
-		printWarning("Grid_NEC_SCA::padGridn2, autoPad is not available on your platform") ;
-		i2PadStart = i2Halo2End ;
-		i2PadEnd   = i2Halo2End ;
-#else
-		sca_int_t tmp_n2, tmp_n3, m1, m2, m3;
-		tmp_n2 = i2Halo2End + 1 ;
-		tmp_n3 = 10;
-		sca_utility_optimize_leading(n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
-		if (tmp_n2 != m2)
-		{
-			i2PadStart = i2Halo2End + 1 ;
-			i2PadEnd   = i2PadStart + (m2 - tmp_n2) - 1 ;
-		}
-		else
-		{
-			i2PadStart = i2Halo2End ;
-			i2PadEnd   = i2Halo2End ;
-		}
-#endif
-	}
-	else if (Config::Instance()->n2AddPad != UNSPECIFIED)
-	{
-		i2PadStart = i2Halo2End + 1 ;
-		i2PadEnd   = i2PadStart + Config::Instance()->n2AddPad - 1 ;
-	}
-	else if (Config::Instance()->n2MulPad != UNSPECIFIED)
-	{
-		i2PadStart = i2Halo2End + 1 ;
-		Myint nTmp = (i2PadStart + 1) / Config::Instance()->n2MulPad ;
-		if ((Config::Instance()->n2MulPad * nTmp) < (i2PadStart))
-		{
-			Myint nTot = (nTmp + 1) * Config::Instance()->n2MulPad ;
-			i2PadEnd = nTot - 1 ;
-		}
-		else
-		{
-			Myint nTot = (nTmp) * Config::Instance()->n2MulPad ;
-			i2PadEnd = nTot - 1 ;
-		}
-	}
-	else
-	{
-		i2PadStart = i2Halo2End ;
-		i2PadEnd   = i2Halo2End ;
-	}
-
-	printDebug(MID_DEBUG, "OUT Grid_NEC_SCA::padGridn2");
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void Grid_NEC_SCA::padGridn3(void)
-{
-	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::padGridn3");
-
-	if (Config::Instance()->autoPad == true)
-	{
-#ifndef __NEC__
-		printWarning("Grid_NEC_SCA::padGridn3, autoPad is not available on your platform") ;
-		i3PadStart = i3Halo2End ;
-		i3PadEnd   = i3Halo2End ;
-#else
-		sca_int_t tmp_n3, m1, m2, m3;
-		tmp_n3 = i3Halo2End + 1 ;
-		sca_utility_optimize_leading(n1, n2, tmp_n3, 1, &m1, &m2, &m3);
-		if (tmp_n3 != m3)
-		{
-			i3PadStart = i3Halo2End + 1 ;
-			i3PadEnd   = i3PadStart + (m3 - tmp_n3) - 1 ;
-		}
-		else
-		{
-			i3PadStart = i3Halo2End ;
-			i3PadEnd   = i3Halo2End ;
-		}
-#endif
-	}
-	else if (Config::Instance()->n3AddPad != UNSPECIFIED)
-	{
-		i3PadStart = i3Halo2End + 1 ;
-		i3PadEnd   = i3PadStart + Config::Instance()->n3AddPad - 1 ;
-	}
-	else if (Config::Instance()->n3MulPad != UNSPECIFIED)
-	{
-		i3PadStart = i3Halo2End + 1 ;
-		Myint nTmp = (i3PadStart + 1) / Config::Instance()->n3MulPad ;
-		if ((Config::Instance()->n3MulPad * nTmp) < (i3PadStart))
-		{
-			Myint nTot = (nTmp + 1) * Config::Instance()->n3MulPad ;
-			i3PadEnd = nTot - 1 ;
-		}
-		else
-		{
-			Myint nTot = (nTmp) * Config::Instance()->n3MulPad ;
-			i3PadEnd = nTot - 1 ;
-		}
-	}
-	else
-	{
-		i3PadStart = i3Halo2End ;
-		i3PadEnd   = i3Halo2End ;
-	}
-
-	printDebug(MID_DEBUG, "OUT Grid_NEC_SCA::padGridn3");
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1199,173 +921,6 @@ Rtn_code Grid_NEC_SCA::initialize_code_FD_LAPLACIAN(Point_type pType, const Grid
 #endif
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC_SCA::initialize_code_FD_LAPLACIAN");
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-Rtn_code Grid_NEC_SCA::applyBoundaryCondition(BoundCond_type boundCondType)
-{
-	printDebug(FULL_DEBUG, "IN Grid_NEC_SCA::applyBoundaryCondition");
-
-	if (boundCondType == NO_BOUND_COND)
-	{
-		// nothing to do
-	}
-
-	else if (boundCondType == BOUND_COND_ANTI_MIRROR)
-	{
-		// anti-mirroring value in halos
-		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-
-		if (dim >= DIM1)
-		{
-			// I1HALO1
-			if (getNeighbourProc(I1HALO1) == MPI_PROC_NULL)
-			{
-				getGridIndex(I1HALO1, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-#pragma omp parallel for collapse(2)
-				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-				{
-					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-					{
-						// set inner point to 0
-						Myint64 iInner1 = i1End+1 ;
-						grid_3d[iInner1+i2*n1+i3*n1*n2] = 0.0 ;
-#pragma omp simd
-						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-						{
-							// set symetrical point to minus inner point value
-							grid_3d[i1+i2*n1+i3*n1*n2] = -grid_3d[(iInner1+iInner1-i1)+i2*n1+i3*n1*n2] ;
-						}
-					}
-				}
-			}
-
-			// I1HALO2
-			if (getNeighbourProc(I1HALO2) == MPI_PROC_NULL)
-			{
-				getGridIndex(I1HALO2, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-#pragma omp parallel for collapse(2)
-				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-				{
-					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-					{
-						// set inner point to 0
-						Myint64 iInner1 = i1Start-1 ;
-						grid_3d[iInner1+i2*n1+i3*n1*n2] = 0.0 ;
-#pragma omp simd
-						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-						{
-							// set symetrical point to minus inner point value
-							grid_3d[i1+i2*n1+i3*n1*n2] = -grid_3d[(iInner1-(i1-iInner1))+i2*n1+i3*n1*n2] ;
-						}
-					}
-				}
-			}
-		}
-
-		if (dim >= DIM2)
-		{
-			// I2HALO1
-			if (getNeighbourProc(I2HALO1) == MPI_PROC_NULL)
-			{
-				getGridIndex(I2HALO1, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-#pragma omp parallel for collapse(2)
-				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-				{
-					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-					{
-						// set inner point to 0
-						Myint64 iInner2 = i2End+1 ;
-						grid_3d[i1+iInner2*n1+i3*n1*n2] = 0.0 ;
-#pragma omp simd
-						for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-						{
-							// set symetrical point to minus inner point value
-							grid_3d[i1+i2*n1+i3*n1*n2] = -grid_3d[i1+(iInner2+iInner2-i2)*n1+i3*n1*n2] ;
-						}
-					}
-				}
-			}
-
-			// I2HALO2
-			if (getNeighbourProc(I2HALO2) == MPI_PROC_NULL)
-			{
-				getGridIndex(I2HALO2, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-#pragma omp parallel for collapse(2)
-				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-				{
-					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-					{
-						// set inner point to 0
-						Myint64 iInner2 = i2Start-1 ;
-						grid_3d[i1+iInner2*n1+i3*n1*n2] = 0.0 ;
-#pragma omp simd
-						for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-						{
-							// set symetrical point to minus inner point value
-							grid_3d[i1+i2*n1+i3*n1*n2] = -grid_3d[i1+(iInner2-(i2-iInner2))*n1+i3*n1*n2] ;
-						}
-					}
-				}
-			}
-		}
-
-		if (dim >= DIM3)
-		{
-			// I3HALO1
-			if (getNeighbourProc(I3HALO1) == MPI_PROC_NULL)
-			{
-				getGridIndex(I3HALO1, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-#pragma omp parallel for collapse(2)
-				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-				{
-					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-					{
-						// set inner point to 0
-						Myint64 iInner3 = i3End+1 ;
-						grid_3d[i1+i2*n1+iInner3*n1*n2] = 0.0 ;
-#pragma omp simd
-						for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-						{
-							// set symetrical point to minus inner point value
-							grid_3d[i1+i2*n1+i3*n1*n2] = -grid_3d[i1+i2*n1+(iInner3+iInner3-i3)*n1*n2] ;
-						}
-					}
-				}
-			}
-
-			// I3HALO2
-			if (getNeighbourProc(I3HALO2) == MPI_PROC_NULL)
-			{
-				getGridIndex(I3HALO2, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-#pragma omp parallel for collapse(2)
-				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-				{
-					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-					{
-						// set inner point to 0
-						Myint64 iInner3 = i3Start-1 ;
-						grid_3d[i1+i2*n1+iInner3*n1*n2] = 0.0 ;
-#pragma omp simd
-						for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-						{
-							// set symetrical point to minus inner point value
-							grid_3d[i1+i2*n1+i3*n1*n2] = -grid_3d[i1+i2*n1+(iInner3-(i3-iInner3))*n1*n2] ;
-						}
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		printError("IN Grid_NEC_SCA::applyBoundaryCondition, invalid boundCondType", boundCondType) ;
-		return(RTN_CODE_KO) ;
-	}
-
-	printDebug(FULL_DEBUG, "OUT Grid_NEC_SCA::applyBoundaryCondition");
-	return(RTN_CODE_OK) ;
 }
 
 } // namespace hpcscan

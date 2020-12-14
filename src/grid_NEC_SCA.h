@@ -10,12 +10,12 @@
 #include <sca.h>
 #endif
 
-#include "grid.h"
+#include "grid_NEC.h"
 #include "type_def.h"
 
 namespace hpcscan {
 
-class Grid_NEC_SCA : public Grid
+class Grid_NEC_SCA : public Grid_NEC
 {
 public:
 
@@ -34,16 +34,6 @@ public:
 	// print info
 	virtual void info(void) ;
 
-	// get min and max in grid
-	virtual Myfloat getMin(Point_type) ;
-	virtual Myfloat getMax(Point_type) ;
-
-	// Max error between this grid and another (point wise)
-	virtual Myfloat maxErr(Point_type, const Grid&) const ;
-
-	// apply boundary condition
-	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;
-
 	// compute FD_D2 along N1
 	virtual Rtn_code FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
 
@@ -57,11 +47,6 @@ public:
 	virtual Rtn_code FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
 
 protected:
-
-	// grid padding
-	virtual void padGridn1(void) ;
-	virtual void padGridn2(void) ;
-	virtual void padGridn3(void) ;
 
 #ifdef __NEC__
 	// Handle for stencil code.
