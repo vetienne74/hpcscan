@@ -109,7 +109,7 @@ void Grid_NEC_SCA::info(void)
 	Grid_NEC::info() ;
 
 	// additional info
-	printInfo(MASTER, " TO BE COMPLETED") ;
+	//printInfo(MASTER, " TO BE COMPLETED") ;
 
 	printDebug(FULL_DEBUG, "IN Grid_NEC_SCA::info");
 }

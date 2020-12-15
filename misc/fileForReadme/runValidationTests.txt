@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------
 Start testDriver.sh
 >>> Test Mode Baseline <<<
-Launch MPI with mpirun
+Launch MPI with mpirun --oversubscribe
 Running -testCase All ...
 Running -testCase Util ...
 Running -testCase Template ...
@@ -20,7 +20,7 @@ End testDriver.sh
 ------------------------------------------------------------------------
 Start testDriver.sh
 >>> Test Mode CacheBlk <<<
-Launch MPI with mpirun
+Launch MPI with mpirun --oversubscribe
 Running -testCase All ...
 Running -testCase Util ...
 Running -testCase Template ...
@@ -34,8 +34,8 @@ End testDriver.sh
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Mon 14 Dec 2020 05:11:07 AM +03
-# Ended    :  Mon 14 Dec 2020 05:12:44 AM +03
+# Started  :  Tue 15 Dec 2020 05:53:33 AM +03
+# Ended    :  Tue 15 Dec 2020 05:55:09 AM +03
 On machine :  mars
 Done by    :  vincent
 * SUMMARY

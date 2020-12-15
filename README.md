@@ -102,6 +102,8 @@ Go to ./build, and use the command
 
 `make`
 
+[Display command output](misc/fileForReadme/make.txt)
+
 > If hpcscan environment has not been set (see [Environment script (mandatory)](#environment-script-mandatory)), compilation will abort.
 
 By default, hpcscan is compiled in single in precision
@@ -174,6 +176,8 @@ where
 Example
 
 `mpirun -n 1 ./bin/hpcscan -testCase Propa -testMode CacheBlk`
+
+[Display command output](misc/fileForReadme/runPropaTestCase.txt)
 
 > If you omit to specify `-testMode <TESTMODE>`, the Baseline mode it assumed.
 

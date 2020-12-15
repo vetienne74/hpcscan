@@ -1,0 +1,130 @@
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	../bin/hpcscan
+ TestCase name		Propa
+ Test mode		CacheBlk
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 069a036ac0fe6e31aab81c059d12ee8c45c9d653
+		Author: Vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 15 03:36:36 2020 +0100
+
+ Host name	mars
+ User name	vincent
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Propa
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	1
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Propa
+ TestCase version	Standard implementation
+ TestCase mode		CacheBlk
+
+ * Propagator parameters *
+ Wave equation		Acoustic Wave Eq. 2nd order
+ Kernel type		Standard implementation
+ FD space order		8
+ CFL 			0.452856
+ Stable time step (s)	0.00754759
+ No. time steps		20
+ Time step (s)		0.00754759
+ Ratio Eff. / Stable dt	1
+ Snapshot inc. (sec.)	0
+ Snapshot inc. (steps)	1
+
+ Max. frequency (Hz)	0.866025
+ Min. period T (s)	1.1547
+ Max. time (s)		0.143404
+ No. of periods		0.124192
+ No. of steps / period	152.989
+
+ Min. velocity (m/s)	1
+ Max. velocity (m/s)	1
+ Min. lambda (m)	1.1547
+ Min. grid spacing (m)	0.0166667
+ No. of lambda axis1	0.866025
+ No. of lambda axis2	0.866025
+ No. of lambda axis3	0.866025
+ No. grid pts / lambda	69.282
+
+ * Grid parameters *
+ Grid type		LOCAL
+ Grid mode		CacheBlk
+ Grid dim.		3D
+ Total n1		69
+ Total n2		69
+ Total n3		69
+ Inner n1		61
+ Inner n2		61
+ Inner n3		61
+ Grid size (MB)		1.31404
+ Cache block size axis1	9999
+ Cache block size axis2	4
+ Cache block size axis3	16
+
+ Halos Com Local (Pts)	0
+ Halos Com Global (Pts)	0
+ Halos Com Global (MB)	0
+ Grid Inner Loc. (Pts)	226981
+ Grid Inner Glob. (Pts)	226981
+ Grid Inner Glob. (MB)	0.907924
+
+ Max allowed error	0.02
+
+ * Case	PropaEigenMode
+ Check at time	0
+ Check at time	0.00754759
+ Check at time	0.0150952
+ Check at time	0.0226428
+ Check at time	0.0301904
+ Check at time	0.037738
+ Check at time	0.0452856
+ Check at time	0.0528331
+ Check at time	0.0603807
+ Check at time	0.0679283
+ Check at time	0.0754759
+ Check at time	0.0830235
+ Check at time	0.0905711
+ Check at time	0.0981187
+ Check at time	0.105666
+ Check at time	0.113214
+ Check at time	0.120761
+ Check at time	0.128309
+ Check at time	0.135857
+ Check at time	0.143404
+ ntCheck	20
+ errTestCase2	8.3911e-06
+ Test PASSED
+ #Flop per point	48
+ #Point in stencil	25
+ Best GFlop/s in FD	17.351
+ Best Gpoint/s eff.	0.361479
+ Best Gpoint/s in FD	0.361479
+ Best Apparent BW GB/s	41.9316
+
+ Case run time (s)	0.155953
+--------------------------------------------------------------------------------
+ Total run time (s)	0.156673
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================

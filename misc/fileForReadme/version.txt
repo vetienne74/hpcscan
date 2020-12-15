@@ -1,9 +1,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.1 (2020)
 
- Git version	commit 61fc36c718b5a1d00f33abb8c64c69916f83e155
-		Author: vincent <vetienne@rocketmail.com>
-		Date:   Sun Dec 13 13:12:47 2020 +0300
+ Git version	commit 069a036ac0fe6e31aab81c059d12ee8c45c9d653
+		Author: Vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 15 03:36:36 2020 +0100
 
  Host name	mars
  User name	vincent

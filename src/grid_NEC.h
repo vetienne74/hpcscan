@@ -56,6 +56,9 @@ public:
 	virtual Rtn_code updatePressure(Point_type pType, const Grid& prcGrid,
 			const Grid& coefGrid, const Grid& laplaGrid) ;
 
+	// compute pressure with FD
+	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;
+
 protected:
 
 #ifndef _DOUBLE_PRECISION_
