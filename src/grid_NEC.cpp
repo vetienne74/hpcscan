@@ -1515,6 +1515,7 @@ Rtn_code Grid_NEC::applyBoundaryCondition(BoundCond_type boundCondType)
 				{
 					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 					{
+#pragma _NEC ivdep
 						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 						{
 							// set symetrical point to minus inner point value
@@ -1546,6 +1547,7 @@ Rtn_code Grid_NEC::applyBoundaryCondition(BoundCond_type boundCondType)
 				{
 					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 					{
+#pragma _NEC ivdep
 						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 						{
 							// set symetrical point to minus inner point value
@@ -1580,6 +1582,7 @@ Rtn_code Grid_NEC::applyBoundaryCondition(BoundCond_type boundCondType)
 				{
 					for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 					{
+#pragma _NEC ivdep
 						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 						{
 							// set symetrical point to minus inner point value
@@ -1611,6 +1614,7 @@ Rtn_code Grid_NEC::applyBoundaryCondition(BoundCond_type boundCondType)
 				{
 					for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 					{
+#pragma _NEC ivdep
 						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 						{
 							// set symetrical point to minus inner point value
