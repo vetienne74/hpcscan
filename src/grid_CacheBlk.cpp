@@ -1095,7 +1095,7 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 	const Myint64 cb2 = Config::Instance()->cb2 ;
 	const Myint64 cb3 = Config::Instance()->cb3 ;
 
-	// compute FD for 3D
+	// compute FD for 1D
 	if (dim == DIM1)
 	{
 		if (fdOrder == 2)

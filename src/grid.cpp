@@ -2816,7 +2816,7 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 
 	const Myfloat TWO = 2.0 ;
 
-	// compute FD for 3D
+	// compute FD for 1D
 	if (dim == DIM1)
 	{
 		if (fdOrder == 2)
