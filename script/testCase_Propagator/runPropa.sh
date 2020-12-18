@@ -1,6 +1,6 @@
 
-mpirun -n 1 ../../bin/hpcscan -v > perf.out
-$HPCSCAN_CPP --version >> perf.out
+$HPCSCAN_CPP --version >& perf.out
+mpirun -n 1 ../../bin/hpcscan -v >> perf.out
 
 # 500^3 Baseline Ac2Standard
 hpcscanCmd='mpirun -n 1 ../../bin/hpcscan -testCase Propa -n1 500 -n2 500 -n3 500 -testMode Baseline -autoPad -nt 100 -propagator Ac2Standard'
