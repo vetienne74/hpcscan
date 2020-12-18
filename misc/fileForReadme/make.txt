@@ -1,7 +1,5 @@
 hpcscan will be compiled with mpic++
 HPCSCAN_CPP_FLAGCOMP="-w -g -O3 -mavx2 -fopenmp"
-Files version and ../src/version_hpcscan.h differ
-version has changed, regenerating version info
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/config.cpp
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/grid.cpp
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/grid_CacheBlk.cpp

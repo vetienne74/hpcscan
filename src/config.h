@@ -29,6 +29,9 @@ public:
 	// auto padding (final grid is automatically augmented)
 	bool autoPad ;
 
+	// boundary name
+	string boundary ;
+
 	// cache block sizes
 	Myint cb1, cb2, cb3 ;
 
@@ -71,8 +74,8 @@ public:
 	// coef. parameters used for various purposes
 	Myfloat64 param1, param2, param3, param4 ;
 
-	// name of propagator
-	string propaName ;
+	// propagator name
+	string propagator ;
 
 	// ratio of stability time step
 	Myfloat64 ratioCFL ;

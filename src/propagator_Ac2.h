@@ -39,6 +39,9 @@ public:
 	shared_ptr<Grid> prnGrid ;    // pressure wavefield new time step
 	shared_ptr<Grid> prcGrid ;    // pressure wavefield previous time step
 
+	// boundary condition tyte
+	BoundCond_type boundCondType ;
+
 	// FD scheme order in space
 	Myint fdOrder ;
 

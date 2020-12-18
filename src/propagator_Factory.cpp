@@ -15,23 +15,23 @@ namespace hpcscan {
 
 //-------------------------------------------------------------------------------------------------------
 
-shared_ptr<Propagator_Ac2> Propagator_Factory::create(string propaName)
+shared_ptr<Propagator_Ac2> Propagator_Factory::create(string propagator)
 {
 	printDebug(MID_DEBUG, "IN Propagator_Factory::create");
 
 	Propagator_Ac2 *propa = nullptr ;
 
-	if (propaName.compare("Ac2Standard") == 0)
+	if (propagator.compare("Ac2Standard") == 0)
 	{
 		propa = new Propagator_Ac2() ;
 	}
-	else if (propaName.compare("Ac2SplitComp") == 0)
+	else if (propagator.compare("Ac2SplitComp") == 0)
 	{
 		propa = new Propagator_Ac2SplitComp() ;
 	}
 	else
 	{
-		printError("IN Propagator_Factory::create, invalid propaName", propaName) ;
+		printError("IN Propagator_Factory::create, invalid propagator", propagator) ;
 	}
 
 	printDebug(MID_DEBUG, "OUT Propagator_Factory::create");

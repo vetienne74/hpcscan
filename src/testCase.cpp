@@ -81,7 +81,7 @@ Rtn_code TestCase::initialize(void)
 			perfLogFile << Config::Instance()->userName << " " ;
 			perfLogFile << Config::Instance()->testCaseName << " " ;
 			perfLogFile << Config::Instance()->testMode << " " ;
-			perfLogFile << Config::Instance()->propaName << " " ;
+			perfLogFile << Config::Instance()->propagator << " " ;
 
 			// numeric values follow
 			perfLogFile << nproc_world << " " ; // 1

@@ -36,8 +36,8 @@ Rtn_code TestCase_Propa::run(void)
 	if (this->initialize() == RTN_CODE_KO) return (RTN_CODE_KO) ;
 
 	// instantiate propagator
-	const string propaName = Config::Instance()->propaName ;
-	auto propa = Propagator_Factory::create(propaName) ;
+	const string propagator = Config::Instance()->propagator ;
+	auto propa = Propagator_Factory::create(propagator) ;
 	if (propa == nullptr) return(RTN_CODE_KO) ;
 
 	// initialize propagator

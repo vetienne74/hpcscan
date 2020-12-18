@@ -7,11 +7,11 @@
 ================================================================================
 			 H P C S C A N - ver 1.1 (2020)
 
- Git version	commit 069a036ac0fe6e31aab81c059d12ee8c45c9d653
-		Author: Vincent <vetienne@rocketmail.com>
-		Date:   Tue Dec 15 03:36:36 2020 +0100
+ Git version	commit 7cd5d1561ae233719f602352429c9b69844534e7
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 15 06:09:26 2020 +0300
 
- Host name	mars
+ Host name	neptune
  User name	vincent
  Computation	SINGLE PRECISION
  Mode Baseline	ENABLED
@@ -42,6 +42,7 @@
  * Propagator parameters *
  Wave equation		Acoustic Wave Eq. 2nd order
  Kernel type		Standard implementation
+ Boundary type		Free Surface
  FD space order		8
  CFL 			0.452856
  Stable time step (s)	0.00754759
@@ -116,14 +117,14 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	17.351
- Best Gpoint/s eff.	0.361479
- Best Gpoint/s in FD	0.361479
- Best Apparent BW GB/s	41.9316
+ Best GFlop/s in FD	11.4051
+ Best Gpoint/s eff.	0.237607
+ Best Gpoint/s in FD	0.237607
+ Best Apparent BW GB/s	27.5624
 
- Case run time (s)	0.155953
+ Case run time (s)	0.240843
 --------------------------------------------------------------------------------
- Total run time (s)	0.156673
+ Total run time (s)	0.242356
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

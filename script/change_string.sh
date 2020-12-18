@@ -12,7 +12,7 @@ for file in $(ls ${dir}/${pattern}):
 do
 
     echo 'process ' ${file}   
-    sed -i -e 's/XBENCHMARK/HPCSCAN/g' $file
+    sed -i -e 's/propaName/propagator/g' $file
 done
 
 echo 'change_string done!'

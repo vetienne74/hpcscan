@@ -54,28 +54,29 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Propagator_Ac2::Propagator_Ac2(void)
-		{
+				{
 	printDebug(FULL_DEBUG, "In Propagator_Ac2::Propagator_Ac2") ;
 
 	propaWaveEq     = "Acoustic Wave Eq. 2nd order" ;
 	propaKernelType = "Standard implementation" ;
 
-	fdOrder     = Config::Instance()->fdOrder ;
-	snapInc     = 0 ;
-	tmax        = 0.0 ;
-	dt          = 0.0 ;
-	nt          = 0 ;
-	stableDt    = 0.0 ;
-	maxFreq     = 0.0 ;
-	minVelocity = 0.0 ;
-	maxVelocity = 0.0 ;
+	boundCondType   = BOUND_COND_ANTI_MIRROR ;
+	fdOrder         = Config::Instance()->fdOrder ;
+	snapInc         = 0 ;
+	tmax            = 0.0 ;
+	dt              = 0.0 ;
+	nt              = 0 ;
+	stableDt        = 0.0 ;
+	maxFreq         = 0.0 ;
+	minVelocity     = 0.0 ;
+	maxVelocity     = 0.0 ;
 
-	coefGrid    = nullptr ;
-	prnGrid     = nullptr ;
-	prcGrid     = nullptr ;
+	coefGrid        = nullptr ;
+	prnGrid         = nullptr ;
+	prcGrid         = nullptr ;
 
 	printDebug(FULL_DEBUG, "Out Propagator_Ac2::Propagator_Ac2") ;
-		}
+				}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -95,6 +96,21 @@ Rtn_code Propagator_Ac2::initialize(PropaInit_type propaInitType)
 
 	prcGrid = Grid_Factory::create(gridMode, GRID_LOCAL) ;
 	prcGrid->initializeGrid();
+
+	// boundary condition
+	if (Config::Instance()->boundary.compare("FreeSurf") == 0)
+	{
+		boundCondType = BOUND_COND_ANTI_MIRROR ;
+	}
+	else if (Config::Instance()->boundary.compare("None") == 0)
+	{
+		boundCondType = NO_BOUND_COND ;
+	}
+	else
+	{
+		printError("In Propagator_Ac2::initialize, invalid boundary", Config::Instance()->boundary) ;
+		return(RTN_CODE_KO) ;
+	}
 
 	if (propaInitType == EIGEN_MODE)
 	{
@@ -210,6 +226,8 @@ void Propagator_Ac2::info(void)
 	printInfo(MASTER, " * Propagator parameters *") ;
 	printInfo(MASTER, " Wave equation\t", propaWaveEq) ;
 	printInfo(MASTER, " Kernel type\t", propaKernelType) ;
+	if (boundCondType == NO_BOUND_COND) printInfo(MASTER, " Boundary type\t", "None") ;
+	else if (boundCondType == BOUND_COND_ANTI_MIRROR) printInfo(MASTER, " Boundary type\t", "Free Surface") ;
 
 	printInfo(MASTER, " FD space order\t", fdOrder) ;
 	printInfo(MASTER, " CFL \t\t", getCFL()) ;
@@ -265,7 +283,7 @@ Rtn_code Propagator_Ac2::computeWavefieldNextTimeStep(Grid& prnGridIn, Grid& prc
 	prcGridIn.exchangeHalos(MPI_COMM_MODE_SENDRECV) ;
 
 	// apply boundary condition
-	prcGridIn.applyBoundaryCondition(BOUND_COND_ANTI_MIRROR) ;
+	prcGridIn.applyBoundaryCondition(boundCondType) ;
 
 	// compute with FD kernel
 	computePressureWithFD(prnGridIn, prcGridIn) ;

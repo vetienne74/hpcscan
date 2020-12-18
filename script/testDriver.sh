@@ -101,7 +101,7 @@ $HPCSCAN_MPI_INVOKER -n 3 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Comm 
 # test case Propa
 echo Running -testCase Propa ...
 
-# -propaName Ac2Standard (default)
+# -propagator Ac2Standard (default)
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -param1 2 -snapInc 20 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 >> ${report_file}
@@ -110,14 +110,14 @@ $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 -nsub2 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 -nsub3 2 >> ${report_file}
 
-# -propaName Ac2SplitComp
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -param1 2 -snapInc 20 -propaName Ac2SplitComp >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 -propaName Ac2SplitComp >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 -propaName Ac2SplitComp >> ${report_file}
+# -propagator Ac2SplitComp
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -param1 2 -snapInc 20 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 -propagator Ac2SplitComp >> ${report_file}
 
-$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -param1 2 -snapInc 20 -nsub1 2 -propaName Ac2SplitComp >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 -nsub2 2 -propaName Ac2SplitComp >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 -nsub3 2 -propaName Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -param1 2 -snapInc 20 -nsub1 2 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 -nsub2 2 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 -nsub3 2 -propagator Ac2SplitComp >> ${report_file}
 
 echo End testDriver.sh
 echo '------------------------------------------------------------------------'

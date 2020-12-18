@@ -27,6 +27,7 @@ namespace hpcscan {
 
 // default parameters
 static const bool      DEFAULT_AUTO_PAD       = false ;
+static const string    DEFAULT_BOUNDARY       = "FreeSurf" ;
 static const Myint     DEFAULT_CB1            = 9999 ;
 static const Myint     DEFAULT_CB2            = 4 ;
 static const Myint     DEFAULT_CB3            = 16 ;
@@ -53,7 +54,7 @@ static const Myfloat64 DEFAULT_PARAM1         = 0.8 ;
 static const Myfloat64 DEFAULT_PARAM2         = 0.9 ;
 static const Myfloat64 DEFAULT_PARAM3         = 1.0 ;
 static const Myfloat64 DEFAULT_PARAM4         = 1.1 ;
-static const string    DEFAULT_PROPA_NAME     = "Ac2Standard" ;
+static const string    DEFAULT_PROPAGATOR     = "Ac2Standard" ;
 static const Myfloat64 DEFAULT_RATIO_CFL      = 1.0 ;
 static const Myfloat64 DEFAULT_SNAP_DT        = 0.0 ;
 static const Myint     DEFAULT_SNAP_INC       = 1 ;
@@ -91,6 +92,7 @@ Config* Config::Instance()
 Config::Config(void)
 {
 	autoPad      = DEFAULT_AUTO_PAD ;
+	boundary     = DEFAULT_BOUNDARY ;
 	cb1          = DEFAULT_CB1 ;
 	cb2          = DEFAULT_CB2 ;
 	cb3          = DEFAULT_CB3 ;
@@ -117,7 +119,7 @@ Config::Config(void)
 	param2       = DEFAULT_PARAM2 ;
 	param3       = DEFAULT_PARAM3 ;
 	param4       = DEFAULT_PARAM4 ;
-	propaName    = DEFAULT_PROPA_NAME ;
+	propagator   = DEFAULT_PROPAGATOR ;
 	ratioCFL     = DEFAULT_RATIO_CFL ;
 	snapDt       = DEFAULT_SNAP_DT ;
 	snapInc      = DEFAULT_SNAP_INC ;
@@ -149,60 +151,63 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 		else if ((argc == 1) || (string(argv[ii]) == "-help") || (string(argv[ii]) == "-h"))
 		{
 			printInfo(MASTER, " List of command line parameters:") ;
-			printInfo(MASTER, " -autoPad            = automatic grid padding on all axis") ;
+			printInfo(MASTER, " -autoPad             = automatic grid padding on all axis") ;
 			printInfo(MASTER, "     (if specified autoPad overrides all other padding options)") ;
-			printInfo(MASTER, " -cb1 <int>          = cache block size axis 1 [grid pts]") ;
-			printInfo(MASTER, " -cb2 <int>          = cache block size axis 2 [grid pts]") ;
-			printInfo(MASTER, " -cb3 <int>          = cache block size axis 3 [grid pts}") ;
-			printInfo(MASTER, " -debug <OPT>        = debug trace [OPT=none/light/mid/full]") ;
-			printInfo(MASTER, " -dim <int>          = space dimension [1,2 or 3]") ;
-			printInfo(MASTER, " -dt <float>         = time step (s) for propagator") ;
-			printInfo(MASTER, " -fdOrder <int>      = spatial FD order [2, 4, 8, 12, 16]") ;
-			printInfo(MASTER, " -help or -h         = list of command line parameters") ;
-			printInfo(MASTER, " -n1 <int>           = inner domain size axis 1 [grid pts]") ;
-			printInfo(MASTER, " -n2 <int>           = inner domain size axis 2 [grid pts]") ;
-			printInfo(MASTER, " -n3 <int>           = inner domain size axis 3 [grid pts]") ;
-			printInfo(MASTER, " -n1AddPad <int>     = add N points to grid along axis 1") ;
-			printInfo(MASTER, " -n2AddPad <int>     = add N points to grid along axis 2") ;
-			printInfo(MASTER, " -n3AddPad <int>     = add N points to grid along axis 3") ;
-			printInfo(MASTER, " -n1MulPad <int>     = grid size multiple of N axis 1") ;
-			printInfo(MASTER, " -n2MulPad <int>     = grid size multiple of N axis 2") ;
-			printInfo(MASTER, " -n3MulPad <int>     = grid size multiple of N axis 3") ;
-			printInfo(MASTER, " -nsub1 <int>        = no. of subdomains axis 1") ;
-			printInfo(MASTER, " -nsub2 <int>        = no. of subdomains axis 2") ;
-			printInfo(MASTER, " -nsub3 <int>        = no. of subdomains axis 3") ;
-			printInfo(MASTER, " -nt <int>           = no. of time steps for propagator") ;
-			printInfo(MASTER, " -ntry <int>         = no. of tries for each testCase") ;
-			printInfo(MASTER, " -param1 <float>     = parameter 1 used in testCases") ;
-			printInfo(MASTER, " -param2 <float>     = parameter 2 used in testCases") ;
-			printInfo(MASTER, " -param3 <float>     = parameter 3 used in testCases") ;
-			printInfo(MASTER, " -param4 <float>     = parameter 4 used in testCases") ;
-			printInfo(MASTER, " -propaName <string> = run specific testCase by name") ;
-			printInfo(MASTER, "     Ac2Standard     * Acoustic 2nd Standard (DEFAULT)") ;
-			printInfo(MASTER, "     Ac2SplitComp    * Acoustic 2nd Separate Laplacian computation") ;
-			printInfo(MASTER, " -ratioCFL <float>   = ratio of stability dt for propagator") ;
-			printInfo(MASTER, " -snapDt <float>     = snaphots increment (time in sec.)") ;
+			printInfo(MASTER, " -boundary <string>   = boundary condition type") ;
+			printInfo(MASTER, "     FreeSurf         * Free surface (DEFAULT)") ;
+			printInfo(MASTER, "     None             * No boundary condition") ;
+			printInfo(MASTER, " -cb1 <int>           = cache block size axis 1 [grid pts]") ;
+			printInfo(MASTER, " -cb2 <int>           = cache block size axis 2 [grid pts]") ;
+			printInfo(MASTER, " -cb3 <int>           = cache block size axis 3 [grid pts}") ;
+			printInfo(MASTER, " -debug <OPT>         = debug trace [OPT=none/light/mid/full]") ;
+			printInfo(MASTER, " -dim <int>           = space dimension [1,2 or 3]") ;
+			printInfo(MASTER, " -dt <float>          = time step (s) for propagator") ;
+			printInfo(MASTER, " -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]") ;
+			printInfo(MASTER, " -help or -h          = list of command line parameters") ;
+			printInfo(MASTER, " -n1 <int>            = inner domain size axis 1 [grid pts]") ;
+			printInfo(MASTER, " -n2 <int>            = inner domain size axis 2 [grid pts]") ;
+			printInfo(MASTER, " -n3 <int>            = inner domain size axis 3 [grid pts]") ;
+			printInfo(MASTER, " -n1AddPad <int>      = add N points to grid along axis 1") ;
+			printInfo(MASTER, " -n2AddPad <int>      = add N points to grid along axis 2") ;
+			printInfo(MASTER, " -n3AddPad <int>      = add N points to grid along axis 3") ;
+			printInfo(MASTER, " -n1MulPad <int>      = grid size multiple of N axis 1") ;
+			printInfo(MASTER, " -n2MulPad <int>      = grid size multiple of N axis 2") ;
+			printInfo(MASTER, " -n3MulPad <int>      = grid size multiple of N axis 3") ;
+			printInfo(MASTER, " -nsub1 <int>         = no. of subdomains axis 1") ;
+			printInfo(MASTER, " -nsub2 <int>         = no. of subdomains axis 2") ;
+			printInfo(MASTER, " -nsub3 <int>         = no. of subdomains axis 3") ;
+			printInfo(MASTER, " -nt <int>            = no. of time steps for propagator") ;
+			printInfo(MASTER, " -ntry <int>          = no. of tries for each testCase") ;
+			printInfo(MASTER, " -param1 <float>      = parameter 1 used in testCases") ;
+			printInfo(MASTER, " -param2 <float>      = parameter 2 used in testCases") ;
+			printInfo(MASTER, " -param3 <float>      = parameter 3 used in testCases") ;
+			printInfo(MASTER, " -param4 <float>      = parameter 4 used in testCases") ;
+			printInfo(MASTER, " -propagator <string> = propagator type") ;
+			printInfo(MASTER, "     Ac2Standard      * Acoustic 2nd Standard (DEFAULT)") ;
+			printInfo(MASTER, "     Ac2SplitComp     * Acoustic 2nd Separate Laplacian computation") ;
+			printInfo(MASTER, " -ratioCFL <float>    = ratio of stability dt for propagator") ;
+			printInfo(MASTER, " -snapDt <float>      = snaphots increment (time in sec.)") ;
 			printInfo(MASTER, "     (if specified snapDt overrides snapInc)") ;
-			printInfo(MASTER, " -snapInc <int>      = snaphots increment (no. of time steps)") ;
-			printInfo(MASTER, " -testCase <string>  = run specific testCase by name") ;
-			printInfo(MASTER, "     All             * All test cases (DEFAULT)") ;
-			printInfo(MASTER, "     Comm            * MPI communication") ;
-			printInfo(MASTER, "     FD_D2           * Finite-difference computation") ;
-			printInfo(MASTER, "     Grid            * Grid operation") ;
-			printInfo(MASTER, "     Memory          * Memory") ;
-			printInfo(MASTER, "     Propa           * Propagator") ;
-			printInfo(MASTER, "     Util            * Utility for developers") ;
-			printInfo(MASTER, " -testMode <string>  = test mode") ;
-			printInfo(MASTER, "     Baseline        * CPU without optimization (DEFAULT)") ;
-			printInfo(MASTER, "     CacheBlk        * CPU with cache blocking techniques") ;
-			printInfo(MASTER, "     Cuda            * GPU with CUDA without optimization") ;
-			printInfo(MASTER, "     NEC             * NEC with compiler directives") ;
-			printInfo(MASTER, "     NEC_SCA         * NEC with Stencil Code Accelerator") ;
-			printInfo(MASTER, "     OpenAcc         * GPU with OpenAcc without optimization") ;
-			printInfo(MASTER, " -tmax <float>       = max. time (s) for propagator") ;
+			printInfo(MASTER, " -snapInc <int>       = snaphots increment (no. of time steps)") ;
+			printInfo(MASTER, " -testCase <string>   = run specific testCase by name") ;
+			printInfo(MASTER, "     All              * All test cases (DEFAULT)") ;
+			printInfo(MASTER, "     Comm             * MPI communication") ;
+			printInfo(MASTER, "     FD_D2            * Finite-difference computation") ;
+			printInfo(MASTER, "     Grid             * Grid operation") ;
+			printInfo(MASTER, "     Memory           * Memory") ;
+			printInfo(MASTER, "     Propa            * Propagator") ;
+			printInfo(MASTER, "     Util             * Utility for developers") ;
+			printInfo(MASTER, " -testMode <string>   = test mode") ;
+			printInfo(MASTER, "     Baseline         * CPU without optimization (DEFAULT)") ;
+			printInfo(MASTER, "     CacheBlk         * CPU with cache blocking techniques") ;
+			printInfo(MASTER, "     Cuda             * GPU with CUDA without optimization") ;
+			printInfo(MASTER, "     NEC              * NEC with compiler directives") ;
+			printInfo(MASTER, "     NEC_SCA          * NEC with Stencil Code Accelerator") ;
+			printInfo(MASTER, "     OpenAcc          * GPU with OpenAcc without optimization") ;
+			printInfo(MASTER, " -tmax <float>        = max. time (s) for propagator") ;
 			printInfo(MASTER, "     (if specified tmax overrides nt)") ;
-			printInfo(MASTER, " -version or -v      = print version information") ;
-			printInfo(MASTER, " -writeGrid          = write grids on disk") ;
+			printInfo(MASTER, " -version or -v       = print version information") ;
+			printInfo(MASTER, " -writeGrid           = write grids on disk") ;
 
 			// exit
 			return(RTN_CODE_EXIT);
@@ -231,6 +236,18 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			{
 				printInfo(MASTER, " Automatic padding","YES") ;
 				autoPad = true ;
+			}
+
+			else if (string(argv[ii]) == "-boundary")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -boundary") ;
+					return(RTN_CODE_KO) ;
+				}
+				boundary = argv[ii];
+				printInfo(MASTER, " Boundary\t", boundary) ;
 			}
 
 			else if (string(argv[ii]) == "-cb1")
@@ -639,16 +656,16 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				printInfo(MASTER, " Parameter 4\t", param4) ;
 			}
 
-			else if (string(argv[ii]) == "-propaName")
+			else if (string(argv[ii]) == "-propagator")
 			{
 				ii++ ;
 				if (ii >= argc)
 				{
-					printError(" parameter is needed after -propaName") ;
+					printError(" parameter is needed after -propagator") ;
 					return(RTN_CODE_KO) ;
 				}
-				propaName = argv[ii];
-				printInfo(MASTER, " Propagator\t", propaName) ;
+				propagator = argv[ii];
+				printInfo(MASTER, " Propagator\t", propagator) ;
 			}
 
 			else if (string(argv[ii]) == "-ratioCFL")
