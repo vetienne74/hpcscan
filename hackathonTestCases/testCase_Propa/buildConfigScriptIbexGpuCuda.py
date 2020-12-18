@@ -17,12 +17,12 @@ ratioCFLRange=['1.0','0.5','0.1']
 #ratioCFLRange=['1.0']
 #testModeRange=['Baseline','NEC_SCA']
 testModeRange=['GPU1']
-propaNameRange=['Ac2Standard']
+propagatorRange=['Ac2Standard']
 
 #-----------------------------------------------------------------
 configName='configIbexGpuCuda'
 ii = 1
-for propaName in propaNameRange:
+for propagator in propagatorRange:
     for testMode in testModeRange:
         for n1 in n1Range:
             for fdOrder in fdOrderRange:
@@ -33,7 +33,7 @@ for propaName in propaNameRange:
                     script_new = script_template.replace('template', new_name)
 
                     # skip some unwanted config
-                    if propaName == 'Ac2Standard' and testMode == 'NEC_SCA':
+                    if propagator == 'Ac2Standard' and testMode == 'NEC_SCA':
                         continue
 
                     # open files
@@ -50,7 +50,7 @@ for propaName in propaNameRange:
                         new_line = new_line.replace('_fdOrder_', fdOrder)
                         new_line = new_line.replace('_snapDt_', snapDt)
                         new_line = new_line.replace('_testMode_', testMode)
-                        new_line = new_line.replace('_propaName_', propaName)
+                        new_line = new_line.replace('_propagator_', propagator)
                         new_line = new_line.replace('_nmode_', nmode)
                         new_line = new_line.replace('_dt_', dt)
                         new_line = new_line.replace('_ratioCFL_', ratioCFL)

@@ -2,8 +2,9 @@
 #-----------------------------------------------------------------------------------
 
 # change string in sources files
-dir='../src'
+#dir='../src'
 #dir='../script'
+dir='../hackathonTestCases/testCase_Propa/'
 pattern='*'
 
 echo 'change_string start!'
