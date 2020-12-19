@@ -42,30 +42,31 @@ Contributors
 
 ## Description
 
-hpcscan is a tool for benchmarking scientific computing kernels on various platforms.
+hpcscan is a tool for benchmarking algorithms/kernels that are found in many scientific applications on various architectures/systems.
 
-It features several categories of test cases aiming to measure memory, computation and interconnect bandwidths.
+It features several categories of test cases aiming to measure memory, computation and communication bandwidths.
 
-All cases are validated with embedded reference solutions.
+All test cases are validated with embedded reference solutions.
 
 ## Project directories
 
-* build: hpcscan is built from here
-* doc: documents
-* env: scripts to initialize hpcscan environment
-* mics: various (output samples and studies) 
-* script: scripts for validation and performance benchmarks
-* src: all hpcscan source files
+* `bin` this directory is created during compilation and contains hpcscan executable
+* `build` hpcscan can be compiled from here
+* `doc` documents
+* `env` scripts to initialize hpcscan environment
+* `mics` output samples and studies 
+* `script` scripts for validation and performance benchmarks
+* `src` all hpcscan source files
 
 ## List of test cases
 
 Test case name | Description | Remark
 ------------ | ----------- | ------------
-Comm         | MPI communications bandwidth | This case requires at least 2 MPI processes
-FD_D2        | Finite-difference computations bandwidth | - 
-Grid         | Grid operations bandwidth | -
-Memory       | Memory operations bandwidth | -
-Propa        | Acoustic wave propagator bandwidth | - 
+Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes<br>Width of halos depends on the selected FD stencil order <br> <font color="blue"> **Validation is done with filling grids with predefined values** </font> <br> **Measures GPoints/s and GBytes/s** </p>
+FD_D2        | **Finite-difference (second derivatives in space) computations bandwidth** <ul><li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_1^2} \: (V)"> (for grid dim. 1, 2 or 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_2^2} \: (V)"> (for grid dim. 2 or 3) </li>  <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_3^2} \: (V)"> (for grid dim. 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U= \Delta (V)"> (for grid dim 2 or 3) </li> </ul> | <p>Accuracy is checked against multi-dimensional sine function<br>Accuracy depends on the selected FD stencil order <br> <font color="blue"> **Computes L1 Error against analitic solution** </font> <br> **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
+Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Max. diff. between grids U and V </li> <li> L1 norm between U and V </li> <li> Sum of abs(U) </li> <li> Max. of U </li> <li> Min. of U </li> <li> Complex grid manipulation (pressure update in propagator) U = 2 x V - U + C x L </li> <li> Boundary condition (free surface) at all edges of U </li> </ul> | <p>Operation can be done in portions of the grid (for instance, excluding halos) <br> <font color="blue"> **Validation is done with filling grids with predefined values** </font> <br> **Measures GPoints/s and GBytes/s**<p>
+Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p>Conversely to Test Case Grid, operations are done on continuous memory arrays <br> <font color="blue"> **Validation is done with filling arrays with predefined values** </font> <br> **Measures GPoints/s and GBytes/s**<p>
+Propa        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> <img src="https://render.githubusercontent.com/render/math?math={\partial^2}/{\partial t^2} (P)=c^2 \: \Delta (P)"> </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against Eigen mode analytic solution of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order <br> <font color="blue"> **Computes L1 Error against analitic solution** </font> <br> **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
 Template     | Test case template | Copy this template to create a new test case
 Util         | Utility tests to check internal functions | Reserved for developpers
 

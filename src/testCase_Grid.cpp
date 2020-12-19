@@ -351,7 +351,7 @@ Rtn_code TestCase_Grid::run(void)
 	{
 		//============================================
 		// updatePressure
-		// W = coef
+		// W = 2*V - W + C*L
 		//============================================
 
 		print_blank() ;
