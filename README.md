@@ -6,6 +6,7 @@
 - [Welcome to hpcscan](#welcome-to-hpcscan)
 - [Overview](#overview)
   * [Description](#description)
+  * [Project directories](#project-directories)
   * [List of test cases](#list-of-test-cases)
   * [List of test modes](#list-of-test-modes)
 - [Environment set-up](#environment-set-up)
@@ -43,9 +44,18 @@ Contributors
 
 hpcscan is a tool for benchmarking scientific computing kernels on various platforms.
 
-It features several categories of test cases aiming to measure memory, computation and interconnect bandwidth.
+It features several categories of test cases aiming to measure memory, computation and interconnect bandwidths.
 
 All cases are validated with embedded reference solutions.
+
+## Project directories
+
+* build: hpcscan is built from here
+* doc: documents
+* env: scripts to initialize hpcscan environment
+* mics: various (output samples and studies) 
+* script: scripts for validation and performance benchmarks
+* src: all hpcscan source files
 
 ## List of test cases
 
@@ -238,8 +248,8 @@ Performance measurements and scripts to reproduce results can be found in ./doc/
 
 Version      | Description | Release date
 ------------ | ----------- | ------------
-1.0          | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
-1.1          | Added test modes NEC, OpenAcc and Cuda (ON GOING) | Coming soon
+v1.0          | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
+v1.1          | Added test modes NEC, OpenAcc (ON GOING) and Cuda (ON GOING) | Coming soon
 
 # Have fun!
 
