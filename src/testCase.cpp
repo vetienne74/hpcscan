@@ -49,20 +49,23 @@ Rtn_code TestCase::initialize(void)
 		}
 #endif
 
+#ifdef __OPENACC__
 		else if (Config::Instance()->testMode.compare("OpenAcc") == 0)
 		{
 
 		}
+#endif
 
+#ifdef __NEC__
 		else if (Config::Instance()->testMode.compare("NEC") == 0)
 		{
 
 		}
-
 		else if (Config::Instance()->testMode.compare("NEC_SCA") == 0)
 		{
 
 		}
+#endif
 
 		else
 		{

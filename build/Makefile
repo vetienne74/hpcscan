@@ -69,7 +69,7 @@ CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
 	testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
 	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
 
-# cpp OpenAcc objects
+# cpp OpenACC objects
 CPP_OPENACC_OBJ = grid_OpenAcc.o
 
 # Cuda objects
@@ -79,15 +79,21 @@ CUDA_OBJ = grid_Cuda.o
 CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o
 
 # build list of needed objects
+#-----------------------------
+# common C++ objects
 ALL_OBJ = ${CPP_OBJ}
 ifneq ($(strip $(HPCSCAN_CUDA)),)
+# CUDA objects
 ALL_OBJ += ${CUDA_OBJ}
 endif
+# OpenACC objects
 ifneq ($(strip $(HPCSCAN_CPP_OPENACC_FLAG)),)
 ALL_OBJ += ${CPP_OPENACC_OBJ}
 endif
-
+# NEC objects
+ifeq ($(HPCSCAN_CPP), mpinc++)
 ALL_OBJ += ${CPP_NEC_OBJ}
+endif
 
 .SUFFIXES: .o .cpp .cu
 

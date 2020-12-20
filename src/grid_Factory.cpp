@@ -47,7 +47,7 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	}
 #endif
 
-	//#ifdef __NEC__
+#ifdef __NEC__
 	else if (gridMode.compare("NEC") == 0)
 	{
 		Rgrid = new Grid_NEC(gridType) ;
@@ -56,7 +56,7 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType) ;
 	}
-	//#endif
+#endif
 
 	else
 	{
@@ -107,7 +107,7 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	}
 #endif
 
-	//#ifdef __NEC__
+#ifdef __NEC__
 	else if (gridMode.compare("NEC") == 0)
 	{
 		Rgrid = new Grid_NEC(gridType, dim, n1, n2, n3) ;
@@ -116,7 +116,7 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	{
 		Rgrid = new Grid_NEC_SCA(gridType, dim, n1, n2, n3) ;
 	}
-	//#endif
+#endif
 
 	else
 	{
