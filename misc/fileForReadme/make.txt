@@ -1,5 +1,7 @@
 hpcscan will be compiled with mpic++
 HPCSCAN_CPP_FLAGCOMP="-w -g -O3 -mavx2 -fopenmp"
+Files version and ../src/version_hpcscan.h differ
+version has changed, regenerating version info
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/config.cpp
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/grid.cpp
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/grid_CacheBlk.cpp
@@ -17,9 +19,7 @@ mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/testCase_Propa.cpp
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/testCase_Memory.cpp
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/testCase_Template.cpp
 mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/testCase_Util.cpp
-mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/grid_NEC.cpp
-mpic++ -c -w -g -O3 -mavx2 -fopenmp ../src/grid_NEC_SCA.cpp
-mpic++ -w -g -O3 -mavx2 -fopenmp -o ../bin/hpcscan config.o grid.o grid_CacheBlk.o grid_Factory.o main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o grid_NEC.o grid_NEC_SCA.o  
+mpic++ -w -g -O3 -mavx2 -fopenmp -o ../bin/hpcscan config.o grid.o grid_CacheBlk.o grid_Factory.o main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o  
 *** BUILD OK (SINGLE PRECISION) *** 
 g++ (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
 Copyright (C) 2019 Free Software Foundation, Inc.

@@ -105,8 +105,8 @@ Test mode name | Description | Remark
 Baseline     | CPU standard implementation | Always enabled
 CacheBlk     | CPU with cache blocking optimization techniques | Always enabled
 Cuda         | GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
-NEC          | NEC with compiler directives | Only enabled when compiled with ncc++ (NEC C++ compiler for SX-Aurora TSUBASA)
-NEC_SCA      | NEC with Stencil Code Accelerator | Only enabled when compiled with nvc++ (NEC C++ compiler for SX-Aurora TSUBASA)
+NEC          | NEC with compiler directives | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
+NEC_SCA      | NEC with Stencil Code Accelerator | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
 OpenAcc      | GPU with OpenACC without optimization | Only enabled when compiled with a C++ compiler that supports OpenACC
 
 # Environment set-up
