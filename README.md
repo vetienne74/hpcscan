@@ -6,6 +6,12 @@
 - [Welcome to hpcscan](#welcome-to-hpcscan)
 - [Overview](#overview)
   * [Description](#description)
+  * [Why another benchmark?](#why-another-benchmark)
+  * [What hpcscan is](#what-hpcscan-is)
+  * [What hpcscan is not](#what-hpcscan-is-not)
+  * [Quick start](#quick-start)
+  * [Going further](#going-further)
+- [Main features](#main-features)
   * [Project directories](#project-directories)
   * [List of test cases](#list-of-test-cases)
   * [List of test modes](#list-of-test-modes)
@@ -48,6 +54,28 @@ It features several categories of test cases aiming to measure memory, computati
 
 All test cases are validated with embedded reference solutions.
 
+## Why another benchmark?
+
+TO DO
+
+## What hpcscan is
+
+TO DO
+
+## What hpcscan is not
+
+TO DO
+
+## Quick start
+
+TO DO
+
+## Going further
+
+TO DO
+
+# Main features
+
 ## Project directories
 
 * `bin` this directory is created during compilation and contains hpcscan executable
@@ -62,11 +90,11 @@ All test cases are validated with embedded reference solutions.
 
 Test case name | Description | Remark
 ------------ | ----------- | ------------
-Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes<br>Width of halos depends on the selected FD stencil order <br> <font color="blue"> **Validation is done with filling grids with predefined values** </font> <br> **Measures GPoints/s and GBytes/s** </p>
-FD_D2        | **Finite-difference (second derivatives in space) computations bandwidth** <ul><li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_1^2} \: (V)"> (for grid dim. 1, 2 or 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_2^2} \: (V)"> (for grid dim. 2 or 3) </li>  <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_3^2} \: (V)"> (for grid dim. 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U= \Delta (V)"> (for grid dim 2 or 3) </li> </ul> | <p>Accuracy is checked against multi-dimensional sine function<br>Accuracy depends on the selected FD stencil order <br> <font color="blue"> **Computes L1 Error against analitic solution** </font> <br> **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
-Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Max. diff. between grids U and V </li> <li> L1 norm between U and V </li> <li> Sum of abs(U) </li> <li> Max. of U </li> <li> Min. of U </li> <li> Complex grid manipulation (pressure update in propagator) U = 2 x V - U + C x L </li> <li> Boundary condition (free surface) at all edges of U </li> </ul> | <p>Operation can be done in portions of the grid (for instance, excluding halos) <br> <font color="blue"> **Validation is done with filling grids with predefined values** </font> <br> **Measures GPoints/s and GBytes/s**<p>
-Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p>Conversely to Test Case Grid, operations are done on continuous memory arrays <br> <font color="blue"> **Validation is done with filling arrays with predefined values** </font> <br> **Measures GPoints/s and GBytes/s**<p>
-Propa        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> <img src="https://render.githubusercontent.com/render/math?math={\partial^2}/{\partial t^2} (P)=c^2 \: \Delta (P)"> </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against Eigen mode analytic solution of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order <br> <font color="blue"> **Computes L1 Error against analitic solution** </font> <br> **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
+Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes <br> Depending on the placement of MPI processes, intra-node or inter-node bandwidth can be measured <br> Width of halos depends on the selected FD stencil order <br> **Validation is done against reference grids filled with predefined values** <br> <font color="blue"> **Measures GPoints/s and GBytes/s** </font></p>
+FD_D2        | **Finite-difference (second derivatives in space) computations bandwidth** <ul><li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_1^2} \: (V)"> (for grid dim. 1, 2 or 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_2^2} \: (V)"> (for grid dim. 2 or 3) </li>  <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_3^2} \: (V)"> (for grid dim. 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U= \Delta (V)"> (for grid dim 2 or 3) </li> </ul> | <p>Accuracy is checked against multi-dimensional sine function <br> Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of periods in the sine function<br> **Computes L1 Error against analytical solution** <br> <font color="blue"> **Measures GPoints/s, GBytes/s and GFlop/s** </font> </p> 
+Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Max. diff. between grids U and V </li> <li> L1 norm between U and V </li> <li> Sum of abs(U) </li> <li> Max. of U </li> <li> Min. of U </li> <li> Complex grid manipulation (pressure update in propagator) U = 2 x V - U + C x L </li> <li> Boundary condition (free surface) at all edges of U </li> </ul> | <p>Operation can be done in portions of the grid (for instance, excluding halos) <br> **Validation is done against reference grids filled with predefined values** <br> <font color="blue"> **Measures GPoints/s and GBytes/s** </font> <p>
+Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p> Conversely to Test Case Grid, operations are done on continuous memory arrays <br> This test case is similar to the Stream benchmark <br> **Validation is done against reference grids filled with predefined values** <br> <font color="blue"> **Measures GPoints/s and GBytes/s** </font> <p>
+Propa        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> <img src="https://render.githubusercontent.com/render/math?math={\partial^2}/{\partial t^2} (P)=c^2 \: \Delta (P)"> </li> <li> Domain size is 1 m in every dimension </li> <li> c is constant and equals to 1 m/s </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against the multi-dimensional Eigen mode analytical solution of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of Eigen modes <br> **Computes L1 Error against analytical solution** <br> <font color="blue"> **Measures GPoints/s, GBytes/s and GFlop/s** </font> </p> 
 Template     | Test case template | Copy this template to create a new test case
 Util         | Utility tests to check internal functions | Reserved for developpers
 
@@ -74,12 +102,12 @@ Util         | Utility tests to check internal functions | Reserved for developp
 
 Test mode name | Description | Remark
 ------------ | ----------- | ------------
-Baseline     | CPU standard implementation | -
-CacheBlk     | CPU with cache blocking optimization techniques | -
-Cuda         | GPU with CUDA without optimization | -
-NEC          | NEC with compiler directives | Only available on NEC SX-Aurora TSUBASA
-NEC_SCA      | NEC with Stencil Code Accelerator | Only available on NEC SX-Aurora TSUBASA
-OpenAcc      | GPU with OpenAcc without optimization | -
+Baseline     | CPU standard implementation | Always enabled
+CacheBlk     | CPU with cache blocking optimization techniques | Always enabled
+Cuda         | GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
+NEC          | NEC with compiler directives | Only enabled when compiled with ncc++ (NEC C++ compiler for SX-Aurora TSUBASA)
+NEC_SCA      | NEC with Stencil Code Accelerator | Only enabled when compiled with nvc++ (NEC C++ compiler for SX-Aurora TSUBASA)
+OpenAcc      | GPU with OpenACC without optimization | Only enabled when compiled with a C++ compiler that supports OpenACC
 
 # Environment set-up
 
@@ -90,7 +118,7 @@ OpenAcc      | GPU with OpenAcc without optimization | -
 
 ## Optional requirements
 
-* C++ compiler with OpenAcc support 
+* C++ compiler with OpenACC support 
 * CUDA compiler
 * NEC compiler
 
@@ -227,15 +255,51 @@ Example
 
 hpcscan does not require any input file. All data are built internally.
 
-**Output**
+**Output on the terminal**
 
-Information regarding results validation and performances are sent to the terminal output.
+During execution, information regarding results validation and performances are sent to the terminal output.
 
-Performance log file (Description to be added)
+**Output performance log file**
 
-Grid output (Description to be added)
+For every test case, an ASCII file containing all measures in a compact way is created.
+It can used to plot results with dedicated tools.
+The name of the log file is as follows 
 
-Debug trace output (Description to be added)
+`hpcscan.perf.<TESTCASE>.log`
+
+If hpcscan is launched several times, results are added to the log file.
+It is convenient for instance, when you want to analyse the effect of a parameter and plot the serie of results in a graph.
+
+**Output grids**
+
+Be default, the grids manipulated by hpcscan are not written on disk.
+To output the grids, use the option `-writeGrid`.
+When activated, each grid used in a test will generate 2 files:
+* An ASCII file with the grid dimensions (name of the file `<GRIDNAME>.proc<ID>.grid.info`)
+* A binary file with the grid data (name of the file `<GRIDNAME>.proc<ID>.grid.bin`) where ID is the MPI rank.
+
+Example (this is the command that was used to produce the hpcscan logo on top of this page)
+
+```
+mpirun -n 1 ../../bin/hpcscan -testCase Propa -writeGrid \
+       -tmax 0.2 -snapDt 0.1 \
+       -dim 2 -n1 200 -n2 600 \
+       -param1 4 -param2 8
+```
+
+Outputs the following files: `PropaEigenModeRef.proc0.grid.info`, `PropaEigenModeRef.proc0.grid.bin`, `PropaEigenModePrn.proc0.grid.info` and `PropaEigenModePrn.proc0.grid.bin`
+
+> Writing grids on disks slows down the code and shouldn't be combined with performance measurements
+
+> Grids can be of large size and can quickly reach your available disk space
+
+**Output debug traces**
+
+The code is equipped with debug traces that can be activated with the option `-debug <LEVEL>` where LEVEL can be set to `light`, `mid` or `full` (minimum, middle and maximum level of verbosity).
+It can useful to activate them when developping/debugging to understand the behavior of the code.
+When activated, debug traces are written by each MPI proc in an ASCII file with name `hpcscan.debug.proc<ID>.log` where ID is the MPI rank.
+
+> Debug traces slow down the code and shouldn't be combined with performance measurements
 
 # Performance benchmarks
 
