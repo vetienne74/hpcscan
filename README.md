@@ -48,11 +48,22 @@ Contributors
 
 ## Description
 
-hpcscan is a tool for benchmarking algorithms/kernels that are found in many scientific applications on various architectures/systems.
+hpcscan is a tool for **benchmarking algorithms/kernels** that are found in many scientific applications on **various architectures/systems**.
 
 It features several categories of test cases aiming to measure memory, computation and communication bandwidths.
 
-All test cases are validated with embedded reference solutions.
+* Entirely written in C++
+* Simple code struture based on individual test cases
+* Easy to add new test cases
+* Main class is `Grid` that handles all operations on multi-dimension (1, 2 \& 3D) Cartesian grids
+* Hybrid OpenMP/MPI parallelism
+* Support for OpenACC, CUDA and other specific features are available depending on compiler/architecture
+* All configuration parameters on command line
+* Support single and double precision computation
+* Compilation with standard Makefile
+* No external librairies
+* Follows [C++ Google style code](https://google.github.io/styleguide/cppguide.html)
+* All test cases are validated with embedded reference solutions
 
 ## Why another benchmark?
 
@@ -307,7 +318,7 @@ These tests are intended to measure various bandwidths
 
 > **They are intensive tests that require to run on HPC platforms**
 
-Performance measurements and scripts to reproduce results can be found in ./doc/TestCases/TestCases.pdf
+Performance measurements and scripts to reproduce results can be found in [./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf](./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf)
 
 # Versions
 

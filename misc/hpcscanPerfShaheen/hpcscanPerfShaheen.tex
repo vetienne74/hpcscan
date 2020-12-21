@@ -54,12 +54,12 @@
 
 %-------------------------------------------------------------------------------------
 
-\title[hpcscan Test Cases]{hpcscan version 1.0 \\ Test Cases}
+\title[hpcscan benchmarks on Shaheen II]{hpcscan version 1.1 \\ Performance benchmarks on Shaheen II (KAUST)}
 %\subtitle{}
-\author[Vincent Etienne]{Vincent Etienne}
-\institute[]{Saudi Aramco / EXPEC ARC / GPT}
+%\author[Vincent Etienne]{Vincent Etienne}
+%\institute[]{XX}
 
-\date[11/25/2020] {\small{Updated November 25, 2020 }}
+\date[12/21/2020] {\small{Updated December 21, 2020 }}
 
 %-------------------------------------------------------------------------------------
 
@@ -96,109 +96,15 @@
 \frametitle{Content}
 \tableofcontents }
 
+%*************************************************************************************
+
+\section{Shaheen II (KAUST)}
 
 %*************************************************************************************
 
-\section{hpcscan}
-
-%*************************************************************************************
-
-%=====================================================================================
-\subsection{Overview}
-%=====================================================================================
-
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Overview}
-
-  hpcscan is a C++ code for benchmarking HPC kernels (mainly for solving PDEs with FDM)
-
-  \begin{itemize}
-  \item Simple code struture based on individual test cases
-  \item Easy to add new test cases
-  \item Main class is Grid: multi-dimension (1, 2 \& 3D) Cartesian grid
-  \item Hybrid MPI/OpenMP parallelism
-  \item All configuration parameters on command line
-  \item Support single and double precision computation
-  \item Compilation with standard Makefile
-  \item No external librairies
-  \item Follows C++ Google style code
-  \end{itemize}
-}
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Overview}
-
-  {\bf hpcscan embeds several test cases}
-  \vspace{0.5cm}
-
-  Current version 1.0
-  \begin{itemize}
-  \item General operations on grids
-  \item Memory operations
-  \item MPI communication
-  \item FD computation 
-  \item Basic wave propagator
-  \end{itemize}
-  
-  Possible additions for future versions
-  \begin{itemize}
-  \item Operations on matrices full and sparse
-  \item FFT
-  \item IO
-  \item Compression
-  \end{itemize}
-}
-
-%=====================================================================================
-\subsection{Compilation and validation}
-%=====================================================================================
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Compilation and validation}
-
-  Compiling hpcscan
-  
-  go to \texttt{./build} and \texttt{make} (by default compilation with single precision float)
-
-  To compile with double precision float, \texttt{make precision=double}
-
-  \vspace{0.5cm}
-  Validating hpcscan
-
-  go to \texttt{./script} and \texttt{sh runValidationTests.sh}
-
-   {\tiny
-  \begin{table}
-    \caption{\scriptsize \texttt{runValidationTests.sh} \footnote{\scriptsize \textcolor{blue}{Updated Nov 25, 2020}} }
-    \label{table_runAllTestCases}
-    \begin{tabular}{@{}cccc}
-      Machine & Compiler & Single prec. & Double prec. \\
-      \hline
-      Mars & g++ 9.3.0          & 764 PASS / 0 FAIL / 0 ERR / 20 WARN & 764 PASS / 0 FAIL / 0 ERR / 20 WARN \\
-      Shaheen & icpc 19.0.5.281 & 764 PASS / 0 FAIL / 0 ERR / 20 WARN & 764 PASS / 0 FAIL / 0 ERR / 20 WARN \\
-    \end{tabular}
-  \end{table}
-   }
-
-   Numbers can differ due to availability of features depending on the platforms
-}
-
-%*************************************************************************************
-
-\section{Test platforms}
-
-%*************************************************************************************
-
-%=====================================================================================
-\subsection{Shaheen II (KAUST)}
-%=====================================================================================
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Test platform - Shaheen II (KAUST)}
+  \frametitle{Shaheen II (KAUST)}
 
   {\bf Machine Shaheen II / Cray XC40}
   \begin{itemize}
@@ -603,23 +509,6 @@
 
 %*************************************************************************************
 
-\section{Status and next steps}
-
-%*************************************************************************************
-
-%-------------------------------------------------------------------------------------
-\frame{
-  \frametitle{Status and next steps}
-
-  \begin{itemize}
-  \item Finalize performance analysis
-  \item Check compiler warnings (non vectorized loops)
-  \item Check compiler options are optimal
-  \end{itemize}
-}
-
-%*************************************************************************************
-
 \section{Acknowledgements}
 
 %*************************************************************************************
@@ -627,9 +516,7 @@
 %-------------------------------------------------------------------------------------
 \frame{
   \frametitle{Acknowledgements}
-
   \begin{itemize}
-  \item Laurent Gatineau (NEC Corporation) for discussions, testing and optimizations on SX-Aurora Tsubasa
   \item KAUST ECRC and KSL for access and support on Shaheen II \& Ibex
   \end{itemize}
 }

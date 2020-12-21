@@ -1,0 +1,2 @@
+pdflatex hpcscanPerfShaheen.tex
+pdflatex hpcscanPerfShaheen.tex
