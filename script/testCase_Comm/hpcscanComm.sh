@@ -1,12 +1,13 @@
 
+# grid size
+n1=1000
+n2=1000
+n3=1000
+
 export KMP_AFFINITY=scatter,1,0,granularity=fine 
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
 start_time=$(date)
-
-export n1=1000
-export n2=1000
-export n3=1000
 
 sh ../clean_dir.sh
 

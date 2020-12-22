@@ -81,7 +81,7 @@ Rtn_code TestCase::initialize(void)
 
 			// all strings first
 			perfLogFile << Config::Instance()->hostName << " " ;
-			perfLogFile << Config::Instance()->userName << " " ;
+			//perfLogFile << Config::Instance()->userName << " " ;
 			perfLogFile << Config::Instance()->testCaseName << " " ;
 			perfLogFile << Config::Instance()->testMode << " " ;
 			perfLogFile << Config::Instance()->propagator << " " ;
