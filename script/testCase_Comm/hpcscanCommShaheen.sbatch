@@ -6,4 +6,9 @@
 #SBATCH --nodes=8
 #SBATCH --time=00:30:00
 
-sh runTestShaheen.sh
+source ../../env/setEnvShaheenIntel.sh
+
+sh hpcscanComm.sh > hpcscanCommShaheen.out
+
+perfLog='hpcscan.perf.Comm.log'
+mv ${perfLog} ./hpcscanComm.${perfLog}
