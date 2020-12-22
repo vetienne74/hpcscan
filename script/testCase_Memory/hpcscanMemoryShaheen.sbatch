@@ -3,12 +3,13 @@
 #SBATCH --job-name=hpcscan
 #SBATCH --output=hpcscan.out
 #SBATCH --error=hpcscan.err
-#SBATCH --nodes=8
+#SBATCH --nodes=1
 #SBATCH --time=00:30:00
 
 source ../../env/setEnvShaheenIntel.sh
 
-sh hpcscanMemory.sh > hpcscanCommMemory.out
+script='hpcscanMemory'
+sh ${script}.sh > ${script}Shaheen.out
 
 perfLog='hpcscan.perf.Memory.log'
-mv ${perfLog} ./hpcscanMemory.${perfLog}
+mv ${perfLog} ${script}Shaheen.log

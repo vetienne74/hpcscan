@@ -1,0 +1,935 @@
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	1
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	9.15185
+ Best achieved GPoint/s	2.28796
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	17.6441
+ Best achieved GPoint/s	2.20551
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	12.7594
+ Best achieved GPoint/s	1.06328
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	12.7473
+ Best achieved GPoint/s	1.06227
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	17.3843
+ Best achieved GPoint/s	1.44869
+
+ Case run time (s)	58.7593
+--------------------------------------------------------------------------------
+ Total run time (s)	59.1824
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	2
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	17.9736
+ Best achieved GPoint/s	4.49339
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	33.5084
+ Best achieved GPoint/s	4.18855
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	24.5067
+ Best achieved GPoint/s	2.04223
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	24.4329
+ Best achieved GPoint/s	2.03608
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	33.3581
+ Best achieved GPoint/s	2.77984
+
+ Case run time (s)	30.7152
+--------------------------------------------------------------------------------
+ Total run time (s)	31.1721
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	4
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	26.1963
+ Best achieved GPoint/s	6.54909
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	51.5223
+ Best achieved GPoint/s	6.44029
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	38.1283
+ Best achieved GPoint/s	3.17736
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	38.0977
+ Best achieved GPoint/s	3.17481
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	51.6037
+ Best achieved GPoint/s	4.30031
+
+ Case run time (s)	18.9515
+--------------------------------------------------------------------------------
+ Total run time (s)	19.44
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	8
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	27.4735
+ Best achieved GPoint/s	6.86838
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	53.0987
+ Best achieved GPoint/s	6.63733
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	44.0666
+ Best achieved GPoint/s	3.67222
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	44.0799
+ Best achieved GPoint/s	3.67332
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	57.9188
+ Best achieved GPoint/s	4.82657
+
+ Case run time (s)	15.3251
+--------------------------------------------------------------------------------
+ Total run time (s)	15.8486
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	12
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	27.0891
+ Best achieved GPoint/s	6.77228
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	52.5184
+ Best achieved GPoint/s	6.5648
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	44.8794
+ Best achieved GPoint/s	3.73995
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	44.8803
+ Best achieved GPoint/s	3.74003
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	58.9105
+ Best achieved GPoint/s	4.9092
+
+ Case run time (s)	14.5539
+--------------------------------------------------------------------------------
+ Total run time (s)	15.0716
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	16
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	26.8836
+ Best achieved GPoint/s	6.72091
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	51.773
+ Best achieved GPoint/s	6.47163
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	45.0601
+ Best achieved GPoint/s	3.75501
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	45.0713
+ Best achieved GPoint/s	3.75594
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	59.012
+ Best achieved GPoint/s	4.91767
+
+ Case run time (s)	14.2691
+--------------------------------------------------------------------------------
+ Total run time (s)	14.7888
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	20
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	33.6026
+ Best achieved GPoint/s	8.40065
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	66.4434
+ Best achieved GPoint/s	8.30543
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	56.2622
+ Best achieved GPoint/s	4.68851
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	56.2159
+ Best achieved GPoint/s	4.68466
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	73.8087
+ Best achieved GPoint/s	6.15072
+
+ Case run time (s)	11.8463
+--------------------------------------------------------------------------------
+ Total run time (s)	12.3609
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	24
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	40.4316
+ Best achieved GPoint/s	10.1079
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	77.3275
+ Best achieved GPoint/s	9.66594
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	67.5225
+ Best achieved GPoint/s	5.62687
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	67.5318
+ Best achieved GPoint/s	5.62765
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	88.6025
+ Best achieved GPoint/s	7.38354
+
+ Case run time (s)	10.093
+--------------------------------------------------------------------------------
+ Total run time (s)	10.6056
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	28
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	47.2
+ Best achieved GPoint/s	11.8
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	90.2133
+ Best achieved GPoint/s	11.2767
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	78.7342
+ Best achieved GPoint/s	6.56118
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	78.7154
+ Best achieved GPoint/s	6.55962
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	103.337
+ Best achieved GPoint/s	8.61144
+
+ Case run time (s)	8.94579
+--------------------------------------------------------------------------------
+ Total run time (s)	9.47153
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+--------------------------------------------------------------------------------
+ COMMAND LINE ARGUMENTS
+
+ Executable	 	/lustre/scratch/x_etiennv/hpcscan/script/testCase_Memory/../../bin/hpcscan
+ TestCase name		Memory
+ Space dimension	3
+ n1			1000
+ n2			1000
+ n3			1000
+================================================================================
+			 H P C S C A N - ver 1.1 (2020)
+
+ Git version	commit 6afcc8672bdae0e0e2f708545823c0eedf429d39
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Tue Dec 22 05:45:45 2020 +0300
+
+ Host name	nid03476
+ User name	
+ Computation	SINGLE PRECISION
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode Cuda	DISABLED
+ Mode OpenAcc	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Configuration parameters
+ TestCase name		Memory
+ No. of MPI process	1
+ No. subdomains axis1	1
+ No. subdomains axis2	1
+ No. subdomains axis3	1
+ OpenMP threads / MPI	32
+ Number of tries	10
+ FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+--------------------------------------------------------------------------------
+ TestCase name		Memory
+ TestCase version	Standard implementation
+ TestCase mode		Baseline
+
+ * Grid parameters *
+ Grid type		GLOBAL
+ Grid mode		Baseline
+ Grid dim.		3D
+ Total n1		1008
+ Total n2		1008
+ Total n3		1008
+ Inner n1		1000
+ Inner n2		1000
+ Inner n3		1000
+ Grid size (GB)		4.09677
+
+ * Case	MemoryFillGrid
+ Test PASSED / Rel err.	0
+ Test PASSED / Rel err.	0
+ Best achieved GByte/s	53.9284
+ Best achieved GPoint/s	13.4821
+
+ * Case	MemoryCopyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	102.873
+ Best achieved GPoint/s	12.8591
+
+ * Case	MemoryAddGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	89.4694
+ Best achieved GPoint/s	7.45578
+
+ * Case	MemoryMultiplyGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	89.4244
+ Best achieved GPoint/s	7.45203
+
+ * Case	MemoryAddUpdateGrid
+ Test PASSED / L1 err.	0
+ Test PASSED / Max err.	0
+ Best achieved GByte/s	117.527
+ Best achieved GPoint/s	9.79395
+
+ Case run time (s)	7.99119
+--------------------------------------------------------------------------------
+ Total run time (s)	8.52324
+
+================================================================================
+			 HPCSCAN TERMINATED SUCCESSFULLY
+================================================================================
+*** TEST ENDED ***
+# Started  :  Tue Dec 22 06:37:35 +03 2020
+# Ended    :  Tue Dec 22 06:41:20 +03 2020
+On machine :  nid03476
+Done by    :  x_etiennv
