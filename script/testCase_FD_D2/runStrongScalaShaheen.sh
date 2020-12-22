@@ -1,5 +1,5 @@
 
-source ../set_env_for_shaheen.sh
+source ../../env/setEnvShaheenIntel.sh
 
 export KMP_AFFINITY=scatter,1,0,granularity=fine 
 export OMP_NUM_THREADS=32 
