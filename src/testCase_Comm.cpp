@@ -21,10 +21,10 @@
 namespace hpcscan {
 
 TestCase_Comm::TestCase_Comm(void)
-		{
+														{
 	testCaseName    = "Comm" ;
 	testCaseVersion = "Standard implementation" ;
-		}
+														}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -43,8 +43,15 @@ Rtn_code TestCase_Comm::run(void)
 	}
 
 	// for perf log file
-	Myfloat SendGB=0     , SendRecvGB=0     , HaloExchGB=0 ;
-	Myfloat SendGPoint=0 , SendRecvGPoint=0 , HaloExchGPoint=0 ;
+	Myfloat SendGB[nproc_world-1]     , SendRecvGB[nproc_world-1]     , HaloExchGB=0 ;
+	Myfloat SendGPoint[nproc_world-1] , SendRecvGPoint[nproc_world-1] , HaloExchGPoint=0 ;
+	for (Myint iproc = 1; iproc < nproc_world; iproc++)
+	{
+		SendGPoint[iproc-1] = 0 ;
+		SendRecvGB[iproc-1] = 0 ;
+		SendGPoint[iproc-1] = 0 ;
+		SendRecvGPoint[iproc-1] = 0 ;
+	}
 
 	const string gridMode = Config::Instance()->testMode ;
 
@@ -164,14 +171,14 @@ Rtn_code TestCase_Comm::run(void)
 				}
 			} // for (Myint itry = 0; itry < ntry; itry++)
 
-			SendGPoint = nGridPoint/testCase_time_best/1.e9 ;
-			SendGB = SendGPoint *sizeof(Myfloat) ;
-			printInfo(MASTER, " Best achieved GByte/s", SendGB) ;
-			printInfo(MASTER, " Best achieved GPoint/s", SendGPoint) ;
+			SendGPoint[iproc-1] = nGridPoint/testCase_time_best/1.e9 ;
+			SendGB[iproc-1] = SendGPoint[iproc-1] *sizeof(Myfloat) ;
+			printInfo(MASTER, " Best achieved GByte/s", SendGB[iproc-1]) ;
+			printInfo(MASTER, " Best achieved GPoint/s", SendGPoint[iproc-1]) ;
 
 			MPI_Barrier(MPI_COMM_WORLD) ;
 
-		} // for (Myint iproc = 0; iproc < nproc_world; iproc++)
+		} // for (Myint iproc = 1; iproc < nproc_world; iproc++)
 	}
 
 	{
@@ -298,13 +305,13 @@ Rtn_code TestCase_Comm::run(void)
 
 			} // for (Myint itry = 0; itry < ntry; itry++)
 
-			SendRecvGPoint = 2*nGridPoint/testCase_time_best/1.e9 ;
-			SendRecvGB = SendRecvGPoint * sizeof(Myfloat) ;
+			SendRecvGPoint[iproc-1] = 2*nGridPoint/testCase_time_best/1.e9 ;
+			SendRecvGB[iproc-1] = SendRecvGPoint[iproc-1] * sizeof(Myfloat) ;
 
-			printInfo(MASTER, " Best achieved GByte/s", SendRecvGB) ;
-			printInfo(MASTER, " Best achieved GPoint/s", SendRecvGPoint) ;
+			printInfo(MASTER, " Best achieved GByte/s", SendRecvGB[iproc-1]) ;
+			printInfo(MASTER, " Best achieved GPoint/s", SendRecvGPoint[iproc-1]) ;
 
-		} // for (Myint iproc = 0; iproc < nproc_world; iproc++)
+		} // for (Myint iproc = 1; iproc < nproc_world; iproc++)
 	}
 
 	{
@@ -381,11 +388,15 @@ Rtn_code TestCase_Comm::run(void)
 	// log perf
 	if (myid_world == 0)
 	{
-		perfLogFile
-		<< SendGB << " " << SendGPoint << " "
-		<< SendRecvGB << " " << SendRecvGPoint << " "
-		<< HaloExchGB << " " << HaloExchGPoint << " "
-		<< "\n" ;
+		for (Myint iproc = 1; iproc < nproc_world; iproc++)
+		{
+			perfLogFile << SendGB[iproc-1] << " " << SendGPoint[iproc-1] << " " ;
+		}
+		for (Myint iproc = 1; iproc < nproc_world; iproc++)
+		{
+			perfLogFile << SendRecvGB[iproc-1] << " " << SendRecvGPoint[iproc-1] << " " ;
+		}
+		perfLogFile << HaloExchGB << " " << HaloExchGPoint << "\n" ;
 	}
 
 	this->finalize() ;
