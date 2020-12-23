@@ -160,7 +160,7 @@
   
   \begin{figure}
     \begin{center}
-      \includegraphics[width=0.85 \textwidth]{../../script/testCase_Memory/hpcscanMemoryShaheen.jpg}
+      \includegraphics[width=1.0 \textwidth]{../../script/testCase_Memory/hpcscanMemoryShaheen.jpg}
     \end{center}
   \end{figure}
 
@@ -173,7 +173,6 @@
 \frame{
   \frametitle{Test Case Memory - Summary}
 
-  {\bf Machine: Shaheen}
   \begin{itemize}
   \item Measured memory BW between 91 to 122 GB/s (67-90 \% of peak BW)
   \item Low BW 59 GB/s for Fill (43 \% of peak BW)
@@ -193,12 +192,15 @@
   \frametitle{Test Case Grid - Description}
 
   \begin{itemize}
-  \item Fill grid (W = coef)
-  \item Max. err. grid W
-  \item L1 err. grid W
-  \item Get min. grid W
-  \item Get max. grid W
+  \item Fill grid (U = coef)
+  \item Max. diff (U-V)
+  \item L1 norm between U and V
+  \item Sum Abs(U)
+  \item Sum Abs(U-V)
+  \item Get max. grid U
+  \item Get min. grid U
   \item Update pressure (used in propagator)
+  \item Boundary condition (free surface at all edges)
   \item Small Grid size 500 MB (500 x 500 x 500 points)
   \item Medium Grid size 4 GB (1000 x 1000 x 1000 points)
   \end{itemize}
@@ -207,44 +209,26 @@
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case Grid - Results}
+  \frametitle{Test Case Grid - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 23, 2020}} }
 
   \begin{itemize}
-  \item {\bf Machine: shaheen}
   \item 1 node / 32 threads
   \item Baseline kernel
   \end{itemize}
-  
-  {\scriptsize
-  \begin{table}
-    \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Nov 26, 2020}} }
-    \label{table_memory}
-    \begin{tabular}{@{}ccccccc}
-      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. & Update Pres. \\
-      \hline
-      Small  & 58   & 72        & 122     & 125      & 125      & 119 \\
-      Medium & 54   & 91        & 124     & 127      & 127      & 120 \\
-    \end{tabular}
-  \end{table}
-  }
 
-  {\scriptsize
-  \begin{table}
-    \caption{\scriptsize Bandwidth GPoints/s}
-    \label{table_memory}
-    \begin{tabular}{@{}ccccccc}
-      Grid   & Fill & Max. err. & L1 err. & Get max. & Get min. & Update Pres. \\
-      \hline
-      Small  & 14.4  & 9.0      & 15.2    & 31.3     & 31.2    & 6.0 \\
-      Medium & 13.4  & 11.4     & 15.5    & 31.8     & 31.8    & 6.0 \\
-    \end{tabular}
-  \end{table}
-  }
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=1.0 \textwidth]{../../script/testCase_Grid/hpcscanGridShaheen.jpg}
+    \end{center}
+  \end{figure}
 
-  Reproduce results with \texttt{./script/testCase\_Grid/runSmallGridShaheen.sh}
-  and \texttt{./script/testCase\_Grid/runMediumGridShaheen.sh}
+  Blue small grid / Red medium grid
   
-  Elapsed time 5 and 7 sec.
+  ApplyBoundaryCondition performs at 713/846 GBytes (89/105 Gpoint/s)
+  
+  Reproduce results with \texttt{./script/testCase\_Grid/hpcscanGrid.sh}
+  
+  Elapsed time XX min.
 
 }
 
@@ -252,7 +236,6 @@
 \frame{
   \frametitle{Test Case Grid - Summary}
 
-  {\bf Machine: Shaheen}
   \begin{itemize}
   \item L1 Err., Get Min \& Max: 125 GB/s close to peak BW (92 \% Peak Mem. BW)
   \item {Low perf for Fill: 54-58 GB/s (40-43 \% Peak Mem. BW)}
@@ -295,7 +278,6 @@
   \frametitle{Test Case Comm - Results}
 
   \begin{itemize}
-  \item {\bf Machine: Shaheen}
   \item 8 MPI processes (1 per computing node)
   \item Baseline kernel
   \end{itemize}
@@ -364,7 +346,7 @@
   \frametitle{Test Case FD\_D2 - Results}
 
   \begin{itemize}
-  \item {\bf machine Shaheen} /  1 node with 32 threads / Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
+  \item 1 node with 32 threads / Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
   \item \texttt{./script/testCase\_FD\_D2/runSmallGridShaheen.sh} \& \texttt{runMediumGridShaheen.sh}
   \end{itemize}
 
@@ -381,7 +363,7 @@
   \frametitle{Test Case FD\_D2 - Results}
 
   \begin{itemize}
-  \item {\bf machine Shaheen} /  1 node with 32 threads / Cache blocking kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
+  \item 1 node with 32 threads / Cache blocking kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
   \item \texttt{./script/testCase\_FD\_D2/runSmallGridShaheen.sh} \& \texttt{runMediumGridShaheen.sh}
   \end{itemize}
 
@@ -398,7 +380,6 @@
   \frametitle{Test Case FD\_D2 - Results}
 
   \begin{itemize}
-  \item {\bf machine Shaheen}
   \item 1 to 8 nodes with 32 threads/node
   \item Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
   \item Strong scalabity: Grid 1000 x 1000 x 1000 (4 GB)
@@ -417,7 +398,6 @@
 %-------------------------------------------------------------------------------------
 \frame{
   \frametitle{Test Case FD\_D2 - Summary}
-  {\bf machine Shaheen}
   \begin{itemize}
   \item Large benefit of cache blocking
   \item Significant effect of grid dimnsion and index (very bad performance for n3 without cache blocking)
@@ -445,7 +425,7 @@
   \frametitle{Test Case PropaAc2 - Results}
   
   \begin{itemize}
-  \item {\bf machine Mars} / preliminary results \footnote{\scriptsize \textcolor{blue}{Updated Nov 5, 2020}}
+  \item preliminary results \footnote{\scriptsize \textcolor{blue}{Updated Nov 5, 2020}}
   \item Eigen mode - 1D model
     \item FD: Black O2, Blue O4, Pink O8, Red O12 / Square=Baseline 
     \item \texttt{./paramAnalysis/propaAccuracy/runMars.sh} 
