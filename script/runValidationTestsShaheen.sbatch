@@ -6,4 +6,6 @@
 #SBATCH --nodes=1
 #SBATCH --time=00:30:00
 
+source ../../env/setEnvShaheenIntel.sh
+
 sh runValidationTests.sh

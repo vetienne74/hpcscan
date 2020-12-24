@@ -11,19 +11,19 @@ start_time=$(date)
 
 sh ../clean_dir.sh
 
-# FD_D2 (Baseline)
+# FD_D2 Baseline
 $HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 2
 $HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 4
 $HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 8
 $HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 12
 $HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 16
 
-# FD_D2_CacheBlk
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2_CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 2
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2_CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 4
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2_CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 8
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2_CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 12
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2_CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 16
+# Same with CacheBlk
+$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -testMode CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 2
+$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -testMode CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 4
+$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -testMode CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 8
+$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -testMode CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 12
+$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase FD_D2 -testMode CacheBlk -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3} -fdOrder 16
 
 end_time=$(date)
 
