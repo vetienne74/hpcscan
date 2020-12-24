@@ -106,7 +106,8 @@
 \frame{
   \frametitle{Shaheen II (KAUST)}
 
-  {\bf Machine Shaheen II / Cray XC40}
+  \begin{block}{\center Machine Shaheen II / Cray XC40}
+
   \scriptsize
   \begin{itemize}
   \item Computing nodes Intel Haswell 2.3 Ghz dual socket (16 cores / socket)
@@ -120,6 +121,8 @@
     \item \scriptsize 5 GB/s PCIe from node to Aries router
     \end{itemize}
   \end{itemize}
+
+  \end{block}
 
   \begin{figure}
     \begin{center}
@@ -138,35 +141,37 @@
 \frame{
   \frametitle{Test Case Memory - Description}
 
-  \begin{itemize}
-  \item Fill grid (W = coef)
-  \item Copy grid (W = U)
-  \item Add grids (W = U + V)
-  \item Multiply grids (W = U * V)
-  \item Add and update grids (W = W + U)
-  \item Grid size 4 GB (1000 x 1000 x 1000 points)
+  \begin{block}{\center Benchmark objective}
+    Measure GByte/s and GPoint/s for
+    \begin{itemize}
+    \item Fill grid (W = coef)
+    \item Copy grid (W = U)
+    \item Add grids (W = U + V)
+    \item Multiply grids (W = U * V)
+    \item Add and update grids (W = W + U)
   \end{itemize}
-  
+  \end{block}
+
+  \begin{block}{\center Benchmark configuration}
+    \begin{itemize}
+    \item Scalability on 1 node with 1 to 32 threads
+    \item Baseline kernel
+    \item Grid size 4 GB (1000 x 1000 x 1000 points)
+    \item Reproduce results with \texttt{./script/testCase\_Memory/hpcscanMemory.sh}
+    \item Elapsed time about 4 minutes
+    \end{itemize}
+  \end{block}
 }
 
 %-------------------------------------------------------------------------------------
 \frame{
   \frametitle{Test Case Memory - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 22, 2020}} }
 
-  \begin{itemize}
-  \item 1 node with 1 to 32 threads
-  \item Baseline kernel
-  \end{itemize}
-  
   \begin{figure}
     \begin{center}
       \includegraphics[width=1.0 \textwidth]{../../script/testCase_Memory/hpcscanMemoryShaheen.jpg}
     \end{center}
   \end{figure}
-
-  Reproduce results with \texttt{./script/testCase\_Memory/hpcscanMemory.sh}
-
-  Elapsed time about 4 minutes.
 }
 
 %-------------------------------------------------------------------------------------
@@ -191,30 +196,38 @@
 \frame{
   \frametitle{Test Case Grid - Description}
 
-  \begin{itemize}
-  \item Fill grid (U = coef)
-  \item Max. diff (U-V)
-  \item L1 norm between U and V
-  \item Sum Abs(U)
-  \item Sum Abs(U-V)
-  \item Get max. grid U
-  \item Get min. grid U
-  \item Update pressure (used in propagator)
-  \item Boundary condition (free surface at all edges)
-  \item Small Grid size 500 MB (500 x 500 x 500 points)
-  \item Medium Grid size 4 GB (1000 x 1000 x 1000 points)
+  \begin{block}{\center Benchmark objective}
+    Measure GByte/s and GPoint/s for
+    \begin{itemize}
+    \item Fill grid (U = coef)
+    \item Max. diff (U-V)
+    \item L1 norm between U and V
+    \item Sum Abs(U) \& Sum Abs(U-V)
+    \item Get max. \& Get min. grid U
+    \item Update pressure (used in propagator)
+    \item Boundary condition (free surface at all edges)
   \end{itemize}
+  \end{block}
+
+  \begin{block}{\center Benchmark configuration}
+    \begin{itemize}
+    \item 1 node with 32 threads
+    \item Baseline kernel
+    \item 2 grid sizes
+      \begin{itemize}
+      \item \tiny Small size 500 MB (500 x 500 x 500 points)
+      \item \tiny Medium size 4 GB (1000 x 1000 x 1000 points)
+      \end{itemize}
+    \item Reproduce results with \texttt{./script/testCase\_Grid/hpcscanGrid.sh}
+    \item Elapsed time less than 1 minute
+    \end{itemize}
+  \end{block}
   
 }
 
 %-------------------------------------------------------------------------------------
 \frame{
   \frametitle{Test Case Grid - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 23, 2020}} }
-
-  \begin{itemize}
-  \item 1 node / 32 threads
-  \item Baseline kernel
-  \end{itemize}
 
   \begin{figure}
     \begin{center}
@@ -225,11 +238,6 @@
   Blue small grid / Red medium grid
   
   ApplyBoundaryCondition performs at 713/846 GBytes (89/105 Gpoint/s)
-  
-  Reproduce results with \texttt{./script/testCase\_Grid/hpcscanGrid.sh}
-  
-  Elapsed time XX min.
-
 }
 
 %-------------------------------------------------------------------------------------
@@ -240,7 +248,7 @@
   \item L1 Err., Get Min \& Max: 125 GB/s close to peak BW (92 \% Peak Mem. BW)
   \item {Low perf for Fill: 54-58 GB/s (40-43 \% Peak Mem. BW)}
   \item Max Err. 72-91 GB/s (53-67 \% Peak Mem. BW)
-    \item Pressure update 6 GPoint/s (120 GB/s, 88 \% Peak Mem. BW)
+  \item Pressure update 6 GPoint/s (120 GB/s, 88 \% Peak Mem. BW)
   \end{itemize}
 }
 
@@ -254,22 +262,33 @@
 \frame{
   \frametitle{Test Case Comm - Description}
 
-  {\bf Measure MPI communication bandwidth}
+  \begin{block}{\center Benchmark objective}
+    Measure GByte/s and GPoint/s for
   
-  \vspace{0.5cm}
-  MPI point to point communication
-  \begin{itemize}
-  \item Send with MPI\_Send from proc X to proc 0 (Half-duplex BW)
-  \item Send and receive with MPI\_Sendrecv between proc X and proc 0 (Full-duplex BW)
-  \end{itemize}
+    \vspace{0.25cm}
+    MPI point to point communication
+    \begin{itemize}
+    \item Send with MPI\_Send from proc X to proc 0 (Half-duplex BW)
+    \item Send and receive with MPI\_Sendrecv between proc X and proc 0 (Full-duplex BW)
+    \end{itemize}
 
-  MPI collective communication
-  \begin{itemize}
-  \item Exhange of halos used in FD kernel with MPI\_Sendrecv
-  \item Grid size 1000 x 1000 x 1000
-  \item Domain decomposition with N1 x N2 x N3 subdomains
-  \end{itemize}
-  
+    MPI collective communication
+    \begin{itemize}
+    \item Exhange of halos used in FD kernel with MPI\_Sendrecv
+    \item Domain decomposition with N1 x N2 x N3 subdomains
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{\center Benchmark configuration}
+    \begin{itemize}
+    \item 8 nodes with 32 threads
+    \item Baseline kernel
+    \item Grid size 4 GB (1000 x 1000 x 1000 points)
+    \item Subdomain decomposition: 1x4x2 / 1x2x4 \& 2x2x2
+    \item Reproduce results with \texttt{./script/testCase\_Comm/hpcscanComm.sh}
+    \item Elapsed time less than 1 minute
+    \end{itemize}
+  \end{block}
 }
 
 
@@ -277,11 +296,6 @@
 \frame{
   \frametitle{Test Case Comm - Results}
 
-  \begin{itemize}
-  \item 8 MPI processes (1 per computing node)
-  \item Baseline kernel
-  \end{itemize}
-  
   {\tiny
   \begin{table}
     \caption{\scriptsize Bandwidth GB/s \footnote{\scriptsize \textcolor{blue}{Updated Sep 19, 2020}} }
@@ -303,9 +317,6 @@
   \end{table}
   }
 
-  Reproduce results with \texttt{./script/testCase\_Comm/runTestShaheen.sh}
-
-  Elapsed time 9 seconds
 }
 
 %*************************************************************************************
@@ -318,37 +329,40 @@
 \frame{
   \frametitle{Test Case FD\_D2 - Description}
 
-  \begin{itemize}
-  \item Computation of second order derivatives with finite-differnce stencil
-  \item Directionnal derivatives
+  \begin{block}{\center Benchmark objective}
+    Measure GByte/s, GPoint/s \& Gflop/s for
     \begin{itemize}
-    \item {\scriptsize Axis 1 $W = \partial^2_{x1} (U)$}
-    \item {\scriptsize Axis 2 $W = \partial^2_{x2} (U)$}
-    \item {\scriptsize Axis 3 $W = \partial^2_{x3} (U)$}
+    \item Computation of second order derivatives with finite-difference stencil
+    \item Directionnal derivatives
+      \begin{itemize}
+      \item {\tiny Axis 1, $W = \partial^2_{x1} (U)$}
+      \item {\tiny Axis 2, $W = \partial^2_{x2} (U)$}
+      \item {\tiny Axis 3, $W = \partial^2_{x3} (U)$}
+      \end{itemize}
+    \item Laplacian $W = \Delta (U)$
+    \item Stencil orders 2, 4, 8, 12 \& 16
     \end{itemize}
-  \item Laplacian
+    
+  \end{block}
+
+  \begin{block}{\center Benchmark configuration}
     \begin{itemize}
-    \item {\scriptsize For 2D grids $W = \Delta (U) =\partial^2_{x1} (U) + \partial^2_{x2} (U)$}
-    \item {\scriptsize For 3D grids $W = \Delta (U) =\partial^2_{x1} (U) + \partial^2_{x2} (U) + \partial^2_{x3} (U)$}
+    \item 1 node with 32 threads
+    \item 2 test modes
+      \begin{itemize}
+      \item \tiny Baseline
+      \item \tiny CacheBlk
+      \end{itemize}
+    \item Grid size 4 GB (1000 x 1000 x 1000 points)
+    \item Reproduce results with \texttt{./script/testCase\_FD\_D2/hpcscanFD\_D2.sh}
+    \item Elapsed time about 2 minutes
     \end{itemize}
-  \item Stencil order 2, 4, 8, 12 \& 16
-  \item Grid size
-    \begin{itemize}
-    \item {\scriptsize Small 500 x 500 x 500}
-    \item {\scriptsize Medium 1000 x 1000 x 1000}
-    \end{itemize}
-  \end{itemize}
-  
+  \end{block}
 }
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case FD\_D2 - Results}
-
-  \begin{itemize}
-  \item 1 node with 32 threads / Baseline kernel \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}}
-  \item \texttt{./script/testCase\_FD\_D2/runSmallGridShaheen.sh} \& \texttt{runMediumGridShaheen.sh}
-  \end{itemize}
+  \frametitle{Test Case FD\_D2 - Results \footnote{\scriptsize \textcolor{blue}{Updated Sep 26, 2020}} }
 
   \begin{figure}
     \begin{center}
