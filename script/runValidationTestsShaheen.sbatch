@@ -3,7 +3,7 @@
 #SBATCH --job-name=hpcscan
 #SBATCH --output=hpcscan.out
 #SBATCH --error=hpcscan.err
-#SBATCH --nodes=8
+#SBATCH --nodes=1
 #SBATCH --time=00:30:00
 
-sh runTestCasesShaheen.sh
+sh runValidationTests.sh
