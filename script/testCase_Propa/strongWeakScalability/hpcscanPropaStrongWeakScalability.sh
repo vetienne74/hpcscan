@@ -6,7 +6,7 @@ start_time=$(date)
 
 sh ../../clean_dir.sh
 
-# Weak Scalability
+# Strong Scalability
 fdOrder=8
 
 $HPCSCAN_MPI_INVOKER -n 1 ../../../bin/hpcscan \
@@ -44,7 +44,7 @@ $HPCSCAN_MPI_INVOKER -n 8 ../../../bin/hpcscan \
 			-param1 130 -param2 130 -param3 130 -snapInc 10 \
 			-nsub1 1 -nsub2 4 -nsub3 2
 
-# Strong Scalability
+# Weak Scalability
 fdOrder=8
 
 $HPCSCAN_MPI_INVOKER -n 1 ../../../bin/hpcscan \
