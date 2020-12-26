@@ -10,8 +10,8 @@ tmax='0.1'
 snapDt='0.01'
 dt='0.0'
 nmode='130'
-#dim='3'
-dim='1'
+dim='3'
+#dim='1'
 # number of tries
 ntry='3'
 ratioCFLRange=['1.0','0.5','0.1']

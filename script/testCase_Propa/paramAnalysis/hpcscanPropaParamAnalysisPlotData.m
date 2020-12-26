@@ -1,11 +1,11 @@
 
-close all ;
-clear all ;
+close all ; clear all ;
 
-%DATA = 'runMars'
-DATA = 'runNEC'
-FILE = sprintf('%s.out', DATA) ;
-val = importdata(FILE) ;
+DIR  = '.' ;
+FILE = 'hpcscanPropaParamAnalysisShaheen' ;
+
+pathFile = sprintf('%s/%s.log', DIR, FILE) ;
+val = importdata(pathFile) ;
 
 valTime   = val.data(:,14) ;
 valN1     = val.data(:,6) ;
@@ -168,7 +168,7 @@ ax.XScale='log'
 ax.YScale='log'
 
 % save figure
-figName = sprintf('%s_AccPerf.tmp.jpg', DATA) ;
+figName = sprintf('%s.jpg', FILE) ;
 print(figName, '-djpeg')
 
 
