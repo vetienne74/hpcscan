@@ -4,7 +4,7 @@
 #SBATCH --output=hpcscan.out
 #SBATCH --error=hpcscan.err
 #SBATCH --nodes=8
-#SBATCH --time=00:30:00
+#SBATCH --time=02:00:00
 
 source ../../../env/setEnvShaheenIntel.sh
 
