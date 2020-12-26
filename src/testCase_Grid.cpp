@@ -481,7 +481,7 @@ Rtn_code TestCase_Grid::run(void)
 
 		}
 
-		// we multiply by 2 the number of point to get an approximate of the bytes
+		// TO DO: we multiply by 2 the number of point to get an approximate of the bytes
 		// this number is not exact
 		ApplyBoundaryConditionGB = Myfloat(2 * nGridPointGlob*sizeof(Myfloat)/testCase_time_best/1.e9) ;
 		printInfo(MASTER, " Best achieved GByte/s", ApplyBoundaryConditionGB) ;

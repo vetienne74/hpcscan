@@ -15,7 +15,11 @@ Optimal time step is not optimal when spacing grid sampling is not the same in t
 
 ## testCase_Propa.cpp
 
-Does not measure time spent in MPI communication (propaGpointFD = propaGpointEff, because testCase_time_com = 0)
+Elapse time includes MPI comm. but it does not allow to know the time spent in MPI communication (propaGpointFD = propaGpointEff, because testCase_time_com = 0)
+
+## testCase_Grid.cpp
+
+ApplyBoundaryConditionGB is not exact but a rough estimate
 
 # Additions for future versions
 

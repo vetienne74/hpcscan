@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.1 (2020)
 
- Git version	commit db69b379d52d52e9e15500bac1564e93786dcfe7
-		Author: vincent <vetienne@rocketmail.com>
-		Date:   Sun Dec 20 10:07:17 2020 +0300
+ Git version	commit 591bac96b307c46741a5caae72ba2827f10e9f0f
+		Author: Vincent Etienne <vincent.etienne@aramco.com>
+		Date:   Sat Dec 26 07:46:31 2020 +0300
 
  Host name	mars
  User name	vincent
@@ -117,14 +117,14 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	17.3795
- Best Gpoint/s eff.	0.362074
- Best Gpoint/s in FD	0.362074
- Best Apparent BW GB/s	42.0006
+ Best GFlop/s in FD	16.8506
+ Best Gpoint/s eff.	0.351054
+ Best Gpoint/s in FD	0.351054
+ Best Apparent BW GB/s	40.7222
 
- Case run time (s)	0.154153
+ Case run time (s)	0.15623
 --------------------------------------------------------------------------------
- Total run time (s)	0.154927
+ Total run time (s)	0.157112
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

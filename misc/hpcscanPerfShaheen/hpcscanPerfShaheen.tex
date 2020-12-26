@@ -289,28 +289,13 @@
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case Comm - Results \footnote{\scriptsize \textcolor{blue}{Updated Sep 19, 2020}} }
+  \frametitle{Test Case Comm - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 26, 2020}} }
 
-  {\tiny
-  \begin{table}
-    \caption{\scriptsize Bandwidth GB/s}
-    \label{table_comm}
-    \begin{tabular}{@{}ccccccc}
-      MPI\#1 & MPI\#2 & Send & Sendrecv & Halo exch. & Comm. size & Subdomains \\
-      \hline
-      0 & 1 & 8.5 & 15.3 & -    & 47 MB  & - \\
-      0 & 2 & 8.3 & 15.3 & -    & 47 MB  & - \\
-      0 & 3 & 8.6 & 15.3 & -    & 47 MB  & - \\
-      0 & 4 & 8.5 & 15.3 & -    & 47 MB  & - \\
-      0 & 5 & 8.2 & 15.3 & -    & 47 MB  & - \\
-      0 & 6 & 8.5 & 15.3 & -    & 47 MB  & - \\
-      0 & 7 & 8.6 & 15.3 & -    & 47 MB  & - \\
-      All & All & -    & -   & 5.0  & 128 MB & 1 4 2 \\
-      All & All & -    & -   & 5.1  & 128 MB & 1 2 4 \\
-      All & All & -    & -   & 2.0  & 96 MB  & 2 2 2 \\
-    \end{tabular}
-  \end{table}
-  }
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=1.0 \textwidth]{../../script/testCase_Comm/hpcscanCommShaheen.jpg}
+    \end{center}
+  \end{figure}
 
 }
 
@@ -435,7 +420,7 @@
     \item Strong scalability: Grid size $1000^3$ (4 GB)
     \item Weak scalability: Grid size from 1000x1000x1000 (4 GB) to 1000x4000x2000 (32 GB)
     \item Reproduce results with \texttt{./script/testCase\_strongWeakScalability/hpcscanPropaStrongWeakScalability.sh}
-    \item Elapsed time about 7 minutes
+    \item Elapsed time about 38 minutes
     \end{itemize}
   \end{block}
 }

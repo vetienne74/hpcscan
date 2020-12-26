@@ -388,6 +388,7 @@ Rtn_code TestCase_Comm::run(void)
 	// log perf
 	if (myid_world == 0)
 	{
+		// first number is at position 10 in log file for numeric values
 		for (Myint iproc = 1; iproc < nproc_world; iproc++)
 		{
 			perfLogFile << SendGB[iproc-1] << " " << SendGPoint[iproc-1] << " " ;
