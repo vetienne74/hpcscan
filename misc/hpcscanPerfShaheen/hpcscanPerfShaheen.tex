@@ -1,7 +1,7 @@
 %%% Local Variables: 
 %%% mode: latexTeX-master: t
 %%% End: 
-\documentclass{beamer}
+\documentclass[usenames,dvipsnames]{beamer}
 \usepackage{graphicx}
 \usepackage{natbib}
 %\usepackage[latin1]{inputenc}
@@ -108,7 +108,7 @@
 
   All tests in single precision
 
-  Best performance is reported over 10 tries for each cases
+  Best performance is reported over 10 tries for each cases (unless stated otherwise)
 
   Grids are 3D
   
@@ -258,7 +258,7 @@
   \frametitle{Test Case Comm - Description}
 
   \begin{block}{\center Benchmark objective}
-    Measure GByte/s and GPoint/s for
+    \textcolor{Sepia}{\bf Assess inter-node communication bandwith}
   
     \vspace{0.25cm}
     MPI point to point communication
@@ -269,19 +269,20 @@
 
     MPI collective communication
     \begin{itemize}
-    \item Exhange of halos used in FD kernel with MPI\_Sendrecv
-    \item Domain decomposition with N1 x N2 x N3 subdomains
+    \item Exhange of halos used in FD kernels with MPI\_Sendrecv
+    \item Effect of subdomain decomposition setttings
     \end{itemize}
   \end{block}
 
   \begin{block}{\center Benchmark configuration}
     \begin{itemize}
-    \item 8 nodes with 32 threads
+    \item 8 nodes with 1 MPI/node \& 32 threads/node
     \item Baseline kernel
     \item Grid size 4 GB (1000 x 1000 x 1000 points)
-    \item Subdomain decomposition: 1x4x2 / 1x2x4 \& 2x2x2
+    \item FD order O8
+    \item Subdomain decomposition settings: 1x4x2 / 1x2x4 \& 2x2x2
     \item Reproduce results with \texttt{./script/testCase\_Comm/hpcscanComm.sh}
-    \item Elapsed time less than 1 minute
+    \item Total 3 configurations: Elapsed time less than 1 minute
     \end{itemize}
   \end{block}
 }
@@ -310,9 +311,8 @@
   \frametitle{Test Case FD\_D2 - Description}
 
   \begin{block}{\center Benchmark objective}
-    Measure GByte/s, GPoint/s \& Gflop/s for
+    \textcolor{Sepia}{\bf Assess performance of spatial second derivative computations with FD}
     \begin{itemize}
-    \item Computation of second order derivatives with finite-difference stencil
     \item Directionnal derivatives
       \begin{itemize}
       \item {\tiny Axis 1, $W = \partial^2_{x1} (U)$}
@@ -320,22 +320,19 @@
       \item {\tiny Axis 3, $W = \partial^2_{x3} (U)$}
       \end{itemize}
     \item Laplacian $W = \Delta (U)$
-    \item Stencil orders 2, 4, 8, 12 \& 16
+    \item Effect of FD stencil order
+    \item Try different implementations of FD computation
     \end{itemize}
-    
   \end{block}
 
   \begin{block}{\center Benchmark configuration}
     \begin{itemize}
     \item 1 node with 32 threads
-    \item 2 test modes
-      \begin{itemize}
-      \item \tiny Baseline
-      \item \tiny CacheBlk
-      \end{itemize}
+    \item 2 test modes: Baseline \& CacheBlk
     \item Grid size 4 GB (1000 x 1000 x 1000 points)
+    \item FD orders 2, 4, 8, 12 \& 16
     \item Reproduce results with \texttt{./script/testCase\_FD\_D2/hpcscanFD\_D2.sh}
-    \item Elapsed time about 2 minutes
+    \item Total 10 configurations: Elapsed time about 2 minutes
     \end{itemize}
   \end{block}
 }
@@ -359,14 +356,15 @@
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case FD\_D2 - Description}
+  \frametitle{Test Case Propa - Description}
 
   \begin{block}{\center Benchmark objective}
-    Measure GByte/s, GPoint/s \& Gflop/s for
+    \textcolor{Sepia}{\bf Find optimal configuration for the wave propagator regarding accuracy/cost}
     \begin{itemize}
-    \item Acoustic wave propagator
-    \item Stencil orders 2, 4, 8, 12 \& 16
-    \item Time step 1, 0.5 \& 0.1 of stability time step
+    \item Explore range of grid sampling
+    \item Explore range of time step
+    \item Explore range of FD order
+    \item Try different implementations of the propagator
     \end{itemize}
     
   \end{block}
@@ -375,39 +373,41 @@
     \begin{itemize}
     \item 1 node with 32 threads
     \item Test mode CachBlk
-    \item 2 propagator implementations
-      \begin{itemize}
-      \item \tiny Ac2Standard
-      \item \tiny Ac2SplitComp
-      \end{itemize}
-    \item Grid size from $500^3$ (500 MB) to $1000^3$ (4 GB)
-    \item Reproduce results with \texttt{./script/testCase\_PropaparamAnalysis/hpcscanPropaParamAnalysis.sh}
-    \item Elapsed time about XX minutes
+    \item 2 propagator implementations: Ac2Standard and Ac2SplitComp
+    \item FD orders 4, 8 \& 12
+    \item Time step 100, 50 and 10\% of stability time step
+    \item Grid size from 500x500x500 (500 MB) to 1000x1000x1000 (4 GB)
+    \item nt from 101 to 2311 (depending of the configuration) \& ntry = 3
+    \item Reproduce results with \texttt{./script/testCase\_Propa/paramAnalysis/hpcscanPropaParamAnalysis.sh}
+    \item Total 108 configurations: Elapsed time about 9 hours
     \end{itemize}
   \end{block}
 }
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case Propa - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 26, 2020}} }
+  \frametitle{Test Case Propa - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 27, 2020}} }
+
+  Blue FD O4, Pink FD O8, Red FD O12 / Square=Ac2Standard, Cross=Ac2SplitComp \\
+  \bf Best config to get error less than 1\%: FD O8 Ac2Standard (500x500x500 / 10\% stability dt)
   
   \begin{figure}
     \begin{center}
-      \includegraphics[width=0.75 \textwidth]{../../script/testCase_Propa/paramAnalysis/hpcscanPropaParamAnalysisShaheen.jpg}
+      \includegraphics[width=0.7 \textwidth]{../../script/testCase_Propa/paramAnalysis/hpcscanPropaParamAnalysisShaheen.jpg}
     \end{center}
   \end{figure}
+
 }
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case FD\_D2 - Description}
+  \frametitle{Test Case Propa - Description}
 
   \begin{block}{\center Benchmark objective}
-    Measure GByte/s, GPoint/s \& Gflop/s for
+    \textcolor{Sepia}{\bf Assess the scalability of the wave propagator on multiple nodes}
     \begin{itemize}
-    \item Acoustic wave propagator
-    \item Stencil order 8
     \item Strong and weak scalability
+    \item Effect of the FD stencil order
     \end{itemize}
     
   \end{block}
@@ -417,10 +417,12 @@
     \item From 1 node to 8 nodes with 32 threads/node
     \item Test mode CachBlk
     \item Propagator implementation Ac2Standard
-    \item Strong scalability: Grid size $1000^3$ (4 GB)
+    \item FD orders 4, 8 \& 12
+    \item Strong scalability: Grid size 1000x1000x1000 (4 GB)
     \item Weak scalability: Grid size from 1000x1000x1000 (4 GB) to 1000x4000x2000 (32 GB)
+    \item nt = 100 \& ntry = 5
     \item Reproduce results with \texttt{./script/testCase\_strongWeakScalability/hpcscanPropaStrongWeakScalability.sh}
-    \item Elapsed time about 38 minutes
+    \item Total 30 configurations: Elapsed time about 38 minutes
     \end{itemize}
   \end{block}
 }
@@ -428,7 +430,7 @@
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case Propa - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 26, 2020}} }
+  \frametitle{Test Case Propa - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 27, 2020}} }
 
   \begin{figure}
     \begin{center}

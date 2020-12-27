@@ -203,7 +203,10 @@ Rtn_code TestCase_Propa::run(void)
 		<< propaGflop << " " << propaGpointFD << " " << propaGpointEff << " " << propaGB << " "
 
 		// 14, 15
-		<< testCase_time_best << " " << errTestCase
+		<< testCase_time_best << " " << errTestCase << " "
+
+		// 16, 17, 18
+		<< propa->nt << " " << propa->dt << " " << propa->stableDt
 
 		<< "\n" ;
 	}

@@ -7,7 +7,7 @@ start_time=$(date)
 sh ../../clean_dir.sh
 
 # Number of tries
-ntry=5
+ntry=10
 
 # Strong Scalability
 #-------------------

@@ -34,8 +34,8 @@ End testDriver.sh
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Sat 26 Dec 2020 07:49:59 AM +03
-# Ended    :  Sat 26 Dec 2020 07:50:46 AM +03
+# Started  :  Sun 27 Dec 2020 09:41:55 AM +03
+# Ended    :  Sun 27 Dec 2020 09:42:42 AM +03
 On machine :  mars
 Done by    :  vincent
 * SUMMARY

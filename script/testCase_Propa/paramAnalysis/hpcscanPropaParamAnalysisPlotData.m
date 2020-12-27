@@ -22,11 +22,11 @@ figure('Position',[100 100 1100 900])
 % plot Error versus N1
 subplot(2,2,1)
 hold on; grid on;
-xlabel('N1')
-ylabel('Error')
-title('Error vs N1', 'FontSize', 12)
+xlabel('N')
+ylabel('L1 Error')
+title('L1 Error vs N', 'FontSize', 12)
 for ii=1:nConfig
-    if strcmp(val.textdata(ii,2), 'Baseline')
+    if strcmp(val.textdata(ii,4), 'Ac2Standard')
         if valOrder(ii) == 2
             plot(valN1(ii), valError(ii), 'sw', 'MarkerEdgeColor', 'k', 'MarkerSize', 10, 'LineWidth', 2)
         elseif valOrder(ii) == 4
@@ -59,11 +59,11 @@ ax.YScale='log'
 % plot Error versus Time
 subplot(2,2,2)
 hold on; grid on;
-xlabel('Time (s)')
-ylabel('Error')
-title('Error vs Compute Time', 'FontSize', 12)
+xlabel('Elapse Time (s)')
+ylabel('L1 Error')
+title('L1 Error vs Elapse Time', 'FontSize', 12)
 for ii=1:nConfig
-    if strcmp(val.textdata(ii,2), 'Baseline')
+    if strcmp(val.textdata(ii,4), 'Ac2Standard')
         if valOrder(ii) == 2
             plot(valTime(ii), valError(ii), 'sw', 'MarkerEdgeColor', 'k', 'MarkerSize', 10, 'LineWidth', 2)
         elseif valOrder(ii) == 4
@@ -96,11 +96,11 @@ ax.YScale='log'
 % plot Gpoint versus N1
 subplot(2,2,3)
 hold on; grid on;
-xlabel('N1')
+xlabel('N')
 ylabel('GPoint/s')
-title('GPoint/s vs N1', 'FontSize', 12)
+title('GPoint/s vs N', 'FontSize', 12)
 for ii=1:nConfig
-    if strcmp(val.textdata(ii,2), 'Baseline')
+    if strcmp(val.textdata(ii,4), 'Ac2Standard')
         if valOrder(ii) == 2
             plot(valN1(ii), valGpoint(ii), 'sw', 'MarkerEdgeColor', 'k', 'MarkerSize', 10, 'LineWidth', 2)
         elseif valOrder(ii) == 4
@@ -133,11 +133,11 @@ ax.YScale='log'
 % plot Gbyte versus N1
 subplot(2,2,4)
 hold on; grid on;
-xlabel('N1')
+xlabel('N')
 ylabel('GByte/s')
-title('GByte/s vs N1', 'FontSize', 12)
+title('GByte/s vs N', 'FontSize', 12)
 for ii=1:nConfig
-    if strcmp(val.textdata(ii,2), 'Baseline')
+    if strcmp(val.textdata(ii,4), 'Ac2Standard')
         if valOrder(ii) == 2
             plot(valN1(ii), valGbyte(ii), 'sw', 'MarkerEdgeColor', 'k', 'MarkerSize', 10, 'LineWidth', 2)
         elseif valOrder(ii) == 4

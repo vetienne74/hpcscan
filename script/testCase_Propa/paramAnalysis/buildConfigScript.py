@@ -13,7 +13,7 @@ nmode='130'
 dim='3'
 #dim='1'
 # number of tries
-ntry='3'
+ntry='4'
 ratioCFLRange=['1.0','0.5','0.1']
 testModeRange=['CacheBlk']
 propagatorRange=['Ac2Standard','Ac2SplitComp']
