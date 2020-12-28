@@ -377,23 +377,22 @@
     \item FD orders 4, 8 \& 12
     \item Time step 100, 50 and 10\% of stability time step
     \item Grid size from 500x500x500 (500 MB) to 1000x1000x1000 (4 GB)
-    \item nt from 101 to 2311 (depending of the configuration) \& ntry = 3
+    \item nt from 101 to 2311 (depending of the configuration) \& ntry = 4
     \item Reproduce results with \texttt{./script/testCase\_Propa/paramAnalysis/hpcscanPropaParamAnalysis.sh}
-    \item Total 108 configurations: Elapsed time about 9 hours
+    \item Total 108 configurations: Elapsed time about 12 hours
     \end{itemize}
   \end{block}
 }
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case Propa - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 27, 2020}} }
+  \frametitle{Test Case Propa - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 28, 2020}} }
 
-  Blue FD O4, Pink FD O8, Red FD O12 / Square=Ac2Standard, Cross=Ac2SplitComp \\
-  \bf Best config to get error less than 1\%: FD O8 Ac2Standard (500x500x500 / 10\% stability dt)
+  Blue FD O4, Pink FD O8, Red FD O12 / Square=Ac2Standard, Cross=Ac2SplitComp
   
   \begin{figure}
     \begin{center}
-      \includegraphics[width=0.7 \textwidth]{../../script/testCase_Propa/paramAnalysis/hpcscanPropaParamAnalysisShaheen.jpg}
+      \includegraphics[width=0.75 \textwidth]{../../script/testCase_Propa/paramAnalysis/hpcscanPropaParamAnalysisShaheen.jpg}
     \end{center}
   \end{figure}
 
@@ -420,9 +419,9 @@
     \item FD orders 4, 8 \& 12
     \item Strong scalability: Grid size 1000x1000x1000 (4 GB)
     \item Weak scalability: Grid size from 1000x1000x1000 (4 GB) to 1000x4000x2000 (32 GB)
-    \item nt = 100 \& ntry = 5
+    \item nt = 100
     \item Reproduce results with \texttt{./script/testCase\_strongWeakScalability/hpcscanPropaStrongWeakScalability.sh}
-    \item Total 30 configurations: Elapsed time about 38 minutes
+    \item Total 30 configurations: Elapsed time about 1h 15min
     \end{itemize}
   \end{block}
 }
@@ -430,7 +429,7 @@
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case Propa - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 27, 2020}} }
+  \frametitle{Test Case Propa - Results \footnote{\scriptsize \textcolor{blue}{Updated Dec 28, 2020}} }
 
   \begin{figure}
     \begin{center}
