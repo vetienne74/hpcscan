@@ -643,7 +643,7 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	if (fdOrder != 4 && fdOrder != 8)
 	{
@@ -658,13 +658,16 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
 
+	Myfloat *prc_d_grid_3d = ((Grid_Cuda&) prcGridIn).d_grid_3d ;
+	Myfloat *coef_d_grid_3d = ((Grid_Cuda&) coefGridIn).d_grid_3d ;
+
 	if (fdOrder == 4)
 	{
-		cuda_computePressureWithFD_O4<<<1024,256>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cuda_computePressureWithFD_O4<<<1024,256>>>(d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	else if (fdOrder == 8)
 	{
-		cuda_computePressureWithFD_O8<<<1024,256>>>(d_grid_3d,prcGridIn.d_grid_3d,coefGridIn.d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cuda_computePressureWithFD_O8<<<1024,256>>>(d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	
 	cudaCheckError();
@@ -823,8 +826,10 @@ Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
 	thrust::device_ptr<Myfloat> d_help_3d_ptr;
 
 	const int numBlocks = 1024;
+	
+	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
 
-	cuda_diff<<<numBlocks,256>>>(d_grid_3d,gridIn.d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	cuda_diff<<<numBlocks,256>>>(d_grid_3d, gridIn_d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	cudaCheckError();
 	d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
 	double totErr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + numBlocks);
@@ -832,12 +837,12 @@ Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
 	double totArr;
 	if (false)
 	{
-		cuda_fabsf<<<1024,256>>>(gridIn.d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cuda_fabsf<<<1024,256>>>(gridIn_d_grid_3d, d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		totArr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
 	}
 	else // assuming grid values are positive
 	{
-		d_help_3d_ptr = thrust::device_pointer_cast(gridIn.d_grid_3d);
+		d_help_3d_ptr = thrust::device_pointer_cast(gridIn_d_grid_3d);
 		totArr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
 	}
 
@@ -864,7 +869,10 @@ Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	cuda_updatePressure<<<1024,256>>>(d_grid_3d, prcGrid.d_grid_3d, coefGrid.d_grid_3d, laplaGrid.d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	Myfloat *prcGrid_d_grid_3d = ((Grid_Cuda&) prcGrid).d_grid_3d ;
+	Myfloat *coefGrid_d_grid_3d = ((Grid_Cuda&) coefGrid).d_grid_3d ;
+	Myfloat *laplaGrid_d_grid_3d = ((Grid_Cuda&) laplaGrid).d_grid_3d ;
+	cuda_updatePressure<<<1024,256>>>(d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
 	cudaDeviceSynchronize();
 
