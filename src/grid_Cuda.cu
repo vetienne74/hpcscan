@@ -560,22 +560,14 @@ __global__ void cuda_computePressureWithFD_O8(Myfloat *prn, Myfloat *prc, Myfloa
 
 //-------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
 Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn) : Grid(gridTypeIn)
 														{
 	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
 
 	gridMode = "Cuda" ;
+	
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
 														}
@@ -589,6 +581,9 @@ Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn, Dim_type dimIn,
 	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
 
 	gridMode = "Cuda" ;
+	
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
 }

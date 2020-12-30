@@ -59,14 +59,9 @@ Grid::Grid(Grid_type gridTypeIn)
 	n3Inner  = Config::Instance()->n3 ;
 	gridType = gridTypeIn ;
 	dim      = Config::Instance()->dim ;
-
-	//initializeGrid(gridTypeIn, dimIn, n1InnerIn, n2InnerIn, n3InnerIn) ;
+	grid_3d  = NULL;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
-
-	grid_3d = NULL;
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -82,8 +77,7 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 	n3Inner  = n3InnerIn ;
 	gridType = gridTypeIn ;
 	dim      = dimTypeIn ;
-
-	//initializeGrid(gridTypeIn, dimIn, n1InnerIn, n2InnerIn, n3InnerIn) ;
+	grid_3d  = NULL;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
 }

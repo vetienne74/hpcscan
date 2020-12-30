@@ -145,9 +145,6 @@ public:
 #pragma acc declare create(grid_3d) 	
 #endif
 
-	Myfloat * d_grid_3d ; // this will be a pointer to device (GPU) memory
-	Myfloat * d_help_3d ; // this will be a pointer to device (GPU) memory
-
 	// Grid size (local)
 	Myint n1, n2, n3 ;
 

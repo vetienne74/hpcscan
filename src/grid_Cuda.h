@@ -65,6 +65,9 @@ public:
 
 protected:
 
+	Myfloat * d_grid_3d ; // this will be a pointer to device (GPU) memory
+	Myfloat * d_help_3d ; // this will be a pointer to device (GPU) memory
+
 } ;
 
 } // namespace hpcscan
