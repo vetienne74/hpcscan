@@ -56,6 +56,8 @@ public:
 
 protected:
 
+#pragma acc declare create(grid_3d) 
+
 } ;
 
 } // namespace hpcscan
