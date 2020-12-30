@@ -108,7 +108,7 @@
 \frame{
   \frametitle{Introduction}
 
-  This document presents a characterization of the computing nodes and interconnect of the KAUST supercomputer Shaheen II.
+  This document presents a characterization of the computing nodes and interconnect of the supercomputer Shaheen II at KAUST.
   The full set of test cases embedded in \texttt{hpcscan} is used in various configurations.
   
   {\tiny
@@ -135,7 +135,7 @@
     \item All tests are performed in single precision
     \item Best performance is reported over 10 tries for each case (unless stated otherwise)
     \item Grids dimensions are 3D
-    \item Grids sizes are from 500 MB up to 4 GB per node
+    \item Grids sizes range from 500 MB up to 4 GB per node
     \end{itemize}
   \end{block}
   }
@@ -200,7 +200,7 @@
     \begin{itemize}
     \item Scalability on 1 node with 1 to 32 threads
     \item Baseline kernel
-    \item Grid size 4 GB (1000 x 1000 x 1000 points)
+    \item Array size 4 GB
     \item Reproduce results with \texttt{./script/testCase\_Memory/hpcscanMemory.sh}
     \item Total 10 configurations, Elapsed time about 4 minutes
     \end{itemize}
@@ -281,15 +281,15 @@
     \textcolor{Sepia}{\bf Assess inter-node communication bandwidth}
   
     \vspace{0.25cm}
-    MPI point to point communication
+    Point to point communication
     \begin{itemize}
-    \item Send with MPI\_Send from proc X to proc 0 (Half-duplex BW)
-    \item Send and receive with MPI\_Sendrecv between proc X and proc 0 (Full-duplex BW)
+    \item Half-duplex BW with MPI\_Send from proc X to proc 0
+    \item Full-duplex BW with MPI\_Sendrecv between proc X and proc 0
     \end{itemize}
 
-    MPI collective communication
+    Collective communication
     \begin{itemize}
-    \item Exhange of halos used in FD kernels with MPI\_Sendrecv
+    \item Grid halos exchange (used in FD kernels) with MPI\_Sendrecv
     \item Analyse effect of subdomain decomposition geometry
     \end{itemize}
   \end{block}
@@ -300,7 +300,7 @@
     \item Baseline kernel
     \item Grid size 4 GB (1000 x 1000 x 1000 points)
     \item FD order O8
-    \item Subdomain decomposition: 1x4x2 / 1x2x4 \& 2x2x2
+    \item Subdomain decomposition: 1x4x2, 1x2x4 \& 2x2x2
     \item Reproduce results with \texttt{./script/testCase\_Comm/hpcscanComm.sh}
     \item Total 3 configurations: Elapsed time less than 1 minute
     \end{itemize}
@@ -470,18 +470,19 @@
 
   \begin{block}{\center Test Case Memory}
     \begin{itemize}
-    \item Measured memory BW between 91 to 122 GB/s (67-90 \% of peak BW)
-    \item Low BW 59 GB/s for Fill (43 \% of peak BW)
-    \item Multiply (= imaging condition) performs at 7.6 Gpoint/s
+    \item Highest memory BW for Add+Update 118 GB/s [9.8 GPoint/s] (86 \% of peak BW)
+    \item Lowest memory BW for Fill 54 GB/s [13.5 GPoint/s] (40 \% of peak BW)
+    \item All cores (32 threads) are required to reach best perf. on the node
     \end{itemize}
   \end{block}
 
   \begin{block}{\center Test Case Grid}
     \begin{itemize}
-    \item L1 Err., Get Min \& Max: 125 GB/s close to peak BW (92 \% Peak Mem. BW)
-    \item {Low perf for Fill: 54-58 GB/s (40-43 \% Peak Mem. BW)}
-    \item Max Err. 72-91 GB/s (53-67 \% Peak Mem. BW)
-    \item Pressure update 6 GPoint/s (120 GB/s, 88 \% Peak Mem. BW)
+    \item Highest memory BW for L1Err, SumAbs, SumAbsDiff, GetMin \& GetMax 125 GB/s (92 \% of peak BW)
+    \item In terms of GPoint/s: 15 for L1Err \& SumAbsDiff and 30 for SumAbs, GetMin \& GetMax
+    \item Lowest memory BW for Fill 54 GB/s [13.5 GPoint/s] (40 \% of peak BW)
+    \item Minor effect of the grid size on the performance
+    \item Results are consistent with the test case Memory
     \end{itemize}
   \end{block}
   }
@@ -493,7 +494,14 @@
 
   \begin{block}{\center Test Case Comm}
     \begin{itemize}
-    \item TO DO
+    \item Half-duplex BW about 8.6 GByte/s [2.1 GPoint/s]
+    \item Full-duplex BW about 13.4 GByte/s [3.3 GPoint/s]
+    \item Communication BW is similar between 8 nodes (no unbalance observed)
+    \item Grid halos exchange: large effect of subdomain decomposition geometry
+      \begin{itemize}
+      \item \scriptsize Best BW: 1x4x2 or 1x2x4 with 13.6 GByte/s [3.4 GPoint/s]
+      \item \scriptsize Worst BW: 2x2x2 with 1.8 GByte/s [0.5 GPoint/s]
+      \end{itemize}
     \end{itemize}
   \end{block}
 }

@@ -67,7 +67,14 @@ It features several categories of test cases aiming to measure memory, computati
 
 ## Why another benchmark?
 
-TO DO
+There exist several benchmarks commonly used in the HPC community. Just to cite a few, the [Stream benchmark](https://www.cs.virginia.edu/stream/) and the [OSU Micro benchmarks](https://mvapich.cse.ohio-state.edu/benchmarks/), allow to measure the memory bandwidth and the interconnect bandwidth respectively.
+In general, these benchmarks target specific characteristics of HPC systems and are not related to concrete scientific applications.
+**It is not straightforward to transpose these characteristics in a given context.**
+
+This is why, HPC vendors used to publish performance results on open source scientific codes such as [OpenFOAM](https://www.openfoam.com/) (Computational Fluid Dynamics) or [SPECFEM3D](https://geodynamics.org/cig/software/specfem3d/) (Seismology).
+While these results are important to assess the performance of a given architecture to solve concrete problems, it is again not straightforward to transpose conclusions to other applications. Moreover, every application has been built on technical choices that may hinder performance on a system compared to another. **How to overcome the technical bias?**
+
+**hpcscan has been designed to address these issues.**
 
 ## What hpcscan is
 
@@ -79,7 +86,11 @@ TO DO
 
 ## Quick start
 
-TO DO
+hpcscan is a self-content package that can be easily installed and executed on your system. Just follow the steps:
+* Step 1: [create the environment script for your system](#environment-script-mandatory)
+* Step 2: [build the executable](#makefile)
+* Step 3: [validate the executable](#validation-tests)
+* Step 4: [run the performance benchmarks](#performance-benchmarks)
 
 ## Going further
 
@@ -91,7 +102,6 @@ TO DO
 
 * `bin` this directory is created during compilation and contains hpcscan executable
 * `build` hpcscan can be compiled from here
-* `doc` documents
 * `env` scripts to initialize hpcscan environment
 * `mics` output samples and studies 
 * `script` scripts for validation and performance benchmarks
