@@ -136,6 +136,8 @@
     \item Best performance is reported over 10 tries for each case (unless stated otherwise)
     \item Grids dimensions are 3D
     \item Grids sizes range from 500 MB up to 4 GB per node
+    \item At maximum, 5 grids are allocated (test case Propa) {\bf $\Rightarrow$ max. memory per node is 20 GB}
+    \item At maximum, {\bf 8 computing nodes (with one MPI proc per node) are used}
     \end{itemize}
   \end{block}
   }
@@ -381,8 +383,8 @@
   \begin{block}{\center Benchmark objective}
     \textcolor{Sepia}{\bf Find optimal configuration for the wave propagator regarding accuracy/cost}
     \begin{itemize}
-    \item Explore range of grid sampling
-    \item Explore range of time step
+    \item Physical problem: 3D domain, size 130 $\lambda$ in all direction, tmax = 11 periods
+    \item Explore range of grid sampling and time step
     \item Explore range of FD order
     \item Try different implementations of the propagator
     \end{itemize}
@@ -434,9 +436,10 @@
   \begin{block}{\center Benchmark configuration}
     \begin{itemize}
     \item From 1 node to 8 nodes with 32 threads/node
-    \item Test mode CachBlk
-    \item Propagator implementation Ac2Standard
+    \item Test mode CachBlk (best config from test case FD\_D2)
+    \item Propagator implementation Ac2Standard (best config from previous test case)
     \item FD orders 4, 8 \& 12
+    \item Subdomain decomposition geometry is best config obtained in test case Comm
     \item Strong scalability: Grid size 1000x1000x1000 (4 GB)
     \item Weak scalability: Grid size from 1000x1000x1000 (4 GB) to 1000x4000x2000 (32 GB)
     \item nt = 100
@@ -513,18 +516,16 @@
   
   \begin{block}{\center Test Case FD\_D2}
     \begin{itemize}
-    \item Large benefit of cache blocking
-    \item Significant effect of grid dimnsion and index (very bad performance for n3 without cache blocking)
-    \item Min BW 50 GFLOP/s ($\partial^2_{x3}$ O2) = 2 \% peak BW [apparent Mem. BW 150 GB/s]
-    \item Max BW 370 GFLOP/s ($\Delta$ O8) = 16 \% peak BW [apparent Mem. BW 900 GB/s]
-    \item Apparent Mem. BW 150-900 GB/s (110-660 \% Peak Mem. BW) = shows data in-cache effect
-    \item Typical stencils of interest for geophysical applications
+    \item Max. 10 GPoint/s for $\partial^2_{x1}$ for all FD orders
+    \item Large effect of Cache Blocking
       \begin{itemize}
-      \item {\scriptsize $\Delta$ O4  BW = 8-10 GPoint/s}
-      \item {\scriptsize $\Delta$ O8  BW = 7-9 GPoint/s}
-      \item {\scriptsize $\Delta$ O12 BW = 3-5 GPoint/s}
+      \item \scriptsize Max 950 GByte/s for $\Delta$ O12 with Cache Blocking (x7 memory BW)
+      \item \scriptsize Max 300 GByte/s for $\Delta$ O12 Baseline (speed-up 3.2 with Cache Blocking)
+      \item \scriptsize GFlop/s increases for all derivatives with the FD order (except for $\Delta$ O16)
+      \item \scriptsize Cache Block size is n2=4, n3=16 and full size for n1 (optimized for Shaheen \footnote{\tiny \textcolor{blue}{Etienne, V., et al. "High-performance seismic modeling with finite-difference using spatial and temporal cache blocking." Third EAGE Workshop on High Performance Computing for Upstream. Vol. 2017. No. 1. European Association of Geoscientists \& Engineers, 2017.}})
       \end{itemize}
-    \item Parallel efficiency with 8 nodes 55 to 86 \% (depends on workload on Shaheen)
+    \item Max. 390 GFlop/s for $\Delta$ O12 with Cache Blocking (17 \% peak GFlop/s)
+    \item Lowest GFlop/s observed for  $\partial^2_{x3}$
     \end{itemize}
   \end{block}
 }
@@ -534,10 +535,51 @@
 \frame{
   \frametitle{Summary}
 
-  \begin{block}{\center Test Case Propa}
+  \begin{block}{\center Test Case Propa - Parametric analysis}
+
     \begin{itemize}
-    \item TO DO
+    \item Accuracy
+      \begin{itemize}
+      \item \scriptsize Increases with FD orders, number of grid points and number of time steps
+      \item \scriptsize Stability time step is too large for high order FD stencils to reach optimal convergence
+      \end{itemize}
+    \item Optimal config to reach error less than 1\% with minimal elapsed time
+      \begin{itemize}
+      \item \scriptsize FD O8 - Cache Blocking - Standard propagator implementation with N=500 and 10\% stability time step
+      \item \scriptsize This schemes perform at 6.2 GPoint/s and 720 GByte/s (elapsed time 22 s)
+      \item \scriptsize To reach similar accuracy, FD O4 requires N=900 and an elapsed time 203 s (9.2 times longer than O8)
+      \end{itemize}
+    \item Implementation algorithm
+      \begin{itemize}
+      \item \scriptsize Splitting computation with a separate Laplacian computation slows down the propagator by 2
+      \end{itemize}
     \end{itemize}
+
+  \end{block}
+}
+%-------------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Summary}
+
+  \begin{block}{\center Test Case Propa - Scalability}
+    
+    \begin{itemize}
+    \item Strong scalability
+      \begin{itemize}
+      \item \scriptsize Speed-up is sub-linear and gets worst as the number of nodes increases
+      \item \scriptsize Parallel efficiency decreases with FD order
+      \item \scriptsize Parallel efficiency on 8 nodes: 77\% for O4, 64\% for O8 and 60\% for O12
+      \end{itemize}
+    \item Weak scalability
+      \begin{itemize}
+      \item \scriptsize Speed-up is linear
+      \item \scriptsize Parallel efficiency decreases with FD order
+      \item \scriptsize Parallel efficiency on 8 nodes: 90\% for O4, 83\% for O8 and 80\% for O12
+      \end{itemize}
+    \end{itemize}
+    
   \end{block}
 }
 %-------------------------------------------------------------------------------------

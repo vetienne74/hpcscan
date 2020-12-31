@@ -324,18 +324,33 @@ When activated, debug traces are written by each MPI proc in an ASCII file with 
 
 # Performance benchmarks
 
-These tests are intended to measure various bandwidths
+> **These benchmarks are intensive tests that require to run on HPC platforms**
 
-> **They are intensive tests that require to run on HPC platforms**
+> Maximum memory required per node (device) is 20 GB
 
-Performance measurements and scripts to reproduce results can be found in [./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf](./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf)
+> At maximum, 8 computing nodes (devices) are used
+
+> Benchmarks are independent and can be used as is or configured according to your system if needed 
+
+**Test cases description** 
+
+Test case    | Objectives  | Remarks
+------------ | ----------- | ------------
+Memory | Assess memory bandwidth | Scalability analysis on a single node
+Grid | Assess bandwidth of grid operations | Analyse effect of the grid size
+Comm | Assess inter-node communication bandwidth | Analyse effect of subdomain decomposition
+FD\_D2 | Assess FD spatial derivative computation bandwidth | Analyse effect of FD stencil order
+Propa | Find optimal configuration for the wave propagator | Explore range of parameters
+Propa | Scalability analysis of wave propagator on multiple nodes | Analyse effect of the FD stencil order
+
+**Performance measurements and scripts to reproduce results obtained on the supercomputer Shaheen II at KAUST can be found in [./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf](./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf)**
 
 # Versions
 
 Version      | Description | Release date
 ------------ | ----------- | ------------
-v1.0          | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
-v1.1          | Added test modes NEC, OpenAcc (ON GOING) and Cuda (ON GOING) | Coming soon
+v1.0         | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
+v1.1         | Added test modes NEC, OpenAcc (ON GOING) and Cuda (ON GOING) | Coming soon
 
 # Have fun!
 
