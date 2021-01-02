@@ -5,13 +5,13 @@
  TestCase name		Propa
  Test mode		CacheBlk
 ================================================================================
-			 H P C S C A N - ver 1.1 (2020)
+			 H P C S C A N - ver 1.1
 
- Git version	commit cab7a613148b1e60d89af20084a30ef2ad0fc3bb
-		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		Date:   Sun Dec 27 06:14:44 2020 +0300
+ Git version	commit 6aaee933be2f3798e277cf1b271dda98607304e3
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Thu Dec 31 09:41:54 2020 +0300
 
- Host name	mars
+ Host name	neptune
  User name	vincent
  Computation	SINGLE PRECISION
  Mode Baseline	ENABLED
@@ -117,14 +117,14 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	17.149
- Best Gpoint/s eff.	0.357272
- Best Gpoint/s in FD	0.357272
- Best Apparent BW GB/s	41.4435
+ Best GFlop/s in FD	11.3701
+ Best Gpoint/s eff.	0.236878
+ Best Gpoint/s in FD	0.236878
+ Best Apparent BW GB/s	27.4778
 
- Case run time (s)	0.153349
+ Case run time (s)	0.241516
 --------------------------------------------------------------------------------
- Total run time (s)	0.154267
+ Total run time (s)	0.242986
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

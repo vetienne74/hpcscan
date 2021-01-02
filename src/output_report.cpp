@@ -37,7 +37,7 @@ Rtn_code print_header_of_output_report(void)
 	if (myid_world == 0)
 	{
 		print_line1() ;
-		cout << "\t\t\t H P C S C A N - ver " << CURRENT_VERSION << " (2020)\n\n" ;
+		cout << "\t\t\t H P C S C A N - ver " << CURRENT_VERSION << "\n\n" ;
 		printInfo(MASTER, " Git version", HPCSCAN_GIT_COMMIT) ;
 		printInfo(MASTER, "\t", HPCSCAN_GIT_AUTHOR) ;
 		printInfo(MASTER, "\t", HPCSCAN_GIT_DATE) ;

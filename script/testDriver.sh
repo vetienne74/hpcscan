@@ -28,10 +28,6 @@ then
 fi
 echo Launch MPI with $HPCSCAN_MPI_INVOKER
 
-# run all test cases with default parameters
-echo Running -testCase All ...
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase All >> ${report_file}
-
 # test case Util
 echo Running -testCase Util ...
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util >> ${report_file}
@@ -76,7 +72,7 @@ $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
 
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
 
 # test case Grid
 echo Running -testCase Grid ...

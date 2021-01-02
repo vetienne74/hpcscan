@@ -1,10 +1,19 @@
 
 //-------------------------------------------------------------------------------------------------------
-// Handle all grids data in Xbenchmark
-// and all operations performed on grids
-// unique definition for 1D, 2D and 3D grids
 //
-// for all axis, grid index is as follows
+// THIS IS THE MAIN CLASS OF HPCSCAN
+// Handle all grid data in hpcscan and all operations performed on grids
+//
+// ####################################################################################
+// ##                                                                                ##
+// ##              IMPORTANT: THIS FILE SHOULD NOT BE MODIFIED                       ##
+// ## To implement specialization of some functions, you may create a new grid class ##
+// ## that derives from this one. See for example: grid_CacheBlk.cpp                 ##
+// ##                                                                                ##
+// ####################################################################################
+//
+// Unique definition for 1D, 2D and 3D grids
+// For all axis, grid index is as follows:
 //
 // <-----><------><-----><------><-----><--------> --> Axis N (N=1,2 or 3)
 //  Halo1  Layer1  Inner  Layer2  Halo2  Pad
@@ -50,7 +59,7 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Grid::Grid(Grid_type gridTypeIn)
-{
+				{
 	printDebug(MID_DEBUG, "IN Grid::Grid");
 
 	gridMode = "Baseline" ;
@@ -62,7 +71,7 @@ Grid::Grid(Grid_type gridTypeIn)
 	grid_3d  = NULL;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
-}
+				}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -1000,6 +1009,97 @@ void Grid::fill(Point_type pointType, Myfloat val)
 	}
 
 	printDebug(MID_DEBUG, "OUT Grid::fill");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::fillArray(Myfloat val)
+{
+	printDebug(MID_DEBUG, "IN Grid::fillArray");
+
+	Myfloat * const w = grid_3d ;
+
+#pragma omp parallel for
+	for (Myint64 ii=0; ii<npoint; ii++)
+	{
+		w[ii] = val ;
+	}
+
+	printDebug(MID_DEBUG, "OUT Grid::fillArray");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::copyArray(const Grid& gridIn)
+{
+	printDebug(MID_DEBUG, "IN Grid::copyArray");
+
+	Myfloat * const w = grid_3d ;
+	Myfloat * const u = gridIn.grid_3d ;
+
+#pragma omp parallel for
+	for (Myint64 ii=0; ii<npoint; ii++)
+	{
+		w[ii] = u[ii] ;
+	}
+
+	printDebug(MID_DEBUG, "OUT Grid::copyArray");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::addArray(const Grid& gridIn1, const Grid& gridIn2)
+{
+	printDebug(MID_DEBUG, "IN Grid::addArray");
+
+	Myfloat * const w = grid_3d ;
+	Myfloat * const u = gridIn1.grid_3d ;
+	Myfloat * const v = gridIn2.grid_3d ;
+
+#pragma omp parallel for
+	for (Myint64 ii=0; ii<npoint; ii++)
+	{
+		w[ii] = u[ii] + v[ii];
+	}
+
+	printDebug(MID_DEBUG, "OUT Grid::addArray");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
+{
+	printDebug(MID_DEBUG, "IN Grid::multiplyArray");
+
+	Myfloat * const w = grid_3d ;
+	Myfloat * const u = gridIn1.grid_3d ;
+	Myfloat * const v = gridIn2.grid_3d ;
+
+#pragma omp parallel for
+	for (Myint64 ii=0; ii<npoint; ii++)
+	{
+		w[ii] = u[ii] * v[ii];
+	}
+
+	printDebug(MID_DEBUG, "OUT Grid::multiplyArray");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::addUpdateArray(const Grid& gridIn)
+{
+	printDebug(MID_DEBUG, "IN Grid::addUpdateArray");
+
+	Myfloat * const w = grid_3d ;
+	Myfloat * const u = gridIn.grid_3d ;
+
+#pragma omp parallel for
+	for (Myint64 ii=0; ii<npoint; ii++)
+	{
+		w[ii] = w[ii] + u[ii];
+	}
+
+	printDebug(MID_DEBUG, "OUT Grid::addUpdateArray");
 }
 
 //-------------------------------------------------------------------------------------------------------

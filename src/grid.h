@@ -1,4 +1,17 @@
 
+//-------------------------------------------------------------------------------------------------------
+// THIS IS THE MAIN CLASS OF HPCSCAN
+// Handle all grid data in hpcscan and all operations performed on grids
+//-------------------------------------------------------------------------------------------------------
+
+// ####################################################################################
+// ##                                                                                ##
+// ##              IMPORTANT: THIS FILE SHOULD NOT BE MODIFIED                       ##
+// ## To implement specialization of some functions, you may create a new grid class ##
+// ## that derives from this one. See for example: grid_CacheBlk.cpp                 ##
+// ##                                                                                ##
+// ####################################################################################
+
 #ifndef HPCSCAN_GRID_H_
 #define HPCSCAN_GRID_H_
 
@@ -88,6 +101,21 @@ public:
 	// fill grid with predefined functions
 	virtual void fill(Point_type pType, Func_type t1,  Func_type t2, Func_type t3,
 			Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp) ;
+
+	// fill array with constant value
+	virtual void fillArray(Myfloat val) ;
+
+	// copy array
+	virtual void copyArray(const Grid& gridIn) ;
+
+	// add array
+	virtual void addArray(const Grid& gridIn1, const Grid& gridIn2) ;
+
+	// multiply array
+	virtual void multiplyArray(const Grid& gridIn1, const Grid& gridIn2) ;
+
+	// add and update array
+	virtual void addUpdateArray(const Grid& gridIn) ;
 
 	// define unit grid
 	void defineUnitGrid() ;

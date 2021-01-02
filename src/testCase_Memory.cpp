@@ -56,10 +56,6 @@ Rtn_code TestCase_Memory::run(void)
 
 	const Myint64 nGridPoint = Ugrid.getNumberOfGridPoint(GRID_GLOBAL, ALL_POINTS) ;
 
-	Myfloat * const u = Ugrid.grid_3d ;
-	Myfloat * const v = Vgrid.grid_3d ;
-	Myfloat * const w = Wgrid.grid_3d ;
-
 	// for perf log
 	Myfloat FillGridGB=0, FillGridGpoint=0, CopyGridGB=0, CopyGridGpoint=0 ;
 	Myfloat AddGridGB=0, AddGridGpoint=0, MultiplyGridGB=0, MultiplyGridGpoint=0 ;
@@ -68,12 +64,12 @@ Rtn_code TestCase_Memory::run(void)
 	// one block per case
 	{
 		//============================================
-		// fill grid
+		// fill array
 		// W = coef
 		//============================================
 
 		print_blank() ;
-		string caseName = testCaseName + "FillGrid" ;
+		string caseName = testCaseName + "FillArray" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Wgrid.fill(ALL_POINTS, 0.0) ;
@@ -85,11 +81,7 @@ Rtn_code TestCase_Memory::run(void)
 		for (Myint itry = 0; itry < ntry; itry++)
 		{
 			double t0 = MPI_Wtime() ;
-#pragma omp parallel for
-			for (Myint64 ii=0; ii<nGridPoint; ii++)
-			{
-				w[ii] = a1 ;
-			}
+			Wgrid.fillArray(a1) ;
 			double t1 = MPI_Wtime() ;
 
 			double testCase_time = t1-t0 ;
@@ -117,12 +109,12 @@ Rtn_code TestCase_Memory::run(void)
 
 	{
 		//============================================
-		// copy grid
+		// copy array
 		// W = U
 		//============================================
 
 		print_blank() ;
-		string caseName = testCaseName + "CopyGrid" ;
+		string caseName = testCaseName + "CopyArray" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Ugrid.fill(ALL_POINTS, a1) ;
@@ -135,11 +127,7 @@ Rtn_code TestCase_Memory::run(void)
 		for (Myint itry = 0; itry < ntry; itry++)
 		{
 			double t0 = MPI_Wtime() ;
-#pragma omp parallel for
-			for (Myint64 ii=0; ii<nGridPoint; ii++)
-			{
-				w[ii] = u[ii] ;
-			}
+			Wgrid.copyArray(Ugrid) ;
 			double t1 = MPI_Wtime() ;
 
 			double testCase_time = t1-t0 ;
@@ -165,12 +153,12 @@ Rtn_code TestCase_Memory::run(void)
 
 	{
 		//============================================
-		// add grid
+		// add array
 		// W = U + V
 		//============================================
 
 		print_blank() ;
-		string caseName = testCaseName + "AddGrid" ;
+		string caseName = testCaseName + "AddArray" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Ugrid.fill(ALL_POINTS, a1) ;
@@ -185,11 +173,7 @@ Rtn_code TestCase_Memory::run(void)
 		for (Myint itry = 0; itry < ntry; itry++)
 		{
 			double t0 = MPI_Wtime() ;
-#pragma omp parallel for
-			for (Myint64 ii=0; ii<nGridPoint; ii++)
-			{
-				w[ii] = u[ii] + v[ii];
-			}
+			Wgrid.addArray(Ugrid, Vgrid) ;
 			double t1 = MPI_Wtime() ;
 
 			double testCase_time = t1-t0 ;
@@ -215,12 +199,12 @@ Rtn_code TestCase_Memory::run(void)
 
 	{
 		//============================================
-		// multiply grid
+		// multiply array
 		// W = U * V
 		//============================================
 
 		print_blank() ;
-		string caseName = testCaseName + "MultiplyGrid" ;
+		string caseName = testCaseName + "MultiplyArray" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Ugrid.fill(ALL_POINTS, a1) ;
@@ -235,11 +219,7 @@ Rtn_code TestCase_Memory::run(void)
 		for (Myint itry = 0; itry < ntry; itry++)
 		{
 			double t0 = MPI_Wtime() ;
-#pragma omp parallel for
-			for (Myint64 ii=0; ii<nGridPoint; ii++)
-			{
-				w[ii] = u[ii] * v[ii];
-			}
+			Wgrid.multiplyArray(Ugrid, Vgrid) ;
 			double t1 = MPI_Wtime() ;
 
 			double testCase_time = t1-t0 ;
@@ -265,12 +245,12 @@ Rtn_code TestCase_Memory::run(void)
 
 	{
 		//============================================
-		// add and update grid
+		// add and update array
 		// W = W + U
 		//============================================
 
 		print_blank() ;
-		string caseName = testCaseName + "AddUpdateGrid" ;
+		string caseName = testCaseName + "AddUpdateArray" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Ugrid.fill(ALL_POINTS, a1) ;
@@ -284,11 +264,7 @@ Rtn_code TestCase_Memory::run(void)
 		for (Myint itry = 0; itry < ntry; itry++)
 		{
 			double t0 = MPI_Wtime() ;
-#pragma omp parallel for
-			for (Myint64 ii=0; ii<nGridPoint; ii++)
-			{
-				w[ii] = w[ii] + u[ii];
-			}
+			Wgrid.addUpdateArray(Ugrid) ;
 			double t1 = MPI_Wtime() ;
 
 			double testCase_time = t1-t0 ;
