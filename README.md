@@ -1,5 +1,5 @@
 
-![hpcscan logo](misc/hpcscanLogo/hpcscanLogo.jpg)
+<img src="./misc/hpcscanLogo/hpcscanLogo.jpg" alt="hpcscanLogo.jpg" width="800" height="300"/>
 
 **TABLE OF CONTENTS**
 
@@ -10,7 +10,7 @@
   * [What hpcscan is](#what-hpcscan-is)
   * [What hpcscan is not](#what-hpcscan-is-not)
   * [Quick start](#quick-start)
-  * [Going further](#going-further)
+  * [Versions](#versions)
 - [Main features](#main-features)
   * [Project directories](#project-directories)
   * [List of test cases](#list-of-test-cases)
@@ -29,8 +29,10 @@
   * [Usage](#usage)
   * [Input and output](#input-and-output)
 - [Performance benchmarks](#performance-benchmarks)
-- [Versions](#versions)
+- [Customization](#customization)
 - [Have fun!](#have-fun)
+  * [Share feedback](#share-feedback)
+  * [Contributing to hpcscan](#contributing-to-hpcscan)
 
 # Welcome to hpcscan
 
@@ -55,7 +57,7 @@ It features several categories of test cases aiming to measure memory, computati
 * Entirely written in C++
 * Simple code struture based on individual test cases
 * Easy to add new test cases
-* Main class is `Grid` that handles all operations on multi-dimension (1, 2 \& 3D) Cartesian grids
+* Design centered on a unique class that handles all operations on multi-dimension (1, 2 \& 3D) Cartesian grids
 * Hybrid OpenMP/MPI parallelism
 * Support for OpenACC, CUDA and other specific features are available depending on compiler/architecture
 * All configuration parameters on command line
@@ -68,21 +70,37 @@ It features several categories of test cases aiming to measure memory, computati
 ## Why another benchmark?
 
 There exist several benchmarks commonly used in the HPC community. Just to cite a few, the [Stream benchmark](https://www.cs.virginia.edu/stream/) and the [OSU Micro benchmarks](https://mvapich.cse.ohio-state.edu/benchmarks/), allow to measure the memory bandwidth and the interconnect bandwidth respectively.
-In general, these benchmarks target specific characteristics of HPC systems and are not related to concrete scientific applications.
-**It is not straightforward to transpose these characteristics in a given context.**
+In general, these benchmarks target specific characteristics of HPC systems.
+However, it is **not straightforward to transpose these characteristics in the context of a given scientific application.**
 
-This is why, HPC vendors used to publish performance results on open source scientific codes such as [OpenFOAM](https://www.openfoam.com/) (Computational Fluid Dynamics) or [SPECFEM3D](https://geodynamics.org/cig/software/specfem3d/) (Seismology).
-While these results are important to assess the performance of a given architecture to solve concrete problems, it is again not straightforward to transpose conclusions to other applications. Moreover, every application has been built on technical choices that may hinder performance on a system compared to another. **How to overcome the technical bias?**
+This is why, HPC vendors used to present throughputs obtained with open source scientific codes such as for instance [OpenFOAM](https://www.openfoam.com/) (Computational Fluid Dynamics) or [SPECFEM3D](https://geodynamics.org/cig/software/specfem3d/) (Seismology).
+While these results are important to assess the performance of a given architecture to solve concrete problems, it is again not straightforward to transpose conclusions to other applications. Moreover, every application has been built on technical choices that may hinder performance on a system compared to another. **How to overcome these technical biases?**
 
-**hpcscan has been designed to address these issues.**
+hpcscan has been designed to address these issues :smiley:
 
 ## What hpcscan is
 
-TO DO
+:ballot_box_with_check: **Lightweight and portable** tool that can be easily deployed on a wide range of architectures including CPUs, GPUs and accelerators (see [list of current supported architectures](#validated-hardware-operating-systems-and-compilers)). 
+
+:ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond getting accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. An example is shown below where several key parameters of an algorithm (a wave propagation kernel) are explored to find the optimum (in terms of computation speed vs accuracy) on the supercomputer Shaheen II at KAUST.
+
+<img src="./script/testCase_Propa/paramAnalysis/hpcscanPropaParamAnalysisShaheen.jpg" alt="hpcscanPropaParamAnalysisShaheen.jpg" width="1000" height="700"/>
+
+:ballot_box_with_check: **Set of representative kernels** used in many scientific applications (see [list of test cases](#list-of-test-cases)). Without being too specific, the embedded kernels provide a way to capture the main traits of HPC architectures and identify their bottle-necks and strenghts. With this knowledge, one can re-design or update accordingly specific parts of an application to take full benefit of the target hardware.
+
+:ballot_box_with_check: **Set of robust protocols** to compare architectures. As suggested in the example above, the optimal configuration to solve a given problem might change from an architecture to another. hpcscan provides a solid framework to compare performances between different systems, where one can analyse results from different perspectives and achieve 'apples to apples' comparisons.  
+
+:ballot_box_with_check: **Customizable** to fit a specific hardware (see [Customization](#customization)).
+
+:ballot_box_with_check: **Multi-purpose** initiative with benefits at several levels: from computer science students eager to learn to seasonned numerical analysts who want to share their findings or to software engineers that can reuse kernels of interest to upgrade their applications. 
+
+:ballot_box_with_check: **On-going** effort at the first phase aiming to collect contributions to cover the current offer of HPC systems. More options and kernels will be added in a second phase.
 
 ## What hpcscan is not
 
-TO DO
+:no_entry: **One-number** benchmark to rank HPC systems. However, hpcscan provides a way to perform a complete scanning and possibly focus on one characteristic.
+
+:no_entry: **Confidential** project. Everyone is invited to share results, feedbacks and more important contributions for the benefit of the entire HPC community.
 
 ## Quick start
 
@@ -92,9 +110,12 @@ hpcscan is a self-content package that can be easily installed and executed on y
 * Step 3: [validate the executable](#validation-tests)
 * Step 4: [run the performance benchmarks](#performance-benchmarks)
 
-## Going further
+## Versions
 
-TO DO
+Version      | Description | Release date
+------------ | ----------- | ------------
+v1.0         | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
+v1.1         | Added test modes NEC, OpenAcc (ON GOING) and Cuda (ON GOING) | Coming soon
 
 # Main features
 
@@ -111,19 +132,19 @@ TO DO
 
 Test case name | Description | Remark
 ------------ | ----------- | ------------
-Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes <br> Depending on the placement of MPI processes, intra-node or inter-node bandwidth can be measured <br> Width of halos depends on the selected FD stencil order <br> **Validation is done against reference grids filled with predefined values** <br> <font color="blue"> **Measures GPoints/s and GBytes/s** </font></p>
-FD_D2        | **Finite-difference (second derivatives in space) computations bandwidth** <ul><li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_1^2} \: (V)"> (for grid dim. 1, 2 or 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_2^2} \: (V)"> (for grid dim. 2 or 3) </li>  <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_3^2} \: (V)"> (for grid dim. 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U= \Delta (V)"> (for grid dim 2 or 3) </li> </ul> | <p>Accuracy is checked against multi-dimensional sine function <br> Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of periods in the sine function<br> **Computes L1 Error against analytical solution** <br> <font color="blue"> **Measures GPoints/s, GBytes/s and GFlop/s** </font> </p> 
-Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Max. diff. between grids U and V </li> <li> L1 norm between U and V </li> <li> Sum of abs(U) </li> <li> Sum of abs(U-V) </li> <li> Max. of U </li> <li> Min. of U </li> <li> Complex grid manipulation (pressure update in propagator) U = 2 x V - U + C x L </li> <li> Boundary condition (free surface) at all edges of U </li> </ul> | <p>Operation can be done in portions of the grid (for instance, excluding halos) <br> **Validation is done against reference grids filled with predefined values** <br> <font color="blue"> **Measures GPoints/s and GBytes/s** </font> <p>
-Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p> Conversely to Test Case Grid, operations are done on continuous memory arrays <br> This test case is similar to the Stream benchmark <br> **Validation is done against reference grids filled with predefined values** <br> <font color="blue"> **Measures GPoints/s and GBytes/s** </font> <p>
-Propa        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> <img src="https://render.githubusercontent.com/render/math?math={\partial^2}/{\partial t^2} (P)=c^2 \: \Delta (P)"> </li> <li> Domain size is 1 m in every dimension </li> <li> c is constant and equals to 1 m/s </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against the multi-dimensional Eigen mode analytical solution of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of Eigen modes <br> **Computes L1 Error against analytical solution** <br> <font color="blue"> **Measures GPoints/s, GBytes/s and GFlop/s** </font> </p> 
-Template     | Test case template | Copy this template to create a new test case
+Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes <br> Depending on the placement of MPI processes, intra-node or inter-node bandwidth can be measured <br> Width of halos depends on the selected FD stencil order <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** </p>
+FD_D2        | **Finite-difference (second derivatives in space) computations bandwidth** <ul><li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_1^2} \: (V)"> (for grid dim. 1, 2 or 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_2^2} \: (V)"> (for grid dim. 2 or 3) </li>  <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_3^2} \: (V)"> (for grid dim. 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U= \Delta (V)"> (for grid dim 2 or 3) </li> </ul> | <p>Accuracy is checked against multi-dimensional sine function <br> Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of periods in the sine function <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
+Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Max. diff. between grids U and V </li> <li> L1 norm between U and V </li> <li> Sum of abs(U) </li> <li> Sum of abs(U-V) </li> <li> Max. of U </li> <li> Min. of U </li> <li> Complex grid manipulation (wavefield update in propagator) U = 2 x V - U + C x L </li> <li> Boundary condition (free surface) at all edges of U </li> </ul> | <p>Operations on grids include manipulation of multi-dimensional indexes and specific portions of the grids (for instance, excluding halos) <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
+Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p> Conversely to Test Case Grid, operations are done on continuous memory arrays <br> This test case is similar to the Stream benchmark <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
+Propa        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> <img src="https://render.githubusercontent.com/render/math?math={\partial^2}/{\partial t^2} (P)=c^2 \: \Delta (P)"> </li> <li> Domain size is 1 m in every dimension </li> <li> c is constant and equals to 1 m/s </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against the multi-dimensional analytical solution (Eigen modes) of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of Eigen modes <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
+Template     | Test case template | Used to create new test cases
 Util         | Utility tests to check internal functions | Reserved for developpers
 
 ## List of test modes
 
 Test mode name | Description | Remark
 ------------ | ----------- | ------------
-Baseline     | CPU standard implementation | Always enabled
+Baseline     | CPU standard implementation | **This mode is the reference implementation without any optimization.** Always enabled
 CacheBlk     | CPU with cache blocking optimization techniques | Always enabled
 Cuda         | GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
 NEC          | NEC with compiler directives | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
@@ -145,34 +166,30 @@ OpenAcc      | GPU with OpenACC without optimization | Only enabled when compile
 
 ## Environment script (mandatory)
 
-In order to compile and run hpcscan, you need to source one of the files in ./env
+In order to compile and run hpcscan, you need to source one of the files in the directory `./env`
 
 Example
 
 `source ./env/setEnvMarsGccCuda.sh`
 
-> **For a new system, you would need to create a file for your system (take example from one of the existing files)**
+:bell: **For a new system, you would need to create a file for your system** (take example from one of the existing files)
 
 
 # Compilation
 
 ## Makefile
 
-Go to ./build, and use the command
-
-`make`
+Go to `./build`, and use the command `make`
 
 [Display command output](misc/fileForReadme/make.txt)
 
-> If hpcscan environment has not been set (see [Environment script (mandatory)](#environment-script-mandatory)), compilation will abort.
+Executable can be found in `./bin/hpcscan`
+
+:bell: If hpcscan environment has not been set (see [Environment script (mandatory)](#environment-script-mandatory)), compilation will abort.
 
 By default, hpcscan is compiled in single in precision
 
-To compile in double precision
-
-`make precision=double`
-
-Executable is ./bin/hpcscan
+To compile in double precision: `make precision=double`
 
 ## Enabled test modes
 
@@ -186,7 +203,7 @@ To check the test modes that are enabled in your hpcscan binary, use the command
 
 ## Validation tests
 
-To check hpcscan has been correctly built and works fine, go to ./script and launch
+To check that hpcscan has correctly been built and works fine, go to `./script` and launch
 
 `sh runValidationTests.sh`
 
@@ -200,6 +217,8 @@ You should get in the ouptput report (displayed on the terminal)
 * No test marked as FAILED
 
 Check the summary at the end of report to have a quick look on this.
+
+:bell: These tests are intended for validation purpose only, they do not allow for performance measurements.
 
 ## Validated hardware, operating systems and compilers
 
@@ -239,18 +258,18 @@ Example
 
 [Display command output](misc/fileForReadme/runPropaTestCase.txt)
 
-> If you omit to specify `-testMode <TESTMODE>`, the Baseline mode it assumed.
+:bell: If you omit to specify `-testMode <TESTMODE>`, the Baseline mode is assumed.
 
 Example
 
 `mpirun -n 1 ./bin/hpcscan -testCase Propa`
 
-**Execution with a multiples MPI processes**
+**Execution with multiple MPI processes**
 
 `mpirun -n <N> ./bin/hpcscan -testCase <TESTCASE> -testMode <TESTMODE> -nsub1 <NSUB1> -nsub2 <NSUB2> -nsub3 <NSUB3>`
 
-> When several MPI processes are used, subdomain decomposition is activated. The product NSUB1 x NSUB2 x NSUB3 must be equal to N (no. of MPI processes).
-> You may omit to specify the number of subdomains along an axis if that number is 1.
+:bell: When several MPI processes are used, subdomain decomposition is activated. The product NSUB1 x NSUB2 x NSUB3 must be equal to N (no. of MPI proc.).
+You may omit to specify the number of subdomains along an axis if that number is 1.
 
 Example
 
@@ -264,11 +283,13 @@ Simply add on the command line
 
 Where `N1, N2, N3` are the number of grid points along axis 1, 2 and 3.
 
-And `DIM` = 1,2 or 3 (1D, 2D or 3D grids). By default 3D grid is assumed.
+And `DIM` = 1,2 or 3 (1D, 2D or 3D grids).
 
 Example
 
 `mpirun -n 1 ../bin/hpcscan -testCase Grid -dim 2 -n1 200 -n2 300`
+
+:bell: If you omit to specify `-dim <DIM>`, 3D grid is assumed.
 
 ## Input and output
 
@@ -310,27 +331,27 @@ mpirun -n 1 ../../bin/hpcscan -testCase Propa -writeGrid \
 
 Outputs the following files: `PropaEigenModeRef.proc0.grid.info`, `PropaEigenModeRef.proc0.grid.bin`, `PropaEigenModePrn.proc0.grid.info` and `PropaEigenModePrn.proc0.grid.bin`
 
-> Writing grids on disks slows down the code and shouldn't be combined with performance measurements
+:warning: Writing grids on disks slows down the code and shouldn't be combined with performance measurements
 
-> Grids can be of large size and can quickly reach your available disk space
+:warning: Grids can be of large size and can quickly reach your available disk space
 
 **Output debug traces**
 
 The code is equipped with debug traces that can be activated with the option `-debug <LEVEL>` where LEVEL can be set to `light`, `mid` or `full` (minimum, middle and maximum level of verbosity).
-It can useful to activate them when developping/debugging to understand the behavior of the code.
+It can be useful to activate them when developping/debugging to understand the behavior of the code.
 When activated, debug traces are written by each MPI proc in an ASCII file with name `hpcscan.debug.proc<ID>.log` where ID is the MPI rank.
 
-> Debug traces slow down the code and shouldn't be combined with performance measurements
+:warning: Debug traces slow down the code and shouldn't be combined with performance measurements
 
 # Performance benchmarks
 
-> **These benchmarks are intensive tests that require to run on HPC platforms**
+:warning: **These benchmarks are intensive tests that require to run on HPC platforms**
 
-> Maximum memory required per node (device) is 20 GB
+:bell: Maximum memory required per node (device) is 20 GB
 
-> At maximum, 8 computing nodes (devices) are used
+:bell:  At maximum, 8 computing nodes (devices) are used
 
-> Benchmarks are independent and can be used as is or configured according to your system if needed 
+The benchmarks are independent and can be used as is or configured according to your system if needed.
 
 **Test cases description** 
 
@@ -343,17 +364,19 @@ FD\_D2 | Assess FD spatial derivative computation bandwidth | Analyse effect of 
 Propa | Find optimal configuration for the wave propagator | Explore range of parameters
 Propa | Scalability analysis of wave propagator on multiple nodes | Analyse effect of the FD stencil order
 
-**Performance measurements and scripts to reproduce results obtained on the supercomputer Shaheen II at KAUST can be found in [./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf](./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf)**
+:arrow_right: **Performance measurements and scripts to reproduce results** obtained on the supercomputer Shaheen II at KAUST can be found in [./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf](./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf)
 
-# Versions
+# Customization
 
-Version      | Description | Release date
------------- | ----------- | ------------
-v1.0         | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
-v1.1         | Added test modes NEC, OpenAcc (ON GOING) and Cuda (ON GOING) | Coming soon
+TO DO
 
 # Have fun!
 
-Please share and send your feedbacks to vetienne@rocketmail.com
+## Share feedback
 
+TO DO
+
+## Contributing to hpcscan
+
+TO DO
 
