@@ -1,6 +1,7 @@
 
 //-------------------------------------------------------------------------------------------------------
 // Grid factory used to create specialized Grid objects
+// Unique location where all grid implementations are referenced
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_Factory.h"

@@ -1,7 +1,11 @@
 
 //-------------------------------------------------------------------------------------------------------
 //
-// THIS IS THE MAIN CLASS OF HPCSCAN
+// This grid is activated with command line option -testMode Baseline
+//
+// ## THIS IS THE MAIN CLASS OF HPCSCAN AND THE REFERENCE IMPLEMENTATION ##
+// ## ALL GRID IMPLEMENTATIONS SHOULD DERIVE FROM THIS CLASS             ##
+//
 // Handle all grid data in hpcscan and all operations performed on grids
 //
 // ####################################################################################

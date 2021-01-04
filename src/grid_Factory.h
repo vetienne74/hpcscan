@@ -1,4 +1,9 @@
 
+//-------------------------------------------------------------------------------------------------------
+// Grid factory used to create specialized Grid objects
+// Unique location where all grid implementations are referenced
+//-------------------------------------------------------------------------------------------------------
+
 #ifndef HPCSCAN_GRID_FACTORY_H_
 #define HPCSCAN_GRID_FACTORY_H_
 

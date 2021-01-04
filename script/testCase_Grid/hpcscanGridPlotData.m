@@ -22,7 +22,9 @@ iApplyBoundaryConditionGB = 26 ;
 iApplyBoundaryConditionGpoint = 27 ;
 
 DIR  = '.' ;
-FILE = 'hpcscanGridShaheen' ;
+% log file name with .log extension
+%FILE = 'hpcscanGridShaheen' ;
+FILE = 'hpcscan.perf.Grid' ;
 TITLE = 'Test Case Grid' ;
 
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;

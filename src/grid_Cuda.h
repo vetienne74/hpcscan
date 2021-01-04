@@ -1,4 +1,10 @@
 
+//-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode Cuda
+// Derived class from Grid
+// CUDA implementation (target GPU)
+//-------------------------------------------------------------------------------------------------------
+
 #ifndef HPCSCAN_GRID_CUDA_H_
 #define HPCSCAN_GRID_CUDA_H_
 

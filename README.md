@@ -80,25 +80,25 @@ hpcscan has been designed to address these issues :smiley:
 
 ## What hpcscan is
 
-:ballot_box_with_check: **Lightweight and portable** tool that can be easily deployed on a wide range of architectures including CPUs, GPUs and accelerators (see [list of current supported architectures](#validated-hardware-operating-systems-and-compilers)). 
+:ballot_box_with_check: **Lightweight and portable** tool that can be easily deployed on a wide range of architectures including CPUs, GPUs and accelerators (see [Validated hardware, operating systems and compilers](#validated-hardware-operating-systems-and-compilers)). 
 
-:ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond getting accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. An example is shown below where several key parameters of an algorithm (a wave propagation kernel) are explored to find the optimum (in terms of computation speed vs accuracy) on the supercomputer Shaheen II at KAUST.
+:ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond getting accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. An example is shown below where several key parameters of an algorithm (a wave propagation kernel) are explored to find the optimum (in terms of computation speed vs accuracy) on the supercomputer Shaheen II at KAUST (see  [Performance benchmarks](#performance-benchmarks)).
 
 <img src="./script/testCase_Propa/paramAnalysis/hpcscanPropaParamAnalysisShaheen.jpg" alt="hpcscanPropaParamAnalysisShaheen.jpg" width="1000" height="700"/>
 
-:ballot_box_with_check: **Set of representative kernels** used in many scientific applications (see [list of test cases](#list-of-test-cases)). Without being too specific, the embedded kernels provide a way to capture the main traits of HPC architectures and identify their bottle-necks and strenghts. With this knowledge, one can re-design or update accordingly specific parts of an application to take full benefit of the target hardware.
+:ballot_box_with_check: **Set of representative kernels** used in many scientific applications (see [List of test cases](#list-of-test-cases)). Without being too specific, the embedded kernels provide a way to capture the main traits of HPC architectures and identify their bottle-necks and strenghts. With this knowledge, one can re-design or update accordingly specific parts of an application to take full benefit of the target hardware.
 
 :ballot_box_with_check: **Set of robust protocols** to compare architectures. As suggested in the example above, the optimal configuration to solve a given problem might change from an architecture to another. hpcscan provides a solid framework to compare performances between different systems, where one can analyse results from different perspectives and achieve 'apples to apples' comparisons.  
 
 :ballot_box_with_check: **Customizable** to fit a specific hardware (see [Customization](#customization)).
 
-:ballot_box_with_check: **Multi-purpose** initiative with benefits at several levels: from computer science students eager to learn to seasonned numerical analysts who want to share their findings or to software engineers that can reuse kernels of interest to upgrade their applications. 
+:ballot_box_with_check: **Multi-purpose** initiative with benefits at several levels: from computer science students eager to learn to seasoned numerical analysts willing to share their findings or to software engineers reusing kernels of interest to upgrade their applications. 
 
 :ballot_box_with_check: **On-going** effort at the first phase aiming to collect contributions to cover the current offer of HPC systems. More options and kernels will be added in a second phase.
 
 ## What hpcscan is not
 
-:no_entry: **One-number** benchmark to rank HPC systems. However, hpcscan provides a way to perform a complete scanning and possibly focus on one characteristic.
+:no_entry: **One-number** benchmark to rank HPC systems. However, hpcscan provides a way to perform a complete 'scanning' of architectures and possibly focus on one characteristic.
 
 :no_entry: **Confidential** project. Everyone is invited to share results, feedbacks and more important contributions for the benefit of the entire HPC community.
 
@@ -144,7 +144,7 @@ Util         | Utility tests to check internal functions | Reserved for developp
 
 Test mode name | Description | Remark
 ------------ | ----------- | ------------
-Baseline     | CPU standard implementation | **This mode is the reference implementation without any optimization.** Always enabled
+Baseline     | CPU standard implementation | :arrow_right: **This mode is the reference implementation without any optimization.** <br> Always enabled
 CacheBlk     | CPU with cache blocking optimization techniques | Always enabled
 Cuda         | GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
 NEC          | NEC with compiler directives | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
@@ -249,8 +249,8 @@ hpcscan can be launched from a terminal with all configuration parameters within
 `mpirun -n 1 ./bin/hpcscan -testCase <TESTCASE> -testMode <TESTMODE>`
 
 where
-* TESTCASE is the name of the test case (see [List of test cases](#list-of-test-cases))
-* TESTMODE is the name of the test mode (see [List of test modes](#list-of-test-modes))
+* `TESTCASE` is the name of the test case (see [List of test cases](#list-of-test-cases))
+* `TESTMODE` is the name of the test mode (see [List of test modes](#list-of-test-modes))
 
 Example
 
@@ -331,7 +331,7 @@ mpirun -n 1 ../../bin/hpcscan -testCase Propa -writeGrid \
 
 Outputs the following files: `PropaEigenModeRef.proc0.grid.info`, `PropaEigenModeRef.proc0.grid.bin`, `PropaEigenModePrn.proc0.grid.info` and `PropaEigenModePrn.proc0.grid.bin`
 
-:warning: Writing grids on disks slows down the code and shouldn't be combined with performance measurements
+:warning: Writing grids on disks slows down the execution and shouldn't be combined with performance measurements
 
 :warning: Grids can be of large size and can quickly reach your available disk space
 
@@ -341,7 +341,7 @@ The code is equipped with debug traces that can be activated with the option `-d
 It can be useful to activate them when developping/debugging to understand the behavior of the code.
 When activated, debug traces are written by each MPI proc in an ASCII file with name `hpcscan.debug.proc<ID>.log` where ID is the MPI rank.
 
-:warning: Debug traces slow down the code and shouldn't be combined with performance measurements
+:warning: Debug traces slow down the execution and shouldn't be combined with performance measurements
 
 # Performance benchmarks
 
@@ -368,15 +368,37 @@ Propa | Scalability analysis of wave propagator on multiple nodes | Analyse effe
 
 # Customization
 
-TO DO
+hpcscan is built on a simple yet very flexible design heavily relying on inheritance feature of C++.
+
+The main class is `Grid` (see [./src/grid.cpp](./src/grid.cpp)).
+This class handles all grid data in hpcscan and all operations performed on grids.
+It implements the so-called Baseline mode and it is the reference implementation. 
+
+:bulb: All test cases, at some point, call methods of this class. Indeed, test cases (testCase_xxx.cpp) do not implement kernels.
+
+Now, let us say, you would like to specialize the implementation for a given architecture.
+
+To do this, you would need to create a new class that derives from `Grid`.
+For instance, you will create `Grid_ArchXYZ.h` and `Grid_ArchXYZ.cpp` for your new class (you need to add the new source file in the Makefile as well).
+In this class, you may implement only few functions that are declared as `virtual` in `Grid`.
+
+:bulb: To allow hpcscan to use this new class, you need only to add it the 'grid factory' (see [./src/grid_Factory.cpp](./src/grid_Factory.cpp)).
+This is the only location of the code where all grids are referenced.
+
+By doing this, you may switch at execution time, to your new grid with the `-testMode <TESTMODE>` option where `TESTMODE` = ArchXYZ.
+
+:bulb: You can proceed little by little, implementing one function at a time, with the possibility to check the behavior of your implementation against the Baseline reference solution.
+
+Check the grids that are already implemented in hpcscan to get some examples.
 
 # Have fun!
 
 ## Share feedback
 
-TO DO
+* Issues encountered
+* Suggestions of new test cases
+* Performance measurements
 
 ## Contributing to hpcscan
 
-TO DO
-
+:arrow_right: If you want to contribute to hpcscan, please contact the project coordinator (vetienne@rocketmail.com).

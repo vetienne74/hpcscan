@@ -1,4 +1,10 @@
 
+//-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode NEC
+// Derived class from Grid
+// NEC compiler directives (target NEC Aurora Vector Engine)
+//-------------------------------------------------------------------------------------------------------
+
 #ifndef HPCSCAN_GRID_NEC_H_
 #define HPCSCAN_GRID_NEC_H_
 

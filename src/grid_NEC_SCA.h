@@ -1,4 +1,10 @@
 
+//-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode NEC_SCA
+// Derived class from Grid
+// NEC Stencil Code Accelerator (target NEC Aurora Vector Engine)
+//-------------------------------------------------------------------------------------------------------
+
 #ifndef HPCSCAN_GRID_NEC_SCA_H_
 #define HPCSCAN_GRID_NEC_SCA_H_
 

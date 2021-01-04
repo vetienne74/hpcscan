@@ -2,7 +2,9 @@
 close all ; clear all ;
 
 DIR  = '.' ;
-FILE = 'hpcscanPropaParamAnalysisShaheen' ;
+% log file name with .log extension
+%FILE = 'hpcscanPropaParamAnalysisShaheen' ;
+FILE = 'hpcscan.perf.Propa' ;
 
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;
 val = importdata(pathFile) ;

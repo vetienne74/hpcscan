@@ -1,7 +1,8 @@
 
 //-------------------------------------------------------------------------------------------------------
-// Derived class from Grid_NEC
-// Optimized for with NEC SCA
+// This grid is activated with command line option -testMode NEC_SCA
+// Derived class from Grid
+// NEC Stencil Code Accelerator (target NEC Aurora Vector Engine)
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_NEC_SCA.h"

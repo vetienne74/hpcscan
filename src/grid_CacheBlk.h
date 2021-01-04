@@ -1,4 +1,10 @@
 
+//-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode CacheBlk
+// Derived class from Grid
+// Optimized with cache blocking techniques (target CPU)
+//-------------------------------------------------------------------------------------------------------
+
 #ifndef HPCSCAN_GRID_CACHEBLK_H_
 #define HPCSCAN_GRID_CACHEBLK_H_
 

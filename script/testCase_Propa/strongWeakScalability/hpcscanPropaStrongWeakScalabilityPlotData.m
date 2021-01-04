@@ -9,7 +9,9 @@ for ifig = 1:1
     
     if ifig == 1
         DIR  = '.' ;
-        FILE = 'hpcscanPropaStrongWeakScalabilityShaheen' ;
+        % log file name with .log extension
+        %FILE = 'hpcscanPropaStrongWeakScalabilityShaheen' ;
+        FILE = 'hpcscan.perf.Propa' ;
     else
         DIR  = '.' ;
         FILE = 'hpcscanPropaStrongWeakScalabilityXXX' ;

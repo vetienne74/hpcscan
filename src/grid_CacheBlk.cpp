@@ -1,7 +1,8 @@
 
 //-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode CacheBlk
 // Derived class from Grid
-// Optimized with cache blocking techniques
+// Optimized with cache blocking techniques (target CPU)
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_CacheBlk.h"

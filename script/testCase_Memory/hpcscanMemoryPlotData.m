@@ -14,7 +14,9 @@ iAddUpdateGridGB = 18 ;
 iAddUpdateGridGpoint = 19 ;
 
 DIR  = '.' ;
-FILE = 'hpcscanMemoryShaheen' ;
+% log file name with .log extension
+%FILE = 'hpcscanMemoryShaheen' ;
+FILE = 'hpcscan.perf.Memory' ;
 TITLE = 'Test Case Memory / scalability ' ;
 
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;

@@ -1,7 +1,8 @@
 
 //-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode NEC
 // Derived class from Grid
-// Optimized for with NEC SCA
+// NEC compiler directives (target NEC Aurora Vector Engine)
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_NEC.h"

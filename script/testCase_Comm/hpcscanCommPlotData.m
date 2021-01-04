@@ -35,7 +35,9 @@ iHaloExchGB = 38 ;
 iHaloExchGPoint = 39 ;
 
 DIR  = '.' ;
-FILE = 'hpcscanCommShaheen' ;
+% log file name with .log extension
+%FILE = 'hpcscanCommShaheen' ;
+FILE = 'hpcscan.perf.Comm' ;
 TITLE = 'Test Case Comm' ;
 
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;

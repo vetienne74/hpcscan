@@ -1,4 +1,10 @@
 
+//-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode OpenAcc
+// Derived class from Grid
+// OpenACC directives (target GPU)
+//-------------------------------------------------------------------------------------------------------
+
 #ifndef HPCSCAN_GRID_OPENACC_H_
 #define HPCSCAN_GRID_OPENACC_H_
 

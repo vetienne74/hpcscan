@@ -28,7 +28,9 @@ for ifig = 1:1
     
     if ifig == 1
         DIR  = '.' ;
-        FILE = 'hpcscanFD_D2Shaheen' ;
+        % log file name with .log extension
+        %FILE = 'hpcscanFD_D2Shaheen' ;
+        FILE = 'hpcscan.perf.FD_D2' ;
         orientation1 = 'southwest' ;
         orientation2 = 'southwest' ;
         orientation3 = 'northwest' ;

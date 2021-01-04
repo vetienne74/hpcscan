@@ -1,8 +1,8 @@
 
 //-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode Cuda
 // Derived class from Grid
-// Optimized for GPU
-// Version 1 ??
+// CUDA implementation (target GPU)
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_Cuda.h"

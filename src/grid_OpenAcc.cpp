@@ -1,8 +1,8 @@
 
 //-------------------------------------------------------------------------------------------------------
+// This grid is activated with command line option -testMode OpenAcc
 // Derived class from Grid
-// Optimized for GPU
-// Version 2 ??
+// OpenACC directives (target GPU)
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_OpenAcc.h"
