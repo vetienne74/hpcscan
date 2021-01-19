@@ -82,9 +82,17 @@ hpcscan has been designed to address these issues :smiley:
 
 :ballot_box_with_check: **Lightweight and portable** tool that can be easily deployed on a wide range of architectures including CPUs, GPUs and accelerators (see [Validated hardware, operating systems and compilers](#validated-hardware-operating-systems-and-compilers)). 
 
-:ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond getting accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. An example is shown below where several key parameters of an algorithm (a wave propagation kernel) are explored to find the optimum (in terms of computation speed vs accuracy) on the supercomputer Shaheen II at KAUST (see  [Performance benchmarks](#performance-benchmarks)).
+:ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond getting accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. An example is shown below where several key parameters of an algorithm (a wave propagation kernel) are explored to find the optimum (in terms of computation speed vs accuracy) on the supercomputer Shaheen II at KAUST. See  [Performance benchmarks](#performance-benchmarks) for details on this test case as well as scripts to perform the analysis.
 
 <img src="./script/testCase_Propa/paramAnalysis/hpcscanPropaParamAnalysisShaheen.jpg" alt="hpcscanPropaParamAnalysisShaheen.jpg" width="1000" height="700"/>
+
+<font size="2"> **Top left:** L1 Error between the computed (wavefield) and analytical solutions versus N, the number of grid points along on direction (grid size is NxNxN). Blue: Finite-Difference with 4th order stencil, Pink: 8th order and Red: 12th order. Squares are obtained with the standard propagator implementation while crosses are obtained when the Laplacian operator is computed separately. </font>
+
+<font size="2"> **Top right:** L1 Error between the computed and analytical solutions versus the computation time. The black star points to the configuration with an error below 1% and shortest computation time (i.e. the optimal configuration relative to the target error). </font>
+
+<font size="2"> **Bottom left:** Propagator bandwidth in GPoint/s versus N. </font>
+
+<font size="2"> **Bottom right:** Propagator bandwidth in GBtye/s versus N. </font>
 
 :ballot_box_with_check: **Set of representative kernels** used in many scientific applications (see [List of test cases](#list-of-test-cases)). Without being too specific, the embedded kernels provide a way to capture the main traits of HPC architectures and identify their bottle-necks and strenghts. With this knowledge, one can re-design or update accordingly specific parts of an application to take full benefit of the target hardware.
 
