@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <cmath>   // for fabs
 
 #include <mpi.h>
 #include <omp.h>
@@ -145,7 +146,7 @@ Rtn_code TestCase_Grid::run(void)
 			{
 				Myfloat maxErr ;
 				MPI_Reduce(&maxErrLoc, &maxErr, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
-				Myfloat maxErrRef = abs(2*a2-a1)/a1 ;
+				Myfloat maxErrRef = fabs(2*a2-a1)/a1 ;
 				checkFloatDiff(maxErr, maxErrRef, MAX_ERR_FLOAT) ;
 			}
 
@@ -184,7 +185,7 @@ Rtn_code TestCase_Grid::run(void)
 			// check testCase results
 			if (itry == 0)
 			{
-				Myfloat64 sum1 = (nGridPointGlob-1) * abs(a2-a1) + abs(2*a2-a1) ;
+				Myfloat64 sum1 = (nGridPointGlob-1) * fabs(a2-a1) + fabs(2*a2-a1) ;
 				Myfloat64 sum2 = nGridPointGlob * a1 ;
 				Myfloat L1ErrRef = sum1 / sum2 ;
 				checkFloatDiff(L1Err, L1ErrRef, MAX_ERR_FLOAT) ;
@@ -261,7 +262,7 @@ Rtn_code TestCase_Grid::run(void)
 			// check testCase results
 			if (itry == 0)
 			{
-				Myfloat64 sum1 = (nGridPointGlob-1) * abs(a2-a1) + abs(2*a2-a1) ;
+				Myfloat64 sum1 = (nGridPointGlob-1) * fabs(a2-a1) + fabs(2*a2-a1) ;
 				checkFloatDiff(sumAbsDiff, sum1, MAX_ERR_FLOAT) ;
 			}
 		}
