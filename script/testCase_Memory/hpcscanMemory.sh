@@ -8,38 +8,26 @@ start_time=$(date)
 
 sh ../clean_dir.sh
 
-# from 1 to 8 threads
+# set thread affinity
 export KMP_AFFINITY=scatter,1,0,granularity=fine
 
-export OMP_NUM_THREADS=1
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=2
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=4
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=8
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=12
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=16
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=20
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=24
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=28
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
-
-export OMP_NUM_THREADS=32
-$HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
+nthread=1
+while [ $nthread -le $HPCSCAN_NTHREADS ]
+do
+    echo "nthread $nthread"
+    export OMP_NUM_THREADS=$nthread
+    # run hpcscan
+    $HPCSCAN_MPI_INVOKER -n 1 ../../bin/hpcscan -testCase Memory -dim 3 -n1 ${n1} -n2 ${n2} -n3 ${n3}
+    
+    if [ $nthread -lt 8 ]
+    then
+	# from 1 to 8, increment is 1
+	nthread=$(( $nthread + 1 ))
+    else
+	# from 8 to $HPCSCAN_NTHREADS, increment is 4
+	nthread=$(( $nthread + 4 ))
+    fi
+done
 
 end_time=$(date)
 

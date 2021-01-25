@@ -6,7 +6,7 @@
 export HPCSCAN_MPI_INVOKER='mpirun --oversubscribe'
 
 # OpenMP config
-export HPCSCAN_NTHREADS=1
+export HPCSCAN_NTHREADS=4
 export KMP_AFFINITY=scatter,1,0,granularity=fine
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
