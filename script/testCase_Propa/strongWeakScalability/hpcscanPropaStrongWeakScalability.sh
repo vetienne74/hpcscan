@@ -1,6 +1,6 @@
 
 export KMP_AFFINITY=scatter,1,0,granularity=fine 
-export OMP_NUM_THREADS=32 
+export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
 start_time=$(date)
 
