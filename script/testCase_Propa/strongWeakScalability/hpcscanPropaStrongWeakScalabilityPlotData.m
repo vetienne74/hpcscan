@@ -38,7 +38,7 @@ for ifig = 1:1
     yPropaGpointEff = val.data(6:10,ipropaGpointEff) ;
     plot(xVal, yPropaGpointEff, 'ro-', 'LineWidth', 2., 'DisplayName', 'Propa O8')
     yValIdeal = xVal * yPropaGpointEff(1) ;
-    plot(xVal, yValIdeal, 'r--', 'LineWidth', 1.5, 'DisplayName', 'Ideal O4')
+    plot(xVal, yValIdeal, 'r--', 'LineWidth', 1.5, 'DisplayName', 'Ideal O8')
     if max(yValIdeal) > yMax 
         yMax = max(yValIdeal) ;
     end
@@ -46,9 +46,9 @@ for ifig = 1:1
     % O12
     xVal = val.data(11:15,iNproc) ;
     yPropaGpointEff = val.data(11:15,ipropaGpointEff) ;
-    plot(xVal, yPropaGpointEff, 'bo-', 'LineWidth', 2., 'DisplayName', 'Propa O8')
+    plot(xVal, yPropaGpointEff, 'bo-', 'LineWidth', 2., 'DisplayName', 'Propa O12')
     yValIdeal = xVal * yPropaGpointEff(1) ;
-    plot(xVal, yValIdeal, 'b--', 'LineWidth', 1.5, 'DisplayName', 'Ideal O4')
+    plot(xVal, yValIdeal, 'b--', 'LineWidth', 1.5, 'DisplayName', 'Ideal O12')
     if max(yValIdeal) > yMax 
         yMax = max(yValIdeal) ;
     end
@@ -73,14 +73,14 @@ for ifig = 1:1
     yPropaGpointEff = val.data(21:25,ipropaGpointEff) ;
     plot(xVal, yPropaGpointEff, 'ro-', 'LineWidth', 2., 'DisplayName', 'Propa O8')
     yValIdeal = xVal * yPropaGpointEff(1) ;
-    plot(xVal, yValIdeal, 'r--', 'LineWidth', 1.5, 'DisplayName', 'Ideal O4')
+    plot(xVal, yValIdeal, 'r--', 'LineWidth', 1.5, 'DisplayName', 'Ideal O8')
     
     % O12
     xVal = val.data(26:30,iNproc) ;
     yPropaGpointEff = val.data(26:30,ipropaGpointEff) ;
-    plot(xVal, yPropaGpointEff, 'bo-', 'LineWidth', 2., 'DisplayName', 'Propa O8')
+    plot(xVal, yPropaGpointEff, 'bo-', 'LineWidth', 2., 'DisplayName', 'Propa O12')
     yValIdeal = xVal * yPropaGpointEff(1) ;
-    plot(xVal, yValIdeal, 'b--', 'LineWidth', 1.5, 'DisplayName', 'Ideal O4')
+    plot(xVal, yValIdeal, 'b--', 'LineWidth', 1.5, 'DisplayName', 'Ideal O12')
     
     xlabel('# MPI'); ylabel('GPoint/s'); title ('Propagator Weak Scalability')
     xMax = max(val.data(:,iNproc)) ;
