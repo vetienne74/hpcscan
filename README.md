@@ -40,11 +40,12 @@ Version 1.1
 
 Contact: Vincent Etienne (Saudi Aramco / EXPEC ARC / GPT) / Email: vetienne@rocketmail.com
 
-Contributors
+Contributors (chronological order)
 * Vincent Etienne
 * Suha Kayum
 * Marcin Rogowski
 * Laurent Gatineau
+* Philippe Thierry
 
 # Overview
 
