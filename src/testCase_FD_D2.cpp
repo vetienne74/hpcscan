@@ -446,6 +446,9 @@ Rtn_code TestCase_FD_D2::run(void)
 		<< D2Axis3Gflop << " " << D2Axis3GpointFD << " " << D2Axis3GpointEff << " " << D2Axis3GB << " "
 		// 22, 23, 24, 25
 		<< D2LaplaGflop << " " << D2LaplaGpointFD << " " << D2LaplaGpointEff << " " << D2LaplaGB << " "
+
+		// cache block sizes
+		<< Config::Instance()->cb1 << " " << Config::Instance()->cb2 << " " << Config::Instance()->cb3
 		<< "\n" ;
 	}
 
