@@ -15,10 +15,10 @@ orientation3 = 'northwest' ;
 orientation4 = 'northwest' ;
 
 % indicate below the range of parameters in the log file
-fdOrderInLog = [4,8] ;
+fdOrderInLog = [2,4,8,12,16] ;
 cb1InLog     = 9999 ;
-cb2InLog     = 1:10 ;
-cb3InLog     = 1:10 ;
+cb2InLog     = 1:32 ;
+cb3InLog     = 1:32 ;
 % end input parameters
 %--------------------------------------------------------------------------
 
@@ -27,8 +27,24 @@ nfdOrderInLog = numel(fdOrderInLog)
 ncb1InLog     = numel(cb1InLog)
 ncb2InLog     = numel(cb2InLog)
 ncb3InLog     = numel(cb3InLog)
-perfMapGpoint = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
-perfMapGflop  = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+perfMapD2Axis1Gpoint = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+perfMapD2Axis1Gflop  = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+perfMapD2Axis2Gpoint = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+perfMapD2Axis2Gflop  = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+perfMapD2Axis3Gpoint = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+perfMapD2Axis3Gflop  = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+perfMapD2LaplaGpoint = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+perfMapD2LaplaGflop  = zeros(nfdOrderInLog, ncb1InLog, ncb2InLog, ncb3InLog) ;
+
+% allocate table to store max val and optimal cache size
+maxD2Axis1_gpoint = zeros(nfdOrderInLog,1) ;
+maxD2Axis2_gpoint = zeros(nfdOrderInLog,1) ;
+maxD2Axis3_gpoint = zeros(nfdOrderInLog,1) ;
+maxD2Lapla_gpoint = zeros(nfdOrderInLog,1) ;
+maxD2Axis1_cb = zeros(nfdOrderInLog,3) ;
+maxD2Axis2_cb = zeros(nfdOrderInLog,3) ;
+maxD2Axis3_cb = zeros(nfdOrderInLog,3) ;
+maxD2Lapla_cb = zeros(nfdOrderInLog,3) ;
 
 % index of parameters in log file
 iFDOrder          = 9 ;
@@ -62,7 +78,7 @@ val = importdata(pathFile) ;
 
 % build perf maps
 sizeLog = size(val.data)
-if (sizeLog(1) ~= numel(perfMapGpoint))
+if (sizeLog(1) ~= numel(perfMapD2Axis1Gpoint))
     disp('*** ERROR, LOG FILE INCONSISTENT WITH PARAM DESCRIPTION ! ***')
     return
 else
@@ -71,199 +87,132 @@ end
 
 for iconfig = 1:sizeLog(1)
     % get index in perf map
-    idxFdOrder = find(fdOrderInLog(:) == val.data(iconfig,iFDOrder)) 
-    idxCb1     = find(cb1InLog(:) == val.data(iconfig,iCB1)) 
-    idxCb2     = find(cb2InLog(:) == val.data(iconfig,iCB2)) 
-    idxCb3     = find(cb3InLog(:) == val.data(iconfig,iCB3)) 
+    idxFdOrder = find(fdOrderInLog(:) == val.data(iconfig,iFDOrder)) ;
+    idxCb1     = find(cb1InLog(:) == val.data(iconfig,iCB1)) ;
+    idxCb2     = find(cb2InLog(:) == val.data(iconfig,iCB2)) ;
+    idxCb3     = find(cb3InLog(:) == val.data(iconfig,iCB3)) ;
     
     % store GFlop
-    perfMapGflop(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2LaplaGflop) ;
+    perfMapD2Axis1Gflop(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2Axis1Gflop) ;
+    perfMapD2Axis2Gflop(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2Axis2Gflop) ;
+    perfMapD2Axis3Gflop(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2Axis3Gflop) ;
+    perfMapD2LaplaGflop(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2LaplaGflop) ;
     
     % store GPoint
+    perfMapD2Axis1Gpoint(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2Axis1GpointFD) ;
+    perfMapD2Axis2Gpoint(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2Axis2GpointFD) ;
+    perfMapD2Axis3Gpoint(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2Axis3GpointFD) ;
+    perfMapD2LaplaGpoint(idxFdOrder, idxCb1, idxCb2, idxCb3) = val.data(iconfig,iD2LaplaGpointFD) ;
 end
 
-figure
-perfMap = reshape(perfMapGflop(1, 1, :, :), [ncb2InLog ncb3InLog])
-surf(perfMap)
-view(0,90)
-axis tight
-colormap(jet)
+disp('START FIND OPTIM CACHE SIZE...')
+for iOrder = 1:nfdOrderInLog
+    for iCb1 = 1:ncb1InLog
+        for iCb2 = 1:ncb2InLog
+            for iCb3 = 1:ncb3InLog
+                if perfMapD2Axis1Gpoint(iOrder, iCb1, iCb2, iCb3) > maxD2Axis1_gpoint(iOrder)
+                    maxD2Axis1_gpoint(iOrder) = perfMapD2Axis1Gpoint(iOrder, iCb1, iCb2, iCb3) ;
+                    maxD2Axis1_cb(iOrder, 1) = iCb1 ;
+                    maxD2Axis1_cb(iOrder, 2) = iCb2 ;
+                    maxD2Axis1_cb(iOrder, 3) = iCb3 ;
+                end
+                if perfMapD2Axis2Gpoint(iOrder, iCb1, iCb2, iCb3) > maxD2Axis2_gpoint(iOrder)
+                    maxD2Axis2_gpoint(iOrder) = perfMapD2Axis2Gpoint(iOrder, iCb1, iCb2, iCb3) ;
+                    maxD2Axis2_cb(iOrder, 1) = iCb1 ;
+                    maxD2Axis2_cb(iOrder, 2) = iCb2 ;
+                    maxD2Axis2_cb(iOrder, 3) = iCb3 ;
+                end
+                if perfMapD2Axis3Gpoint(iOrder, iCb1, iCb2, iCb3) > maxD2Axis3_gpoint(iOrder)
+                    maxD2Axis3_gpoint(iOrder) = perfMapD2Axis3Gpoint(iOrder, iCb1, iCb2, iCb3) ;
+                    maxD2Axis3_cb(iOrder, 1) = iCb1 ;
+                    maxD2Axis3_cb(iOrder, 2) = iCb2 ;
+                    maxD2Axis3_cb(iOrder, 3) = iCb3 ;
+                end
+                if perfMapD2LaplaGpoint(iOrder, iCb1, iCb2, iCb3) > maxD2Lapla_gpoint(iOrder)
+                    maxD2Lapla_gpoint(iOrder) = perfMapD2LaplaGpoint(iOrder, iCb1, iCb2, iCb3) ;
+                    maxD2Lapla_cb(iOrder, 1) = iCb1 ;
+                    maxD2Lapla_cb(iOrder, 2) = iCb2 ;
+                    maxD2Lapla_cb(iOrder, 3) = iCb3 ;
+                end
+            end
+        end
+    end
+end
 
-return
 
-fdOrderVal = val.data(1:5,iFDOrder) ;
-cb1Val     = val.data(1:5,iCB1) ;
-cb2Val     = val.data(1:5,iCB2) ;
-cb3Val     = val.data(1:5,iCB3) ;
+for iOrder = 1:nfdOrderInLog
+%for iOrder = 5:5
+    
+    if (0)
+        %Gflop
+        figure('Position', [100 100 1000 800'])
+        
+        subplot(2,2,1); hold on
+        title(sprintf('FD O%d D2Axis1 Gflop', fdOrderInLog(iOrder)))
+        perfMap = reshape(perfMapD2Axis1Gflop(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+        surf(perfMap); colorbar
+        view(0,90); axis tight
+        
+        subplot(2,2,2); hold on
+        title(sprintf('FD O%d D2Axis2 Gflop', fdOrderInLog(iOrder)))
+        perfMap = reshape(perfMapD2Axis2Gflop(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+        surf(perfMap); colorbar
+        view(0,90); axis tight
+        
+        subplot(2,2,3); hold on
+        title(sprintf('FD O%d D2Axis3 Gflop', fdOrderInLog(iOrder)))
+        perfMap = reshape(perfMapD2Axis3Gflop(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+        surf(perfMap); colorbar
+        view(0,90); axis tight
+        
+        subplot(2,2,4); hold on
+        title(sprintf('FD O%d Lapla Gflop', fdOrderInLog(iOrder)))
+        perfMap = reshape(perfMapD2LaplaGflop(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+        surf(perfMap); colorbar
+        view(0,90); axis tight
+        
+        colormap(jet)
+    end
+    
+    %Gpoint
+    figure('Position', [100 100 1000 800'])
+    
+    subplot(2,2,1); hold on
+    title(sprintf('FD O%d D2Axis1 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
+        fdOrderInLog(iOrder), maxD2Axis1_gpoint(iOrder), maxD2Axis1_cb(iOrder, 2), maxD2Axis1_cb(iOrder, 3)))
+    xlabel('block size axis3'); ylabel('block size axis2');
+    perfMap = reshape(perfMapD2Axis1Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+    surf(perfMap); colorbar
+    view(0,90); axis tight
+    
+    subplot(2,2,2); hold on
+    title(sprintf('FD O%d D2Axis2 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
+        fdOrderInLog(iOrder), maxD2Axis2_gpoint(iOrder), maxD2Axis2_cb(iOrder, 2), maxD2Axis2_cb(iOrder, 3)))
+    xlabel('block size axis3'); ylabel('block size axis2');
+    perfMap = reshape(perfMapD2Axis2Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+    surf(perfMap); colorbar
+    view(0,90); axis tight
+    
+    subplot(2,2,3); hold on
+    title(sprintf('FD O%d D2Axis3 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
+        fdOrderInLog(iOrder), maxD2Axis3_gpoint(iOrder), maxD2Axis3_cb(iOrder, 2), maxD2Axis3_cb(iOrder, 3)))
+    xlabel('block size axis3'); ylabel('block size axis2');
+    perfMap = reshape(perfMapD2Axis3Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+    surf(perfMap); colorbar
+    view(0,90); axis tight
+    
+    subplot(2,2,4); hold on
+    title(sprintf('FD O%d Lapla Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
+        fdOrderInLog(iOrder), maxD2Lapla_gpoint(iOrder), maxD2Lapla_cb(iOrder, 2), maxD2Lapla_cb(iOrder, 3)))
+    xlabel('block size axis3'); ylabel('block size axis2');
+    perfMap = reshape(perfMapD2LaplaGpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+    surf(perfMap); colorbar
+    view(0,90); axis tight
+    
+    colormap(jet)
+end
 
-return
-
-figure('Position',[100 100 1000 800])
-
-%---------------------------------------------------------------------------------
-% GpointEff
-subplot(2,2,1); hold on
-
-xVal = val.data(1:5,iFDOrder) ;
-
-yD2Axis1 = val.data(1:5,iD2Axis1GpointEff) ;
-plot(xVal, yD2Axis1, 'ko-', 'LineWidth', 1, 'DisplayName', 'Ax1 Base')
-yD2Axis2 = val.data(1:5,iD2Axis2GpointEff) ;
-plot(xVal, yD2Axis2, 'bo-', 'LineWidth', 1, 'DisplayName', 'Ax2 Base')
-yD2Axis3 = val.data(1:5,iD2Axis3GpointEff) ;
-plot(xVal, yD2Axis3, 'go-', 'LineWidth', 1, 'DisplayName', 'Ax3 Base')
-yD2Lapla = val.data(1:5,iD2LaplaGpointEff) ;
-plot(xVal, yD2Lapla, 'mo-', 'LineWidth', 1, 'DisplayName', 'Lap Base')
-
-yD2Axis1 = val.data(6:10,iD2Axis1GpointEff) ;
-plot(xVal, yD2Axis1, 'ko--', 'LineWidth', 1.5, 'DisplayName', 'Ax1 Cach')
-yD2Axis2 = val.data(6:10,iD2Axis2GpointEff) ;
-plot(xVal, yD2Axis2, 'bo--', 'LineWidth', 1.5, 'DisplayName', 'Ax2 Cach')
-yD2Axis3 = val.data(6:10,iD2Axis3GpointEff) ;
-plot(xVal, yD2Axis3, 'go--', 'LineWidth', 1.5, 'DisplayName', 'Ax3 Cach')
-yD2Lapla = val.data(6:10,iD2LaplaGpointEff) ;
-plot(xVal, yD2Lapla, 'mo--', 'LineWidth', 1.5, 'DisplayName', 'Lap Cach')
-
-minY = 0 ; maxY = 0 ; minX = 0 ;
-maxX = max(xVal) ;
-maxY = max(maxY, max(yD2Axis1)) ;
-maxY = max(maxY, max(yD2Axis2)) ;
-maxY = max(maxY, max(yD2Axis3)) ;
-maxY = max(maxY, max(yD2Lapla)) ;
-
-xlabel('FD order'); ylabel('GPoint/s'); title ('GPoint/s Eff.')
-grid on
-maxY = max(maxY, max(yD2Axis1)) ;
-maxY = max(maxY, max(yD2Axis2)) ;
-maxY = max(maxY, max(yD2Axis3)) ;
-maxY = max(maxY, max(yD2Lapla)) ;
-axis([minX, maxX*1.1, minY, maxY*1.1])
-
-lgd = legend('show', 'Location', orientation1)
-lgd.FontSize = 7 ;
-
-%---------------------------------------------------------------------------------
-% GpointFD
-subplot(2,2,2); hold on
-
-yD2Axis1 = val.data(1:5,iD2Axis1GpointFD) ;
-plot(xVal, yD2Axis1, 'ko-', 'LineWidth', 1, 'DisplayName', 'Ax1 Base')
-yD2Axis2 = val.data(1:5,iD2Axis2GpointFD) ;
-plot(xVal, yD2Axis2, 'bo-', 'LineWidth', 1, 'DisplayName', 'Ax2 Base')
-yD2Axis3 = val.data(1:5,iD2Axis3GpointFD) ;
-plot(xVal, yD2Axis3, 'go-', 'LineWidth', 1, 'DisplayName', 'Ax3 Base')
-yD2Lapla = val.data(1:5,iD2LaplaGpointFD) ;
-plot(xVal, yD2Lapla, 'mo-', 'LineWidth', 1, 'DisplayName', 'Lap Base')
-
-yD2Axis1 = val.data(6:10,iD2Axis1GpointFD) ;
-plot(xVal, yD2Axis1, 'ko--', 'LineWidth', 1.5, 'DisplayName', 'Ax1 Cach')
-yD2Axis2 = val.data(6:10,iD2Axis2GpointFD) ;
-plot(xVal, yD2Axis2, 'bo--', 'LineWidth', 1.5, 'DisplayName', 'Ax2 Cach')
-yD2Axis3 = val.data(6:10,iD2Axis3GpointFD) ;
-plot(xVal, yD2Axis3, 'go--', 'LineWidth', 1.5, 'DisplayName', 'Ax3 Cach')
-yD2Lapla = val.data(6:10,iD2LaplaGpointFD) ;
-plot(xVal, yD2Lapla, 'mo--', 'LineWidth', 1.5, 'DisplayName', 'Lap Cach')
-
-minY = 0 ; maxY = 0 ; minX = 0 ;
-maxX = max(xVal) ;
-maxY = max(maxY, max(yD2Axis1)) ;
-maxY = max(maxY, max(yD2Axis2)) ;
-maxY = max(maxY, max(yD2Axis3)) ;
-maxY = max(maxY, max(yD2Lapla)) ;
-
-xlabel('FD order'); ylabel('GPoint/s'); title ('GPoint/s FD')
-grid on
-maxY = max(maxY, max(yD2Axis1)) ;
-maxY = max(maxY, max(yD2Axis2)) ;
-maxY = max(maxY, max(yD2Axis3)) ;
-maxY = max(maxY, max(yD2Lapla)) ;
-axis([minX, maxX*1.1, minY, maxY*1.1])
-
-lgd = legend('show', 'Location', orientation2)
-lgd.FontSize = 7 ;
-
-%---------------------------------------------------------------------------------
-% GfLop
-subplot(2,2,3); hold on
-
-yD2Axis1 = val.data(1:5,iD2Axis1Gflop) ;
-plot(xVal, yD2Axis1, 'ko-', 'LineWidth', 1, 'DisplayName', 'Ax1 Base')
-yD2Axis2 = val.data(1:5,iD2Axis2Gflop) ;
-plot(xVal, yD2Axis2, 'bo-', 'LineWidth', 1, 'DisplayName', 'Ax2 Base')
-yD2Axis3 = val.data(1:5,iD2Axis3Gflop) ;
-plot(xVal, yD2Axis3, 'go-', 'LineWidth', 1, 'DisplayName', 'Ax3 Base')
-yD2Lapla = val.data(1:5,iD2LaplaGflop) ;
-plot(xVal, yD2Lapla, 'mo-', 'LineWidth', 1, 'DisplayName', 'Lap Base')
-
-yD2Axis1 = val.data(6:10,iD2Axis1Gflop) ;
-plot(xVal, yD2Axis1, 'ko--', 'LineWidth', 1.5, 'DisplayName', 'Ax1 Cach')
-yD2Axis2 = val.data(6:10,iD2Axis2Gflop) ;
-plot(xVal, yD2Axis2, 'bo--', 'LineWidth', 1.5, 'DisplayName', 'Ax2 Cach')
-yD2Axis3 = val.data(6:10,iD2Axis3Gflop) ;
-plot(xVal, yD2Axis3, 'go--', 'LineWidth', 1.5, 'DisplayName', 'Ax3 Cach')
-yD2Lapla = val.data(6:10,iD2LaplaGflop) ;
-plot(xVal, yD2Lapla, 'mo--', 'LineWidth', 1.5, 'DisplayName', 'Lap Cach')
-
-minY = 0 ; maxY = 0 ; minX = 0 ;
-maxX = max(xVal) ;
-maxY = max(maxY, max(yD2Axis1)) ;
-maxY = max(maxY, max(yD2Axis2)) ;
-maxY = max(maxY, max(yD2Axis3)) ;
-maxY = max(maxY, max(yD2Lapla)) ;
-
-xlabel('FD order'); ylabel('GFLOP/s'); title ('GFLOP/s')
-grid on
-maxY = max(maxY, max(yD2Axis1)) ;
-maxY = max(maxY, max(yD2Axis2)) ;
-maxY = max(maxY, max(yD2Axis3)) ;
-maxY = max(maxY, max(yD2Lapla)) ;
-axis([minX, maxX*1.1, minY, maxY*1.1])
-
-lgd = legend('show', 'Location', orientation3)
-lgd.FontSize = 7 ;
-
-%---------------------------------------------------------------------------------
-% GB
-subplot(2,2,4); hold on
-
-yD2Axis1 = val.data(1:5,iD2Axis1GB) ;
-plot(xVal, yD2Axis1, 'ko-', 'LineWidth', 1, 'DisplayName', 'Ax1 Base')
-yD2Axis2 = val.data(1:5,iD2Axis2GB) ;
-plot(xVal, yD2Axis2, 'bo-', 'LineWidth', 1, 'DisplayName', 'Ax2 Base')
-yD2Axis3 = val.data(1:5,iD2Axis3GB) ;
-plot(xVal, yD2Axis3, 'go-', 'LineWidth', 1, 'DisplayName', 'Ax3 Base')
-yD2Lapla = val.data(1:5,iD2LaplaGB) ;
-plot(xVal, yD2Lapla, 'mo-', 'LineWidth', 1, 'DisplayName', 'Lap Base')
-
-yD2Axis1 = val.data(6:10,iD2Axis1GB) ;
-plot(xVal, yD2Axis1, 'ko--', 'LineWidth', 1.5, 'DisplayName', 'Ax1 Cach')
-yD2Axis2 = val.data(6:10,iD2Axis2GB) ;
-plot(xVal, yD2Axis2, 'bo--', 'LineWidth', 1.5, 'DisplayName', 'Ax2 Cach')
-yD2Axis3 = val.data(6:10,iD2Axis3GB) ;
-plot(xVal, yD2Axis3, 'go--', 'LineWidth', 1.5, 'DisplayName', 'Ax3 Cach')
-yD2Lapla = val.data(6:10,iD2LaplaGB) ;
-plot(xVal, yD2Lapla, 'mo--', 'LineWidth', 1.5, 'DisplayName', 'Lap Cach')
-
-minY = 0 ; maxY = 0 ; minX = 0 ;
-maxX = max(xVal) ;
-maxY = max(maxY, max(yD2Axis1)) ;
-maxY = max(maxY, max(yD2Axis2)) ;
-maxY = max(maxY, max(yD2Axis3)) ;
-maxY = max(maxY, max(yD2Lapla)) ;
-
-xlabel('FD order'); ylabel('GB/s'); title ('GB/s')
-grid on
-maxY = max(maxY, max(yD2Axis1)) ;
-maxY = max(maxY, max(yD2Axis2)) ;
-maxY = max(maxY, max(yD2Axis3)) ;
-maxY = max(maxY, max(yD2Lapla)) ;
-axis([minX, maxX*1.1, minY, maxY*1.1])
-
-lgd = legend('show', 'Location', orientation4)
-lgd.FontSize = 7 ;
-
-%---------------------------------------------------------------------------------
-figFile = sprintf('%s.jpg', FILE) ;
-print('-djpeg', figFile)
+%figFile = sprintf('%s.jpg', FILE) ;
+%print('-djpeg', figFile)
 
 %end
