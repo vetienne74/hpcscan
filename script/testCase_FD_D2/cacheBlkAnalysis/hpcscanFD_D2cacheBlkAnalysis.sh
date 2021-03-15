@@ -20,6 +20,7 @@ echo Launch MPI with $HPCSCAN_MPI_INVOKER
 
 # clean dir
 sh ./clean_dir.sh
+rm -f hpcscanFD_D2cacheBlkAnalysis.out
 
 # build scripts
 python3 buildConfigScript.py

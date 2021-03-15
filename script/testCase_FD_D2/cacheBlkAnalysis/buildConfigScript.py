@@ -2,13 +2,13 @@
 script_template = 'templateScript.sh'
 
 n1Range=['1000']
-fdOrderRange=['4','8']
-dim='1'
+fdOrderRange=['2','4','8','12','16']
+dim='3'
 ntry='5'
 cb1Range=[9999]
-# from 1 to 10
-cb2Range=range(1,11,1)
-cb3Range=range(1,11,1)
+# from 1 to 32
+cb2Range=range(1,33,1)
+cb3Range=range(1,33,1)
 
 #-----------------------------------------------------------------
 configName='config'
