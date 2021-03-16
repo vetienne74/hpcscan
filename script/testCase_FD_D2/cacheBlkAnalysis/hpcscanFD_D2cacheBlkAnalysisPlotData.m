@@ -9,16 +9,14 @@ DIR  = '.' ;
 %FILE = 'hpcscanFD_D2Shaheen' ;
 FILE = 'hpcscan.perf.FD_D2' ;
 
-orientation1 = 'southwest' ;
-orientation2 = 'southwest' ;
-orientation3 = 'northwest' ;
-orientation4 = 'northwest' ;
-
 % indicate below the range of parameters in the log file
 fdOrderInLog = [2,4,8,12,16] ;
 cb1InLog     = 9999 ;
 cb2InLog     = 1:32 ;
 cb3InLog     = 1:32 ;
+
+PLOT_GPOINT = 0 ;
+PLOT_GFLOP   = 1 ;
 % end input parameters
 %--------------------------------------------------------------------------
 
@@ -41,6 +39,10 @@ maxD2Axis1_gpoint = zeros(nfdOrderInLog,1) ;
 maxD2Axis2_gpoint = zeros(nfdOrderInLog,1) ;
 maxD2Axis3_gpoint = zeros(nfdOrderInLog,1) ;
 maxD2Lapla_gpoint = zeros(nfdOrderInLog,1) ;
+maxD2Axis1_gflop = zeros(nfdOrderInLog,1) ;
+maxD2Axis2_gflop = zeros(nfdOrderInLog,1) ;
+maxD2Axis3_gflop = zeros(nfdOrderInLog,1) ;
+maxD2Lapla_gflop = zeros(nfdOrderInLog,1) ;
 maxD2Axis1_cb = zeros(nfdOrderInLog,3) ;
 maxD2Axis2_cb = zeros(nfdOrderInLog,3) ;
 maxD2Axis3_cb = zeros(nfdOrderInLog,3) ;
@@ -112,24 +114,28 @@ for iOrder = 1:nfdOrderInLog
             for iCb3 = 1:ncb3InLog
                 if perfMapD2Axis1Gpoint(iOrder, iCb1, iCb2, iCb3) > maxD2Axis1_gpoint(iOrder)
                     maxD2Axis1_gpoint(iOrder) = perfMapD2Axis1Gpoint(iOrder, iCb1, iCb2, iCb3) ;
+                    maxD2Axis1_gflop(iOrder) = perfMapD2Axis1Gflop(iOrder, iCb1, iCb2, iCb3) ;
                     maxD2Axis1_cb(iOrder, 1) = iCb1 ;
                     maxD2Axis1_cb(iOrder, 2) = iCb2 ;
                     maxD2Axis1_cb(iOrder, 3) = iCb3 ;
                 end
                 if perfMapD2Axis2Gpoint(iOrder, iCb1, iCb2, iCb3) > maxD2Axis2_gpoint(iOrder)
                     maxD2Axis2_gpoint(iOrder) = perfMapD2Axis2Gpoint(iOrder, iCb1, iCb2, iCb3) ;
+                    maxD2Axis2_gflop(iOrder) = perfMapD2Axis2Gflop(iOrder, iCb1, iCb2, iCb3) ;
                     maxD2Axis2_cb(iOrder, 1) = iCb1 ;
                     maxD2Axis2_cb(iOrder, 2) = iCb2 ;
                     maxD2Axis2_cb(iOrder, 3) = iCb3 ;
                 end
                 if perfMapD2Axis3Gpoint(iOrder, iCb1, iCb2, iCb3) > maxD2Axis3_gpoint(iOrder)
                     maxD2Axis3_gpoint(iOrder) = perfMapD2Axis3Gpoint(iOrder, iCb1, iCb2, iCb3) ;
+                    maxD2Axis3_gflop(iOrder) = perfMapD2Axis3Gflop(iOrder, iCb1, iCb2, iCb3) ;
                     maxD2Axis3_cb(iOrder, 1) = iCb1 ;
                     maxD2Axis3_cb(iOrder, 2) = iCb2 ;
                     maxD2Axis3_cb(iOrder, 3) = iCb3 ;
                 end
                 if perfMapD2LaplaGpoint(iOrder, iCb1, iCb2, iCb3) > maxD2Lapla_gpoint(iOrder)
                     maxD2Lapla_gpoint(iOrder) = perfMapD2LaplaGpoint(iOrder, iCb1, iCb2, iCb3) ;
+                    maxD2Lapla_gflop(iOrder) = perfMapD2LaplaGflop(iOrder, iCb1, iCb2, iCb3) ;
                     maxD2Lapla_cb(iOrder, 1) = iCb1 ;
                     maxD2Lapla_cb(iOrder, 2) = iCb2 ;
                     maxD2Lapla_cb(iOrder, 3) = iCb3 ;
@@ -143,76 +149,89 @@ end
 for iOrder = 1:nfdOrderInLog
 %for iOrder = 5:5
     
-    if (0)
+    if (PLOT_GFLOP)
         %Gflop
         figure('Position', [100 100 1000 800'])
         
         subplot(2,2,1); hold on
-        title(sprintf('FD O%d D2Axis1 Gflop', fdOrderInLog(iOrder)))
+        title(sprintf('FD O%d D2Axis1 Gflop \n Max %.1f / cb2=%d cb3=%d', ...
+            fdOrderInLog(iOrder), maxD2Axis1_gflop(iOrder), maxD2Axis1_cb(iOrder, 2), maxD2Axis1_cb(iOrder, 3)))
+        xlabel('block size axis3'); ylabel('block size axis2');
         perfMap = reshape(perfMapD2Axis1Gflop(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
         surf(perfMap); colorbar
         view(0,90); axis tight
         
         subplot(2,2,2); hold on
-        title(sprintf('FD O%d D2Axis2 Gflop', fdOrderInLog(iOrder)))
+        title(sprintf('FD O%d D2Axis2 Gflop \n Max %.1f / cb2=%d cb3=%d', ...
+            fdOrderInLog(iOrder), maxD2Axis2_gflop(iOrder), maxD2Axis2_cb(iOrder, 2), maxD2Axis2_cb(iOrder, 3)))
+        xlabel('block size axis3'); ylabel('block size axis2');
         perfMap = reshape(perfMapD2Axis2Gflop(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
         surf(perfMap); colorbar
         view(0,90); axis tight
         
         subplot(2,2,3); hold on
-        title(sprintf('FD O%d D2Axis3 Gflop', fdOrderInLog(iOrder)))
+        title(sprintf('FD O%d D2Axis3 Gflop \n Max %.1f / cb2=%d cb3=%d', ...
+            fdOrderInLog(iOrder), maxD2Axis3_gflop(iOrder), maxD2Axis3_cb(iOrder, 2), maxD2Axis3_cb(iOrder, 3)))
+        xlabel('block size axis3'); ylabel('block size axis2');
         perfMap = reshape(perfMapD2Axis3Gflop(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
         surf(perfMap); colorbar
         view(0,90); axis tight
         
         subplot(2,2,4); hold on
-        title(sprintf('FD O%d Lapla Gflop', fdOrderInLog(iOrder)))
+        title(sprintf('FD O%d Lapla Gflop \n Max %.1f / cb2=%d cb3=%d', ...
+            fdOrderInLog(iOrder), maxD2Lapla_gflop(iOrder), maxD2Lapla_cb(iOrder, 2), maxD2Lapla_cb(iOrder, 3)))
+        xlabel('block size axis3'); ylabel('block size axis2');
         perfMap = reshape(perfMapD2LaplaGflop(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
         surf(perfMap); colorbar
         view(0,90); axis tight
         
         colormap(jet)
+        
+        figFile = sprintf('%s_GflopFD_O%d.jpg', FILE, fdOrderInLog(iOrder)) ;
+        print('-djpeg', figFile)
     end
     
     %Gpoint
-    figure('Position', [100 100 1000 800'])
-    
-    subplot(2,2,1); hold on
-    title(sprintf('FD O%d D2Axis1 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
-        fdOrderInLog(iOrder), maxD2Axis1_gpoint(iOrder), maxD2Axis1_cb(iOrder, 2), maxD2Axis1_cb(iOrder, 3)))
-    xlabel('block size axis3'); ylabel('block size axis2');
-    perfMap = reshape(perfMapD2Axis1Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
-    surf(perfMap); colorbar
-    view(0,90); axis tight
-    
-    subplot(2,2,2); hold on
-    title(sprintf('FD O%d D2Axis2 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
-        fdOrderInLog(iOrder), maxD2Axis2_gpoint(iOrder), maxD2Axis2_cb(iOrder, 2), maxD2Axis2_cb(iOrder, 3)))
-    xlabel('block size axis3'); ylabel('block size axis2');
-    perfMap = reshape(perfMapD2Axis2Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
-    surf(perfMap); colorbar
-    view(0,90); axis tight
-    
-    subplot(2,2,3); hold on
-    title(sprintf('FD O%d D2Axis3 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
-        fdOrderInLog(iOrder), maxD2Axis3_gpoint(iOrder), maxD2Axis3_cb(iOrder, 2), maxD2Axis3_cb(iOrder, 3)))
-    xlabel('block size axis3'); ylabel('block size axis2');
-    perfMap = reshape(perfMapD2Axis3Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
-    surf(perfMap); colorbar
-    view(0,90); axis tight
-    
-    subplot(2,2,4); hold on
-    title(sprintf('FD O%d Lapla Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
-        fdOrderInLog(iOrder), maxD2Lapla_gpoint(iOrder), maxD2Lapla_cb(iOrder, 2), maxD2Lapla_cb(iOrder, 3)))
-    xlabel('block size axis3'); ylabel('block size axis2');
-    perfMap = reshape(perfMapD2LaplaGpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
-    surf(perfMap); colorbar
-    view(0,90); axis tight
-    
-    colormap(jet)
+    if (PLOT_GPOINT)
+        figure('Position', [100 100 1000 800'])
+        
+        subplot(2,2,1); hold on
+        title(sprintf('FD O%d D2Axis1 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
+            fdOrderInLog(iOrder), maxD2Axis1_gpoint(iOrder), maxD2Axis1_cb(iOrder, 2), maxD2Axis1_cb(iOrder, 3)))
+        xlabel('block size axis3'); ylabel('block size axis2');
+        perfMap = reshape(perfMapD2Axis1Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+        surf(perfMap); colorbar
+        view(0,90); axis tight
+        
+        subplot(2,2,2); hold on
+        title(sprintf('FD O%d D2Axis2 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
+            fdOrderInLog(iOrder), maxD2Axis2_gpoint(iOrder), maxD2Axis2_cb(iOrder, 2), maxD2Axis2_cb(iOrder, 3)))
+        xlabel('block size axis3'); ylabel('block size axis2');
+        perfMap = reshape(perfMapD2Axis2Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+        surf(perfMap); colorbar
+        view(0,90); axis tight
+        
+        subplot(2,2,3); hold on
+        title(sprintf('FD O%d D2Axis3 Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
+            fdOrderInLog(iOrder), maxD2Axis3_gpoint(iOrder), maxD2Axis3_cb(iOrder, 2), maxD2Axis3_cb(iOrder, 3)))
+        xlabel('block size axis3'); ylabel('block size axis2');
+        perfMap = reshape(perfMapD2Axis3Gpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+        surf(perfMap); colorbar
+        view(0,90); axis tight
+        
+        subplot(2,2,4); hold on
+        title(sprintf('FD O%d Lapla Gpoint \n Max %.1f / cb2=%d cb3=%d', ...
+            fdOrderInLog(iOrder), maxD2Lapla_gpoint(iOrder), maxD2Lapla_cb(iOrder, 2), maxD2Lapla_cb(iOrder, 3)))
+        xlabel('block size axis3'); ylabel('block size axis2');
+        perfMap = reshape(perfMapD2LaplaGpoint(iOrder, 1, :, :), [ncb2InLog ncb3InLog]) ;
+        surf(perfMap); colorbar
+        view(0,90); axis tight
+        
+        colormap(jet)
+        
+        figFile = sprintf('%s_GpointFD_O%d.jpg', FILE, fdOrderInLog(iOrder)) ;
+        print('-djpeg', figFile)
+    end
 end
-
-%figFile = sprintf('%s.jpg', FILE) ;
-%print('-djpeg', figFile)
 
 %end
