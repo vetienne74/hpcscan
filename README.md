@@ -46,6 +46,7 @@ Contributors (chronological order)
 * Marcin Rogowski
 * Laurent Gatineau
 * Philippe Thierry
+* Fabrice Dupros
 
 # Overview
 
