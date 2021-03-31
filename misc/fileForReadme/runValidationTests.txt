@@ -32,16 +32,16 @@ End testDriver.sh
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Mon 04 Jan 2021 08:17:18 AM +03
-# Ended    :  Mon 04 Jan 2021 08:18:09 AM +03
-On machine :  neptune
+# Started  :  Wed 31 Mar 2021 08:48:13 AM +03
+# Ended    :  Wed 31 Mar 2021 08:48:54 AM +03
+On machine :  mars
 Done by    :  vincent
 * SUMMARY
 # PASSED  : 662
 # FAILED  : 0
 # ERROR   : 0
 # WARNING : 0
-==> Results of tests are saved in runValidationTests.neptune.vincent.out
+==> Results of tests are saved in runValidationTests.mars.vincent.out
 
 ========================================================================
                          END VALIDATION TESTS

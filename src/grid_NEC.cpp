@@ -80,7 +80,7 @@ void Grid_NEC::info(void)
 	// additional info
 	//printInfo(MASTER, " TO BE COMPLETED") ;
 
-	printDebug(FULL_DEBUG, "IN Grid_NEC::info");
+	printDebug(FULL_DEBUG, "OUT Grid_NEC::info");
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1123,16 +1123,30 @@ Myfloat Grid_NEC::getMin(Point_type pointType)
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 	Myfloat val = FLT_MAX ;
 
+	Myint64 nn1 = i1End - i1Start + 1;
+	Myint64 nn2 = i2End - i2Start + 1;
+	Myint64 nn3 = i3End - i3Start + 1;
+	Myint64 n = nn1 * nn2 * nn3;
+
+#pragma omp parallel for
+        for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+        {
+                Myint64 tmp_idx = (i3 - i3Start) * nn1 * nn2;
+                for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+                {
+                        Myint64 idx = i1Start + i2 * n1 + i3 * n1 * n2;
+                        for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+                        {
+                                tmp_grid_3d[tmp_idx++] = grid_3d[idx++];
+                        }
+                }
+        }
+
 #pragma omp parallel for reduction(min:val)
-	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-	{
-		for (Myint64 i2 = i1Start + i2Start * n1; i2<= i1End + i2End * n1; i2++)
-		{
-			Myint64 ii = i2 + i3*n2*n1 ;
-			Myint64 i1 = (i2 - i1Start) % n1 + i1Start;
-			if (i1 >= i1Start && i1 <= i1End && grid_3d[ii] < val) val = grid_3d[ii] ;
-		}
-	}
+        for (Myint64 i = 0; i < n; i++)
+        {
+                if (tmp_grid_3d[i] < val) val = tmp_grid_3d[i] ;
+        }
 
 	printDebug(LIGHT_DEBUG, "Min val", val);
 
@@ -1151,15 +1165,29 @@ Myfloat Grid_NEC::getMax(Point_type pointType)
 
 	Myfloat val = -FLT_MAX ;
 
-#pragma omp parallel for reduction(max:val)
+	Myint64 nn1 = i1End - i1Start + 1;
+	Myint64 nn2 = i2End - i2Start + 1;
+	Myint64 nn3 = i3End - i3Start + 1;
+	Myint64 n = nn1 * nn2 * nn3;
+
+#pragma omp parallel for
 	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 	{
-		for (Myint64 i2 = i1Start + i2Start * n1; i2<= i1End + i2End * n1; i2++)
+		Myint64 tmp_idx = (i3 - i3Start) * nn1 * nn2;
+		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 		{
-			Myint64 ii = i2 + i3*n2*n1 ;
-			Myint64 i1 = (i2 - i1Start) % n1 + i1Start;
-			if (i1 >= i1Start && i1 <= i1End && grid_3d[ii] > val) val = grid_3d[ii] ;
+			Myint64 idx = i1Start + i2 * n1 + i3 * n1 * n2;
+			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+			{
+				tmp_grid_3d[tmp_idx++] = grid_3d[idx++];
+			}
 		}
+	}
+
+#pragma omp parallel for reduction(max:val)
+	for (Myint64 i = 0; i < n; i++)
+	{
+		if (tmp_grid_3d[i] > val) val = tmp_grid_3d[i] ;
 	}
 
 	printDebug(LIGHT_DEBUG, "Max val", val);
@@ -1414,6 +1442,8 @@ void Grid_NEC::initializeGrid(void)
 	 */
 	flag_packed_stencil = (((reinterpret_cast<std::uintptr_t>(&(u[i1Start+i2Start*n1+i3Start*n1*n2]))) & 0x7) == 0) && ((i1End-i1Start+1) % 2 == 0) && (nlayer % 2 == 0);
 #endif
+
+	tmp_grid_3d = new Myfloat[npoint] ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC::initializeGrid");
 }
