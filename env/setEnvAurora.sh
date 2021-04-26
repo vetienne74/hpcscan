@@ -8,7 +8,7 @@ export HPCSCAN_MPI_INVOKER='mpirun'
 
 # OpenMP config
 export HPCSCAN_NTHREADS=8
-export KMP_AFFINITY=scatter,1,0,granularity=fine
+export KMP_AFFINITY=granularity=fine,compact
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
 # C++ compiler

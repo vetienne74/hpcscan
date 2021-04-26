@@ -14,7 +14,7 @@
 
 hostname
 source ../../script/set_env_for_ibex.sh
-export KMP_AFFINITY=scatter,1,0,granularity=fine
+export KMP_AFFINITY=granularity=fine,compact
 export OMP_NUM_THREADS=32
 mpirun -n 1 ../../bin/hpcscan -testCase Grid -dim 3 -n1 500 -n2 500 -n3 500 -testMode Baseline
 

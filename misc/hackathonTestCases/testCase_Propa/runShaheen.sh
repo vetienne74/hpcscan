@@ -1,5 +1,5 @@
 
-export KMP_AFFINITY=scatter,1,0,granularity=fine 
+export KMP_AFFINITY=granularity=fine,compact 
 export OMP_NUM_THREADS=32
 
 start_time=$(date)
