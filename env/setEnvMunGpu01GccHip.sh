@@ -19,9 +19,14 @@ export HPCSCAN_CPP_FLAGCOMP='-w -g -O3 -mavx2 -fopenmp -fPIC'
 export HPCSCAN_CPP_LIB=
 
 # CUDA compiler
-export HPCSCAN_CUDA=hipcc
-export HPCSCAN_CUDA_FLAGCOMP='-fPIC -I /opt/mpi/ompi/include/'
-export HPCSCAN_CUDA_LIB='-L/opt/rocm/lib -lamdhip64 '
+export HPCSCAN_CUDA=
+export HPCSCAN_CUDA_FLAGCOMP=
+export HPCSCAN_CUDA_LIB=
+
+# HIP compiler
+export HPCSCAN_HIP=hipcc
+export HPCSCAN_HIP_FLAGCOMP='-fPIC -I /opt/mpi/ompi/include/'
+export HPCSCAN_HIP_LIB='-L/opt/rocm/lib -lamdhip64 '
 
 echo HPCSCAN set for MunGpu01 with $HPCSCAN_CPP and $HPCSCAN_CUDA.
 

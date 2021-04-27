@@ -43,7 +43,14 @@ Rtn_code TestCase::initialize(void)
 
 		}
 #ifdef __CUDA__
-		else if (Config::Instance()->testMode.compare("Cuda") == 0)
+		else if (Config::Instance()->testMode.compare("CUDA") == 0)
+		{
+
+		}
+#endif
+
+#ifdef __HIP__
+		else if (Config::Instance()->testMode.compare("HIP") == 0)
 		{
 
 		}

@@ -35,9 +35,16 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	}
 
 #ifdef __CUDA__
-	else if (gridMode.compare("Cuda") == 0)
+	else if (gridMode.compare("CUDA") == 0)
 	{
 		Rgrid = new Grid_Cuda(gridType) ;
+	}
+#endif
+
+#ifdef __HIP__
+	else if (gridMode.compare("HIP") == 0)
+	{
+		Rgrid = new Grid_Hip(gridType) ;
 	}
 #endif
 
@@ -95,9 +102,16 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	}
 
 #ifdef __CUDA__
-	else if (gridMode.compare("Cuda") == 0)
+	else if (gridMode.compare("CUDA") == 0)
 	{
 		Rgrid = new Grid_Cuda(gridType, dim, n1, n2, n3) ;
+	}
+#endif
+
+#ifdef __HIP__
+	else if (gridMode.compare("HIP") == 0)
+	{
+		Rgrid = new Grid_Hip(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 

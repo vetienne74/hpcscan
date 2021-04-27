@@ -200,7 +200,8 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -testMode <string>   = test mode") ;
 			printInfo(MASTER, "     Baseline         * CPU without optimization (DEFAULT)") ;
 			printInfo(MASTER, "     CacheBlk         * CPU with cache blocking techniques") ;
-			printInfo(MASTER, "     Cuda             * GPU with CUDA without optimization") ;
+			printInfo(MASTER, "     CUDA             * GPU with CUDA without optimization") ;
+			printInfo(MASTER, "     HIP              * GPU with HIP without optimization") ;
 			printInfo(MASTER, "     NEC              * NEC with compiler directives") ;
 			printInfo(MASTER, "     NEC_SCA          * NEC with Stencil Code Accelerator") ;
 			printInfo(MASTER, "     OpenAcc          * GPU with OpenAcc without optimization") ;

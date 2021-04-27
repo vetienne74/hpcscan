@@ -1,6 +1,6 @@
 
 //-------------------------------------------------------------------------------------------------------
-// This grid is activated with command line option -testMode Cuda
+// This grid is activated with command line option -testMode CUDA
 // Derived class from Grid
 // CUDA implementation (target GPU)
 //-------------------------------------------------------------------------------------------------------

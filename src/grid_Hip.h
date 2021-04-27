@@ -1,12 +1,12 @@
 
 //-------------------------------------------------------------------------------------------------------
-// This grid is activated with command line option -testMode CUDA
+// This grid is activated with command line option -testMode HIP
 // Derived class from Grid
-// CUDA implementation (target GPU)
+// HIP implementation (target GPU)
 //-------------------------------------------------------------------------------------------------------
 
-#ifndef HPCSCAN_GRID_CUDA_H_
-#define HPCSCAN_GRID_CUDA_H_
+#ifndef HPCSCAN_GRID_HIP_H_
+#define HPCSCAN_GRID_HIP_H_
 
 #include <string>
 
@@ -17,18 +17,18 @@
 
 namespace hpcscan {
 
-class Grid_Cuda : public Grid
+class Grid_Hip : public Grid
 {
 public:
 
 	// constructor
-	Grid_Cuda(Grid_type) ;
+	Grid_Hip(Grid_type) ;
 
 	// constructor
-	Grid_Cuda(Grid_type, Dim_type, Myint64, Myint64, Myint64) ;
+	Grid_Hip(Grid_type, Dim_type, Myint64, Myint64, Myint64) ;
 
 	// destructor
-	~Grid_Cuda(void) ;
+	~Grid_Hip(void) ;
 
 	// compute pressure with FD
 	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;

@@ -46,6 +46,11 @@ ifneq ($(strip $(HPCSCAN_CUDA)),)
 HPCSCAN_CPP_FLAGCOMP+=-D__CUDA__
 endif
 
+# WITH HIP
+ifneq ($(strip $(HPCSCAN_HIP)),)
+HPCSCAN_CPP_FLAGCOMP+=-D__HIP__
+endif
+
 # WITH OPENACC
 ifneq ($(strip $(HPCSCAN_CPP_OPENACC_FLAG)),)
 HPCSCAN_CPP_FLAGCOMP+=-D__OPENACC__
@@ -75,6 +80,9 @@ CPP_OPENACC_OBJ = grid_OpenAcc.o
 # Cuda objects
 CUDA_OBJ = grid_Cuda.o
 
+# Hip objects
+HIP_OBJ = grid_Hip.o
+
 # NEC objects
 CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o
 
@@ -82,23 +90,33 @@ CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o
 #-----------------------------
 # common C++ objects
 ALL_OBJ = ${CPP_OBJ}
-ifneq ($(strip $(HPCSCAN_CUDA)),)
+
 # CUDA objects
+ifneq ($(strip $(HPCSCAN_CUDA)),)
 ALL_OBJ += ${CUDA_OBJ}
 endif
+
+# HIP objects
+ifneq ($(strip $(HPCSCAN_HIP)),)
+ALL_OBJ += ${HIP_OBJ}
+endif
+
 # OpenACC objects
 ifneq ($(strip $(HPCSCAN_CPP_OPENACC_FLAG)),)
 ALL_OBJ += ${CPP_OPENACC_OBJ}
 endif
+
 # NEC objects
 ifeq ($(HPCSCAN_CPP), mpinc++)
 ALL_OBJ += ${CPP_NEC_OBJ}
 endif
 
-.SUFFIXES: .o .cpp .cu
+.SUFFIXES: .o .cpp .cu .hip
 
 .cu.o:
 	$(HPCSCAN_CUDA) -c $(HPCSCAN_CUDA_FLAGCOMP) $<
+.hip.o:
+	$(HPCSCAN_HIP) -c $(HPCSCAN_HIP_FLAGCOMP) $<
 .cpp.o:
 	$(HPCSCAN_CPP) -c $(HPCSCAN_CPP_FLAGCOMP) $<
 
@@ -106,7 +124,7 @@ all: version hpcscan
 
 hpcscan: $(ALL_OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(HPCSCAN_CPP) $(HPCSCAN_CPP_FLAGCOMP) -o $(BIN_DIR)/$@ $(ALL_OBJ) $(HPCSCAN_CPP_LIB) $(HPCSCAN_CUDA_LIB)
+	$(HPCSCAN_CPP) $(HPCSCAN_CPP_FLAGCOMP) -o $(BIN_DIR)/$@ $(ALL_OBJ) $(HPCSCAN_CPP_LIB) $(HPCSCAN_CUDA_LIB) $(HPCSCAN_HIP_LIB)
 	@echo $(BUILD_MESSAGE)
 	@$(HPCSCAN_CPP) --version
 

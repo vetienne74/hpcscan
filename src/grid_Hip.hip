@@ -1,12 +1,12 @@
 #include "hip/hip_runtime.h"
 
 //-------------------------------------------------------------------------------------------------------
-// This grid is activated with command line option -testMode Cuda
+// This grid is activated with command line option -testMode HIP
 // Derived class from Grid
-// CUDA implementation (target GPU)
+// HIP implementation (target GPU)
 //-------------------------------------------------------------------------------------------------------
 
-#include "grid_Cuda.h"
+#include "grid_Hip.h"
 
 #include <algorithm> // for min and max
 #include <cassert>
@@ -561,53 +561,53 @@ __global__ void cuda_computePressureWithFD_O8(Myfloat *prn, Myfloat *prc, Myfloa
 
 //-------------------------------------------------------------------------------------------------------
 
-Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn) : Grid(gridTypeIn)
+Grid_Hip::Grid_Hip(Grid_type gridTypeIn) : Grid(gridTypeIn)
 														{
-	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
+	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
 
 	gridMode = "Cuda" ;
 	
 	d_grid_3d = NULL;
 	d_help_3d = NULL;
 
-	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
+	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
 														}
 
 //-------------------------------------------------------------------------------------------------------
 
-Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn, Dim_type dimIn,
+Grid_Hip::Grid_Hip(Grid_type gridTypeIn, Dim_type dimIn,
 		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid(gridTypeIn, dimIn,
 				n1InnerIn, n2InnerIn, n3InnerIn)
 {
-	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
+	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
 
 	gridMode = "Cuda" ;
 	
 	d_grid_3d = NULL;
 	d_help_3d = NULL;
 
-	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
+	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-Grid_Cuda::~Grid_Cuda(void)
+Grid_Hip::~Grid_Hip(void)
 {
-	printDebug(MID_DEBUG, "IN Grid_Cuda::~Grid_Cuda");
+	printDebug(MID_DEBUG, "IN Grid_Hip::~Grid_Hip");
 
 	//delete[] grid_3d ;
 	hipFree(d_grid_3d);
 	hipFree(d_help_3d);
 	cudaCheckError();
 
-	printDebug(MID_DEBUG, "OUT Grid_Cuda::~Grid_Cuda");
+	printDebug(MID_DEBUG, "OUT Grid_Hip::~Grid_Hip");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_Cuda::info(void)
+void Grid_Hip::info(void)
 {
-	printDebug(FULL_DEBUG, "IN Grid_Cuda::info");
+	printDebug(FULL_DEBUG, "IN Grid_Hip::info");
 
 	// parent class info
 	Grid::info() ;
@@ -615,29 +615,29 @@ void Grid_Cuda::info(void)
 	// additional info
 	// TO DO
 
-	printDebug(FULL_DEBUG, "IN Grid_Cuda::info");
+	printDebug(FULL_DEBUG, "IN Grid_Hip::info");
 }
 
 
 //-------------------------------------------------------------------------------------------------------
 
-Rtn_code Grid_Cuda::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
+Rtn_code Grid_Hip::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
-	printDebug(MID_DEBUG, "IN Grid_Cuda::FD_LAPLACIAN");
+	printDebug(MID_DEBUG, "IN Grid_Hip::FD_LAPLACIAN");
 
 	// TO DO
 	Grid::FD_LAPLACIAN(pointType, Wgrid, fdOrder) ;
 
-	printDebug(MID_DEBUG, "OUT Grid_Cuda::FD_LAPLACIAN");
+	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_LAPLACIAN");
 	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder)
+Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder)
 {
 
-	printDebug(FULL_DEBUG, "In Grid_Cuda::computePressureWithFD") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::computePressureWithFD") ;
 
 	// TO DO
 	// Grid::computePressureWithFD(prcGridIn, coefGridIn, fdOrder) ;
@@ -659,8 +659,8 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
 
-	Myfloat *prc_d_grid_3d = ((Grid_Cuda&) prcGridIn).d_grid_3d ;
-	Myfloat *coef_d_grid_3d = ((Grid_Cuda&) coefGridIn).d_grid_3d ;
+	Myfloat *prc_d_grid_3d = ((Grid_Hip&) prcGridIn).d_grid_3d ;
+	Myfloat *coef_d_grid_3d = ((Grid_Hip&) coefGridIn).d_grid_3d ;
 
 	if (fdOrder == 4)
 	{
@@ -674,15 +674,15 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 	cudaCheckError();
 	hipDeviceSynchronize();
 	
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::computePressureWithFD") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::computePressureWithFD") ;
 	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_Cuda::initializeGrid(void)
+void Grid_Hip::initializeGrid(void)
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::initializeGrid") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::initializeGrid") ;
 
 	Grid::initializeGrid() ; // this sets up halos etc.
 	printf("test n1=%d n2=%d n3=%d\n",n1,n2,n3);
@@ -695,13 +695,13 @@ void Grid_Cuda::initializeGrid(void)
 		hipMalloc( (void**)&d_help_3d, 1024*sizeof(Myfloat) );
 		cudaCheckError();
 	}
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::initializeGrid") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::initializeGrid") ;
 }
 
 //-------------------------------------------------------------------------------------------------------
-void Grid_Cuda::fill(Point_type pointType, Myfloat val)
+void Grid_Hip::fill(Point_type pointType, Myfloat val)
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::fill") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::fill") ;
 
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
@@ -711,14 +711,14 @@ void Grid_Cuda::fill(Point_type pointType, Myfloat val)
 	hipDeviceSynchronize();
 	cudaCheckError();
 
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::fill") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::fill") ;
 }
 
 //-------------------------------------------------------------------------------------------------------
-void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_type t3,
+void Grid_Hip::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_type t3,
 		Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp)
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::fill") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::fill") ;
 
 	Grid::fill(pointType, t1,  t2, t3, param1, param2, param3, amp) ;
 
@@ -740,13 +740,13 @@ void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_typ
 	else                 hipLaunchKernelGGL(cuda_fill_linear, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
 
 
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::fill") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::fill") ;
 }
 
 //-------------------------------------------------------------------------------------------------------
-Myfloat Grid_Cuda::getMin(Point_type pointType)
+Myfloat Grid_Hip::getMin(Point_type pointType)
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::getMin") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::getMin") ;
 
 	if (true)
 	{
@@ -782,13 +782,13 @@ Myfloat Grid_Cuda::getMin(Point_type pointType)
 		return val;
 	}
 	hipDeviceSynchronize();
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::getMin") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::getMin") ;
 }
 
 //-------------------------------------------------------------------------------------------------------
-Myfloat Grid_Cuda::getMax(Point_type pointType)
+Myfloat Grid_Hip::getMax(Point_type pointType)
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::getMax") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::getMax") ;
 
 	if (hpcscan::nproc_world > 1)
 	{
@@ -809,13 +809,13 @@ Myfloat Grid_Cuda::getMax(Point_type pointType)
 		return val;
 	}
 	hipDeviceSynchronize();
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::getMax") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::getMax") ;
 }
 
 //-------------------------------------------------------------------------------------------------------
-Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
+Myfloat Grid_Hip::L1Err(Point_type pointType, const Grid& gridIn) const
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::L1Err") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::L1Err") ;
 
 	// TO DO
 	// return(Grid::L1Err(pointType, gridIn)) ;
@@ -828,7 +828,7 @@ Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
 
 	const int numBlocks = 1024;
 	
-	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
+	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
 
 	hipLaunchKernelGGL(cuda_diff, dim3(numBlocks), dim3(256), 0, 0, d_grid_3d, gridIn_d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	cudaCheckError();
@@ -855,13 +855,13 @@ Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
 
 	
 
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::L1Err") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::L1Err") ;
 }
 //-------------------------------------------------------------------------------------------------------
-Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
+Rtn_code Grid_Hip::updatePressure(Point_type pointType, const Grid& prcGrid,
 		const Grid& coefGrid, const Grid& laplaGrid)
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::updatePressure") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::updatePressure") ;
 
 	// TO DO
 	// return(Grid::updatePressure(pointType, prcGrid, coefGrid, laplaGrid)) ;
@@ -870,20 +870,20 @@ Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	Myfloat *prcGrid_d_grid_3d = ((Grid_Cuda&) prcGrid).d_grid_3d ;
-	Myfloat *coefGrid_d_grid_3d = ((Grid_Cuda&) coefGrid).d_grid_3d ;
-	Myfloat *laplaGrid_d_grid_3d = ((Grid_Cuda&) laplaGrid).d_grid_3d ;
+	Myfloat *prcGrid_d_grid_3d = ((Grid_Hip&) prcGrid).d_grid_3d ;
+	Myfloat *coefGrid_d_grid_3d = ((Grid_Hip&) coefGrid).d_grid_3d ;
+	Myfloat *laplaGrid_d_grid_3d = ((Grid_Hip&) laplaGrid).d_grid_3d ;
 	hipLaunchKernelGGL(cuda_updatePressure, dim3(1024), dim3(256), 0, 0, d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
 	hipDeviceSynchronize();
 
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::updatePressure") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::updatePressure") ;
 	return(RTN_CODE_OK) ;
 }
 //-------------------------------------------------------------------------------------------------------
-Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
+Rtn_code Grid_Hip::applyBoundaryCondition(BoundCond_type boundCondType)
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::applyBoundaryCondition") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::applyBoundaryCondition") ;
 
 	// TO DO
 	// return(Grid::applyBoundaryCondition(boundCondType)) ;
@@ -918,17 +918,17 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 
 	hipDeviceSynchronize();
 
-	printDebug(FULL_DEBUG, "Out Grid_Cuda::applyBoundaryCondition") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::applyBoundaryCondition") ;
 	return(RTN_CODE_OK) ;
 }
 
-Myfloat Grid_Cuda::getSumAbs(Point_type) const
+Myfloat Grid_Hip::getSumAbs(Point_type) const
 {
 	printWarning("getSumAbs not yet implemented on the GPU, so returning 0.1");
 	return 0.1;
 }
 
-Myfloat Grid_Cuda::getSumAbsDiff(Point_type, const Grid&) const
+Myfloat Grid_Hip::getSumAbsDiff(Point_type, const Grid&) const
 {
 	printWarning("getSumAbsDiff not yet implemented on the GPU, so returning 0");
 	return 0.0;

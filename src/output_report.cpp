@@ -57,9 +57,15 @@ Rtn_code print_header_of_output_report(void)
 		printInfo(MASTER, " Mode CacheBlk", "ENABLED") ;
 
 #ifdef __CUDA__
-		printInfo(MASTER, " Mode Cuda", "ENABLED") ;
+		printInfo(MASTER, " Mode CUDA", "ENABLED") ;
 #else
-		printInfo(MASTER, " Mode Cuda", "DISABLED") ;
+		printInfo(MASTER, " Mode CUDA", "DISABLED") ;
+#endif
+
+#ifdef __HIP__
+		printInfo(MASTER, " Mode HIP", "ENABLED") ;
+#else
+		printInfo(MASTER, " Mode HIP", "DISABLED") ;
 #endif
 
 #ifdef __OPENACC__
