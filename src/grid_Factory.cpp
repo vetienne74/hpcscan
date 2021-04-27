@@ -8,6 +8,7 @@
 
 #include "grid_CacheBlk.h"
 #include "grid_Cuda.h"
+#include "grid_Hip.h"
 #include "grid_NEC.h"
 #include "grid_NEC_SCA.h"
 #include "grid_OpenAcc.h"
