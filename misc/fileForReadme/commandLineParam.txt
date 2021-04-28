@@ -48,7 +48,8 @@
  -testMode <string>   = test mode
      Baseline         * CPU without optimization (DEFAULT)
      CacheBlk         * CPU with cache blocking techniques
-     Cuda             * GPU with CUDA without optimization
+     CUDA             * GPU with CUDA without optimization
+     HIP              * GPU with HIP without optimization
      NEC              * NEC with compiler directives
      NEC_SCA          * NEC with Stencil Code Accelerator
      OpenAcc          * GPU with OpenAcc without optimization
