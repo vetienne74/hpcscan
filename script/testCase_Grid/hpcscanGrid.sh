@@ -1,9 +1,4 @@
 
-# grid size
-n1=1000
-n2=1000
-n3=1000
-
 export KMP_AFFINITY=granularity=fine,compact 
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
