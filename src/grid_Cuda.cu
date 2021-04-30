@@ -684,7 +684,6 @@ void Grid_Cuda::initializeGrid(void)
 	printDebug(FULL_DEBUG, "In Grid_Cuda::initializeGrid") ;
 
 	Grid::initializeGrid() ; // this sets up halos etc.
-	printf("test n1=%d n2=%d n3=%d\n",n1,n2,n3);
 
 	if (d_grid_3d == NULL)
 	{
