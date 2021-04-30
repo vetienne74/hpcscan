@@ -304,8 +304,8 @@ __global__ void cuda_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, 
 
 __global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
@@ -314,13 +314,11 @@ __global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, M
 		int i2 = idx/n1;
 		int i1 = idx%n1;
 
-		// dataOut[tid]=val;
-
 		if (i1 >= i1Start && i1 <= i1End &&
 			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+			i3 >= i3Start && i3 <= i3End)
 		{
-			prn[tid]=2.0*prc[tid]-prn[tid]+coef[tid]*lapla[tid];
+			prn[tid] = Myfloat(2.0) * prc[tid] - prn[tid] + coef[tid] * lapla[tid];
 		}
 
 		tid += blockDim.x * gridDim.x;
