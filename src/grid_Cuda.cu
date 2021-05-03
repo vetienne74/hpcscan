@@ -159,7 +159,7 @@ __global__ void cuda_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut, int 
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	cg::thread_block cta = cg::this_thread_block();
-	extern __shared__ float sdata[256];
+	/*extern*/ __shared__ float sdata[256];
 
 	sdata[threadIdx.x]=0;
 
@@ -230,7 +230,7 @@ __global__ void cuda_min(Myfloat *data, Myfloat *dataOut, int n1, int n2, int n3
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	cg::thread_block cta = cg::this_thread_block();
-	extern __shared__ float sdata[256];
+	/*extern*/ __shared__ float sdata[256];
 	sdata[threadIdx.x]=99999;
 
 	while (tid < size)
