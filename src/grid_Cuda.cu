@@ -562,7 +562,7 @@ Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn) : Grid(gridTypeIn)
 														{
 	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
 
-	gridMode = "Cuda" ;
+	gridMode = "CUDA" ;
 	
 	d_grid_3d = NULL;
 	d_help_3d = NULL;
@@ -578,7 +578,7 @@ Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn, Dim_type dimIn,
 {
 	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
 
-	gridMode = "Cuda" ;
+	gridMode = "CUDA" ;
 	
 	d_grid_3d = NULL;
 	d_help_3d = NULL;

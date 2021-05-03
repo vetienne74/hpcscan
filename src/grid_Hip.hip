@@ -42,7 +42,7 @@ namespace hpcscan {
 #define cudaCheckError() {                                          \
 	hipError_t e=hipGetLastError();                                 \
 	if(e!=hipSuccess) {                                              \
-	  printf("Cuda failure %s:%d: '%s'\n",__FILE__,__LINE__,hipGetErrorString(e));           \
+	  printf("Hip failure %s:%d: '%s'\n",__FILE__,__LINE__,hipGetErrorString(e));           \
 	  exit(0); \
 	}                                                                 \
    }
@@ -305,8 +305,8 @@ __global__ void cuda_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, 
 
 __global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
@@ -315,13 +315,11 @@ __global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, M
 		int i2 = idx/n1;
 		int i1 = idx%n1;
 
-		// dataOut[tid]=val;
-
 		if (i1 >= i1Start && i1 <= i1End &&
 			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+			i3 >= i3Start && i3 <= i3End)
 		{
-			prn[tid]=2.0*prc[tid]-prn[tid]+coef[tid]*lapla[tid];
+			prn[tid] = Myfloat(2.0) * prc[tid] - prn[tid] + coef[tid] * lapla[tid];
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -565,7 +563,7 @@ Grid_Hip::Grid_Hip(Grid_type gridTypeIn) : Grid(gridTypeIn)
 														{
 	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
 
-	gridMode = "Cuda" ;
+	gridMode = "HIP" ;
 	
 	d_grid_3d = NULL;
 	d_help_3d = NULL;
@@ -581,7 +579,7 @@ Grid_Hip::Grid_Hip(Grid_type gridTypeIn, Dim_type dimIn,
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
 
-	gridMode = "Cuda" ;
+	gridMode = "HIP" ;
 	
 	d_grid_3d = NULL;
 	d_help_3d = NULL;
@@ -648,7 +646,7 @@ Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 
 	if (fdOrder != 4 && fdOrder != 8)
 	{
-		printError("CUDA: only FD order 4/8 implemented");
+		printError("HIP: only FD order 4/8 implemented");
 	}
 
 	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
@@ -685,7 +683,6 @@ void Grid_Hip::initializeGrid(void)
 	printDebug(FULL_DEBUG, "In Grid_Hip::initializeGrid") ;
 
 	Grid::initializeGrid() ; // this sets up halos etc.
-	printf("test n1=%d n2=%d n3=%d\n",n1,n2,n3);
 
 	if (d_grid_3d == NULL)
 	{
@@ -732,9 +729,9 @@ void Grid_Hip::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_type
 	if (t1 != FUNC_SINE && t1 != FUNC_LINEAR) ok = 0;
 	if (t2 != FUNC_SINE && t2 != FUNC_LINEAR) ok = 0;
 	if (t3 != FUNC_SINE && t3 != FUNC_LINEAR) ok = 0;
-	if (!ok) printError("CUDA: only FUNC_SINE and FUNC_LINEAR implemented");
+	if (!ok) printError("HIP: only FUNC_SINE and FUNC_LINEAR implemented");
 
-	if ((t1==t2 && t2==t3)==false) printError("CUDA: func has to be same in each dimension");
+	if ((t1==t2 && t2==t3)==false) printError("HIP: func has to be same in each dimension");
 
 	if (t1 == FUNC_SINE) hipLaunchKernelGGL(cuda_fill_sine, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
 	else                 hipLaunchKernelGGL(cuda_fill_linear, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
@@ -890,7 +887,7 @@ Rtn_code Grid_Hip::applyBoundaryCondition(BoundCond_type boundCondType)
 
 	if (boundCondType != BOUND_COND_ANTI_MIRROR)
 	{
-		printError("CUDA: only BOUND_COND_ANTI_MIRROR boundary condition for now");
+		printError("HIP: only BOUND_COND_ANTI_MIRROR boundary condition for now");
 	}
 
 	Myint64 	i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
