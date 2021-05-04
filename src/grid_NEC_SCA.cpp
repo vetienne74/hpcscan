@@ -221,7 +221,7 @@ void Grid_NEC_SCA::initializeGrid(void)
 {
 	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::initializeGrid");
 
-	Grid::initializeGrid() ;
+	Grid_NEC::initializeGrid() ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC_SCA::initializeGrid");
 }

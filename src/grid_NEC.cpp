@@ -106,6 +106,10 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
 	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+	// Workaround for compiler not correctly applying packed_stencil directive.
+        const int ln1 = n1;
+        const int ln2 = n2;
+        const int ln3 = n3;
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -125,8 +129,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 #pragma _NEC packed_stencil
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -141,8 +145,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 #pragma _NEC packed_stencil
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -157,8 +161,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 #pragma _NEC packed_stencil
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -173,8 +177,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 #pragma _NEC packed_stencil
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -189,8 +193,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 #pragma _NEC packed_stencil
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -209,8 +213,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				{
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -224,8 +228,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				{
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -239,8 +243,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				{
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -254,8 +258,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				{
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -269,8 +273,8 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				{
 					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
