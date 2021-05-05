@@ -50,7 +50,7 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 // there is probably an easier way to implement this (3d blocks?)
-__global__ void cuda_fill_const(Myfloat *data, Myfloat val, const int n1, const int n2, const int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, const int n2, const int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -84,7 +84,7 @@ __global__ void cuda_fill_const(Myfloat *data, Myfloat val, const int n1, const 
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void cuda_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3 )
+__global__ void kernel_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3 )
 {
 	// printf("sine %f %f %f %f %f\n",param1,param2,param3,amp,Orig1);
 
@@ -118,7 +118,7 @@ __global__ void cuda_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void cuda_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3)
+__global__ void kernel_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3)
 {
 	// printf("linear %f %f %f %f\n",param1,param2,param3,amp);
 
@@ -154,7 +154,7 @@ __global__ void cuda_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 para
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void cuda_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -198,7 +198,7 @@ __global__ void cuda_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut, int 
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void cuda_fabsf(Myfloat *data, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_fabsf(Myfloat *data, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -225,7 +225,7 @@ __global__ void cuda_fabsf(Myfloat *data, Myfloat *dataOut, int n1, int n2, int 
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void cuda_min(Myfloat *data, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_min(Myfloat *data, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -269,7 +269,7 @@ __global__ void cuda_min(Myfloat *data, Myfloat *dataOut, int n1, int n2, int n3
 }
 
 //-------------------------------------------------------------------------------------------------------
-__global__ void cuda_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -303,7 +303,7 @@ __global__ void cuda_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, 
 // 			prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 // 					coef[i1+i2*n1+i3*n1*n2] * lapla[i1+i2*n1+i3*n1*n2] ;
 
-__global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -328,7 +328,7 @@ __global__ void cuda_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, M
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void cuda_applyBoundaryCondition(Myfloat *data, int n1, int n2, int n3, 
+__global__ void kernel_applyBoundaryCondition(Myfloat *data, int n1, int n2, int n3, 
 			Myint64 i1halo1_i1Start, Myint64 i1halo1_i1End, Myint64 i1halo1_i2Start, Myint64 i1halo1_i2End, Myint64 i1halo1_i3Start, Myint64 i1halo1_i3End,
 			Myint64 i1halo2_i1Start, Myint64 i1halo2_i1End, Myint64 i1halo2_i2Start, Myint64 i1halo2_i2End, Myint64 i1halo2_i3Start, Myint64 i1halo2_i3End,
 			Myint64 i2halo1_i1Start, Myint64 i2halo1_i1End, Myint64 i2halo1_i2Start, Myint64 i2halo1_i2End, Myint64 i2halo1_i3Start, Myint64 i2halo1_i3End,
@@ -445,7 +445,7 @@ __global__ void cuda_applyBoundaryCondition(Myfloat *data, int n1, int n2, int n
 // 				+ FD_D2_O4_A1 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
 // 				+ FD_D2_O4_A2 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])) \
 // 				* inv2_d3)
-__global__ void cuda_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -510,7 +510,7 @@ __global__ void cuda_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloa
 // 				+ FD_D2_O8_A3 * (U[i1 + i2*n1 + (i3+3)*n2*n1] + U[i1 + i2*n1 + (i3-3)*n2*n1])  \
 // 				+ FD_D2_O8_A4 * (U[i1 + i2*n1 + (i3+4)*n2*n1] + U[i1 + i2*n1 + (i3-4)*n2*n1])) \
 // 				* inv2_d3)
-__global__ void cuda_computePressureWithFD_O8(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_computePressureWithFD_O8(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -563,7 +563,7 @@ Grid_Hip::Grid_Hip(Grid_type gridTypeIn) : Grid(gridTypeIn)
 														{
 	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
 
-	gridMode = "HIP" ;
+	gridMode = "Hip" ;
 	
 	d_grid_3d = NULL;
 	d_help_3d = NULL;
@@ -579,7 +579,7 @@ Grid_Hip::Grid_Hip(Grid_type gridTypeIn, Dim_type dimIn,
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
 
-	gridMode = "HIP" ;
+	gridMode = "Hip" ;
 	
 	d_grid_3d = NULL;
 	d_help_3d = NULL;
@@ -662,11 +662,11 @@ Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 
 	if (fdOrder == 4)
 	{
-		hipLaunchKernelGGL(cuda_computePressureWithFD_O4, dim3(1024), dim3(256), 0, 0, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		hipLaunchKernelGGL(kernel_computePressureWithFD_O4, dim3(1024), dim3(256), 0, 0, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	else if (fdOrder == 8)
 	{
-		hipLaunchKernelGGL(cuda_computePressureWithFD_O8, dim3(1024), dim3(256), 0, 0, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		hipLaunchKernelGGL(kernel_computePressureWithFD_O8, dim3(1024), dim3(256), 0, 0, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	
 	cudaCheckError();
@@ -704,7 +704,7 @@ void Grid_Hip::fill(Point_type pointType, Myfloat val)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	hipLaunchKernelGGL(cuda_fill_const, dim3(2048), dim3(128), 0, 0, d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	hipLaunchKernelGGL(kernel_fill_const, dim3(2048), dim3(128), 0, 0, d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	hipDeviceSynchronize();
 	cudaCheckError();
 
@@ -733,11 +733,137 @@ void Grid_Hip::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_type
 
 	if ((t1==t2 && t2==t3)==false) printError("HIP: func has to be same in each dimension");
 
-	if (t1 == FUNC_SINE) hipLaunchKernelGGL(cuda_fill_sine, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
-	else                 hipLaunchKernelGGL(cuda_fill_linear, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
+	if (t1 == FUNC_SINE) hipLaunchKernelGGL(kernel_fill_sine, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
+	else                 hipLaunchKernelGGL(kernel_fill_linear, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
 
 
 	printDebug(FULL_DEBUG, "Out Grid_Hip::fill") ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_fillArray(Myfloat *gridOut, Myfloat val, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = val ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+void Grid_Hip::fillArray(Myfloat val)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::fillArray");
+
+	Myint64 gridSize = n1*n2*n3;
+	hipLaunchKernelGGL(kernel_fillArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, val, gridSize) ;
+
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::fillArray");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_copyArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+void Grid_Hip::copyArray(const Grid& gridIn)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::copyArray");
+
+	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
+	Myint64 gridSize = n1*n2*n3;
+	hipLaunchKernelGGL(kernel_copyArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, gridIn_d_grid_3d, gridSize) ;
+
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::copyArray");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_addArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn1[tid] + gridIn2[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+void Grid_Hip::addArray(const Grid& gridIn1, const Grid& gridIn2)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::addArray");
+
+	Myfloat *gridIn1_d_grid_3d = ((Grid_Hip&) gridIn1).d_grid_3d ;
+	Myfloat *gridIn2_d_grid_3d = ((Grid_Hip&) gridIn2).d_grid_3d ;
+	Myint64 gridSize = n1*n2*n3;
+	hipLaunchKernelGGL(kernel_addArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
+
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::addArray");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_multiplyArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn1[tid] * gridIn2[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+void Grid_Hip::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::multiplyArray");
+
+	Myfloat *gridIn1_d_grid_3d = ((Grid_Hip&) gridIn1).d_grid_3d ;
+	Myfloat *gridIn2_d_grid_3d = ((Grid_Hip&) gridIn2).d_grid_3d ;
+	Myint64 gridSize = n1*n2*n3;
+	hipLaunchKernelGGL(kernel_addArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
+
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::multiplyArray");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_addUpdateArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridOut[tid] + gridIn[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+void Grid_Hip::addUpdateArray(const Grid& gridIn)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::addUpdateArray");
+
+	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
+	Myint64 gridSize = n1*n2*n3;
+	hipLaunchKernelGGL(kernel_addUpdateArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, gridIn_d_grid_3d, gridSize) ;
+
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::addUpdateArray");
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -752,7 +878,7 @@ Myfloat Grid_Hip::getMin(Point_type pointType)
 		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 		
 		const int numBlocks = 1024;
-		hipLaunchKernelGGL(cuda_min, dim3(numBlocks), dim3(256), 0, 0, d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		hipLaunchKernelGGL(kernel_min, dim3(numBlocks), dim3(256), 0, 0, d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		cudaCheckError();
 
 		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
@@ -765,7 +891,7 @@ Myfloat Grid_Hip::getMin(Point_type pointType)
 		//pointType
 		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-		hipLaunchKernelGGL(cuda_mask, dim3(1024), dim3(256), 0, 0, d_grid_3d,d_help_3d,999,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		hipLaunchKernelGGL(kernel_mask, dim3(1024), dim3(256), 0, 0, d_grid_3d,d_help_3d,999,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
 		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::min_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
 		float val = *vptr;
@@ -792,7 +918,7 @@ Myfloat Grid_Hip::getMax(Point_type pointType)
 		//pointType
 		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-		hipLaunchKernelGGL(cuda_mask, dim3(1024), dim3(256), 0, 0, d_grid_3d,d_help_3d,0,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		hipLaunchKernelGGL(kernel_mask, dim3(1024), dim3(256), 0, 0, d_grid_3d,d_help_3d,0,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
 		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::max_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
 		float val = *vptr;
@@ -827,7 +953,7 @@ Myfloat Grid_Hip::L1Err(Point_type pointType, const Grid& gridIn) const
 	
 	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
 
-	hipLaunchKernelGGL(cuda_diff, dim3(numBlocks), dim3(256), 0, 0, d_grid_3d, gridIn_d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	hipLaunchKernelGGL(kernel_diff, dim3(numBlocks), dim3(256), 0, 0, d_grid_3d, gridIn_d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	cudaCheckError();
 	d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
 	double totErr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + numBlocks);
@@ -835,7 +961,7 @@ Myfloat Grid_Hip::L1Err(Point_type pointType, const Grid& gridIn) const
 	double totArr;
 	if (false)
 	{
-		hipLaunchKernelGGL(cuda_fabsf, dim3(1024), dim3(256), 0, 0, gridIn_d_grid_3d, d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		hipLaunchKernelGGL(kernel_fabsf, dim3(1024), dim3(256), 0, 0, gridIn_d_grid_3d, d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		totArr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
 	}
 	else // assuming grid values are positive
@@ -870,7 +996,7 @@ Rtn_code Grid_Hip::updatePressure(Point_type pointType, const Grid& prcGrid,
 	Myfloat *prcGrid_d_grid_3d = ((Grid_Hip&) prcGrid).d_grid_3d ;
 	Myfloat *coefGrid_d_grid_3d = ((Grid_Hip&) coefGrid).d_grid_3d ;
 	Myfloat *laplaGrid_d_grid_3d = ((Grid_Hip&) laplaGrid).d_grid_3d ;
-	hipLaunchKernelGGL(cuda_updatePressure, dim3(1024), dim3(256), 0, 0, d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	hipLaunchKernelGGL(kernel_updatePressure, dim3(1024), dim3(256), 0, 0, d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
 	hipDeviceSynchronize();
 
@@ -905,7 +1031,7 @@ Rtn_code Grid_Hip::applyBoundaryCondition(BoundCond_type boundCondType)
 	Grid::getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
 
 
-	hipLaunchKernelGGL(cuda_applyBoundaryCondition, dim3(1024), dim3(256), 0, 0, d_grid_3d, n1, n2, n3, 	
+	hipLaunchKernelGGL(kernel_applyBoundaryCondition, dim3(1024), dim3(256), 0, 0, d_grid_3d, n1, n2, n3, 	
 		i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
 		i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
 		i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
