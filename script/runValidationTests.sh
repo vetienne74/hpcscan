@@ -1,4 +1,11 @@
 
+if [ -f $HPCSCAN_CPP ]
+then
+    echo It seems hpcscan environment has not been set.
+    echo Source one of the env files in ../env or create a new one for your machine.
+    exit
+fi
+
 export tester=`whoami`
 export machine=`hostname`
 export report_file=runValidationTests.${machine}.${tester}.out
@@ -20,11 +27,24 @@ sh testDriver.sh CacheBlk
 # run all tests with -testMode OpenAcc
 #sh testDriver.sh OpenAcc
 
-# run all tests with -testMode Cuda
-#sh testDriver.sh Cuda
+# run all tests with -testMode CUDA
+if [ "$HPCSCAN_CUDA" = "nvcc" ]
+then
+    sh testDriver.sh CUDA
+else
+    echo 'SKIP testMode CUDA'
+fi
+
+# run all tests with -testMode HIP
+if [ "$HPCSCAN_HIP" = "hipcc" ]
+then
+    sh testDriver.sh HIP
+else
+    echo 'SKIP testMode HIP'
+fi
 
 # run all tests with -testMode NEC
-if [ "$HPCSCAN_CPP" == "mpinc++" ]
+if [ "$HPCSCAN_CPP" = "mpinc++" ]
 then
     sh testDriver.sh NEC
 else
@@ -32,7 +52,7 @@ else
 fi
 
 # run all tests with -testMode NEC_SCA
-if [ "$HPCSCAN_CPP" == "mpinc++" ]
+if [ "$HPCSCAN_CPP" = "mpinc++" ]
 then
     sh testDriver.sh NEC_SCA
 else

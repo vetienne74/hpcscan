@@ -22,7 +22,7 @@ fi
 echo '>>> Test Mode' ${tM} '<<<'
 
 # if not specified, use mpirun to launch MPI
-if [ -z $HPCSCAN_MPI_INVOKER ]
+if [ "$HPCSCAN_MPI_INVOKER" = "" ]
 then
     HPCSCAN_MPI_INVOKER=mpirun
 fi
