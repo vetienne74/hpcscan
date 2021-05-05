@@ -53,6 +53,21 @@ public:
 	virtual Myfloat getMin(Point_type) ;
 	virtual Myfloat getMax(Point_type) ;
 
+	// fill array with constant value
+	virtual void fillArray(Myfloat val) ;
+
+	// copy array
+	virtual void copyArray(const Grid& gridIn) ;
+
+	// add array
+	virtual void addArray(const Grid& gridIn1, const Grid& gridIn2) ;
+
+	// multiply array
+	virtual void multiplyArray(const Grid& gridIn1, const Grid& gridIn2) ;
+
+	// add and update array
+	virtual void addUpdateArray(const Grid& gridIn) ;
+
 	// L1 error between this grid and another
 	virtual Myfloat L1Err(Point_type pointType, const Grid& gridIn) const ;
 
