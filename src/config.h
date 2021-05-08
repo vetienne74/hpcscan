@@ -113,7 +113,7 @@ private:
 	Config(Config const&){} ;
 
 	// assignment operator is private
-	Config& operator=(Config const&){} ;
+	Config& operator=(Config const&){return *this;} ;
 
 	// singleton
 	static Config* m_pInstance ;

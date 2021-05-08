@@ -615,7 +615,9 @@ void Grid_Cuda::info(void)
 	Grid::info() ;
 
 	// additional info
-	// TO DO
+	printInfo(MASTER, " GPU parameters") ;
+	printInfo(MASTER, " Blocks per grid", 999) ;
+	printInfo(MASTER, " Threads per block", 999) ;
 
 	printDebug(FULL_DEBUG, "IN Grid_Cuda::info");
 }
