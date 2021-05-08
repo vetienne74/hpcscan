@@ -1075,7 +1075,245 @@ Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::updatePressure") ;
 	return(RTN_CODE_OK) ;
 }
+
 //-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointType)
+{
+	printDebug(FULL_DEBUG, "IN Grid_Cuda::exchangeHalo");
+
+	if (commMode == MPI_COMM_MODE_SENDRECV)
+	{
+		printDebug(FULL_DEBUG, "MPI_COMM_MODE_SENDRECV") ;
+
+		MPI_Status status ;
+		Myint rankSend, rankRecv ;
+		MPI_Datatype typeSend, typeRecv ;
+		Myfloat *bufSend, *bufRecv ;
+
+		Point_type bufSendPointType, bufRecvPointType ;
+
+		if (pointType == I1HALO1)
+		{
+			printDebug(FULL_DEBUG, "I1HALO1") ;
+			Myint64 i1Send = i1InnerEnd - haloWidth + 1 ;
+			Myint64 i2Send = i2InnerStart ;
+			Myint64 i3Send = i3InnerStart ;
+			Myint64 i1Recv = i1Halo1Start ;
+			Myint64 i2Recv = i2InnerStart ;
+			Myint64 i3Recv = i3InnerStart ;
+			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+			bufSend = &(grid_3d[idxSend]) ;
+			bufRecv = &(grid_3d[idxRecv]) ;
+			typeSend = i1HaloDataType ;
+			typeRecv = i1HaloDataType ;
+			rankSend = i1ProcIdEnd ;
+			rankRecv = i1ProcIdStart ;
+
+			bufRecvPointType = I1HALO1 ;
+			bufSendPointType = I1INNERHALO2 ;
+		}
+
+		else if (pointType == I1HALO2)
+		{
+			printDebug(FULL_DEBUG, "I1HALO2") ;
+			Myint64 i1Send = i1InnerStart ;
+			Myint64 i2Send = i2InnerStart ;
+			Myint64 i3Send = i3InnerStart ;
+			Myint64 i1Recv = i1Halo2Start ;
+			Myint64 i2Recv = i2InnerStart ;
+			Myint64 i3Recv = i3InnerStart ;
+			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+			bufSend = &(grid_3d[idxSend]) ;
+			bufRecv = &(grid_3d[idxRecv]) ;
+			typeSend = i1HaloDataType ;
+			typeRecv = i1HaloDataType ;
+			rankSend = i1ProcIdStart ;
+			rankRecv = i1ProcIdEnd ;
+
+			bufRecvPointType = I1HALO2 ;
+			bufSendPointType = I1INNERHALO1 ;
+		}
+
+		else if (pointType == I2HALO1)
+		{
+			printDebug(FULL_DEBUG, "I2HALO1") ;
+			Myint64 i1Send = i1InnerStart ;
+			Myint64 i2Send = i2InnerEnd - haloWidth + 1 ;
+			Myint64 i3Send = i3InnerStart ;
+			Myint64 i1Recv = i1InnerStart ;
+			Myint64 i2Recv = i2Halo1Start ;
+			Myint64 i3Recv = i3InnerStart ;
+			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+			bufSend = &(grid_3d[idxSend]) ;
+			bufRecv = &(grid_3d[idxRecv]) ;
+			typeSend = i2HaloDataType ;
+			typeRecv = i2HaloDataType ;
+			rankSend = i2ProcIdEnd ;
+			rankRecv = i2ProcIdStart ;
+
+			bufRecvPointType = I2HALO1 ;
+			bufSendPointType = I2INNERHALO2 ;
+		}
+
+		else if (pointType == I2HALO2)
+		{
+			printDebug(FULL_DEBUG, "I2HALO2") ;
+			Myint64 i1Send = i1InnerStart ;
+			Myint64 i2Send = i2InnerStart ;
+			Myint64 i3Send = i3InnerStart ;
+			Myint64 i1Recv = i1InnerStart ;
+			Myint64 i2Recv = i2Halo2Start ;
+			Myint64 i3Recv = i3InnerStart ;
+			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+			bufSend = &(grid_3d[idxSend]) ;
+			bufRecv = &(grid_3d[idxRecv]) ;
+			typeSend = i2HaloDataType ;
+			typeRecv = i2HaloDataType ;
+			rankSend = i2ProcIdStart ;
+			rankRecv = i2ProcIdEnd ;
+
+			bufRecvPointType = I2HALO2 ;
+			bufSendPointType = I2INNERHALO1 ;
+		}
+
+		else if (pointType == I3HALO1)
+		{
+			printDebug(FULL_DEBUG, "I3HALO1") ;
+			Myint64 i1Send = i1InnerStart ;
+			Myint64 i2Send = i2InnerStart ;
+			Myint64 i3Send = i3InnerEnd - haloWidth + 1 ;
+			Myint64 i1Recv = i1InnerStart ;
+			Myint64 i2Recv = i2InnerStart ;
+			Myint64 i3Recv = i3Halo1Start ;
+			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+			bufSend = &(grid_3d[idxSend]) ;
+			bufRecv = &(grid_3d[idxRecv]) ;
+			typeSend = i3HaloDataType ;
+			typeRecv = i3HaloDataType ;
+			rankSend = i3ProcIdEnd ;
+			rankRecv = i3ProcIdStart ;
+
+			bufRecvPointType = I3HALO1 ;
+			bufSendPointType = I3INNERHALO2 ;
+		}
+
+		else if (pointType == I3HALO2)
+		{
+			printDebug(FULL_DEBUG, "I3HALO2") ;
+			Myint64 i1Send = i1InnerStart ;
+			Myint64 i2Send = i2InnerStart ;
+			Myint64 i3Send = i3InnerStart ;
+			Myint64 i1Recv = i1InnerStart ;
+			Myint64 i2Recv = i2InnerStart ;
+			Myint64 i3Recv = i3Halo2Start ;
+			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+			bufSend = &(grid_3d[idxSend]) ;
+			bufRecv = &(grid_3d[idxRecv]) ;
+			typeSend = i3HaloDataType ;
+			typeRecv = i3HaloDataType ;
+			rankSend = i3ProcIdStart ;
+			rankRecv = i3ProcIdEnd ;
+
+			bufRecvPointType = I3HALO2 ;
+			bufSendPointType = I3INNERHALO1 ;
+		}
+
+		else
+		{
+			printError("IN Grid_Cuda::exchangeHalo, invalid pointType", pointType) ;
+			return(RTN_CODE_KO) ;
+		}
+
+		// copy halo to send from device to host
+		if (rankSend != MPI_PROC_NULL)
+			copyGridDeviceToHost(bufSendPointType) ;
+
+		// call MPI_Sendrecv
+		printDebug(FULL_DEBUG, "MPI_Sendrecv", rankSend, rankRecv) ;
+		MPI_Sendrecv(bufSend, 1, typeSend, rankSend, 0,
+				bufRecv, 1, typeRecv, rankRecv, 0,
+				MPI_COMM_WORLD, &status);
+
+		// copy halo received from host to device
+		if (rankRecv != MPI_PROC_NULL)
+			copyGridHostToDevice(bufRecvPointType) ;
+
+	}
+	else
+	{
+		printError("IN Grid_Cuda::exchangeHalo, invalid commMode", commMode) ;
+		return(RTN_CODE_KO) ;
+	}
+
+	printDebug(FULL_DEBUG, "OUT Grid_Cuda::exchangeHalo");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid_Cuda::copyGridDeviceToHost(Point_type pointType)
+{
+	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridDeviceToHost") ;
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+	//if (pointType == I1INNERHALO1)
+	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	{
+		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+		{
+			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+			{
+				// TMP copy point to point
+				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+				cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+			}
+		}
+	}
+
+	cudaDeviceSynchronize();
+
+	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridHostToDevice") ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid_Cuda::copyGridHostToDevice(Point_type pointType)
+{
+	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridDeviceToHost") ;
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+	//if (pointType == I1HALO1)
+	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	{
+		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+		{
+			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+			{
+				// TMP copy point to point
+				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+				cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+			}
+		}
+	}
+
+	cudaDeviceSynchronize();
+
+	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridHostToDevice") ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::applyBoundaryCondition") ;
@@ -1171,9 +1409,28 @@ Myfloat Grid_Cuda::getSumAbs(Point_type pointType) const
 	cudaCheckError();
 	cudaFree(d_sum);
 
+	// reduction
+	Myfloat64 sum2Loc = sum ;
+	Myfloat64 sum2 = 0.0 ;
+	if (gridType == GRID_LOCAL)
+	{
+		MPI_Reduce(&sum2Loc, &sum2, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
+	}
+	else
+	{
+		sum2 = sum2Loc ;
+	}
+
+	printDebug(LIGHT_DEBUG, "sum2", sum2) ;
+
+	if (std::isnan(sum2))
+	{
+		printError("In Grid_Cuda::getSumAbs, std::isnan(sum2)") ;
+	}
+
 	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::getSumAbs");
 
-	return(sum) ;
+	return(sum2) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1233,9 +1490,28 @@ Myfloat Grid_Cuda::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 	cudaCheckError();
 	cudaFree(d_sum);
 
+	// reduction
+	Myfloat64 sum1Loc = sum ;
+	Myfloat64 sum1 = 0.0 ;
+	if (gridType == GRID_LOCAL)
+	{
+		MPI_Reduce(&sum1Loc, &sum1, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
+	}
+	else
+	{
+		sum1 = sum1Loc ;
+	}
+
+	printDebug(LIGHT_DEBUG, "sum1", sum1) ;
+
+	if (std::isnan(sum1))
+	{
+		printError("In Grid_Cuda::getSumAbsDiff, std::isnan(sum1)") ;
+	}
+
 	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::getSumAbsDiff");
 
-	return(sum) ;
+	return(sum1) ;
 }
 
 //-------------------------------------------------------------------------------------------------------

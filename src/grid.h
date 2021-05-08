@@ -130,7 +130,7 @@ public:
 	Rtn_code exchangeHalos(MPI_comm_mode_type) ;
 
 	// exchange one halo with MPI
-	Rtn_code exchangeHalo(MPI_comm_mode_type, Point_type pointType) ;
+	virtual Rtn_code exchangeHalo(MPI_comm_mode_type, Point_type pointType) ;
 
 	// apply boundary condition
 	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;

@@ -1856,6 +1856,60 @@ Rtn_code Grid::getGridIndex(Point_type pointType, Myint64* i1Start, Myint64* i1E
 		*i3Start = i3Halo2Start ;
 		*i3End   = i3Halo2End ;
 	}
+	else if (pointType == I1INNERHALO1)
+	{
+		*i1Start = i1InnerStart ;
+		*i1End   = *i1Start + haloWidth ;
+		*i2Start = i2InnerStart ;
+		*i2End   = i2InnerEnd ;
+		*i3Start = i3InnerStart ;
+		*i3End   = i3InnerEnd ;
+	}
+	else if (pointType == I1INNERHALO2)
+	{
+		*i1Start = i1InnerEnd - haloWidth ;
+		*i1End   = *i1Start + haloWidth ;
+		*i2Start = i2InnerStart ;
+		*i2End   = i2InnerEnd ;
+		*i3Start = i3InnerStart ;
+		*i3End   = i3InnerEnd ;
+	}
+	else if (pointType == I2INNERHALO1)
+	{
+		*i1Start = i1InnerStart ;
+		*i1End   = i1InnerEnd ;
+		*i2Start = i2InnerStart ;
+		*i2End   = *i2Start + haloWidth ;
+		*i3Start = i3InnerStart ;
+		*i3End   = i3InnerEnd ;
+	}
+	else if (pointType == I2INNERHALO2)
+	{
+		*i1Start = i1InnerStart ;
+		*i1End   = i1InnerEnd ;
+		*i2Start = i2InnerEnd - haloWidth ;
+		*i2End   = *i2Start + haloWidth ;
+		*i3Start = i3InnerStart ;
+		*i3End   = i3InnerEnd ;
+	}
+	else if (pointType == I3INNERHALO1)
+	{
+		*i1Start = i1InnerStart ;
+		*i1End   = i1InnerEnd ;
+		*i2Start = i2InnerStart ;
+		*i2End   = i2InnerEnd ;
+		*i3Start = i3InnerStart ;
+		*i3End   = *i3Start + haloWidth ;
+	}
+	else if (pointType == I3INNERHALO2)
+	{
+		*i1Start = i1InnerStart ;
+		*i1End   = i1InnerEnd ;
+		*i2Start = i2InnerStart ;
+		*i2End   = i2InnerEnd ;
+		*i3Start = i3InnerEnd - haloWidth ;
+		*i3End   = *i3Start + haloWidth ;
+	}
 	else
 	{
 		printError("IN Grid::getGridIndex, Invalid pointType") ;
