@@ -81,6 +81,15 @@ public:
 	virtual Rtn_code updatePressure(Point_type pType, const Grid& prcGrid,
 			const Grid& coefGrid, const Grid& laplaGrid) ;
 
+	// exchange one halo with MPI
+	virtual Rtn_code exchangeHalo(MPI_comm_mode_type, Point_type pointType) ;
+
+	// copy Grid device to host
+	void copyGridDeviceToHost(Point_type) ;
+
+	// copy Grid host to device
+	void copyGridHostToDevice(Point_type) ;
+
 	// apply boundary condition
 	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;
 
