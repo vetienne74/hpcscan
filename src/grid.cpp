@@ -1306,8 +1306,6 @@ Myfloat Grid::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 	// reduction
 	MPI_Reduce(&sum1Loc, &sum1, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
 	MPI_Reduce(&sum2Loc, &sum2, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
-	//sum1 = sum1Loc ;
-	//sum2 = sum2Loc ;
 
 	// prevent divide by zero
 	if (sum2 == 0.0) sum2 = 1.0 * npoint ;

@@ -1022,8 +1022,30 @@ Myfloat Grid_Cuda::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::allProcL1Err");
 
-	// TO DO: IMPLEMENT ACCORDING TO grip.cpp
-	Myfloat err = L1Err(pointType, gridIn) ;
+	Myfloat64 sum1Loc = 0.0 ;
+	Myfloat64 sum2Loc = 0.0 ;
+	Myfloat64 sum1 = 0.0 ;
+	Myfloat64 sum2 = 0.0 ;
+
+	sum1Loc = getSumAbsDiff(pointType, gridIn) ;
+	sum2Loc = gridIn.getSumAbs(pointType) ;
+
+	// reduction
+	MPI_Reduce(&sum1Loc, &sum1, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
+	MPI_Reduce(&sum2Loc, &sum2, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
+
+	// prevent divide by zero
+	if (sum2 == 0.0) sum2 = 1.0 * npoint ;
+	Myfloat err = sum1 / sum2 ;
+
+	printDebug(LIGHT_DEBUG, "sum1", sum1) ;
+	printDebug(LIGHT_DEBUG, "sum2", sum2) ;
+	printDebug(LIGHT_DEBUG, "err", err) ;
+
+	if (std::isnan(err))
+	{
+		printError("In Grid_Cuda::allProcL1Err, std::isnan(err)") ;
+	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::allProcL1Err");
 	return(err) ;
