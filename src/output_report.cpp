@@ -300,6 +300,16 @@ void printInfo(Display_type display_t, const char* text, const char* text2)
 
 //-------------------------------------------------------------------------------------------------------
 
+void printInfo(Display_type display_t, string text, const char* text2)
+{
+	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	{
+		cout << text << "\t" << text2 << "\n" << flush ;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 void printWarning(const char* text, Myint nb)
 {
 	cout << "\n" ;

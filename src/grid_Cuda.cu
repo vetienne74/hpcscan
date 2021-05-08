@@ -615,9 +615,47 @@ void Grid_Cuda::info(void)
 	Grid::info() ;
 
 	// additional info
-	printInfo(MASTER, " GPU parameters") ;
+	printInfo(MASTER, "") ;
+	printInfo(MASTER, " * GPU parameters * ") ;
 	printInfo(MASTER, " Blocks per grid", 999) ;
 	printInfo(MASTER, " Threads per block", 999) ;
+
+	int startDevice = 0;
+	int endDevice = 0;
+	int deviceCount;
+	cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
+	if (error_id != cudaSuccess) {
+		printError(" In Grid_Cuda::info, cudaGetDeviceCount", (int) error_id) ;
+	}
+
+	if (deviceCount == 0) {
+		printError(" No GPU found") ;
+	}
+	else
+	{
+		printInfo(MASTER, " Number of GPUs found", deviceCount) ;
+	}
+
+	startDevice = 0;
+	endDevice = deviceCount - 1;
+
+	for (int currentDevice = startDevice; currentDevice <= endDevice;
+			currentDevice++) {
+		cudaDeviceProp deviceProp;
+		cudaError_t error_id = cudaGetDeviceProperties(&deviceProp, currentDevice);
+
+		if (error_id == cudaSuccess) {
+			string deviceStr = " Device #" + to_string(currentDevice) + "\t";
+			printInfo(MASTER, deviceStr, deviceProp.name) ;
+
+			if (deviceProp.computeMode == cudaComputeModeProhibited) {
+				printError(" Error: device is running in <Compute Mode Prohibited>") ;
+			}
+		} else {
+			printf("cudaGetDeviceProperties returned %d\n-> %s\n", (int)error_id,
+					cudaGetErrorString(error_id));
+		}
+	}
 
 	printDebug(FULL_DEBUG, "IN Grid_Cuda::info");
 }

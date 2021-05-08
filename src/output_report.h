@@ -26,6 +26,7 @@ void printInfo(Display_type, const char*, Myfloat64) ;
 void printInfo(Display_type, const char*, const char*) ;
 void printInfo(Display_type, const char*, string) ;
 void printInfo(Display_type, const char*, const char*) ;
+void printInfo(Display_type, string, const char*) ;
 
 void printDebug(Debug_level, const char*) ;
 void printDebug(Debug_level, const char*, string) ;
