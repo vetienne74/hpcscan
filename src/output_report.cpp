@@ -113,16 +113,6 @@ Rtn_code print_end_of_output_report(Rtn_code rtnCode)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printDebug(Debug_level debug_l, char* text)
-{
-	if (debug_l <= debug)
-	{
-		Config::Instance()->debugLogFile << text << "\n" << flush ;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
 void printDebug(Debug_level debug_l, const char* text)
 {
 	if (debug_l <= debug)
@@ -133,7 +123,7 @@ void printDebug(Debug_level debug_l, const char* text)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printDebug(Debug_level debug_l, char* text, string text2)
+void printDebug(Debug_level debug_l, const char* text, string text2)
 {
 	if (debug_l <= debug)
 	{
@@ -143,7 +133,7 @@ void printDebug(Debug_level debug_l, char* text, string text2)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printDebug(Debug_level debug_l, char* text, Myint64 val)
+void printDebug(Debug_level debug_l, const char* text, Myint64 val)
 {
 	if (debug_l <= debug)
 	{
@@ -153,7 +143,7 @@ void printDebug(Debug_level debug_l, char* text, Myint64 val)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printDebug(Debug_level debug_l, char* text, Myint nb)
+void printDebug(Debug_level debug_l, const char* text, Myint nb)
 {
 	if (debug_l <= debug)
 	{
@@ -163,7 +153,7 @@ void printDebug(Debug_level debug_l, char* text, Myint nb)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printDebug(Debug_level debug_l, char* text, Myint nb, Myint nb2)
+void printDebug(Debug_level debug_l, const char* text, Myint nb, Myint nb2)
 {
 	if (debug_l <= debug)
 	{
@@ -173,7 +163,7 @@ void printDebug(Debug_level debug_l, char* text, Myint nb, Myint nb2)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printDebug(Debug_level debug_l, char* text, Myfloat32 nb)
+void printDebug(Debug_level debug_l, const char* text, Myfloat32 nb)
 {
 	if (debug_l <= debug)
 	{
@@ -183,7 +173,7 @@ void printDebug(Debug_level debug_l, char* text, Myfloat32 nb)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printDebug(Debug_level debug_l, char* text, Myfloat64 nb)
+void printDebug(Debug_level debug_l, const char* text, Myfloat64 nb)
 {
 	if (debug_l <= debug)
 	{
@@ -230,31 +220,11 @@ void print_blank(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printInfo(Display_type display_t, char* text)
-{
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
-	{
-		cout << text << "\n" << flush ;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
 void printInfo(Display_type display_t, const char* text)
 {
 	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
 	{
 		cout << text << "\n" << flush ;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void printInfo(Display_type display_t, char* text, Myint nb)
-{
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
-	{
-		cout << text << "\t" << nb << "\n" << flush ;
 	}
 }
 
@@ -290,16 +260,6 @@ void printInfo(Display_type display_t, const char* text, Myint64 nb)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printInfo(Display_type display_t, char* text, Myfloat nb)
-{
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
-	{
-		cout << text << "\t" << nb << "\n" << flush ;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
 void printInfo(Display_type display_t, const char* text, Myfloat32 nb)
 {
 	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
@@ -320,27 +280,7 @@ void printInfo(Display_type display_t, const char* text, Myfloat64 nb)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printInfo(Display_type display_t, char* text, char* text2)
-{
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
-	{
-		cout << text << "\t" << text2 << "\n" << flush ;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
 void printInfo(Display_type display_t, const char* text, string text2)
-{
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
-	{
-		cout << text << "\t" << text2 << "\n" << flush ;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void printInfo(Display_type display_t, const char* text, char* text2)
 {
 	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
 	{
@@ -360,24 +300,12 @@ void printInfo(Display_type display_t, const char* text, const char* text2)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printWarning(char* text, Myint nb)
+void printWarning(const char* text, Myint nb)
 {
 	cout << "\n" ;
 	cout << LINE_REPORT_T3 ;
 	cout << "\n\t\t\t W A R N I N G \n" ;
 	cout << text << "\t" << nb << "\n\n" ;
-	cout << LINE_REPORT_T3 ;
-	cout << "\n" ;
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void printWarning(char* text)
-{
-	cout << "\n" ;
-	cout << LINE_REPORT_T3 ;
-	cout << "\n\t\t\t W A R N I N G \n" ;
-	cout << text << "\n\n" ;
 	cout << LINE_REPORT_T3 ;
 	cout << "\n" ;
 }
@@ -408,7 +336,7 @@ void printError(string* text)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printError(char* text, Myint nb)
+void printError(const char* text, Myint nb)
 {
 	cout << "\n" ;
 	cout << LINE_REPORT_T4 ;
@@ -420,7 +348,7 @@ void printError(char* text, Myint nb)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printError(char* text, string text2)
+void printError(const char* text, string text2)
 {
 	cout << "\n" ;
 	cout << LINE_REPORT_T4 ;
@@ -432,36 +360,12 @@ void printError(char* text, string text2)
 
 //-------------------------------------------------------------------------------------------------------
 
-void printError(char* text, Myint nb1, Myint nb2)
+void printError(const char* text, Myint nb1, Myint nb2)
 {
 	cout << "\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
 	cout << text << "\t" << nb1 << "\t" << nb2 << "\n\n" ;
-	cout << LINE_REPORT_T4 ;
-	cout << "\n" ;
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void printError(char* text)
-{
-	cout << "\n" ;
-	cout << LINE_REPORT_T4 ;
-	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
-	cout << text << "\n\n" ;
-	cout << LINE_REPORT_T4 ;
-	cout << "\n" ;
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void printError(char* text1, char* text2)
-{
-	cout << "\n" ;
-	cout << LINE_REPORT_T4 ;
-	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
-	cout << text1 << "\t" << text2 << "\n\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n" ;
 }
@@ -474,6 +378,18 @@ void printError(const char* text)
 	cout << LINE_REPORT_T4 ;
 	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
 	cout << text << "\n\n" ;
+	cout << LINE_REPORT_T4 ;
+	cout << "\n" ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void printError(const char* text1, const char* text2)
+{
+	cout << "\n" ;
+	cout << LINE_REPORT_T4 ;
+	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
+	cout << text1 << "\t" << text2 << "\n\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n" ;
 }

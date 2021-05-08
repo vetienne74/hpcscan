@@ -17,42 +17,35 @@ void print_line4(void) ;
 void print_line5(void) ;
 void print_blank(void) ;
 
-void printInfo(Display_type, char*) ;
 void printInfo(Display_type, const char*) ;
-void printInfo(Display_type, char*, Myint) ;
 void printInfo(Display_type, const char*, Myint) ;
 void printInfo(Display_type, const char*, Myint, Myint) ;
 void printInfo(Display_type, const char*, Myint64) ;
-void printInfo(Display_type, char*, Myfloat) ;
 void printInfo(Display_type, const char*, Myfloat32) ;
 void printInfo(Display_type, const char*, Myfloat64) ;
-void printInfo(Display_type, char*, char*) ;
-void printInfo(Display_type, const char*, char*) ;
+void printInfo(Display_type, const char*, const char*) ;
 void printInfo(Display_type, const char*, string) ;
 void printInfo(Display_type, const char*, const char*) ;
 
-void printDebug(Debug_level, char*) ;
 void printDebug(Debug_level, const char*) ;
-void printDebug(Debug_level, char*, string) ;
-void printDebug(Debug_level, char*, Myint) ;
-void printDebug(Debug_level, char*, Myint, Myint) ;
-void printDebug(Debug_level, char*, Myint64) ;
-void printDebug(Debug_level, char*, Myfloat32) ;
-void printDebug(Debug_level, char*, Myfloat64) ;
+void printDebug(Debug_level, const char*, string) ;
+void printDebug(Debug_level, const char*, Myint) ;
+void printDebug(Debug_level, const char*, Myint, Myint) ;
+void printDebug(Debug_level, const char*, Myint64) ;
+void printDebug(Debug_level, const char*, Myfloat32) ;
+void printDebug(Debug_level, const char*, Myfloat64) ;
 void printDebug(Debug_level, const char*, const char*) ;
 
 void printWarning(string* text) ;
-void printWarning(char* text) ;
-void printWarning(char* text, Myint) ;
+void printWarning(const char* text, Myint) ;
 void printWarning(const char* text) ;
 
 void printError(string* text) ;
-void printError(char* text) ;
-void printError(char* text, Myint) ;
-void printError(char* text, string) ;
-void printError(char* text, Myint, Myint) ;
-void printError(char* text1, char* text2) ;
 void printError(const char* text) ;
+void printError(const char* text, Myint) ;
+void printError(const char* text, string) ;
+void printError(const char* text, Myint, Myint) ;
+void printError(const char* text1, const char* text2) ;
 
 } // namespace hpcscan
 

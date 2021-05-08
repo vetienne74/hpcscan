@@ -1,6 +1,6 @@
 
 # Load needed modules
-# no module needed on Mars
+# no module needed on Neptune
 
 # MPI config
 export HPCSCAN_MPI_INVOKER='mpirun --oversubscribe'
@@ -21,4 +21,4 @@ export HPCSCAN_CUDA=nvcc
 export HPCSCAN_CUDA_FLAGCOMP='-gencode arch=compute_50,code=sm_50 -I /usr/lib/x86_64-linux-gnu/openmpi/include/'
 export HPCSCAN_CUDA_LIB='-L/usr/local/cuda/lib64 -lcuda -lcudart'
 
-echo HPCSCAN set for Mars with $HPCSCAN_CPP and $HPCSCAN_CUDA.
+echo HPCSCAN set for Neptune with $HPCSCAN_CPP and $HPCSCAN_CUDA.

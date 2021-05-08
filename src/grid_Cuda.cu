@@ -628,7 +628,6 @@ Rtn_code Grid_Cuda::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint 
 	printDebug(MID_DEBUG, "IN Grid_Cuda::FD_LAPLACIAN");
 
 	// TO DO
-	Grid::FD_LAPLACIAN(pointType, Wgrid, fdOrder) ;
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda::FD_LAPLACIAN");
 	return(RTN_CODE_OK) ;
@@ -640,9 +639,6 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 {
 
 	printDebug(FULL_DEBUG, "In Grid_Cuda::computePressureWithFD") ;
-
-	// TO DO
-	// Grid::computePressureWithFD(prcGridIn, coefGridIn, fdOrder) ;
 
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
@@ -706,7 +702,7 @@ void Grid_Cuda::fill(Point_type pointType, Myfloat val)
 
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	kernel_fill_const<<<2048,128>>>(d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	cudaDeviceSynchronize();
@@ -721,12 +717,9 @@ void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_typ
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::fill") ;
 
-	Grid::fill(pointType, t1,  t2, t3, param1, param2, param3, amp) ;
-
-
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	// we only use sine and linear for now
 	int ok = 1;
@@ -916,7 +909,7 @@ Myfloat Grid_Cuda::getMin(Point_type pointType)
 
 	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 	minCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_val,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 	cudaDeviceSynchronize();
@@ -975,7 +968,7 @@ Myfloat Grid_Cuda::getMax(Point_type pointType)
 
 	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 	maxCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_val,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 	cudaDeviceSynchronize();
@@ -1009,7 +1002,7 @@ Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
 
 	if (std::isnan(err))
 	{
-		printError("In Grid::L1Err, std::isnan(err)") ;
+		printError("In Grid_Cuda::L1Err, std::isnan(err)") ;
 	}
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::L1Err") ;
@@ -1057,12 +1050,9 @@ Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::updatePressure") ;
 
-	// TO DO
-	// return(Grid::updatePressure(pointType, prcGrid, coefGrid, laplaGrid)) ;
-
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	Myfloat *prcGrid_d_grid_3d = ((Grid_Cuda&) prcGrid).d_grid_3d ;
 	Myfloat *coefGrid_d_grid_3d = ((Grid_Cuda&) coefGrid).d_grid_3d ;
@@ -1263,7 +1253,7 @@ void Grid_Cuda::copyGridDeviceToHost(Point_type pointType)
 	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridDeviceToHost") ;
 
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	//if (pointType == I1INNERHALO1)
 	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
@@ -1291,7 +1281,7 @@ void Grid_Cuda::copyGridHostToDevice(Point_type pointType)
 	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridDeviceToHost") ;
 
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
 	//if (pointType == I1HALO1)
 	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
@@ -1318,9 +1308,6 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::applyBoundaryCondition") ;
 
-	// TO DO
-	// return(Grid::applyBoundaryCondition(boundCondType)) ;
-
 	if (boundCondType != BOUND_COND_ANTI_MIRROR)
 	{
 		printError("CUDA: only BOUND_COND_ANTI_MIRROR boundary condition for now");
@@ -1333,12 +1320,12 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 				i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
 				i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End;
 	
-	Grid::getGridIndex(I1HALO1, &i1halo1_i1Start, &i1halo1_i1End, &i1halo1_i2Start, &i1halo1_i2End, &i1halo1_i3Start, &i1halo1_i3End);
-	Grid::getGridIndex(I1HALO2, &i1halo2_i1Start, &i1halo2_i1End, &i1halo2_i2Start, &i1halo2_i2End, &i1halo2_i3Start, &i1halo2_i3End);
-	Grid::getGridIndex(I2HALO1, &i2halo1_i1Start, &i2halo1_i1End, &i2halo1_i2Start, &i2halo1_i2End, &i2halo1_i3Start, &i2halo1_i3End);
-	Grid::getGridIndex(I2HALO2, &i2halo2_i1Start, &i2halo2_i1End, &i2halo2_i2Start, &i2halo2_i2End, &i2halo2_i3Start, &i2halo2_i3End);
-	Grid::getGridIndex(I3HALO1, &i3halo1_i1Start, &i3halo1_i1End, &i3halo1_i2Start, &i3halo1_i2End, &i3halo1_i3Start, &i3halo1_i3End);
-	Grid::getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
+	getGridIndex(I1HALO1, &i1halo1_i1Start, &i1halo1_i1End, &i1halo1_i2Start, &i1halo1_i2End, &i1halo1_i3Start, &i1halo1_i3End);
+	getGridIndex(I1HALO2, &i1halo2_i1Start, &i1halo2_i1End, &i1halo2_i2Start, &i1halo2_i2End, &i1halo2_i3Start, &i1halo2_i3End);
+	getGridIndex(I2HALO1, &i2halo1_i1Start, &i2halo1_i1End, &i2halo1_i2Start, &i2halo1_i2End, &i2halo1_i3Start, &i2halo1_i3End);
+	getGridIndex(I2HALO2, &i2halo2_i1Start, &i2halo2_i1End, &i2halo2_i2Start, &i2halo2_i2End, &i2halo2_i3Start, &i2halo2_i3End);
+	getGridIndex(I3HALO1, &i3halo1_i1Start, &i3halo1_i1End, &i3halo1_i2Start, &i3halo1_i2End, &i3halo1_i3Start, &i3halo1_i3End);
+	getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
 
 
 	kernel_applyBoundaryCondition<<<1024,256>>>(d_grid_3d, n1, n2, n3, 	
@@ -1401,7 +1388,7 @@ Myfloat Grid_Cuda::getSumAbs(Point_type pointType) const
 
 	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 	sumAbsCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_sum,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 	cudaDeviceSynchronize();
@@ -1482,7 +1469,7 @@ Myfloat Grid_Cuda::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 	sumAbsDiffCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, gridIn_d_grid_3d, d_sum,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 	cudaDeviceSynchronize();
@@ -1572,7 +1559,7 @@ Myfloat Grid_Cuda::maxErr(Point_type pointType, const Grid& gridIn) const
 	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 	maxErrCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, gridIn_d_grid_3d, d_err,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 	cudaDeviceSynchronize();
