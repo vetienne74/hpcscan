@@ -35,8 +35,6 @@ using namespace std;
 
 namespace hpcscan {
 
-static const int blockSize = 512 ;
-
 //-------------------------------------------------------------------------------------------------------
 
 //Macro for checking cuda errors following a cuda launch or api call
@@ -155,14 +153,13 @@ __global__ void kernel_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 pa
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	cg::thread_block cta = cg::this_thread_block();
-	__shared__ float sdata[256];
+	/*extern*/ __shared__ float sdata[256];
 
 	sdata[threadIdx.x]=0;
 
@@ -234,7 +231,7 @@ __global__ void kernel_min(Myfloat *data, Myfloat *dataOut,
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	cg::thread_block cta = cg::this_thread_block();
-	__shared__ float sdata[256];
+	/*extern*/ __shared__ float sdata[256];
 	sdata[threadIdx.x]=99999;
 
 	while (tid < size)
@@ -306,8 +303,7 @@ __global__ void kernel_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1
 // 			prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 // 					coef[i1+i2*n1+i3*n1*n2] * lapla[i1+i2*n1+i3*n1*n2] ;
 
-__global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -838,7 +834,7 @@ void Grid_Cuda::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
 	Myfloat *gridIn1_d_grid_3d = ((Grid_Cuda&) gridIn1).d_grid_3d ;
 	Myfloat *gridIn2_d_grid_3d = ((Grid_Cuda&) gridIn2).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	kernel_multiplyArray<<<1024,256>>>(d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
+	kernel_addArray<<<1024,256>>>(d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
 
 	cudaDeviceSynchronize();
 
@@ -871,164 +867,119 @@ void Grid_Cuda::addUpdateArray(const Grid& gridIn)
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void minCommSingleBlock(const Myfloat *a, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int idx = threadIdx.x;
-	Myfloat minval = +FLT_MAX;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			if (a[i] < minval) minval = a[i] ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = minval;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] < r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Cuda::getMin(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::getMin") ;
 
-	Myfloat val = 0 ;
-	Myfloat *d_val ;
-	cudaMalloc((void**)&d_val, sizeof(Myfloat) * 1);
+	if (true)
+	{
+		//pointType
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+		
+		const int numBlocks = 1024;
+		kernel_min<<<numBlocks,256>>>(d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		cudaCheckError();
 
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	minCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_val,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::min_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + numBlocks);
+		float val = *vptr;
+		return val;
+	}
+	else if (true)
+	{
+		//pointType
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+		kernel_mask<<<1024,256>>>(d_grid_3d,d_help_3d,999,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::min_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+		float val = *vptr;
+		return val;
+	}
+	else
+	{
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_grid_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::min_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+		float val = *vptr;
+		return val;
+	}
 	cudaDeviceSynchronize();
-	cudaMemcpy(&val, d_val, sizeof(Myfloat), cudaMemcpyDeviceToHost);
-	cudaCheckError();
-	cudaFree(d_val);
-
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::getMin") ;
-
-	return val ;
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void maxCommSingleBlock(const Myfloat *a, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int idx = threadIdx.x;
-	Myfloat maxval = -FLT_MAX;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			if (a[i] > maxval) maxval = a[i] ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = maxval;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] > r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Cuda::getMax(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::getMax") ;
 
-	Myfloat val = 0 ;
-	Myfloat *d_val ;
-	cudaMalloc((void**)&d_val, sizeof(Myfloat) * 1);
-
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	maxCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_val,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	if (hpcscan::nproc_world > 1)
+	{
+		//pointType
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+		Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+		kernel_mask<<<1024,256>>>(d_grid_3d,d_help_3d,0,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::max_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+		float val = *vptr;
+		return val;
+	}
+	else
+	{
+		thrust::device_ptr<Myfloat> d_help_3d_ptr = thrust::device_pointer_cast(d_grid_3d);
+		thrust::device_ptr<hpcscan::Myfloat> vptr = thrust::max_element(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+		float val = *vptr;
+		return val;
+	}
 	cudaDeviceSynchronize();
-	cudaMemcpy(&val, d_val, sizeof(Myfloat), cudaMemcpyDeviceToHost);
-	cudaCheckError();
-	cudaFree(d_val);
-
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::getMax") ;
-
-	return val ;
 }
 
-
 //-------------------------------------------------------------------------------------------------------
-
 Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::L1Err") ;
 
-	Myfloat64 sum1 , sum2 ;
-	sum1 = getSumAbsDiff(pointType, gridIn) ;
-	sum2 = gridIn.getSumAbs(pointType) ;
+	// TO DO
+	// return(Grid::L1Err(pointType, gridIn)) ;
 
-	// prevent divide by zero
-	if (sum2 < MAX_ERR_FLOAT) sum2 = 1.0 * npoint ;
-	Myfloat err = sum1 / sum2 ;
+	//pointType
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	printDebug(LIGHT_DEBUG, "sum1", sum1) ;
-	printDebug(LIGHT_DEBUG, "sum2", sum2) ;
-	printDebug(LIGHT_DEBUG, "err", err) ;
+	thrust::device_ptr<Myfloat> d_help_3d_ptr;
 
-	if (std::isnan(err))
+	const int numBlocks = 1024;
+	
+	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
+
+	kernel_diff<<<numBlocks,256>>>(d_grid_3d, gridIn_d_grid_3d,d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	cudaCheckError();
+	d_help_3d_ptr = thrust::device_pointer_cast(d_help_3d);
+	double totErr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + numBlocks);
+
+	double totArr;
+	if (false)
 	{
-		printError("In Grid::L1Err, std::isnan(err)") ;
+		kernel_fabsf<<<1024,256>>>(gridIn_d_grid_3d, d_help_3d,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		totArr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
+	}
+	else // assuming grid values are positive
+	{
+		d_help_3d_ptr = thrust::device_pointer_cast(gridIn_d_grid_3d);
+		totArr = thrust::reduce(thrust::device, d_help_3d_ptr, d_help_3d_ptr + n1*n2*n3);
 	}
 
+	cudaDeviceSynchronize();
+
+	if (totArr < MAX_ERR_FLOAT) totArr = 1.0 * npoint ;
+
+	return totErr/totArr;
+
+	
+
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::L1Err") ;
-	return(err) ;
 }
-
-//-------------------------------------------------------------------------------------------------------
-
-Myfloat Grid_Cuda::allProcL1Err(Point_type pointType, const Grid& gridIn) const
-{
-	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::allProcL1Err");
-
-	// TO DO: IMPLEMENT ACCORDING TO grip.cpp
-	Myfloat err = L1Err(pointType, gridIn) ;
-
-	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::allProcL1Err");
-	return(err) ;
-}
-
 //-------------------------------------------------------------------------------------------------------
 Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
 		const Grid& coefGrid, const Grid& laplaGrid)
@@ -1045,8 +996,7 @@ Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
 	Myfloat *prcGrid_d_grid_3d = ((Grid_Cuda&) prcGrid).d_grid_3d ;
 	Myfloat *coefGrid_d_grid_3d = ((Grid_Cuda&) coefGrid).d_grid_3d ;
 	Myfloat *laplaGrid_d_grid_3d = ((Grid_Cuda&) laplaGrid).d_grid_3d ;
-	kernel_updatePressure<<<1024,256>>>(d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	kernel_updatePressure<<<1024,256>>>(d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
 	cudaDeviceSynchronize();
 
@@ -1095,195 +1045,15 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 	return(RTN_CODE_OK) ;
 }
 
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void sumAbsCommSingleBlock(const Myfloat *a, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+Myfloat Grid_Cuda::getSumAbs(Point_type) const
 {
-	int idx = threadIdx.x;
-	Myfloat64 sum = 0;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = i - i3*(n1*n2) - i2*n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			sum += fabs(a[i]) ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = sum;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			r[idx] += r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
+	printWarning("getSumAbs not yet implemented on the GPU, so returning 0.1");
+	return 0.1;
 }
 
-Myfloat Grid_Cuda::getSumAbs(Point_type pointType) const
+Myfloat Grid_Cuda::getSumAbsDiff(Point_type, const Grid&) const
 {
-	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::getSumAbs");
-
-	Myfloat sum = 0 ;
-	Myfloat *d_sum ;
-	cudaMalloc((void**)&d_sum, sizeof(Myfloat) * 1);
-
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	sumAbsCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_sum,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
-	cudaDeviceSynchronize();
-	cudaMemcpy(&sum, d_sum, sizeof(Myfloat), cudaMemcpyDeviceToHost);
-	cudaCheckError();
-	cudaFree(d_sum);
-
-	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::getSumAbs");
-
-	return(sum) ;
+	printWarning("getSumAbsDiff not yet implemented on the GPU, so returning 0");
+	return 0.0;
 }
-
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void sumAbsDiffCommSingleBlock(const Myfloat *a, const Myfloat *b, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int idx = threadIdx.x;
-	Myfloat64 sum = 0;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-
-			sum += fabs(a[i] - b[i]) ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = sum;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			r[idx] += r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
-Myfloat Grid_Cuda::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
-{
-
-	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::getSumAbsDiff");
-
-	Myfloat sum = 0 ;
-	Myfloat *d_sum ;
-	cudaMalloc((void**)&d_sum, sizeof(Myfloat) * 1);
-
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
-	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	sumAbsDiffCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, gridIn_d_grid_3d, d_sum,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
-	cudaDeviceSynchronize();
-	cudaMemcpy(&sum, d_sum, sizeof(Myfloat), cudaMemcpyDeviceToHost);
-	cudaCheckError();
-	cudaFree(d_sum);
-
-	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::getSumAbsDiff");
-
-	return(sum) ;
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void maxErrCommSingleBlock(const Myfloat *a, const Myfloat *b, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End) {
-	int idx = threadIdx.x;
-	Myfloat err = -FLT_MAX, err2 = 0.0 ;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			if (fabs(b[i]) < MAX_ERR_FLOAT)
-			{
-				err2 = fabs(a[i] - b[i]) ;
-			}
-			else
-			{
-				err2 = fabs(a[i] - b[i]) / b[i] ;
-			}
-
-			if (err2 > err)
-			{
-				err = err2 ;
-			}
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = err;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] > r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
-Myfloat Grid_Cuda::maxErr(Point_type pointType, const Grid& gridIn) const
-{
-	printDebug(FULL_DEBUG, "IN Grid_Cuda::maxErr");
-
-	Myfloat err = 0 ;
-	Myfloat *d_err ;
-	cudaMalloc((void**)&d_err, sizeof(Myfloat) * 1);
-
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
-	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	Grid::getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	maxErrCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, gridIn_d_grid_3d, d_err,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
-	cudaDeviceSynchronize();
-	cudaMemcpy(&err, d_err, sizeof(Myfloat), cudaMemcpyDeviceToHost);
-	cudaFree(d_err);
-	cudaCheckError();
-
-	printDebug(FULL_DEBUG, "OUT Grid_Cuda::maxErr");
-	return(err) ;
-}
-
 } // namespace hpcscan

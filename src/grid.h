@@ -55,7 +55,7 @@ public:
 	virtual Myfloat L1Err(Point_type pointType, const Grid& gridIn) const ;
 
 	// collective (all MPI process) L1 error between this grid and another
-	Myfloat allProcL1Err(Point_type, const Grid&) const ;
+	virtual Myfloat allProcL1Err(Point_type, const Grid&) const ;
 
 	// Max error between this grid and another (point wise)
 	virtual Myfloat maxErr(Point_type, const Grid&) const ;
