@@ -660,6 +660,31 @@ void Grid_Cuda::info(void)
 	printDebug(FULL_DEBUG, "IN Grid_Cuda::info");
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+void Grid_Cuda::write(string file_name)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::write");
+
+	// each proc write is own file
+
+	if (Config::Instance()->writeGrid)
+	{
+		printf("Max GPU grid %f\n", getMax(INNER_POINTS)) ;
+		printf("Min GPU grid %f\n", getMin(INNER_POINTS)) ;
+
+		// copy grid from device to host
+		copyGridDeviceToHost(ALL_POINTS) ;
+
+		printf("Max CPU grid %f\n", Grid::getMax(INNER_POINTS)) ;
+		printf("Min CPU grid %f\n", Grid::getMin(INNER_POINTS)) ;
+
+		Grid::write(file_name) ;
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::write");
+}
+
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -766,9 +791,9 @@ void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_typ
 	if (t1 != FUNC_SINE && t1 != FUNC_LINEAR) ok = 0;
 	if (t2 != FUNC_SINE && t2 != FUNC_LINEAR) ok = 0;
 	if (t3 != FUNC_SINE && t3 != FUNC_LINEAR) ok = 0;
-	if (!ok) printError("CUDA: only FUNC_SINE and FUNC_LINEAR implemented");
+	if (!ok) printError("In Grid_Cuda::fill, only FUNC_SINE and FUNC_LINEAR implemented");
 
-	if ((t1==t2 && t2==t3)==false) printError("CUDA: func has to be same in each dimension");
+	if ((t1==t2 && t2==t3)==false) printError("In Grid_Cuda::fill, func has to be same in each dimension");
 
 	if (t1 == FUNC_SINE) kernel_fill_sine<<<1024,128>>>  (d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
 	else                 kernel_fill_linear<<<1024,128>>>(d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
@@ -1311,14 +1336,14 @@ void Grid_Cuda::copyGridDeviceToHost(Point_type pointType)
 
 	cudaDeviceSynchronize();
 
-	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridHostToDevice") ;
+	printDebug(FULL_DEBUG, "Out Grid_Cuda::copyGridDeviceToHost") ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void Grid_Cuda::copyGridHostToDevice(Point_type pointType)
 {
-	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridDeviceToHost") ;
+	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridHostToDevice") ;
 
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
@@ -1339,7 +1364,7 @@ void Grid_Cuda::copyGridHostToDevice(Point_type pointType)
 
 	cudaDeviceSynchronize();
 
-	printDebug(FULL_DEBUG, "In Grid_Cuda::copyGridHostToDevice") ;
+	printDebug(FULL_DEBUG, "Out Grid_Cuda::copyGridHostToDevice") ;
 }
 
 //-------------------------------------------------------------------------------------------------------

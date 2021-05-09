@@ -49,7 +49,7 @@ public:
 	virtual void info(void) ;
 
 	// write grid on disk
-	void write(string) ;
+	virtual void write(string) ;
 
 	// L1 error between this grid and another
 	virtual Myfloat L1Err(Point_type pointType, const Grid& gridIn) const ;

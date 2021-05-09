@@ -22,10 +22,10 @@
 namespace hpcscan {
 
 TestCase_Util::TestCase_Util(void)
-{
+		{
 	testCaseName    = "Util" ;
 	testCaseVersion = "Standard implementation" ;
-}
+		}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -166,6 +166,52 @@ Rtn_code TestCase_Util::run(void)
 	auto gridRef2 = Grid_Factory::create(gridMode, GRID_LOCAL) ;
 	Grid &gridRef = *gridRef2 ;
 	gridRef.initializeGrid() ;
+
+	{
+		//--------------------------------
+		// check fill grid with constant
+		//--------------------------------
+		print_blank() ;
+		string caseName = testCaseName + "FillWithConstant" ;
+		printInfo(MASTER, " * Case", caseName) ;
+
+		Myfloat valConst = 999.0 ;
+		gridLoc.fill(ALL_POINTS, valConst) ;
+		gridLoc.write(caseName+"Loc") ;
+
+		Myfloat gridLocMin = gridLoc.getMin(ALL_POINTS) ;
+		Myfloat gridLocGlobMin = 0 ;
+		MPI_Reduce(&gridLocMin, &gridLocGlobMin, 1, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
+		checkFloatDiff(gridLocGlobMin, valConst, MAX_ERR_FLOAT) ;
+
+		Myfloat gridLocMax = gridLoc.getMax(ALL_POINTS) ;
+		Myfloat gridLocGlobMax = 0 ;
+		MPI_Reduce(&gridLocMax, &gridLocGlobMax, 1, MPI_FLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
+		checkFloatDiff(gridLocGlobMax, valConst, MAX_ERR_FLOAT) ;
+	}
+
+	{
+		//--------------------------------
+		// check fill grid with sine
+		//--------------------------------
+		print_blank() ;
+		string caseName = testCaseName + "FillWithSine" ;
+		printInfo(MASTER, " * Case", caseName) ;
+
+		Myfloat valConst = 999.0 ;
+		gridLoc.fill(ALL_POINTS, FUNC_SINE, FUNC_SINE, FUNC_SINE, 1.0, 1.0, 1.0, valConst) ;
+		gridLoc.write(caseName+"Loc") ;
+
+		Myfloat gridLocMin = gridLoc.getMin(ALL_POINTS) ;
+		Myfloat gridLocGlobMin = 0 ;
+		MPI_Reduce(&gridLocMin, &gridLocGlobMin, 1, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
+		checkFloatDiff(gridLocGlobMin, -valConst, 0.1) ;
+
+		Myfloat gridLocMax = gridLoc.getMax(ALL_POINTS) ;
+		Myfloat gridLocGlobMax = 0 ;
+		MPI_Reduce(&gridLocMax, &gridLocGlobMax, 1, MPI_FLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
+		checkFloatDiff(gridLocGlobMax, valConst, 0.1) ;
+	}
 
 	{
 		//---------------------

@@ -317,9 +317,9 @@ Myfloat TestCase::relErr(Myfloat val1, Myfloat val2)
 	Myfloat retVal ;
 	printDebug(LIGHT_DEBUG, "val1", val1) ;
 	printDebug(LIGHT_DEBUG, "val2", val2) ;
-	if (val2 > MAX_ERR_FLOAT)
+	if (fabs(val2) > MAX_ERR_FLOAT)
 	{
-		retVal = fabs(val1 - val2) / val2 ;
+		retVal = fabs(val1 - val2) / fabs(val2) ;
 	}
 	else
 	{
