@@ -173,6 +173,7 @@ OpenAcc      | GPU with OpenACC without optimization | Only enabled when compile
 
 * C++ compiler with OpenACC support 
 * CUDA compiler
+* HIP compiler
 * NEC compiler
 
 ## Environment script (mandatory)
