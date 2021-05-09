@@ -125,7 +125,7 @@ hpcscan is a self-content package that can be easily installed and executed on y
 Version      | Description | Release date
 ------------ | ----------- | ------------
 v1.0         | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
-v1.1         | Added test modes NEC, OpenAcc (ON GOING) and Cuda (ON GOING) | Coming soon
+v1.1         | Added test modes NEC, OpenAcc (ON GOING), CUDA (ON GOING) and HIP (ON GOING) | Coming soon
 
 # Main features
 
@@ -156,7 +156,8 @@ Test mode name | Description | Remark
 ------------ | ----------- | ------------
 Baseline     | CPU standard implementation | :arrow_right: **This mode is the reference implementation without any optimization.** <br> Always enabled
 CacheBlk     | CPU with cache blocking optimization techniques | Always enabled
-Cuda         | GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
+CUDA         | GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
+HIP          | GPU with HIP without optimization | Only enabled when compiled with hipcc (AMD HIP compiler)
 NEC          | NEC with compiler directives | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
 NEC_SCA      | NEC with Stencil Code Accelerator | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
 OpenAcc      | GPU with OpenACC without optimization | Only enabled when compiled with a C++ compiler that supports OpenACC
@@ -234,7 +235,7 @@ Check the summary at the end of report to have a quick look on this.
 
 hpcscan has been successfully tested on the hardware, operating systems and compilers listed below
 
-Operating system | Compiler | Host (H) | Device (D) | Baseline | CacheBlk | Cuda | NEC | NEC_SCA | OpenAcc
+Operating system | Compiler | Host (H) | Device (D) | Baseline | CacheBlk | CUDA | NEC | NEC_SCA | OpenAcc
 |----------------|----------|----------|------------|----------|----------|------|-----|---------|--------
 Ubuntu 20.04.1 LTS |  gcc version 9.3.0 / nvcc release 10.1, V10.1.243 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | OK (H) | OK (H) | ON GOING (D) | - | - | ON GOING (D)
 SUSE Linux Enterprise Server 15 | icpc (ICC) 19.0.5.281 20190815 | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | OK (H) | OK (H) | - | - | - | -
