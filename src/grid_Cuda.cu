@@ -333,12 +333,12 @@ __global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef,
 //-------------------------------------------------------------------------------------------------------
 
 __global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data, int n1, int n2, int n3,
-			Myint64 i1halo1_i1Start, Myint64 i1halo1_i1End, Myint64 i1halo1_i2Start, Myint64 i1halo1_i2End, Myint64 i1halo1_i3Start, Myint64 i1halo1_i3End,
-			Myint64 i1halo2_i1Start, Myint64 i1halo2_i1End, Myint64 i1halo2_i2Start, Myint64 i1halo2_i2End, Myint64 i1halo2_i3Start, Myint64 i1halo2_i3End,
-			Myint64 i2halo1_i1Start, Myint64 i2halo1_i1End, Myint64 i2halo1_i2Start, Myint64 i2halo1_i2End, Myint64 i2halo1_i3Start, Myint64 i2halo1_i3End,
-			Myint64 i2halo2_i1Start, Myint64 i2halo2_i1End, Myint64 i2halo2_i2Start, Myint64 i2halo2_i2End, Myint64 i2halo2_i3Start, Myint64 i2halo2_i3End,
-			Myint64 i3halo1_i1Start, Myint64 i3halo1_i1End, Myint64 i3halo1_i2Start, Myint64 i3halo1_i2End, Myint64 i3halo1_i3Start, Myint64 i3halo1_i3End,
-			Myint64 i3halo2_i1Start, Myint64 i3halo2_i1End, Myint64 i3halo2_i2Start, Myint64 i3halo2_i2End, Myint64 i3halo2_i3Start, Myint64 i3halo2_i3End)
+			Myint I1HALO1_neigh, Myint64 i1halo1_i1Start, Myint64 i1halo1_i1End, Myint64 i1halo1_i2Start, Myint64 i1halo1_i2End, Myint64 i1halo1_i3Start, Myint64 i1halo1_i3End,
+			Myint I1HALO2_neigh, Myint64 i1halo2_i1Start, Myint64 i1halo2_i1End, Myint64 i1halo2_i2Start, Myint64 i1halo2_i2End, Myint64 i1halo2_i3Start, Myint64 i1halo2_i3End,
+			Myint I2HALO1_neigh, Myint64 i2halo1_i1Start, Myint64 i2halo1_i1End, Myint64 i2halo1_i2Start, Myint64 i2halo1_i2End, Myint64 i2halo1_i3Start, Myint64 i2halo1_i3End,
+			Myint I2HALO2_neigh, Myint64 i2halo2_i1Start, Myint64 i2halo2_i1End, Myint64 i2halo2_i2Start, Myint64 i2halo2_i2End, Myint64 i2halo2_i3Start, Myint64 i2halo2_i3End,
+			Myint I3HALO1_neigh, Myint64 i3halo1_i1Start, Myint64 i3halo1_i1End, Myint64 i3halo1_i2Start, Myint64 i3halo1_i2End, Myint64 i3halo1_i3Start, Myint64 i3halo1_i3End,
+			Myint I3HALO2_neigh, Myint64 i3halo2_i1Start, Myint64 i3halo2_i1End, Myint64 i3halo2_i2Start, Myint64 i3halo2_i2End, Myint64 i3halo2_i3Start, Myint64 i3halo2_i3End)
 			
 {
 	int size = n1*n2*n3;
@@ -352,74 +352,92 @@ __global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data, int n
 		int i1 = idx%n1;
 
 		// I1HALO1
-		Myint64 iInner = i1halo1_i1End+1;
-		if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i1halo1_i1Start && i1 <= i1halo1_i1End &&
-			i2 >= i1halo1_i2Start && i2 <= i1halo1_i2End &&
-			i3 >= i1halo1_i3Start && i3 <= i1halo1_i3End   )
+		if (I1HALO1_neigh == MPI_PROC_NULL)
 		{
-			data[tid] = -data[(iInner+iInner-i1)+i2*n1+i3*n1*n2];
+			Myint64 iInner = i1halo1_i1End+1;
+			if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+			if (i1 >= i1halo1_i1Start && i1 <= i1halo1_i1End &&
+					i2 >= i1halo1_i2Start && i2 <= i1halo1_i2End &&
+					i3 >= i1halo1_i3Start && i3 <= i1halo1_i3End   )
+			{
+				data[tid] = -data[(iInner+iInner-i1)+i2*n1+i3*n1*n2];
+			}
 		}
 
 		// I1HALO2
-		iInner = i1halo2_i1Start-1;
-		if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i1halo2_i1Start && i1 <= i1halo2_i1End &&
-			i2 >= i1halo2_i2Start && i2 <= i1halo2_i2End &&
-			i3 >= i1halo2_i3Start && i3 <= i1halo2_i3End   )
+		if (I1HALO2_neigh == MPI_PROC_NULL)
 		{
-			data[tid] = -data[(iInner-(i1-iInner))+i2*n1+i3*n1*n2];
+			Myint64 iInner = i1halo2_i1Start-1;
+			if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+			if (i1 >= i1halo2_i1Start && i1 <= i1halo2_i1End &&
+					i2 >= i1halo2_i2Start && i2 <= i1halo2_i2End &&
+					i3 >= i1halo2_i3Start && i3 <= i1halo2_i3End   )
+			{
+				data[tid] = -data[(iInner-(i1-iInner))+i2*n1+i3*n1*n2];
+			}
 		}
 
 		if (dim >= DIM2)
 		{
 			// I2HALO1
-			iInner = i2halo1_i2End+1;
-			if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-			if (i1 >= i2halo1_i1Start && i1 <= i2halo1_i1End &&
-					i2 >= i2halo1_i2Start && i2 <= i2halo1_i2End &&
-					i3 >= i2halo1_i3Start && i3 <= i2halo1_i3End   )
+			if (I2HALO1_neigh == MPI_PROC_NULL)
 			{
-				data[tid] = -data[i1+(iInner+iInner-i2)*n1+i3*n1*n2];
+				Myint64 iInner = i2halo1_i2End+1;
+				if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+				if (i1 >= i2halo1_i1Start && i1 <= i2halo1_i1End &&
+						i2 >= i2halo1_i2Start && i2 <= i2halo1_i2End &&
+						i3 >= i2halo1_i3Start && i3 <= i2halo1_i3End   )
+				{
+					data[tid] = -data[i1+(iInner+iInner-i2)*n1+i3*n1*n2];
+				}
 			}
 
 			// I2HALO2
-			iInner = i2halo2_i2Start-1;
-			if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-			if (i1 >= i2halo2_i1Start && i1 <= i2halo2_i1End &&
-					i2 >= i2halo2_i2Start && i2 <= i2halo2_i2End &&
-					i3 >= i2halo2_i3Start && i3 <= i2halo2_i3End   )
+			if (I2HALO2_neigh == MPI_PROC_NULL)
 			{
-				data[tid] = -data[i1+(iInner-(i2-iInner))*n1+i3*n1*n2];
+				Myint64 iInner = i2halo2_i2Start-1;
+				if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+				if (i1 >= i2halo2_i1Start && i1 <= i2halo2_i1End &&
+						i2 >= i2halo2_i2Start && i2 <= i2halo2_i2End &&
+						i3 >= i2halo2_i3Start && i3 <= i2halo2_i3End   )
+				{
+					data[tid] = -data[i1+(iInner-(i2-iInner))*n1+i3*n1*n2];
+				}
 			}
 		}
 
 		if (dim >= DIM3)
 		{
 			// I3HALO1
-			iInner = i3halo1_i3End+1;
-			if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
-
-			if (i1 >= i3halo1_i1Start && i1 <= i3halo1_i1End &&
-					i2 >= i3halo1_i2Start && i2 <= i3halo1_i2End &&
-					i3 >= i3halo1_i3Start && i3 <= i3halo1_i3End   )
+			if (I3HALO1_neigh == MPI_PROC_NULL)
 			{
-				data[tid] = -data[i1+i2*n1+(iInner+iInner-i3)*n1*n2];
+				Myint64 iInner = i3halo1_i3End+1;
+				if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
+
+				if (i1 >= i3halo1_i1Start && i1 <= i3halo1_i1End &&
+						i2 >= i3halo1_i2Start && i2 <= i3halo1_i2End &&
+						i3 >= i3halo1_i3Start && i3 <= i3halo1_i3End   )
+				{
+					data[tid] = -data[i1+i2*n1+(iInner+iInner-i3)*n1*n2];
+				}
 			}
 
 			// I3HALO2
-			iInner = i3halo2_i3Start-1;
-			if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
-
-			if (i1 >= i3halo2_i1Start && i1 <= i3halo2_i1End &&
-					i2 >= i3halo2_i2Start && i2 <= i3halo2_i2End &&
-					i3 >= i3halo2_i3Start && i3 <= i3halo2_i3End   )
+			if (I3HALO2_neigh == MPI_PROC_NULL)
 			{
-				data[tid] = -data[i1+i2*n1+(iInner-(i3-iInner))*n1*n2];
+				Myint64 iInner = i3halo2_i3Start-1;
+				if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
+
+				if (i1 >= i3halo2_i1Start && i1 <= i3halo2_i1End &&
+						i2 >= i3halo2_i2Start && i2 <= i3halo2_i2End &&
+						i3 >= i3halo2_i3Start && i3 <= i3halo2_i3End   )
+				{
+					data[tid] = -data[i1+i2*n1+(iInner-(i3-iInner))*n1*n2];
+				}
 			}
 		}
 
@@ -1405,12 +1423,12 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 
 
 	kernel_applyBoundaryCondition<<<1024,256>>>(dim, d_grid_3d, n1, n2, n3,
-		i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
-		i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
-		i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
-		i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
-		i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
-		i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End);
+			getNeighbourProc(I1HALO1), i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
+			getNeighbourProc(I1HALO2), i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
+			getNeighbourProc(I2HALO1), i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
+			getNeighbourProc(I2HALO2), i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
+			getNeighbourProc(I3HALO1), i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
+			getNeighbourProc(I3HALO2), i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End);
 
 	cudaDeviceSynchronize();
 
