@@ -1316,12 +1316,18 @@ void Grid_Cuda::copyGridDeviceToHost(Point_type pointType)
 	{
 		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 		{
-			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-			{
-				// TMP copy point to point
-				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-				cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
-			}
+			//for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+			//{
+			//	// TMP copy point to point
+			//	Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+			//	cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+			//}
+
+			// copy 1d segment
+			Myint64 i1 = i1Start ;
+			Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+			Myint64 nn = i1End - i1Start + 1 ;
+			cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nn * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
 		}
 	}
 
@@ -1344,12 +1350,18 @@ void Grid_Cuda::copyGridHostToDevice(Point_type pointType)
 	{
 		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 		{
-			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-			{
-				// TMP copy point to point
-				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-				cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), sizeof(Myfloat), cudaMemcpyHostToDevice) ;
-			}
+			//for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+			//{
+			//	// TMP copy point to point
+			//	Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+			//	cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+			//}
+
+			// copy 1d segment
+			Myint64 i1 = i1Start ;
+			Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+			Myint64 nn = i1End - i1Start + 1 ;
+			cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), nn * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
 		}
 	}
 
