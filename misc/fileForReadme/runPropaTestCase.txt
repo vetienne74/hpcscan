@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.1
 
- Git version	commit 33d029933725958d395bf50410c3c49c30c2f122
+ Git version	commit b1b7c8d58c31b43833906915bd0ce8bfc82bb814
 		Author: vincent <vetienne@rocketmail.com>
-		Date:   Sun May 9 20:40:53 2021 +0300
+		Date:   Mon May 10 08:01:59 2021 +0300
 
  Host name	mars
  User name	vincent
@@ -118,14 +118,14 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	13.0559
- Best Gpoint/s eff.	0.271998
- Best Gpoint/s in FD	0.271998
- Best Apparent BW GB/s	31.5517
+ Best GFlop/s in FD	13.147
+ Best Gpoint/s eff.	0.273896
+ Best Gpoint/s in FD	0.273896
+ Best Apparent BW GB/s	31.772
 
- Case run time (s)	0.201066
+ Case run time (s)	0.197803
 --------------------------------------------------------------------------------
- Total run time (s)	0.201896
+ Total run time (s)	0.198726
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

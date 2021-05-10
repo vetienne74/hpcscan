@@ -332,7 +332,7 @@ __global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef,
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_applyBoundaryCondition(Myfloat *data, int n1, int n2, int n3, 
+__global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data, int n1, int n2, int n3,
 			Myint64 i1halo1_i1Start, Myint64 i1halo1_i1End, Myint64 i1halo1_i2Start, Myint64 i1halo1_i2End, Myint64 i1halo1_i3Start, Myint64 i1halo1_i3End,
 			Myint64 i1halo2_i1Start, Myint64 i1halo2_i1End, Myint64 i1halo2_i2Start, Myint64 i1halo2_i2End, Myint64 i1halo2_i3Start, Myint64 i1halo2_i3End,
 			Myint64 i2halo1_i1Start, Myint64 i2halo1_i1End, Myint64 i2halo1_i2Start, Myint64 i2halo1_i2End, Myint64 i2halo1_i3Start, Myint64 i2halo1_i3End,
@@ -373,48 +373,54 @@ __global__ void kernel_applyBoundaryCondition(Myfloat *data, int n1, int n2, int
 			data[tid] = -data[(iInner-(i1-iInner))+i2*n1+i3*n1*n2];
 		}
 
-		// I2HALO1
-		iInner = i2halo1_i2End+1;
-		if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i2halo1_i1Start && i1 <= i2halo1_i1End &&
-			i2 >= i2halo1_i2Start && i2 <= i2halo1_i2End &&
-			i3 >= i2halo1_i3Start && i3 <= i2halo1_i3End   )
+		if (dim >= DIM2)
 		{
-			data[tid] = -data[i1+(iInner+iInner-i2)*n1+i3*n1*n2];
+			// I2HALO1
+			iInner = i2halo1_i2End+1;
+			if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+			if (i1 >= i2halo1_i1Start && i1 <= i2halo1_i1End &&
+					i2 >= i2halo1_i2Start && i2 <= i2halo1_i2End &&
+					i3 >= i2halo1_i3Start && i3 <= i2halo1_i3End   )
+			{
+				data[tid] = -data[i1+(iInner+iInner-i2)*n1+i3*n1*n2];
+			}
+
+			// I2HALO2
+			iInner = i2halo2_i2Start-1;
+			if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+			if (i1 >= i2halo2_i1Start && i1 <= i2halo2_i1End &&
+					i2 >= i2halo2_i2Start && i2 <= i2halo2_i2End &&
+					i3 >= i2halo2_i3Start && i3 <= i2halo2_i3End   )
+			{
+				data[tid] = -data[i1+(iInner-(i2-iInner))*n1+i3*n1*n2];
+			}
 		}
 
-		// I2HALO2
-		iInner = i2halo2_i2Start-1;
-		if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i2halo2_i1Start && i1 <= i2halo2_i1End &&
-			i2 >= i2halo2_i2Start && i2 <= i2halo2_i2End &&
-			i3 >= i2halo2_i3Start && i3 <= i2halo2_i3End   )
+		if (dim >= DIM3)
 		{
-			data[tid] = -data[i1+(iInner-(i2-iInner))*n1+i3*n1*n2];
-		}
+			// I3HALO1
+			iInner = i3halo1_i3End+1;
+			if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
 
-		// I3HALO1
-		iInner = i3halo1_i3End+1;
-		if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
+			if (i1 >= i3halo1_i1Start && i1 <= i3halo1_i1End &&
+					i2 >= i3halo1_i2Start && i2 <= i3halo1_i2End &&
+					i3 >= i3halo1_i3Start && i3 <= i3halo1_i3End   )
+			{
+				data[tid] = -data[i1+i2*n1+(iInner+iInner-i3)*n1*n2];
+			}
 
-		if (i1 >= i3halo1_i1Start && i1 <= i3halo1_i1End &&
-			i2 >= i3halo1_i2Start && i2 <= i3halo1_i2End &&
-			i3 >= i3halo1_i3Start && i3 <= i3halo1_i3End   )
-		{
-			data[tid] = -data[i1+i2*n1+(iInner+iInner-i3)*n1*n2];			                  
-		}
+			// I3HALO2
+			iInner = i3halo2_i3Start-1;
+			if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
 
-		// I3HALO2
-		iInner = i3halo2_i3Start-1;
-		if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i3halo2_i1Start && i1 <= i3halo2_i1End &&
-			i2 >= i3halo2_i2Start && i2 <= i3halo2_i2End &&
-			i3 >= i3halo2_i3Start && i3 <= i3halo2_i3End   )
-		{
-			data[tid] = -data[i1+i2*n1+(iInner-(i3-iInner))*n1*n2];
+			if (i1 >= i3halo2_i1Start && i1 <= i3halo2_i1End &&
+					i2 >= i3halo2_i2Start && i2 <= i3halo2_i2End &&
+					i3 >= i3halo2_i3Start && i3 <= i3halo2_i3End   )
+			{
+				data[tid] = -data[i1+i2*n1+(iInner-(i3-iInner))*n1*n2];
+			}
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -1311,23 +1317,24 @@ void Grid_Cuda::copyGridDeviceToHost(Point_type pointType)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	//if (pointType == I1INNERHALO1)
-	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	if (pointType == ALL_POINTS)
 	{
-		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+		// copy all points with one call to cudaMemcpy
+		Myint64 idx = 0 ;
+		cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), npoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+	}
+	else
+	{
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 		{
-			//for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-			//{
-			//	// TMP copy point to point
-			//	Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-			//	cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
-			//}
-
-			// copy 1d segment
-			Myint64 i1 = i1Start ;
-			Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-			Myint64 nn = i1End - i1Start + 1 ;
-			cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nn * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+				// copy 1d segment from i1Start to i1End
+				Myint64 i1 = i1Start ;
+				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+				Myint64 nn = i1End - i1Start + 1 ;
+				cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nn * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+			}
 		}
 	}
 
@@ -1345,23 +1352,24 @@ void Grid_Cuda::copyGridHostToDevice(Point_type pointType)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	//if (pointType == I1HALO1)
-	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	if (pointType == ALL_POINTS)
 	{
-		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+		// copy all points with one call to cudaMemcpy
+		Myint64 idx = 0 ;
+		cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), npoint * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+	}
+	else
+	{
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 		{
-			//for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-			//{
-			//	// TMP copy point to point
-			//	Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-			//	cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), sizeof(Myfloat), cudaMemcpyHostToDevice) ;
-			//}
-
-			// copy 1d segment
-			Myint64 i1 = i1Start ;
-			Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-			Myint64 nn = i1End - i1Start + 1 ;
-			cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), nn * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+				// copy 1d segment
+				Myint64 i1 = i1Start ;
+				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+				Myint64 nn = i1End - i1Start + 1 ;
+				cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), nn * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+			}
 		}
 	}
 
@@ -1396,7 +1404,7 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 	getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
 
 
-	kernel_applyBoundaryCondition<<<1024,256>>>(d_grid_3d, n1, n2, n3, 	
+	kernel_applyBoundaryCondition<<<1024,256>>>(dim, d_grid_3d, n1, n2, n3,
 		i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
 		i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
 		i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,

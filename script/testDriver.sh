@@ -79,15 +79,12 @@ echo Running -testCase Grid ...
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 1 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 3 >> ${report_file}
+
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 1 -nsub1 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 2 -nsub2 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 4 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 2 -nsub2 2 -nsub1 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 3 -nsub3 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 4 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 3 -nsub3 2 -nsub2 2 >> ${report_file}
-
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 1 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 2 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Grid -dim 3 >> ${report_file}
 
 # test case Comm
 echo Running -testCase Comm ...
