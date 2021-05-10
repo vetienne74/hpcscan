@@ -225,7 +225,7 @@ This script runs a set a light test cases and should complete within few minutes
 
 You should get in the ouptput report (displayed on the terminal)
 
-* All tests marked as PASSED (371 tests passed per test mode enabled)
+* All tests marked as PASSED (351 tests passed per test mode enabled)
 * No test marked as FAILED
 
 Check the summary at the end of report to have a quick look on this.

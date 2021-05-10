@@ -182,12 +182,15 @@ Rtn_code TestCase_Util::run(void)
 		Myfloat gridLocMin = gridLoc.getMin(ALL_POINTS) ;
 		Myfloat gridLocGlobMin = 0 ;
 		MPI_Reduce(&gridLocMin, &gridLocGlobMin, 1, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
-		checkFloatDiff(gridLocGlobMin, valConst, MAX_ERR_FLOAT) ;
+		bool checkMin = relErr(gridLocGlobMin, valConst) < MAX_ERR_FLOAT ;
 
 		Myfloat gridLocMax = gridLoc.getMax(ALL_POINTS) ;
 		Myfloat gridLocGlobMax = 0 ;
 		MPI_Reduce(&gridLocMax, &gridLocGlobMax, 1, MPI_FLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
-		checkFloatDiff(gridLocGlobMax, valConst, MAX_ERR_FLOAT) ;
+		bool checkMax = relErr(gridLocGlobMax, valConst) < MAX_ERR_FLOAT ;
+
+		checkBoolDiff((checkMin && checkMax), true) ;
+
 	}
 
 	{
@@ -205,12 +208,14 @@ Rtn_code TestCase_Util::run(void)
 		Myfloat gridLocMin = gridLoc.getMin(ALL_POINTS) ;
 		Myfloat gridLocGlobMin = 0 ;
 		MPI_Reduce(&gridLocMin, &gridLocGlobMin, 1, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
-		checkFloatDiff(gridLocGlobMin, -valConst, 0.1) ;
+		bool checkMin = relErr(gridLocGlobMin, -valConst) < 0.1 ;
 
 		Myfloat gridLocMax = gridLoc.getMax(ALL_POINTS) ;
 		Myfloat gridLocGlobMax = 0 ;
 		MPI_Reduce(&gridLocMax, &gridLocGlobMax, 1, MPI_FLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
-		checkFloatDiff(gridLocGlobMax, valConst, 0.1) ;
+		bool checkMax = relErr(gridLocGlobMax, valConst) < 0.1 ;
+
+		checkBoolDiff((checkMin && checkMax), true) ;
 	}
 
 	{
