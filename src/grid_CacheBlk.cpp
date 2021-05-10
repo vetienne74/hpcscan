@@ -1090,8 +1090,6 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
 
-	const Myfloat TWO = 2.0 ;
-
 	const Myint64 cb1 = Config::Instance()->cb1 ;
 	const Myint64 cb2 = Config::Instance()->cb2 ;
 	const Myint64 cb3 = Config::Instance()->cb3 ;

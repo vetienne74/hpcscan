@@ -19,6 +19,8 @@ const Myfloat MAX_ERR_FLOAT = 1.e-11 ;
 const Myfloat MAX_ERR_FLOAT = 1.e-5 ;
 #endif
 
+const Myfloat TWO = 2.0 ;
+
 } // namespace hpcscan
 
 #endif

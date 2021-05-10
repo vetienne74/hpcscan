@@ -56,7 +56,7 @@ __global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, cons
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
-	// 1D to 3D index (thanks StackOverflow)
+	// 1D to 3D index
 	// public int[] to3D( int idx ) {
 	// 	final int z = idx / (xMax * yMax);
 	// 	idx -= (z * xMax * yMax);
@@ -87,8 +87,6 @@ __global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, cons
 
 __global__ void kernel_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3 )
 {
-	// printf("sine %f %f %f %f %f\n",param1,param2,param3,amp,Orig1);
-
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
@@ -121,8 +119,6 @@ __global__ void kernel_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 para
 
 __global__ void kernel_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3)
 {
-	// printf("linear %f %f %f %f\n",param1,param2,param3,amp);
-
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
@@ -150,8 +146,6 @@ __global__ void kernel_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 pa
 		tid += blockDim.x * gridDim.x;
 	}
 }
-
-//-------------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -299,13 +293,6 @@ __global__ void kernel_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1
 
 //-------------------------------------------------------------------------------------------------------
 
-// #pragma omp parallel for collapse(2)
-// for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-// 	for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-// 		for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-// 			prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-// 					coef[i1+i2*n1+i3*n1*n2] * lapla[i1+i2*n1+i3*n1*n2] ;
-
 __global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla,
 		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
@@ -447,41 +434,11 @@ __global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data, int n
 
 //-------------------------------------------------------------------------------------------------------
 
-
-// 	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-// 	  for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-// 	    for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-// 		  prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
-// 			(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-// 		   + FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-// 		   + FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-
-// #define FD_D2_O4_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O4_A0 *  U[i1   + i2*n1 + i3*n2*n1] \
-// 				+ FD_D2_O4_A1 * (U[i1+1 + i2*n1 + i3*n2*n1] + U[i1-1 + i2*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O4_A2 * (U[i1+2 + i2*n1 + i3*n2*n1] + U[i1-2 + i2*n1 + i3*n2*n1])) \
-// 				* inv2_d1)
-
-// #define FD_D2_O4_N2(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O4_A0 *  U[i1 + i2    *n1 + i3*n2*n1] \
-// 				+ FD_D2_O4_A1 * (U[i1 + (i2+1)*n1 + i3*n2*n1] + U[i1 + (i2-1)*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O4_A2 * (U[i1 + (i2+2)*n1 + i3*n2*n1] + U[i1 + (i2-2)*n1 + i3*n2*n1])) \
-// 				* inv2_d2)
-
-// #define FD_D2_O4_N3(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O4_A0 *  U[i1 + i2*n1 + i3    *n2*n1] \
-// 				+ FD_D2_O4_A1 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
-// 				+ FD_D2_O4_A2 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])) \
-// 				* inv2_d3)
-__global__ void kernel_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_computePressureWithFD(Dim_type dim, Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	const Myfloat FD_D2_O4_A0   =  -5./2. ;
-	const Myfloat FD_D2_O4_A1   =  4./3. ;
-	const Myfloat FD_D2_O4_A2   =  -1./12. ;
-	
 
 	while (tid < size)
 	{
@@ -491,94 +448,128 @@ __global__ void kernel_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfl
 		int i1 = idx%n1;
 
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
-			prn[i1+i2*n1+i3*n1*n2] = 2.0 * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
-			(((FD_D2_O4_A0 *  prc[i1   + i2*n1 + i3*n2*n1]
-			 + FD_D2_O4_A1 * (prc[i1+1 + i2*n1 + i3*n2*n1] + prc[i1-1 + i2*n1 + i3*n2*n1]) 
-			 + FD_D2_O4_A2 * (prc[i1+2 + i2*n1 + i3*n2*n1] + prc[i1-2 + i2*n1 + i3*n2*n1]))
-			 * inv2_d1)
-			+((FD_D2_O4_A0 *  prc[i1 +  i2   *n1 + i3*n2*n1] 
-			 + FD_D2_O4_A1 * (prc[i1 + (i2+1)*n1 + i3*n2*n1] + prc[i1 + (i2-1)*n1 + i3*n2*n1])  
-			 + FD_D2_O4_A2 * (prc[i1 + (i2+2)*n1 + i3*n2*n1] + prc[i1 + (i2-2)*n1 + i3*n2*n1])) 
-			 * inv2_d2)
-			+((FD_D2_O4_A0 *  prc[i1 + i2*n1 +  i3   *n2*n1] 
-			 + FD_D2_O4_A1 * (prc[i1 + i2*n1 + (i3+1)*n2*n1] + prc[i1 + i2*n1 + (i3-1)*n2*n1])  
-			 + FD_D2_O4_A2 * (prc[i1 + i2*n1 + (i3+2)*n2*n1] + prc[i1 + i2*n1 + (i3-2)*n2*n1])) 
-			 * inv2_d3));
-		}
+			// compute FD for 1D
+			if (dim == DIM1)
+			{
+				if (fdOrder == 2)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
 
-		tid += blockDim.x * gridDim.x;
-	}
-}
+			// compute FD for 2D
+			else if (dim == DIM2)
+			{
+				if (fdOrder == 2)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O2_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 4)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 8)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 12)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 16)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O16_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+			}
 
-//-------------------------------------------------------------------------------------------------------
-
-// #define FD_D2_O8_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O8_A0 *  U[i1   + i2*n1 + i3*n2*n1] \
-// 				+ FD_D2_O8_A1 * (U[i1+1 + i2*n1 + i3*n2*n1] + U[i1-1 + i2*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A2 * (U[i1+2 + i2*n1 + i3*n2*n1] + U[i1-2 + i2*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A3 * (U[i1+3 + i2*n1 + i3*n2*n1] + U[i1-3 + i2*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A4 * (U[i1+4 + i2*n1 + i3*n2*n1] + U[i1-4 + i2*n1 + i3*n2*n1])) \
-// 				* inv2_d1)
-
-// #define FD_D2_O8_N2(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O8_A0 *  U[i1 + i2    *n1 + i3*n2*n1] \
-// 				+ FD_D2_O8_A1 * (U[i1 + (i2+1)*n1 + i3*n2*n1] + U[i1 + (i2-1)*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A2 * (U[i1 + (i2+2)*n1 + i3*n2*n1] + U[i1 + (i2-2)*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A3 * (U[i1 + (i2+3)*n1 + i3*n2*n1] + U[i1 + (i2-3)*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A4 * (U[i1 + (i2+4)*n1 + i3*n2*n1] + U[i1 + (i2-4)*n1 + i3*n2*n1])) \
-// 				* inv2_d2)
-
-// #define FD_D2_O8_N3(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O8_A0 *  U[i1 + i2*n1 + i3    *n2*n1] \
-// 				+ FD_D2_O8_A1 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
-// 				+ FD_D2_O8_A2 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])  \
-// 				+ FD_D2_O8_A3 * (U[i1 + i2*n1 + (i3+3)*n2*n1] + U[i1 + i2*n1 + (i3-3)*n2*n1])  \
-// 				+ FD_D2_O8_A4 * (U[i1 + i2*n1 + (i3+4)*n2*n1] + U[i1 + i2*n1 + (i3-4)*n2*n1])) \
-// 				* inv2_d3)
-__global__ void kernel_computePressureWithFD_O8(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	const Myfloat FD_D2_O8_A0   = -205./72. ;
-	const Myfloat FD_D2_O8_A1   = 8./5. ;
-	const Myfloat FD_D2_O8_A2   = -1/5. ;
-	const Myfloat FD_D2_O8_A3   = 8./315. ;
-	const Myfloat FD_D2_O8_A4   = -1/560. ;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			prn[i1+i2*n1+i3*n1*n2] = 2.0 * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
-				((   (FD_D2_O8_A0 *  prc[i1   + i2*n1 + i3*n2*n1] 
-					+ FD_D2_O8_A1 * (prc[i1+1 + i2*n1 + i3*n2*n1] + prc[i1-1 + i2*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[i1+2 + i2*n1 + i3*n2*n1] + prc[i1-2 + i2*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[i1+3 + i2*n1 + i3*n2*n1] + prc[i1-3 + i2*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[i1+4 + i2*n1 + i3*n2*n1] + prc[i1-4 + i2*n1 + i3*n2*n1])) 
-					* inv2_d1)
-			+(       (FD_D2_O8_A0 *  prc[i1 + i2    *n1 + i3*n2*n1] 
-					+ FD_D2_O8_A1 * (prc[i1 + (i2+1)*n1 + i3*n2*n1] + prc[i1 + (i2-1)*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[i1 + (i2+2)*n1 + i3*n2*n1] + prc[i1 + (i2-2)*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[i1 + (i2+3)*n1 + i3*n2*n1] + prc[i1 + (i2-3)*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[i1 + (i2+4)*n1 + i3*n2*n1] + prc[i1 + (i2-4)*n1 + i3*n2*n1])) 
-					* inv2_d2)
-			+(       (FD_D2_O8_A0 *  prc[i1 + i2*n1 + i3    *n2*n1] 
-					+ FD_D2_O8_A1 * (prc[i1 + i2*n1 + (i3+1)*n2*n1] + prc[i1 + i2*n1 + (i3-1)*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[i1 + i2*n1 + (i3+2)*n2*n1] + prc[i1 + i2*n1 + (i3-2)*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[i1 + i2*n1 + (i3+3)*n2*n1] + prc[i1 + i2*n1 + (i3-3)*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[i1 + i2*n1 + (i3+4)*n2*n1] + prc[i1 + i2*n1 + (i3-4)*n2*n1])) 
-					* inv2_d3));
+			// compute FD for 3D
+			else if (dim == DIM3)
+			{
+				if (fdOrder == 2)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O2_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O2_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 4)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 8)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O8_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 12)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 16)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O16_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O16_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+			}
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -694,14 +685,8 @@ void Grid_Cuda::write(string file_name)
 
 	if (Config::Instance()->writeGrid)
 	{
-		printf("Max GPU grid %f\n", getMax(INNER_POINTS)) ;
-		printf("Min GPU grid %f\n", getMin(INNER_POINTS)) ;
-
 		// copy grid from device to host
 		copyGridDeviceToHost(ALL_POINTS) ;
-
-		printf("Max CPU grid %f\n", Grid::getMax(INNER_POINTS)) ;
-		printf("Min CPU grid %f\n", Grid::getMin(INNER_POINTS)) ;
 
 		Grid::write(file_name) ;
 	}
@@ -733,11 +718,6 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	if (fdOrder != 4 && fdOrder != 8)
-	{
-		printError("CUDA: only FD order 4/8 implemented");
-	}
-
 	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
 	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
 	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
@@ -748,16 +728,10 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 
 	Myfloat *prc_d_grid_3d = ((Grid_Cuda&) prcGridIn).d_grid_3d ;
 	Myfloat *coef_d_grid_3d = ((Grid_Cuda&) coefGridIn).d_grid_3d ;
-
-	if (fdOrder == 4)
-	{
-		kernel_computePressureWithFD_O4<<<1024,256>>>(d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-	}
-	else if (fdOrder == 8)
-	{
-		kernel_computePressureWithFD_O8<<<1024,256>>>(d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-	}
 	
+	kernel_computePressureWithFD<<<1024,256>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
 	cudaCheckError();
 	cudaDeviceSynchronize();
 	

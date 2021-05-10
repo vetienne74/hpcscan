@@ -1689,8 +1689,6 @@ Rtn_code Grid_NEC::updatePressure(Point_type pType, const Grid& prcGrid,
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat TWO = 2.0 ;
-
 	Myfloat * prn   = this->grid_3d ;
 	Myfloat * prc   = prcGrid.grid_3d ;
 	Myfloat * lapla = laplaGrid.grid_3d ;
@@ -1762,8 +1760,6 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
 	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
-
-	const Myfloat TWO = 2.0 ;
 
 #ifndef _DOUBLE_PRECISION_
 	// if (flag_packed_stencil)
