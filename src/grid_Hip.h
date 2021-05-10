@@ -39,6 +39,9 @@ public:
 	// print info
 	virtual void info(void) ;
 
+	// write grid on disk
+	virtual void write(string) ;
+
 	// compute FD_LAPLACIAN
 	virtual Rtn_code FD_LAPLACIAN(Point_type pType, const Grid&, Myint fdOrder) ;
 

@@ -661,6 +661,31 @@ void Grid_Hip::info(void)
 	printDebug(FULL_DEBUG, "IN Grid_Hip::info");
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+void Grid_Hip::write(string file_name)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_Hip::write");
+
+	// each proc write is own file
+
+	if (Config::Instance()->writeGrid)
+	{
+		printf("Max GPU grid %f\n", getMax(INNER_POINTS)) ;
+		printf("Min GPU grid %f\n", getMin(INNER_POINTS)) ;
+
+		// copy grid from device to host
+		copyGridDeviceToHost(ALL_POINTS) ;
+
+		printf("Max CPU grid %f\n", Grid::getMax(INNER_POINTS)) ;
+		printf("Min CPU grid %f\n", Grid::getMin(INNER_POINTS)) ;
+
+		Grid::write(file_name) ;
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_Hip::write");
+}
+
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -758,22 +783,13 @@ void Grid_Hip::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_type
 {
 	printDebug(FULL_DEBUG, "In Grid_Hip::fill") ;
 
-	//pointType
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+	// this function is critical for validation purpose of most of functions
+	// however, it is not included in the performance benchmark
+	// it is therefore convenient to build the grid on the CPU
+	// and then copy the grid to the GPU
 
-	// we only use sine and linear for now
-	int ok = 1;
-	if (t1 != FUNC_SINE && t1 != FUNC_LINEAR) ok = 0;
-	if (t2 != FUNC_SINE && t2 != FUNC_LINEAR) ok = 0;
-	if (t3 != FUNC_SINE && t3 != FUNC_LINEAR) ok = 0;
-	if (!ok) printError("HIP: only FUNC_SINE and FUNC_LINEAR implemented");
-
-	if ((t1==t2 && t2==t3)==false) printError("HIP: func has to be same in each dimension");
-
-	if (t1 == FUNC_SINE) hipLaunchKernelGGL(kernel_fill_sine, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
-	else                 hipLaunchKernelGGL(kernel_fill_linear, dim3(1024), dim3(128), 0, 0, d_grid_3d,param1,param2,param3,amp,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End,Orig1,Orig2,Orig3,d1,d2,d2);
-
+	Grid::fill(pointType, t1, t2, t3, param1, param2, param3, amp) ;
+	copyGridHostToDevice(pointType) ;
 
 	printDebug(FULL_DEBUG, "Out Grid_Hip::fill") ;
 }
@@ -1301,25 +1317,31 @@ void Grid_Hip::copyGridDeviceToHost(Point_type pointType)
 	{
 		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 		{
-			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-			{
-				// TMP copy point to point
-				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-				hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), sizeof(Myfloat), hipMemcpyDeviceToHost) ;
-			}
+			//for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+			//{
+			//	// TMP copy point to point
+			//	Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+			//	hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), sizeof(Myfloat), hipMemcpyDeviceToHost) ;
+			//}
+
+			// copy 1d segment
+			Myint64 i1 = i1Start ;
+			Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+			Myint64 nn = i1End - i1Start + 1 ;
+			hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nn * sizeof(Myfloat), hipMemcpyDeviceToHost) ;
 		}
 	}
 
 	hipDeviceSynchronize();
 
-	printDebug(FULL_DEBUG, "In Grid_Hip::copyGridHostToDevice") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::copyGridDeviceToHost") ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void Grid_Hip::copyGridHostToDevice(Point_type pointType)
 {
-	printDebug(FULL_DEBUG, "In Grid_Hip::copyGridDeviceToHost") ;
+	printDebug(FULL_DEBUG, "In Grid_Hip::copyGridHostToDevice") ;
 
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
@@ -1329,18 +1351,24 @@ void Grid_Hip::copyGridHostToDevice(Point_type pointType)
 	{
 		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 		{
-			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-			{
-				// TMP copy point to point
-				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-				hipMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), sizeof(Myfloat), hipMemcpyHostToDevice) ;
-			}
+			//for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+			//{
+			//	// TMP copy point to point
+			//	Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+			//	hipMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), sizeof(Myfloat), hipMemcpyHostToDevice) ;
+			//}
+
+			// copy 1d segment
+			Myint64 i1 = i1Start ;
+			Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+			Myint64 nn = i1End - i1Start + 1 ;
+			hipMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), nn * sizeof(Myfloat), hipMemcpyHostToDevice) ;
 		}
 	}
 
 	hipDeviceSynchronize();
 
-	printDebug(FULL_DEBUG, "In Grid_Hip::copyGridHostToDevice") ;
+	printDebug(FULL_DEBUG, "Out Grid_Hip::copyGridHostToDevice") ;
 }
 
 //-------------------------------------------------------------------------------------------------------
