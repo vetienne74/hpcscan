@@ -1111,6 +1111,8 @@ Rtn_code Grid_Cuda::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint 
 	kernel_FD_LAPLACIAN<<<1024,256>>>(dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
+	cudaCheckError();
+	cudaDeviceSynchronize();
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda::FD_LAPLACIAN");
 	return(RTN_CODE_OK) ;
