@@ -955,11 +955,162 @@ Rtn_code Grid_Cuda::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOr
 
 //-------------------------------------------------------------------------------------------------------
 
+__global__ void kernel_FD_LAPLACIAN(Dim_type dim, Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD Laplacian for 1D
+			if (dim == DIM1)
+			{
+				// same as FD_D2_N1
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+
+			// compute FD Laplacian for 2D
+			else if (dim == DIM2)
+			{
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+
+			// compute FD Laplacian for 3D
+			else if (dim == DIM3)
+			{
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
 Rtn_code Grid_Cuda::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
 	printDebug(MID_DEBUG, "IN Grid_Cuda::FD_LAPLACIAN");
 
-	// TO DO
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_LAPLACIAN, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * d_w = ((Grid_Cuda&) Wgrid).d_grid_3d ;
+	Myfloat * d_u = this->d_grid_3d ;
+
+	kernel_FD_LAPLACIAN<<<1024,256>>>(dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda::FD_LAPLACIAN");
 	return(RTN_CODE_OK) ;
