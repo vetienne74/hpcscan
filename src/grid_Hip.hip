@@ -57,7 +57,7 @@ __global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, cons
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
-	// 1D to 3D index (thanks StackOverflow)
+	// 1D to 3D index
 	// public int[] to3D( int idx ) {
 	// 	final int z = idx / (xMax * yMax);
 	// 	idx -= (z * xMax * yMax);
@@ -88,8 +88,6 @@ __global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, cons
 
 __global__ void kernel_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3 )
 {
-	// printf("sine %f %f %f %f %f\n",param1,param2,param3,amp,Orig1);
-
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
@@ -122,8 +120,6 @@ __global__ void kernel_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 para
 
 __global__ void kernel_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3)
 {
-	// printf("linear %f %f %f %f\n",param1,param2,param3,amp);
-
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
 
@@ -151,8 +147,6 @@ __global__ void kernel_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 pa
 		tid += blockDim.x * gridDim.x;
 	}
 }
-
-//-------------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -300,13 +294,6 @@ __global__ void kernel_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1
 
 //-------------------------------------------------------------------------------------------------------
 
-// #pragma omp parallel for collapse(2)
-// for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-// 	for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-// 		for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-// 			prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-// 					coef[i1+i2*n1+i3*n1*n2] * lapla[i1+i2*n1+i3*n1*n2] ;
-
 __global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla,
 		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
@@ -333,13 +320,13 @@ __global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef,
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_applyBoundaryCondition(Myfloat *data, int n1, int n2, int n3, 
-			Myint64 i1halo1_i1Start, Myint64 i1halo1_i1End, Myint64 i1halo1_i2Start, Myint64 i1halo1_i2End, Myint64 i1halo1_i3Start, Myint64 i1halo1_i3End,
-			Myint64 i1halo2_i1Start, Myint64 i1halo2_i1End, Myint64 i1halo2_i2Start, Myint64 i1halo2_i2End, Myint64 i1halo2_i3Start, Myint64 i1halo2_i3End,
-			Myint64 i2halo1_i1Start, Myint64 i2halo1_i1End, Myint64 i2halo1_i2Start, Myint64 i2halo1_i2End, Myint64 i2halo1_i3Start, Myint64 i2halo1_i3End,
-			Myint64 i2halo2_i1Start, Myint64 i2halo2_i1End, Myint64 i2halo2_i2Start, Myint64 i2halo2_i2End, Myint64 i2halo2_i3Start, Myint64 i2halo2_i3End,
-			Myint64 i3halo1_i1Start, Myint64 i3halo1_i1End, Myint64 i3halo1_i2Start, Myint64 i3halo1_i2End, Myint64 i3halo1_i3Start, Myint64 i3halo1_i3End,
-			Myint64 i3halo2_i1Start, Myint64 i3halo2_i1End, Myint64 i3halo2_i2Start, Myint64 i3halo2_i2End, Myint64 i3halo2_i3Start, Myint64 i3halo2_i3End)
+__global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data, int n1, int n2, int n3,
+			Myint I1HALO1_neigh, Myint64 i1halo1_i1Start, Myint64 i1halo1_i1End, Myint64 i1halo1_i2Start, Myint64 i1halo1_i2End, Myint64 i1halo1_i3Start, Myint64 i1halo1_i3End,
+			Myint I1HALO2_neigh, Myint64 i1halo2_i1Start, Myint64 i1halo2_i1End, Myint64 i1halo2_i2Start, Myint64 i1halo2_i2End, Myint64 i1halo2_i3Start, Myint64 i1halo2_i3End,
+			Myint I2HALO1_neigh, Myint64 i2halo1_i1Start, Myint64 i2halo1_i1End, Myint64 i2halo1_i2Start, Myint64 i2halo1_i2End, Myint64 i2halo1_i3Start, Myint64 i2halo1_i3End,
+			Myint I2HALO2_neigh, Myint64 i2halo2_i1Start, Myint64 i2halo2_i1End, Myint64 i2halo2_i2Start, Myint64 i2halo2_i2End, Myint64 i2halo2_i3Start, Myint64 i2halo2_i3End,
+			Myint I3HALO1_neigh, Myint64 i3halo1_i1Start, Myint64 i3halo1_i1End, Myint64 i3halo1_i2Start, Myint64 i3halo1_i2End, Myint64 i3halo1_i3Start, Myint64 i3halo1_i3End,
+			Myint I3HALO2_neigh, Myint64 i3halo2_i1Start, Myint64 i3halo2_i1End, Myint64 i3halo2_i2Start, Myint64 i3halo2_i2End, Myint64 i3halo2_i3Start, Myint64 i3halo2_i3End)
 			
 {
 	int size = n1*n2*n3;
@@ -353,69 +340,93 @@ __global__ void kernel_applyBoundaryCondition(Myfloat *data, int n1, int n2, int
 		int i1 = idx%n1;
 
 		// I1HALO1
-		Myint64 iInner = i1halo1_i1End+1;
-		if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i1halo1_i1Start && i1 <= i1halo1_i1End &&
-			i2 >= i1halo1_i2Start && i2 <= i1halo1_i2End &&
-			i3 >= i1halo1_i3Start && i3 <= i1halo1_i3End   )
+		if (I1HALO1_neigh == MPI_PROC_NULL)
 		{
-			data[tid] = -data[(iInner+iInner-i1)+i2*n1+i3*n1*n2];
+			Myint64 iInner = i1halo1_i1End+1;
+			if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+			if (i1 >= i1halo1_i1Start && i1 <= i1halo1_i1End &&
+					i2 >= i1halo1_i2Start && i2 <= i1halo1_i2End &&
+					i3 >= i1halo1_i3Start && i3 <= i1halo1_i3End   )
+			{
+				data[tid] = -data[(iInner+iInner-i1)+i2*n1+i3*n1*n2];
+			}
 		}
 
 		// I1HALO2
-		iInner = i1halo2_i1Start-1;
-		if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i1halo2_i1Start && i1 <= i1halo2_i1End &&
-			i2 >= i1halo2_i2Start && i2 <= i1halo2_i2End &&
-			i3 >= i1halo2_i3Start && i3 <= i1halo2_i3End   )
+		if (I1HALO2_neigh == MPI_PROC_NULL)
 		{
-			data[tid] = -data[(iInner-(i1-iInner))+i2*n1+i3*n1*n2];
+			Myint64 iInner = i1halo2_i1Start-1;
+			if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+			if (i1 >= i1halo2_i1Start && i1 <= i1halo2_i1End &&
+					i2 >= i1halo2_i2Start && i2 <= i1halo2_i2End &&
+					i3 >= i1halo2_i3Start && i3 <= i1halo2_i3End   )
+			{
+				data[tid] = -data[(iInner-(i1-iInner))+i2*n1+i3*n1*n2];
+			}
 		}
 
-		// I2HALO1
-		iInner = i2halo1_i2End+1;
-		if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i2halo1_i1Start && i1 <= i2halo1_i1End &&
-			i2 >= i2halo1_i2Start && i2 <= i2halo1_i2End &&
-			i3 >= i2halo1_i3Start && i3 <= i2halo1_i3End   )
+		if (dim >= DIM2)
 		{
-			data[tid] = -data[i1+(iInner+iInner-i2)*n1+i3*n1*n2];
+			// I2HALO1
+			if (I2HALO1_neigh == MPI_PROC_NULL)
+			{
+				Myint64 iInner = i2halo1_i2End+1;
+				if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+				if (i1 >= i2halo1_i1Start && i1 <= i2halo1_i1End &&
+						i2 >= i2halo1_i2Start && i2 <= i2halo1_i2End &&
+						i3 >= i2halo1_i3Start && i3 <= i2halo1_i3End   )
+				{
+					data[tid] = -data[i1+(iInner+iInner-i2)*n1+i3*n1*n2];
+				}
+			}
+
+			// I2HALO2
+			if (I2HALO2_neigh == MPI_PROC_NULL)
+			{
+				Myint64 iInner = i2halo2_i2Start-1;
+				if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
+
+				if (i1 >= i2halo2_i1Start && i1 <= i2halo2_i1End &&
+						i2 >= i2halo2_i2Start && i2 <= i2halo2_i2End &&
+						i3 >= i2halo2_i3Start && i3 <= i2halo2_i3End   )
+				{
+					data[tid] = -data[i1+(iInner-(i2-iInner))*n1+i3*n1*n2];
+				}
+			}
 		}
 
-		// I2HALO2
-		iInner = i2halo2_i2Start-1;
-		if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i2halo2_i1Start && i1 <= i2halo2_i1End &&
-			i2 >= i2halo2_i2Start && i2 <= i2halo2_i2End &&
-			i3 >= i2halo2_i3Start && i3 <= i2halo2_i3End   )
+		if (dim >= DIM3)
 		{
-			data[tid] = -data[i1+(iInner-(i2-iInner))*n1+i3*n1*n2];
-		}
+			// I3HALO1
+			if (I3HALO1_neigh == MPI_PROC_NULL)
+			{
+				Myint64 iInner = i3halo1_i3End+1;
+				if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
 
-		// I3HALO1
-		iInner = i3halo1_i3End+1;
-		if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
+				if (i1 >= i3halo1_i1Start && i1 <= i3halo1_i1End &&
+						i2 >= i3halo1_i2Start && i2 <= i3halo1_i2End &&
+						i3 >= i3halo1_i3Start && i3 <= i3halo1_i3End   )
+				{
+					data[tid] = -data[i1+i2*n1+(iInner+iInner-i3)*n1*n2];
+				}
+			}
 
-		if (i1 >= i3halo1_i1Start && i1 <= i3halo1_i1End &&
-			i2 >= i3halo1_i2Start && i2 <= i3halo1_i2End &&
-			i3 >= i3halo1_i3Start && i3 <= i3halo1_i3End   )
-		{
-			data[tid] = -data[i1+i2*n1+(iInner+iInner-i3)*n1*n2];			                  
-		}
+			// I3HALO2
+			if (I3HALO2_neigh == MPI_PROC_NULL)
+			{
+				Myint64 iInner = i3halo2_i3Start-1;
+				if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
 
-		// I3HALO2
-		iInner = i3halo2_i3Start-1;
-		if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
-
-		if (i1 >= i3halo2_i1Start && i1 <= i3halo2_i1End &&
-			i2 >= i3halo2_i2Start && i2 <= i3halo2_i2End &&
-			i3 >= i3halo2_i3Start && i3 <= i3halo2_i3End   )
-		{
-			data[tid] = -data[i1+i2*n1+(iInner-(i3-iInner))*n1*n2];
+				if (i1 >= i3halo2_i1Start && i1 <= i3halo2_i1End &&
+						i2 >= i3halo2_i2Start && i2 <= i3halo2_i2End &&
+						i3 >= i3halo2_i3Start && i3 <= i3halo2_i3End   )
+				{
+					data[tid] = -data[i1+i2*n1+(iInner-(i3-iInner))*n1*n2];
+				}
+			}
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -424,41 +435,11 @@ __global__ void kernel_applyBoundaryCondition(Myfloat *data, int n1, int n2, int
 
 //-------------------------------------------------------------------------------------------------------
 
-
-// 	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-// 	  for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-// 	    for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-// 		  prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
-// 			(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-// 		   + FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-// 		   + FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-
-// #define FD_D2_O4_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O4_A0 *  U[i1   + i2*n1 + i3*n2*n1] \
-// 				+ FD_D2_O4_A1 * (U[i1+1 + i2*n1 + i3*n2*n1] + U[i1-1 + i2*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O4_A2 * (U[i1+2 + i2*n1 + i3*n2*n1] + U[i1-2 + i2*n1 + i3*n2*n1])) \
-// 				* inv2_d1)
-
-// #define FD_D2_O4_N2(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O4_A0 *  U[i1 + i2    *n1 + i3*n2*n1] \
-// 				+ FD_D2_O4_A1 * (U[i1 + (i2+1)*n1 + i3*n2*n1] + U[i1 + (i2-1)*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O4_A2 * (U[i1 + (i2+2)*n1 + i3*n2*n1] + U[i1 + (i2-2)*n1 + i3*n2*n1])) \
-// 				* inv2_d2)
-
-// #define FD_D2_O4_N3(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O4_A0 *  U[i1 + i2*n1 + i3    *n2*n1] \
-// 				+ FD_D2_O4_A1 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
-// 				+ FD_D2_O4_A2 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])) \
-// 				* inv2_d3)
-__global__ void kernel_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_computePressureWithFD(Dim_type dim, Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	const Myfloat FD_D2_O4_A0   =  -5./2. ;
-	const Myfloat FD_D2_O4_A1   =  4./3. ;
-	const Myfloat FD_D2_O4_A2   =  -1./12. ;
-	
 
 	while (tid < size)
 	{
@@ -468,94 +449,128 @@ __global__ void kernel_computePressureWithFD_O4(Myfloat *prn, Myfloat *prc, Myfl
 		int i1 = idx%n1;
 
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
-			prn[i1+i2*n1+i3*n1*n2] = 2.0 * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
-			(((FD_D2_O4_A0 *  prc[i1   + i2*n1 + i3*n2*n1]
-			 + FD_D2_O4_A1 * (prc[i1+1 + i2*n1 + i3*n2*n1] + prc[i1-1 + i2*n1 + i3*n2*n1]) 
-			 + FD_D2_O4_A2 * (prc[i1+2 + i2*n1 + i3*n2*n1] + prc[i1-2 + i2*n1 + i3*n2*n1]))
-			 * inv2_d1)
-			+((FD_D2_O4_A0 *  prc[i1 +  i2   *n1 + i3*n2*n1] 
-			 + FD_D2_O4_A1 * (prc[i1 + (i2+1)*n1 + i3*n2*n1] + prc[i1 + (i2-1)*n1 + i3*n2*n1])  
-			 + FD_D2_O4_A2 * (prc[i1 + (i2+2)*n1 + i3*n2*n1] + prc[i1 + (i2-2)*n1 + i3*n2*n1])) 
-			 * inv2_d2)
-			+((FD_D2_O4_A0 *  prc[i1 + i2*n1 +  i3   *n2*n1] 
-			 + FD_D2_O4_A1 * (prc[i1 + i2*n1 + (i3+1)*n2*n1] + prc[i1 + i2*n1 + (i3-1)*n2*n1])  
-			 + FD_D2_O4_A2 * (prc[i1 + i2*n1 + (i3+2)*n2*n1] + prc[i1 + i2*n1 + (i3-2)*n2*n1])) 
-			 * inv2_d3));
-		}
+			// compute FD for 1D
+			if (dim == DIM1)
+			{
+				if (fdOrder == 2)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
 
-		tid += blockDim.x * gridDim.x;
-	}
-}
+			// compute FD for 2D
+			else if (dim == DIM2)
+			{
+				if (fdOrder == 2)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O2_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 4)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 8)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 12)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 16)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O16_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+			}
 
-//-------------------------------------------------------------------------------------------------------
-
-// #define FD_D2_O8_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O8_A0 *  U[i1   + i2*n1 + i3*n2*n1] \
-// 				+ FD_D2_O8_A1 * (U[i1+1 + i2*n1 + i3*n2*n1] + U[i1-1 + i2*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A2 * (U[i1+2 + i2*n1 + i3*n2*n1] + U[i1-2 + i2*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A3 * (U[i1+3 + i2*n1 + i3*n2*n1] + U[i1-3 + i2*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A4 * (U[i1+4 + i2*n1 + i3*n2*n1] + U[i1-4 + i2*n1 + i3*n2*n1])) \
-// 				* inv2_d1)
-
-// #define FD_D2_O8_N2(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O8_A0 *  U[i1 + i2    *n1 + i3*n2*n1] \
-// 				+ FD_D2_O8_A1 * (U[i1 + (i2+1)*n1 + i3*n2*n1] + U[i1 + (i2-1)*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A2 * (U[i1 + (i2+2)*n1 + i3*n2*n1] + U[i1 + (i2-2)*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A3 * (U[i1 + (i2+3)*n1 + i3*n2*n1] + U[i1 + (i2-3)*n1 + i3*n2*n1])  \
-// 				+ FD_D2_O8_A4 * (U[i1 + (i2+4)*n1 + i3*n2*n1] + U[i1 + (i2-4)*n1 + i3*n2*n1])) \
-// 				* inv2_d2)
-
-// #define FD_D2_O8_N3(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
-// 		(        (FD_D2_O8_A0 *  U[i1 + i2*n1 + i3    *n2*n1] \
-// 				+ FD_D2_O8_A1 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
-// 				+ FD_D2_O8_A2 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])  \
-// 				+ FD_D2_O8_A3 * (U[i1 + i2*n1 + (i3+3)*n2*n1] + U[i1 + i2*n1 + (i3-3)*n2*n1])  \
-// 				+ FD_D2_O8_A4 * (U[i1 + i2*n1 + (i3+4)*n2*n1] + U[i1 + i2*n1 + (i3-4)*n2*n1])) \
-// 				* inv2_d3)
-__global__ void kernel_computePressureWithFD_O8(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	const Myfloat FD_D2_O8_A0   = -205./72. ;
-	const Myfloat FD_D2_O8_A1   = 8./5. ;
-	const Myfloat FD_D2_O8_A2   = -1/5. ;
-	const Myfloat FD_D2_O8_A3   = 8./315. ;
-	const Myfloat FD_D2_O8_A4   = -1/560. ;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			prn[i1+i2*n1+i3*n1*n2] = 2.0 * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] + coef[i1+i2*n1+i3*n1*n2] *
-				((   (FD_D2_O8_A0 *  prc[i1   + i2*n1 + i3*n2*n1] 
-					+ FD_D2_O8_A1 * (prc[i1+1 + i2*n1 + i3*n2*n1] + prc[i1-1 + i2*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[i1+2 + i2*n1 + i3*n2*n1] + prc[i1-2 + i2*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[i1+3 + i2*n1 + i3*n2*n1] + prc[i1-3 + i2*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[i1+4 + i2*n1 + i3*n2*n1] + prc[i1-4 + i2*n1 + i3*n2*n1])) 
-					* inv2_d1)
-			+(       (FD_D2_O8_A0 *  prc[i1 + i2    *n1 + i3*n2*n1] 
-					+ FD_D2_O8_A1 * (prc[i1 + (i2+1)*n1 + i3*n2*n1] + prc[i1 + (i2-1)*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[i1 + (i2+2)*n1 + i3*n2*n1] + prc[i1 + (i2-2)*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[i1 + (i2+3)*n1 + i3*n2*n1] + prc[i1 + (i2-3)*n1 + i3*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[i1 + (i2+4)*n1 + i3*n2*n1] + prc[i1 + (i2-4)*n1 + i3*n2*n1])) 
-					* inv2_d2)
-			+(       (FD_D2_O8_A0 *  prc[i1 + i2*n1 + i3    *n2*n1] 
-					+ FD_D2_O8_A1 * (prc[i1 + i2*n1 + (i3+1)*n2*n1] + prc[i1 + i2*n1 + (i3-1)*n2*n1])  
-					+ FD_D2_O8_A2 * (prc[i1 + i2*n1 + (i3+2)*n2*n1] + prc[i1 + i2*n1 + (i3-2)*n2*n1])  
-					+ FD_D2_O8_A3 * (prc[i1 + i2*n1 + (i3+3)*n2*n1] + prc[i1 + i2*n1 + (i3-3)*n2*n1])  
-					+ FD_D2_O8_A4 * (prc[i1 + i2*n1 + (i3+4)*n2*n1] + prc[i1 + i2*n1 + (i3-4)*n2*n1])) 
-					* inv2_d3));
+			// compute FD for 3D
+			else if (dim == DIM3)
+			{
+				if (fdOrder == 2)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O2_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O2_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 4)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 8)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O8_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 12)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 16)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O16_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O16_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+			}
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -671,14 +686,8 @@ void Grid_Hip::write(string file_name)
 
 	if (Config::Instance()->writeGrid)
 	{
-		printf("Max GPU grid %f\n", getMax(INNER_POINTS)) ;
-		printf("Min GPU grid %f\n", getMin(INNER_POINTS)) ;
-
 		// copy grid from device to host
 		copyGridDeviceToHost(ALL_POINTS) ;
-
-		printf("Max CPU grid %f\n", Grid::getMax(INNER_POINTS)) ;
-		printf("Min CPU grid %f\n", Grid::getMin(INNER_POINTS)) ;
 
 		Grid::write(file_name) ;
 	}
@@ -689,11 +698,420 @@ void Grid_Hip::write(string file_name)
 
 //-------------------------------------------------------------------------------------------------------
 
+__global__ void kernel_FD_D2_N1(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD along N1
+			if (fdOrder == 2)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 4)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 8)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 12)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 16)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+Rtn_code Grid_Hip::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N1");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D2_N1, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
+	Myfloat * d_u = this->d_grid_3d ;
+
+	hipLaunchKernelGGL(kernel_FD_D2_N1, dim3(1024), dim3(256), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
+	cudaCheckError();
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N1");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_FD_D2_N2(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD along N2
+			if (fdOrder == 2)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 4)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 8)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 12)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 16)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+Rtn_code Grid_Hip::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N2");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D2_N2, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
+	Myfloat * d_u = this->d_grid_3d ;
+
+	hipLaunchKernelGGL(kernel_FD_D2_N2, dim3(1024), dim3(256), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
+	cudaCheckError();
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N2");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_FD_D2_N3(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD along N3
+			if (fdOrder == 2)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O2_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 4)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 8)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 12)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 16)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+Rtn_code Grid_Hip::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N3");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D2_N3, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
+	Myfloat * d_u = this->d_grid_3d ;
+
+	hipLaunchKernelGGL(kernel_FD_D2_N3, dim3(1024), dim3(256), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
+	cudaCheckError();
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N3");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_FD_LAPLACIAN(Dim_type dim, Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD Laplacian for 1D
+			if (dim == DIM1)
+			{
+				// same as FD_D2_N1
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+
+			// compute FD Laplacian for 2D
+			else if (dim == DIM2)
+			{
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+
+			// compute FD Laplacian for 3D
+			else if (dim == DIM3)
+			{
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
 Rtn_code Grid_Hip::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::FD_LAPLACIAN");
 
-	// TO DO
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_LAPLACIAN, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
+	Myfloat * d_u = this->d_grid_3d ;
+
+	hipLaunchKernelGGL(kernel_FD_LAPLACIAN, dim3(1024), dim3(256), 0, 0, dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
 
 	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_LAPLACIAN");
 	return(RTN_CODE_OK) ;
@@ -710,11 +1128,6 @@ Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	if (fdOrder != 4 && fdOrder != 8)
-	{
-		printError("HIP: only FD order 4/8 implemented");
-	}
-
 	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
 	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
 	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
@@ -725,16 +1138,10 @@ Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 
 	Myfloat *prc_d_grid_3d = ((Grid_Hip&) prcGridIn).d_grid_3d ;
 	Myfloat *coef_d_grid_3d = ((Grid_Hip&) coefGridIn).d_grid_3d ;
-
-	if (fdOrder == 4)
-	{
-		hipLaunchKernelGGL(kernel_computePressureWithFD_O4, dim3(1024), dim3(256), 0, 0, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-	}
-	else if (fdOrder == 8)
-	{
-		hipLaunchKernelGGL(kernel_computePressureWithFD_O8, dim3(1024), dim3(256), 0, 0, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-	}
 	
+	hipLaunchKernelGGL(kernel_computePressureWithFD, dim3(1024), dim3(256), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
 	cudaCheckError();
 	hipDeviceSynchronize();
 	
@@ -1312,23 +1719,24 @@ void Grid_Hip::copyGridDeviceToHost(Point_type pointType)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	//if (pointType == I1INNERHALO1)
-	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	if (pointType == ALL_POINTS)
 	{
-		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+		// copy all points with one call to hipMemcpy
+		Myint64 idx = 0 ;
+		hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), npoint * sizeof(Myfloat), hipMemcpyDeviceToHost) ;
+	}
+	else
+	{
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 		{
-			//for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-			//{
-			//	// TMP copy point to point
-			//	Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-			//	hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), sizeof(Myfloat), hipMemcpyDeviceToHost) ;
-			//}
-
-			// copy 1d segment
-			Myint64 i1 = i1Start ;
-			Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-			Myint64 nn = i1End - i1Start + 1 ;
-			hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nn * sizeof(Myfloat), hipMemcpyDeviceToHost) ;
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+				// copy 1d segment from i1Start to i1End
+				Myint64 i1 = i1Start ;
+				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+				Myint64 nn = i1End - i1Start + 1 ;
+				hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nn * sizeof(Myfloat), hipMemcpyDeviceToHost) ;
+			}
 		}
 	}
 
@@ -1346,23 +1754,24 @@ void Grid_Hip::copyGridHostToDevice(Point_type pointType)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	//if (pointType == I1HALO1)
-	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	if (pointType == ALL_POINTS)
 	{
-		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+		// copy all points with one call to hipMemcpy
+		Myint64 idx = 0 ;
+		hipMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), npoint * sizeof(Myfloat), hipMemcpyHostToDevice) ;
+	}
+	else
+	{
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 		{
-			//for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-			//{
-			//	// TMP copy point to point
-			//	Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-			//	hipMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), sizeof(Myfloat), hipMemcpyHostToDevice) ;
-			//}
-
-			// copy 1d segment
-			Myint64 i1 = i1Start ;
-			Myint64 idx = i1+i2*n1+i3*n1*n2 ;
-			Myint64 nn = i1End - i1Start + 1 ;
-			hipMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), nn * sizeof(Myfloat), hipMemcpyHostToDevice) ;
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+				// copy 1d segment
+				Myint64 i1 = i1Start ;
+				Myint64 idx = i1+i2*n1+i3*n1*n2 ;
+				Myint64 nn = i1End - i1Start + 1 ;
+				hipMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), nn * sizeof(Myfloat), hipMemcpyHostToDevice) ;
+			}
 		}
 	}
 
@@ -1397,13 +1806,13 @@ Rtn_code Grid_Hip::applyBoundaryCondition(BoundCond_type boundCondType)
 	getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
 
 
-	hipLaunchKernelGGL(kernel_applyBoundaryCondition, dim3(1024), dim3(256), 0, 0, d_grid_3d, n1, n2, n3, 	
-		i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
-		i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
-		i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
-		i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
-		i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
-		i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End);
+	hipLaunchKernelGGL(kernel_applyBoundaryCondition, dim3(1024), dim3(256), 0, 0, dim, d_grid_3d, n1, n2, n3,
+			getNeighbourProc(I1HALO1), i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
+			getNeighbourProc(I1HALO2), i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
+			getNeighbourProc(I2HALO1), i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
+			getNeighbourProc(I2HALO2), i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
+			getNeighbourProc(I3HALO1), i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
+			getNeighbourProc(I3HALO2), i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End);
 
 	hipDeviceSynchronize();
 

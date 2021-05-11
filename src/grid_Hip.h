@@ -42,6 +42,15 @@ public:
 	// write grid on disk
 	virtual void write(string) ;
 
+	// compute FD_D2 along N1
+	virtual Rtn_code FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
+
+	// compute FD_D2 along N2
+	virtual Rtn_code FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
+
+	// compute FD_D2 along N3
+	virtual Rtn_code FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
+
 	// compute FD_LAPLACIAN
 	virtual Rtn_code FD_LAPLACIAN(Point_type pType, const Grid&, Myint fdOrder) ;
 
