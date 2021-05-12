@@ -34,41 +34,41 @@ Rtn_code TestCase::initialize(void)
 		printInfo(MASTER, " TestCase version", testCaseVersion) ;
 		printInfo(MASTER, " TestCase mode\t", Config::Instance()->testMode) ;
 
-		if (Config::Instance()->testMode.compare("Baseline") == 0)
+		if (Config::Instance()->testMode.compare(GRID_MODE_BASELINE) == 0)
 		{
 
 		}
-		else if (Config::Instance()->testMode.compare("CacheBlk") == 0)
+		else if (Config::Instance()->testMode.compare(GRID_MODE_CACHEBLK) == 0)
 		{
 
 		}
 #ifdef __CUDA__
-		else if (Config::Instance()->testMode.compare("CUDA") == 0)
+		else if (Config::Instance()->testMode.compare(GRID_MODE_CUDA) == 0)
 		{
 
 		}
 #endif
 
 #ifdef __HIP__
-		else if (Config::Instance()->testMode.compare("HIP") == 0)
+		else if (Config::Instance()->testMode.compare(GRID_MODE_HIP) == 0)
 		{
 
 		}
 #endif
 
 #ifdef __OPENACC__
-		else if (Config::Instance()->testMode.compare("OpenAcc") == 0)
+		else if (Config::Instance()->testMode.compare(GRID_MODE_OPENACC) == 0)
 		{
 
 		}
 #endif
 
 #ifdef __NEC__
-		else if (Config::Instance()->testMode.compare("NEC") == 0)
+		else if (Config::Instance()->testMode.compare(GRID_MODE_NEC) == 0)
 		{
 
 		}
-		else if (Config::Instance()->testMode.compare("NEC_SCA") == 0)
+		else if (Config::Instance()->testMode.compare(GRID_MODE_NEC_SCA) == 0)
 		{
 
 		}

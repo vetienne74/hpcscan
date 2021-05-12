@@ -33,7 +33,7 @@ Grid_CacheBlk::Grid_CacheBlk(Grid_type gridTypeIn) : Grid(gridTypeIn)
 {
 	printDebug(MID_DEBUG, "IN Grid_CacheBlk::Grid_CacheBlk");
 
-	gridMode = "CacheBlk" ;
+	gridMode = GRID_MODE_CACHEBLK ;
 
 	printDebug(MID_DEBUG, "OUT Grid_CacheBlk::Grid_CacheBlk");
 }
@@ -46,7 +46,7 @@ Grid_CacheBlk::Grid_CacheBlk(Grid_type gridTypeIn, Dim_type dimIn,
 {
 	printDebug(MID_DEBUG, "IN Grid_CacheBlk::Grid_CacheBlk");
 
-	gridMode = "CacheBlk" ;
+	gridMode = GRID_MODE_CACHEBLK ;
 
 	printDebug(MID_DEBUG, "OUT Grid_CacheBlk::Grid_CacheBlk");
 }

@@ -3,8 +3,6 @@
 
 #include "type_def.h"
 
-#include "mpi.h"
-
 namespace hpcscan {
 
 //-------------------------------------------------------------------------------------------------------
@@ -20,6 +18,17 @@ const Myfloat MAX_ERR_FLOAT = 1.e-5 ;
 #endif
 
 const Myfloat TWO = 2.0 ;
+
+//-------------------------------------------------------------------------------------------------------
+// Grid modes
+//-------------------------------------------------------------------------------------------------------
+const string   GRID_MODE_BASELINE      = "Baseline" ;
+const string   GRID_MODE_CACHEBLK      = "CacheBlk" ;
+const string   GRID_MODE_CUDA          = "CUDA" ;
+const string   GRID_MODE_HIP           = "HIP" ;
+const string   GRID_MODE_OPENACC       = "OpenAcc" ;
+const string   GRID_MODE_NEC           = "NEC" ;
+const string   GRID_MODE_NEC_SCA       = "NEC_SCA" ;
 
 } // namespace hpcscan
 

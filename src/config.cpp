@@ -25,7 +25,10 @@ namespace hpcscan {
 // Constant definitions
 //-------------------------------------------------------------------------------------------------------
 
-// default parameters
+//-------------------------------------------------------------------------------------------------------
+// Default values
+//-------------------------------------------------------------------------------------------------------
+
 static const bool      DEFAULT_AUTO_PAD       = false ;
 static const string    DEFAULT_BOUNDARY       = "FreeSurf" ;
 static const Myint     DEFAULT_CB1            = 9999 ;
@@ -61,11 +64,13 @@ static const Myfloat64 DEFAULT_RATIO_CFL      = 1.0 ;
 static const Myfloat64 DEFAULT_SNAP_DT        = 0.0 ;
 static const Myint     DEFAULT_SNAP_INC       = 1 ;
 static const string    DEFAULT_TEST_CASE      = "UNSPECIFIED" ;
-static const string    DEFAULT_TEST_MODE      = "Baseline" ;
+static const string    DEFAULT_TEST_MODE      = GRID_MODE_BASELINE ;
 static const Myfloat64 DEFAULT_TMAX           = UNSPECIFIED ;
 static const bool      DEFAULT_WRITE_GRID     = false ;
 
-// min and max
+//-------------------------------------------------------------------------------------------------------
+// Min and max
+//-------------------------------------------------------------------------------------------------------
 static const Myint     MIN_NPOINT_NSUB        = 20 ;
 
 //-------------------------------------------------------------------------------------------------------

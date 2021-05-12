@@ -33,7 +33,7 @@ Grid_OpenAcc::Grid_OpenAcc(Grid_type gridTypeIn) : Grid(gridTypeIn)
 																{
 	printDebug(MID_DEBUG, "IN Grid_OpenAcc::Grid_OpenAcc");
 
-	gridMode = "OpenAcc" ;
+	gridMode = GRID_MODE_OPENACC ;
 
 	printDebug(MID_DEBUG, "OUT Grid_OpenAcc::Grid_OpenAcc");
 																}
@@ -46,7 +46,7 @@ Grid_OpenAcc::Grid_OpenAcc(Grid_type gridTypeIn, Dim_type dimIn,
 {
 	printDebug(MID_DEBUG, "IN Grid_OpenAcc::Grid_OpenAcc");
 
-	gridMode = "OpenAcc" ;
+	gridMode = GRID_MODE_OPENACC ;
 
 	printDebug(MID_DEBUG, "OUT Grid_OpenAcc::Grid_OpenAcc");
 }

@@ -6,6 +6,7 @@
 
 #include "grid_Factory.h"
 
+#include "constant.h"
 #include "grid_CacheBlk.h"
 #include "grid_Cuda.h"
 #include "grid_Hip.h"
@@ -26,42 +27,42 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 
 	Grid *Rgrid = nullptr ;
 
-	if (gridMode.compare("Baseline") == 0)
+	if (gridMode.compare(GRID_MODE_BASELINE) == 0)
 	{
 		Rgrid = new Grid(gridType) ;
 	}
-	else if (gridMode.compare("CacheBlk") == 0)
+	else if (gridMode.compare(GRID_MODE_CACHEBLK) == 0)
 	{
 		Rgrid = new Grid_CacheBlk(gridType) ;
 	}
 
 #ifdef __CUDA__
-	else if (gridMode.compare("CUDA") == 0)
+	else if (gridMode.compare(GRID_MODE_CUDA) == 0)
 	{
 		Rgrid = new Grid_Cuda(gridType) ;
 	}
 #endif
 
 #ifdef __HIP__
-	else if (gridMode.compare("HIP") == 0)
+	else if (gridMode.compare(GRID_MODE_HIP) == 0)
 	{
 		Rgrid = new Grid_Hip(gridType) ;
 	}
 #endif
 
 #ifdef __OPENACC__
-	else if (gridMode.compare("OpenAcc") == 0)
+	else if (gridMode.compare(GRID_MODE_OPENACC) == 0)
 	{
 		Rgrid = new Grid_OpenAcc(gridType) ;
 	}
 #endif
 
 #ifdef __NEC__
-	else if (gridMode.compare("NEC") == 0)
+	else if (gridMode.compare(GRID_MODE_NEC) == 0)
 	{
 		Rgrid = new Grid_NEC(gridType) ;
 	}
-	else if (gridMode.compare("NEC_SCA") == 0)
+	else if (gridMode.compare(GRID_MODE_NEC_SCA) == 0)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType) ;
 	}
@@ -93,42 +94,42 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 
 	Grid *Rgrid = nullptr ;
 
-	if (gridMode.compare("Baseline") == 0)
+	if (gridMode.compare(GRID_MODE_BASELINE) == 0)
 	{
 		Rgrid = new Grid(gridType, dim, n1, n2, n3) ;
 	}
-	else if (gridMode.compare("CacheBlk") == 0)
+	else if (gridMode.compare(GRID_MODE_CACHEBLK) == 0)
 	{
 		Rgrid = new Grid_CacheBlk(gridType, dim, n1, n2, n3) ;
 	}
 
 #ifdef __CUDA__
-	else if (gridMode.compare("CUDA") == 0)
+	else if (gridMode.compare(GRID_MODE_CUDA) == 0)
 	{
 		Rgrid = new Grid_Cuda(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
 #ifdef __HIP__
-	else if (gridMode.compare("HIP") == 0)
+	else if (gridMode.compare(GRID_MODE_HIP) == 0)
 	{
 		Rgrid = new Grid_Hip(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
 #ifdef __OPENACC__
-	else if (gridMode.compare("OpenAcc") == 0)
+	else if (gridMode.compare(GRID_MODE_OPENACC) == 0)
 	{
 		Rgrid = new Grid_OpenAcc(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
 #ifdef __NEC__
-	else if (gridMode.compare("NEC") == 0)
+	else if (gridMode.compare(GRID_MODE_NEC) == 0)
 	{
 		Rgrid = new Grid_NEC(gridType, dim, n1, n2, n3) ;
 	}
-	else if (gridMode.compare("NEC_SCA") == 0)
+	else if (gridMode.compare(GRID_MODE_NEC_SCA) == 0)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType, dim, n1, n2, n3) ;
 	}

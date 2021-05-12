@@ -53,7 +53,7 @@ Grid_NEC_SCA::Grid_NEC_SCA(Grid_type gridTypeIn) : Grid_NEC(gridTypeIn)
 {
 	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::Grid_NEC_SCA");
 
-	gridMode = "NEC_SCA" ;
+	gridMode = GRID_MODE_NEC_SCA ;
 
 	flag_code_FD_D2_N1  = false ;
 	flag_code_FD_D2_N2  = false ;
@@ -71,7 +71,7 @@ Grid_NEC_SCA::Grid_NEC_SCA(Grid_type gridTypeIn, Dim_type dimIn,
 {
 	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::Grid_NEC_SCA");
 
-	gridMode = "NEC_SCA" ;
+	gridMode = GRID_MODE_NEC_SCA ;
 
 	flag_code_FD_D2_N1  = false ;
 	flag_code_FD_D2_N2  = false ;

@@ -41,7 +41,7 @@ Grid_NEC::Grid_NEC(Grid_type gridTypeIn) : Grid(gridTypeIn)
 						{
 	printDebug(MID_DEBUG, "IN Grid_NEC::Grid_NEC");
 
-	gridMode = "NEC" ;
+	gridMode = GRID_MODE_NEC ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC::Grid_NEC");
 						}
@@ -54,7 +54,7 @@ Grid_NEC::Grid_NEC(Grid_type gridTypeIn, Dim_type dimIn,
 {
 	printDebug(MID_DEBUG, "IN Grid_NEC::Grid_NEC");
 
-	gridMode = "NEC" ;
+	gridMode = GRID_MODE_NEC ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC::Grid_NEC");
 }

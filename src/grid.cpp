@@ -66,7 +66,7 @@ Grid::Grid(Grid_type gridTypeIn)
 				{
 	printDebug(MID_DEBUG, "IN Grid::Grid");
 
-	gridMode = "Baseline" ;
+	gridMode = GRID_MODE_BASELINE ;
 	n1Inner  = Config::Instance()->n1 ;
 	n2Inner  = Config::Instance()->n2 ;
 	n3Inner  = Config::Instance()->n3 ;
@@ -84,7 +84,7 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 {
 	printDebug(MID_DEBUG, "IN Grid::Grid");
 
-	gridMode = "Baseline" ;
+	gridMode = GRID_MODE_BASELINE ;
 	n1Inner  = n1InnerIn ;
 	n2Inner  = n2InnerIn ;
 	n3Inner  = n3InnerIn ;
