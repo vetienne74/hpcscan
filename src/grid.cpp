@@ -1457,6 +1457,7 @@ Myfloat Grid::getMin(Point_type pointType)
 	printDebug(LIGHT_DEBUG, "Min val", val);
 
 	printDebug(LIGHT_DEBUG, "OUT Grid::getMin");
+
 	return(val) ;
 }
 

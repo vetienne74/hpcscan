@@ -13,7 +13,7 @@ export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 # C++ compiler
 export HPCSCAN_CPP=mpic++
 export HPCSCAN_CPP_OPENACC_FLAG='-fopenacc'
-export HPCSCAN_CPP_FLAGCOMP='-w -g -O3 -mavx2 -fopenmp'
+export HPCSCAN_CPP_FLAGCOMP='-g -O3 -mavx2 -fopenmp'
 export HPCSCAN_CPP_LIB=
 
 # CUDA compiler

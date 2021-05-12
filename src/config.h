@@ -50,6 +50,12 @@ public:
 	// grid sampling
 	Myfloat64 h ;
 
+	// GPU block size (number of threads per block)
+	Myint gpuBlkSize ;
+
+	// GPU grid size (number of blocks per grid)
+	Myint gpuGridSize ;
+
 	// inner domain size
 	Myint n1, n2, n3 ;
 

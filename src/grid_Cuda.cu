@@ -23,11 +23,7 @@
 #include "global.h"
 #include "output_report.h"
 
-#include <thrust/device_vector.h>
-#include <thrust/reduce.h>
-
 #include <cooperative_groups.h>
-// #include <cooperative_groups/reduce.h>
 
 namespace cg = cooperative_groups;
 
@@ -35,7 +31,7 @@ using namespace std;
 
 namespace hpcscan {
 
-static const int blockSize = 512 ;
+static const int blockSize = 256 ;
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -47,6 +43,57 @@ static const int blockSize = 512 ;
 	  exit(0); \
 	}                                                                 \
    }
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn) : Grid(gridTypeIn)
+														{
+	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
+
+	gridMode = "Cuda" ;
+
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
+
+	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
+	gpuGridSize = Config::Instance()->gpuGridSize ;
+
+	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
+														}
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn, Dim_type dimIn,
+		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid(gridTypeIn, dimIn,
+				n1InnerIn, n2InnerIn, n3InnerIn)
+{
+	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
+
+	gridMode = "Cuda" ;
+
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
+
+	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
+	gpuGridSize = Config::Instance()->gpuGridSize ;
+
+
+	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Cuda::~Grid_Cuda(void)
+{
+	printDebug(MID_DEBUG, "IN Grid_Cuda::~Grid_Cuda");
+
+	//delete[] grid_3d ;
+	cudaFree(d_grid_3d);
+	cudaFree(d_help_3d);
+	cudaCheckError();
+
+	printDebug(MID_DEBUG, "OUT Grid_Cuda::~Grid_Cuda");
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -217,52 +264,6 @@ __global__ void kernel_fabsf(Myfloat *data, Myfloat *dataOut, int n1, int n2, in
 
 		tid += blockDim.x * gridDim.x;
 	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_min(Myfloat *data, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	cg::thread_block cta = cg::this_thread_block();
-	__shared__ float sdata[256];
-	sdata[threadIdx.x]=99999;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			Myfloat val = data[tid];
-			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-
-	cg::sync(cta);
-	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1) 
-	{
-		if (threadIdx.x < s) 
-		{
-			Myfloat val = sdata[threadIdx.x + s];
-			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
-		}	
-		cg::sync(cta);
-	  }
-	
-	  // write result for this block to global mem
-	  if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -578,50 +579,6 @@ __global__ void kernel_computePressureWithFD(Dim_type dim, Myint fdOrder, Myfloa
 
 //-------------------------------------------------------------------------------------------------------
 
-Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn) : Grid(gridTypeIn)
-														{
-	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
-
-	gridMode = "Cuda" ;
-	
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
-
-	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
-														}
-
-//-------------------------------------------------------------------------------------------------------
-
-Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn, Dim_type dimIn,
-		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid(gridTypeIn, dimIn,
-				n1InnerIn, n2InnerIn, n3InnerIn)
-{
-	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
-
-	gridMode = "Cuda" ;
-	
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
-
-	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-Grid_Cuda::~Grid_Cuda(void)
-{
-	printDebug(MID_DEBUG, "IN Grid_Cuda::~Grid_Cuda");
-
-	//delete[] grid_3d ;
-	cudaFree(d_grid_3d);
-	cudaFree(d_help_3d);
-	cudaCheckError();
-
-	printDebug(MID_DEBUG, "OUT Grid_Cuda::~Grid_Cuda");
-}
-
-//-------------------------------------------------------------------------------------------------------
-
 void Grid_Cuda::info(void)
 {
 	printDebug(FULL_DEBUG, "IN Grid_Cuda::info");
@@ -632,8 +589,8 @@ void Grid_Cuda::info(void)
 	// additional info
 	printInfo(MASTER, "") ;
 	printInfo(MASTER, " * GPU parameters * ") ;
-	printInfo(MASTER, " Blocks per grid", 999) ;
-	printInfo(MASTER, " Threads per block", 999) ;
+	printInfo(MASTER, " Blocks per grid", gpuGridSize) ;
+	printInfo(MASTER, " Threads per block", gpuBlkSize) ;
 
 	int startDevice = 0;
 	int endDevice = 0;
@@ -1330,6 +1287,56 @@ void Grid_Cuda::addUpdateArray(const Grid& gridIn)
 
 //-------------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_getMin(Myfloat *data, Myfloat *dataOut,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	cg::thread_block cta = cg::this_thread_block();
+
+	//__shared__ float sdata[256] ;
+	extern __shared__ float sdata[];
+
+	sdata[threadIdx.x] = +FLT_MAX ;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			Myfloat val = data[tid];
+			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+		__syncthreads();
+	}
+
+	  // write result for this block to global mem
+	  if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
+}
+
 __global__ void minCommSingleBlock(const Myfloat *a, Myfloat *out,
 		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
@@ -1364,23 +1371,49 @@ __global__ void minCommSingleBlock(const Myfloat *a, Myfloat *out,
 		*out = r[0];
 }
 
+__global__ void kernel_getMin2(Myfloat *r, Myfloat *out, int blockSize)
+{
+	int idx = threadIdx.x;
+	for (int size = blockSize/2; size>0; size/=2) { //uniform
+		if (idx<size)
+			if (r[idx+size] < r[idx]) r[idx] = r[idx+size];
+		__syncthreads();
+	}
+	if (idx == 0)
+		*out = r[0];
+}
+
 Myfloat Grid_Cuda::getMin(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::getMin") ;
 
 	Myfloat val = 0 ;
-	Myfloat *d_val ;
-	cudaMalloc((void**)&d_val, sizeof(Myfloat) * 1);
+	Myfloat *d_val, *d_val2 ;
+	cudaMalloc((void**)&d_val, gpuGridSize * sizeof(Myfloat));
+	cudaMalloc((void**)&d_val2, 1 *  sizeof(Myfloat));
 
 	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	minCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_val,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	//minCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_val,
+	//		n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+
+	//kernel_getMin<<<gpuGridSize, gpuBlkSize>>>(grid_d_grid_3d, d_val,
+	//		n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+
+	kernel_getMin<<<gpuGridSize, gpuBlkSize, gpuBlkSize * sizeof(Myfloat)>>>(grid_d_grid_3d, d_val,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
 	cudaDeviceSynchronize();
-	cudaMemcpy(&val, d_val, sizeof(Myfloat), cudaMemcpyDeviceToHost);
+	cudaCheckError();
+
+	kernel_getMin2<<<1, gpuBlkSize>>>(d_val, d_val2, gpuGridSize) ;
+	cudaDeviceSynchronize();
+	cudaCheckError();
+
+	cudaMemcpy(&val, d_val2, sizeof(Myfloat), cudaMemcpyDeviceToHost);
 	cudaCheckError();
 	cudaFree(d_val);
+	cudaFree(d_val2);
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::getMin") ;
 

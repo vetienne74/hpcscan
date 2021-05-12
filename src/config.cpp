@@ -34,6 +34,8 @@ static const Myint     DEFAULT_CB3            = 16 ;
 static const Dim_type  DEFAULT_DIM            = DIM3 ;
 static const Myfloat64 DEFAULT_DT             = 0.0 ; // stable dt will be used
 static const Myint     DEFAULT_FD_ORDER       = 8 ;
+static const Myint     DEFAULT_GPU_BLKSIZE    = 256 ;
+static const Myint     DEFAULT_GPU_GRIDSIZE   = 512 ;
 static const Myfloat64 DEFAULT_H              = PI / 30 ;
 static const Myint     DEFAULT_INNER_N1       = 61 ;
 static const Myint     DEFAULT_INNER_N2       = 61 ;
@@ -99,6 +101,8 @@ Config::Config(void)
 	dim          = DEFAULT_DIM ;
 	dt           = DEFAULT_DT ;
 	fdOrder      = DEFAULT_FD_ORDER ;
+	gpuBlkSize   = DEFAULT_GPU_BLKSIZE ;
+	gpuGridSize  = DEFAULT_GPU_GRIDSIZE ;
 	h            = DEFAULT_H ;
 	n1           = DEFAULT_INNER_N1 ;
 	n2           = DEFAULT_INNER_N2 ;
@@ -163,6 +167,8 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -dim <int>           = space dimension [1,2 or 3]") ;
 			printInfo(MASTER, " -dt <float>          = time step (s) for propagator") ;
 			printInfo(MASTER, " -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]") ;
+			printInfo(MASTER, " -gpuBlkSize <int>    = GPU, number of threads per block") ;
+			printInfo(MASTER, " -gpuGridSize <int>   = GPU, number of blocks per grid") ;
 			printInfo(MASTER, " -help or -h          = list of command line parameters") ;
 			printInfo(MASTER, " -n1 <int>            = inner domain size axis 1 [grid pts]") ;
 			printInfo(MASTER, " -n2 <int>            = inner domain size axis 2 [grid pts]") ;
@@ -387,6 +393,40 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 						&& (fdOrder != 16))
 				{
 					printError(" FD space order should be 2, 4, 8, 12 or 16") ;
+					return(RTN_CODE_KO) ;
+				}
+			}
+
+			else if (string(argv[ii]) == "-gpuBlkSize")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -gpuBlkSize") ;
+					return(RTN_CODE_KO) ;
+				}
+				gpuBlkSize = atoi(argv[ii]);
+				printInfo(MASTER, " gpuBlkSize\t", n1) ;
+				if (gpuBlkSize <= 0)
+				{
+					printError(" gpuBlkSize should be > 0") ;
+					return(RTN_CODE_KO) ;
+				}
+			}
+
+			else if (string(argv[ii]) == "-gpuGridSize")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -gpuGridSize") ;
+					return(RTN_CODE_KO) ;
+				}
+				gpuGridSize = atoi(argv[ii]);
+				printInfo(MASTER, " gpuGridSize\t", n1) ;
+				if (gpuGridSize <= 0)
+				{
+					printError(" gpuGridSize should be > 0") ;
 					return(RTN_CODE_KO) ;
 				}
 			}

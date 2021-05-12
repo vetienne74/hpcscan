@@ -113,8 +113,18 @@ public:
 
 protected:
 
-	Myfloat * d_grid_3d ; // this will be a pointer to device (GPU) memory
-	Myfloat * d_help_3d ; // this will be a pointer to device (GPU) memory
+	// pointer to device (GPU) memory
+	// equivalent to grid_3d on the CPU side
+	Myfloat * d_grid_3d ;
+
+	// pointer to device (GPU) memory
+	Myfloat * d_help_3d ;
+
+	// GPU block size (number of threads per block)
+	Myint gpuBlkSize ;
+
+	// GPU grid size (number of blocks per grid)
+	Myint gpuGridSize ;
 
 } ;
 
