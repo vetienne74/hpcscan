@@ -97,6 +97,74 @@ Grid_Cuda::~Grid_Cuda(void)
 
 //-------------------------------------------------------------------------------------------------------
 
+// multi-block reduction on the input array dataIn
+// each block find its minimum and store into the array dataOut
+
+__global__ void kernel_multiBlk_minval(Myfloat *dataIn, Myfloat *dataOut,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	// dynamic shared memory
+	extern __shared__ float sdata[];
+
+	// set to max to max float value
+	sdata[threadIdx.x] = +FLT_MAX ;
+
+	// each thread find its minimum
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
+
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update min value
+			Myfloat val = dataIn[tid];
+			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// find minimum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
+}
+
+// single block reduction on the input array dataInOut
+// the minimum is stored at first entry dataInOut[0]
+
+__global__ void kernel_singleBlk_minval(Myfloat *dataInOut, int dataInOutSize)
+{
+	int idx = threadIdx.x;
+	for (int size = dataInOutSize/2; size>0; size/=2) { //uniform
+		if (idx<size)
+			if (dataInOut[idx+size] < dataInOut[idx]) dataInOut[idx] = dataInOut[idx+size];
+		__syncthreads();
+	}
+}
+
+
 // there is probably an easier way to implement this (3d blocks?)
 __global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, const int n2, const int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
@@ -1113,14 +1181,16 @@ void Grid_Cuda::initializeGrid(void)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::initializeGrid") ;
 
-	Grid::initializeGrid() ; // this sets up halos etc.
+	Grid::initializeGrid() ;
 
 	if (d_grid_3d == NULL)
 	{
-		cudaMalloc( (void**)&d_grid_3d, n1*n2*n3*sizeof(Myfloat) );
+		// allocate the grid on the device
+		cudaMalloc( (void**)&d_grid_3d, npoint * sizeof(Myfloat) );
 		cudaCheckError();
 
-		cudaMalloc( (void**)&d_help_3d, 1024*sizeof(Myfloat) );
+		// allocate 1d array of the device used to perform reduction operation
+		cudaMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
 	}
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::initializeGrid") ;
@@ -1287,133 +1357,24 @@ void Grid_Cuda::addUpdateArray(const Grid& gridIn)
 
 //-------------------------------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_getMin(Myfloat *data, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	Myint64 size = n1*n2*n3;
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	cg::thread_block cta = cg::this_thread_block();
-
-	//__shared__ float sdata[256] ;
-	extern __shared__ float sdata[];
-
-	sdata[threadIdx.x] = +FLT_MAX ;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			Myfloat val = data[tid];
-			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-
-	__syncthreads();
-
-	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
-	{
-		if (threadIdx.x < s)
-		{
-			Myfloat val = sdata[threadIdx.x + s];
-			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
-		}
-		__syncthreads();
-	}
-
-	  // write result for this block to global mem
-	  if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
-}
-
-__global__ void minCommSingleBlock(const Myfloat *a, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int idx = threadIdx.x;
-	Myfloat minval = +FLT_MAX;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			if (a[i] < minval) minval = a[i] ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = minval;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] < r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
-__global__ void kernel_getMin2(Myfloat *r, Myfloat *out, int blockSize)
-{
-	int idx = threadIdx.x;
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] < r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Cuda::getMin(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::getMin") ;
 
 	Myfloat val = 0 ;
-	Myfloat *d_val, *d_val2 ;
-	cudaMalloc((void**)&d_val, gpuGridSize * sizeof(Myfloat));
-	cudaMalloc((void**)&d_val2, 1 *  sizeof(Myfloat));
 
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	//minCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, d_val,
-	//		n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
-	//kernel_getMin<<<gpuGridSize, gpuBlkSize>>>(grid_d_grid_3d, d_val,
-	//		n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
-
-	kernel_getMin<<<gpuGridSize, gpuBlkSize, gpuBlkSize * sizeof(Myfloat)>>>(grid_d_grid_3d, d_val,
+	kernel_multiBlk_minval<<<gpuGridSize, gpuBlkSize, gpuBlkSize * sizeof(Myfloat)>>>(d_grid_3d, d_help_3d,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
 	cudaDeviceSynchronize();
-	cudaCheckError();
 
-	kernel_getMin2<<<1, gpuBlkSize>>>(d_val, d_val2, gpuGridSize) ;
+	kernel_singleBlk_minval<<<1, gpuBlkSize>>>(d_help_3d, gpuGridSize) ;
 	cudaDeviceSynchronize();
-	cudaCheckError();
 
-	cudaMemcpy(&val, d_val2, sizeof(Myfloat), cudaMemcpyDeviceToHost);
+	cudaMemcpy(&val, &(d_help_3d[0]), sizeof(Myfloat), cudaMemcpyDeviceToHost);
 	cudaCheckError();
-	cudaFree(d_val);
-	cudaFree(d_val2);
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::getMin") ;
 
