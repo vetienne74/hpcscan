@@ -29,21 +29,33 @@ Running -testCase Comm ...
 Running -testCase Propa ...
 End testDriver.sh
 ------------------------------------------------------------------------
-SKIP testMode CUDA
+------------------------------------------------------------------------
+Start testDriver.sh
+>>> Test Mode CUDA <<<
+Launch MPI with mpirun --oversubscribe
+Running -testCase Util ...
+Running -testCase Template ...
+Running -testCase Memory ...
+Running -testCase FD_D2 ...
+Running -testCase Grid ...
+Running -testCase Comm ...
+Running -testCase Propa ...
+End testDriver.sh
+------------------------------------------------------------------------
 SKIP testMode HIP
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Mon 10 May 2021 02:00:17 PM +03
-# Ended    :  Mon 10 May 2021 02:01:08 PM +03
-On machine :  mars
+# Started  :  Thu 13 May 2021 06:21:16 AM +03
+# Ended    :  Thu 13 May 2021 06:22:42 AM +03
+On machine :  neptune
 Done by    :  vincent
 * SUMMARY
-# PASSED  : 648
+# PASSED  : 972
 # FAILED  : 0
 # ERROR   : 0
 # WARNING : 0
-==> Results of tests are saved in runValidationTests.mars.vincent.out
+==> Results of tests are saved in runValidationTests.neptune.vincent.out
 
 ========================================================================
                          END VALIDATION TESTS
