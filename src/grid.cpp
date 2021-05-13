@@ -3268,4 +3268,59 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 	return(RTN_CODE_OK) ;
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::sendWithMPI(Myint64 nGridPoint, Myint procDestId)
+{
+
+	printDebug(FULL_DEBUG, "In Grid::sendWithMPI") ;
+
+	MPI_Send(grid_3d, nGridPoint, MPI_MYFLOAT, procDestId, 0, MPI_COMM_WORLD) ;
+
+	printDebug(FULL_DEBUG, "Out Grid::sendWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::recvWithMPI(Myint64 nGridPoint, Myint procSrcId)
+{
+
+	printDebug(FULL_DEBUG, "In Grid::recvWithMPI") ;
+
+	MPI_Status status ;
+	MPI_Recv(grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status) ;
+
+	if (status.MPI_ERROR != MPI_SUCCESS)
+	{
+		//printError("MPI ERROR", status.MPI_ERROR) ;
+	}
+
+	printDebug(FULL_DEBUG, "Out Grid::recvWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idRecv, Myint64 nGridPoint)
+{
+
+	printDebug(FULL_DEBUG, "In Grid::sendRecvWithMPI") ;
+
+	Myfloat *bufSend = grid_3d ;
+	Myfloat *bufRecv = gridDest.grid_3d ;
+
+	MPI_Status status ;
+	MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
+			bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
+			MPI_COMM_WORLD, &status) ;
+	if (status.MPI_ERROR != MPI_SUCCESS)
+	{
+		//printError("MPI ERROR", status.MPI_ERROR) ;
+	}
+
+	printDebug(FULL_DEBUG, "Out Grid::sendRecvWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
 } // namespace hpcscan

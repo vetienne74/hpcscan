@@ -30,6 +30,12 @@ const string   GRID_MODE_OPENACC       = "OpenAcc" ;
 const string   GRID_MODE_NEC           = "NEC" ;
 const string   GRID_MODE_NEC_SCA       = "NEC_SCA" ;
 
+//-------------------------------------------------------------------------------------------------------
+// Propagator types
+//-------------------------------------------------------------------------------------------------------
+const string   PROPA_TYPE_AC2STANDARD  = "Ac2Standard" ;
+const string   PROPA_TYPE_AC2SPLITCOMP = "Ac2SplitComp" ;
+
 } // namespace hpcscan
 
 #endif

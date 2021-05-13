@@ -5,6 +5,7 @@
 
 #include "propagator_Factory.h"
 
+#include "constant.h"
 #include "propagator_Ac2.h"
 #include "propagator_Ac2SplitComp.h"
 #include "output_report.h"
@@ -21,11 +22,11 @@ shared_ptr<Propagator_Ac2> Propagator_Factory::create(string propagator)
 
 	Propagator_Ac2 *propa = nullptr ;
 
-	if (propagator.compare("Ac2Standard") == 0)
+	if (propagator.compare(PROPA_TYPE_AC2STANDARD) == 0)
 	{
 		propa = new Propagator_Ac2() ;
 	}
-	else if (propagator.compare("Ac2SplitComp") == 0)
+	else if (propagator.compare(PROPA_TYPE_AC2SPLITCOMP) == 0)
 	{
 		propa = new Propagator_Ac2SplitComp() ;
 	}

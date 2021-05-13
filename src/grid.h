@@ -154,6 +154,15 @@ public:
 	// compute pressure with FD
 	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;
 
+	// send grid with MPI_Send
+	virtual Rtn_code sendWithMPI(Myint64 nGridPoint, Myint procDestId) ;
+
+	// receive grid with MPI_Recv
+	virtual Rtn_code recvWithMPI(Myint64 nGridPoint, Myint procSrcId) ;
+
+	// send and receive grid with MPI_Sendrecv
+	virtual Rtn_code sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idRecv, Myint64 nGridPoint) ;
+
 	// get number of FLOP per point for operator FD_D2
 	Myint getFlopPerPtFD_D2(Myint fdOrder) ;
 

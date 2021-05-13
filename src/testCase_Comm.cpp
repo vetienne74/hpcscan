@@ -122,17 +122,11 @@ Rtn_code TestCase_Comm::run(void)
 				// start MPI_Send & MPI_Recv
 				double t0 = MPI_Wtime() ;
 
-				MPI_Status status ;
+				// receive grid with MPI_Recv
+				gridDest.recvWithMPI(nGridPoint, procSrcId) ;
 
-				// MPI_Recv
-				MPI_Recv(gridDest.grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status);
-				if (status.MPI_ERROR != MPI_SUCCESS)
-				{
-					//printError("MPI ERROR", status.MPI_ERROR) ;
-				}
-
-				// MPI_Send
-				MPI_Send(gridSrc.grid_3d, nGridPoint, MPI_MYFLOAT, procDestId, 0, MPI_COMM_WORLD);
+				// send grid with MPI_Send
+				gridSrc.sendWithMPI(nGridPoint, procDestId) ;
 
 				double t1 = MPI_Wtime() ;
 				// end MPI comm
@@ -251,18 +245,13 @@ Rtn_code TestCase_Comm::run(void)
 
 				// start MPI_Sendrecv
 				double t0 = MPI_Wtime() ;
-				MPI_Status status ;
+
 				printDebug(LIGHT_DEBUG, " idSend ", idSend) ;
 				printDebug(LIGHT_DEBUG, " idRecv ", idRecv) ;
-				MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
-						bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
-						MPI_COMM_WORLD, &status);
+
+				gridSrc.sendRecvWithMPI(gridDest, idSend, idRecv, nGridPoint) ;
 
 				double t1 = MPI_Wtime() ;
-				if (status.MPI_ERROR != MPI_SUCCESS)
-				{
-					//printError("MPI ERROR", status.MPI_ERROR) ;
-				}
 				// end MPI comm
 
 				double testCase_time = t1-t0 ;
