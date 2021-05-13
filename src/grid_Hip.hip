@@ -45,56 +45,223 @@ static const int blockSize = 256 ;
 	}                                                                 \
    }
 
-//-------------------------------------------------------------------------------------------------------
-
-Grid_Hip::Grid_Hip(Grid_type gridTypeIn) : Grid(gridTypeIn)
-														{
-	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
-
-	gridMode = "Hip" ;
-
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
-
-	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
-	gpuGridSize = Config::Instance()->gpuGridSize ;
-
-	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
-														}
+//*******************************************************************************************************
+// BEGINING OF HIP KERNELS
+//*******************************************************************************************************
 
 //-------------------------------------------------------------------------------------------------------
+// retrieve minimum value (1st step)
+// multi-block reduction on the input array dataIn
+// each block finds its minimum and stores into the array dataOut at entry dataOut[blockIdx.x]
 
-Grid_Hip::Grid_Hip(Grid_type gridTypeIn, Dim_type dimIn,
-		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid(gridTypeIn, dimIn,
-				n1InnerIn, n2InnerIn, n3InnerIn)
+__global__ void kernel_multiBlk_minval(Myfloat *dataIn, Myfloat *dataOut,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
-	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
-	gridMode = "Hip" ;
+	// dynamic shared memory
+	HIP_DYNAMIC_SHARED( float, sdata)
 
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
+	// set to max float value
+	sdata[threadIdx.x] = +FLT_MAX ;
 
-	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
-	gpuGridSize = Config::Instance()->gpuGridSize ;
+	// each thread find its minimum
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
 
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update min value
+			Myfloat val = dataIn[tid];
+			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
 
-	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// find minimum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
 }
 
 //-------------------------------------------------------------------------------------------------------
+// retrieve minimum value (2nd step)
+// single block reduction on the input array dataInOut
+// the minimum is stored at first entry dataInOut[0]
 
-Grid_Hip::~Grid_Hip(void)
+__global__ void kernel_singleBlk_minval(Myfloat *dataInOut, int dataInOutSize)
 {
-	printDebug(MID_DEBUG, "IN Grid_Hip::~Grid_Hip");
-
-	//delete[] grid_3d ;
-	hipFree(d_grid_3d);
-	hipFree(d_help_3d);
-	cudaCheckError();
-
-	printDebug(MID_DEBUG, "OUT Grid_Hip::~Grid_Hip");
+	int idx = threadIdx.x;
+	for (int size = dataInOutSize/2; size>0; size/=2) {
+		if (idx<size)
+			if (dataInOut[idx+size] < dataInOut[idx]) dataInOut[idx] = dataInOut[idx+size];
+		__syncthreads();
+	}
 }
+
+//-------------------------------------------------------------------------------------------------------
+// retrieve maximum value (1st step)
+// multi-block reduction on the input array dataIn
+// each block finds its maximum and stores into the array dataOut at entry dataOut[blockIdx.x]
+
+__global__ void kernel_multiBlk_maxval(Myfloat *dataIn, Myfloat *dataOut,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	// dynamic shared memory
+	HIP_DYNAMIC_SHARED( float, sdata)
+
+	// set to min float value
+	sdata[threadIdx.x] = -FLT_MAX ;
+
+	// each thread find its minimum
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
+
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update max value
+			Myfloat val = dataIn[tid];
+			if (val > sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// find maximum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			if (val > sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
+}
+
+//-------------------------------------------------------------------------------------------------------
+// retrieve maximum value (2nd step)
+// single block reduction on the input array dataInOut
+// the maximum is stored at first entry dataInOut[0]
+
+__global__ void kernel_singleBlk_maxval(Myfloat *dataInOut, int dataInOutSize)
+{
+	int idx = threadIdx.x;
+	for (int size = dataInOutSize/2; size>0; size/=2) {
+		if (idx<size)
+			if (dataInOut[idx+size] > dataInOut[idx]) dataInOut[idx] = dataInOut[idx+size];
+		__syncthreads();
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+// sum abs values (1st step)
+// multi-block reduction on the input array dataIn
+// each block does the sum and stores into the array dataOut at entry dataOut[blockIdx.x]
+
+__global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	// dynamic shared memory
+	HIP_DYNAMIC_SHARED( float, sdata)
+
+	// set to zero
+	sdata[threadIdx.x] = 0.0 ;
+
+	// each thread sums
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
+
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update sum
+			Myfloat val = fabs(dataIn[tid]) ;
+			sdata[threadIdx.x] += val ;
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// sum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			sdata[threadIdx.x] += val;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
+}
+
+//-------------------------------------------------------------------------------------------------------
+// sum values (absolute values) (2nd step)
+// single block reduction on the input array dataInOut
+// the maximum is stored at first entry dataInOut[0]
+
+__global__ void kernel_singleBlk_sum(Myfloat *dataInOut, int dataInOutSize)
+{
+	int idx = threadIdx.x;
+	for (int size = dataInOutSize/2; size>0; size/=2) {
+		if (idx<size)
+			dataInOut[idx] += dataInOut[idx+size];
+		__syncthreads();
+	}
+}
+
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -577,6 +744,62 @@ __global__ void kernel_computePressureWithFD(Dim_type dim, Myint fdOrder, Myfloa
 		tid += blockDim.x * gridDim.x;
 	}
 }
+
+//*******************************************************************************************************
+// END OF HIP KERNELS
+//*******************************************************************************************************
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Hip::Grid_Hip(Grid_type gridTypeIn) : Grid(gridTypeIn)
+														{
+	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
+
+	gridMode = GRID_MODE_HIP ;
+
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
+
+	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
+	gpuGridSize = Config::Instance()->gpuGridSize ;
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
+														}
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Hip::Grid_Hip(Grid_type gridTypeIn, Dim_type dimIn,
+		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid(gridTypeIn, dimIn,
+				n1InnerIn, n2InnerIn, n3InnerIn)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
+
+	gridMode = GRID_MODE_HIP ;
+
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
+
+	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
+	gpuGridSize = Config::Instance()->gpuGridSize ;
+
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Hip::~Grid_Hip(void)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::~Grid_Hip");
+
+	//delete[] grid_3d ;
+	hipFree(d_grid_3d);
+	hipFree(d_help_3d);
+	cudaCheckError();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::~Grid_Hip");
+}
+
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -1114,14 +1337,16 @@ void Grid_Hip::initializeGrid(void)
 {
 	printDebug(FULL_DEBUG, "In Grid_Hip::initializeGrid") ;
 
-	Grid::initializeGrid() ; // this sets up halos etc.
+	Grid::initializeGrid() ;
 
 	if (d_grid_3d == NULL)
 	{
-		hipMalloc( (void**)&d_grid_3d, n1*n2*n3*sizeof(Myfloat) );
+		// allocate the grid on the device
+		hipMalloc( (void**)&d_grid_3d, npoint * sizeof(Myfloat) );
 		cudaCheckError();
 
-		hipMalloc( (void**)&d_help_3d, 1024*sizeof(Myfloat) );
+		// allocate 1d array of the device used to perform reduction operation
+		hipMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
 	}
 	printDebug(FULL_DEBUG, "Out Grid_Hip::initializeGrid") ;
@@ -1288,133 +1513,24 @@ void Grid_Hip::addUpdateArray(const Grid& gridIn)
 
 //-------------------------------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_getMin(Myfloat *data, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	Myint64 size = n1*n2*n3;
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	cg::thread_block cta = cg::this_thread_block();
-
-	//__shared__ float sdata[256] ;
-	HIP_DYNAMIC_SHARED( float, sdata)
-
-	sdata[threadIdx.x] = +FLT_MAX ;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			Myfloat val = data[tid];
-			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-
-	__syncthreads();
-
-	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
-	{
-		if (threadIdx.x < s)
-		{
-			Myfloat val = sdata[threadIdx.x + s];
-			if (val < sdata[threadIdx.x]) sdata[threadIdx.x] = val;
-		}
-		__syncthreads();
-	}
-
-	  // write result for this block to global mem
-	  if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
-}
-
-__global__ void minCommSingleBlock(const Myfloat *a, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int idx = threadIdx.x;
-	Myfloat minval = +FLT_MAX;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			if (a[i] < minval) minval = a[i] ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = minval;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] < r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
-__global__ void kernel_getMin2(Myfloat *r, Myfloat *out, int blockSize)
-{
-	int idx = threadIdx.x;
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] < r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Hip::getMin(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Hip::getMin") ;
 
 	Myfloat val = 0 ;
-	Myfloat *d_val, *d_val2 ;
-	hipMalloc((void**)&d_val, gpuGridSize * sizeof(Myfloat));
-	hipMalloc((void**)&d_val2, 1 *  sizeof(Myfloat));
 
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	//hipLaunchKernelGGL(minCommSingleBlock, dim3(1), dim3(blockSize), 0, 0, grid_d_grid_3d, d_val,
-	//		n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
-	//hipLaunchKernelGGL(kernel_getMin, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, grid_d_grid_3d, d_val,
-	//		n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
-
-	hipLaunchKernelGGL(kernel_getMin, dim3(gpuGridSize), dim3(gpuBlkSize), gpuBlkSize * sizeof(Myfloat), 0, grid_d_grid_3d, d_val,
+	hipLaunchKernelGGL(kernel_multiBlk_minval, dim3(gpuGridSize), dim3(gpuBlkSize), gpuBlkSize * sizeof(Myfloat), 0, d_grid_3d, d_help_3d,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
 	hipDeviceSynchronize();
-	cudaCheckError();
 
-	hipLaunchKernelGGL(kernel_getMin2, dim3(1), dim3(gpuBlkSize), 0, 0, d_val, d_val2, gpuGridSize) ;
+	hipLaunchKernelGGL(kernel_singleBlk_minval, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d, gpuGridSize) ;
 	hipDeviceSynchronize();
-	cudaCheckError();
 
-	hipMemcpy(&val, d_val2, sizeof(Myfloat), hipMemcpyDeviceToHost);
+	hipMemcpy(&val, &(d_help_3d[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
 	cudaCheckError();
-	hipFree(d_val);
-	hipFree(d_val2);
 
 	printDebug(FULL_DEBUG, "Out Grid_Hip::getMin") ;
 
@@ -1423,63 +1539,29 @@ Myfloat Grid_Hip::getMin(Point_type pointType)
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void maxCommSingleBlock(const Myfloat *a, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int idx = threadIdx.x;
-	Myfloat maxval = -FLT_MAX;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			if (a[i] > maxval) maxval = a[i] ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = maxval;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] > r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Hip::getMax(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Hip::getMax") ;
 
 	Myfloat val = 0 ;
-	Myfloat *d_val ;
-	hipMalloc((void**)&d_val, sizeof(Myfloat) * 1);
 
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	hipLaunchKernelGGL(maxCommSingleBlock, dim3(1), dim3(blockSize), 0, 0, grid_d_grid_3d, d_val,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+
+	hipLaunchKernelGGL(kernel_multiBlk_maxval, dim3(gpuGridSize), dim3(gpuBlkSize), gpuBlkSize * sizeof(Myfloat), 0, d_grid_3d, d_help_3d,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
 	hipDeviceSynchronize();
-	hipMemcpy(&val, d_val, sizeof(Myfloat), hipMemcpyDeviceToHost);
+
+	hipLaunchKernelGGL(kernel_singleBlk_maxval, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d, gpuGridSize) ;
+	hipDeviceSynchronize();
+
+	hipMemcpy(&val, &(d_help_3d[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
 	cudaCheckError();
-	hipFree(d_val);
 
 	printDebug(FULL_DEBUG, "Out Grid_Hip::getMax") ;
 
 	return val ;
 }
-
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -1857,57 +1939,24 @@ Rtn_code Grid_Hip::applyBoundaryCondition(BoundCond_type boundCondType)
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void sumAbsCommSingleBlock(const Myfloat *a, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int idx = threadIdx.x;
-	Myfloat64 sum = 0;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = i - i3*(n1*n2) - i2*n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			sum += fabs(a[i]) ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = sum;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			r[idx] += r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Hip::getSumAbs(Point_type pointType) const
 {
 	printDebug(LIGHT_DEBUG, "IN Grid_Hip::getSumAbs");
 
 	Myfloat sum = 0 ;
-	Myfloat *d_sum ;
-	hipMalloc((void**)&d_sum, sizeof(Myfloat) * 1);
 
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	hipLaunchKernelGGL(sumAbsCommSingleBlock, dim3(1), dim3(blockSize), 0, 0, grid_d_grid_3d, d_sum,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+
+	hipLaunchKernelGGL(kernel_multiBlk_sumAbs, dim3(gpuGridSize), dim3(gpuBlkSize), gpuBlkSize * sizeof(Myfloat), 0, d_grid_3d, d_help_3d,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
 	hipDeviceSynchronize();
-	hipMemcpy(&sum, d_sum, sizeof(Myfloat), hipMemcpyDeviceToHost);
+
+	hipLaunchKernelGGL(kernel_singleBlk_sum, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d, gpuGridSize) ;
+	hipDeviceSynchronize();
+
+	hipMemcpy(&sum, &(d_help_3d[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
 	cudaCheckError();
-	hipFree(d_sum);
 
 	// reduction
 	Myfloat64 sum2Loc = sum ;
@@ -2083,5 +2132,77 @@ Myfloat Grid_Hip::maxErr(Point_type pointType, const Grid& gridIn) const
 	printDebug(FULL_DEBUG, "OUT Grid_Hip::maxErr");
 	return(err) ;
 }
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Hip::sendWithMPI(Myint64 nGridPoint, Myint procDestId)
+{
+
+	printDebug(FULL_DEBUG, "In Grid_Hip::sendWithMPI") ;
+
+	// copy from device to host
+	Myint64 idx = 0 ;
+	hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), hipMemcpyDeviceToHost) ;
+
+	MPI_Send(grid_3d, nGridPoint, MPI_MYFLOAT, procDestId, 0, MPI_COMM_WORLD) ;
+
+	printDebug(FULL_DEBUG, "Out Grid_Hip::sendWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Hip::recvWithMPI(Myint64 nGridPoint, Myint procSrcId)
+{
+
+	printDebug(FULL_DEBUG, "In Grid_Hip::recvWithMPI") ;
+
+	MPI_Status status ;
+	MPI_Recv(grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status) ;
+
+	// copy from host to device
+	Myint64 idx = 0 ;
+	hipMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), npoint * sizeof(Myfloat), hipMemcpyHostToDevice) ;
+
+	if (status.MPI_ERROR != MPI_SUCCESS)
+	{
+		//printError("MPI ERROR", status.MPI_ERROR) ;
+	}
+
+	printDebug(FULL_DEBUG, "Out Grid_Hip::recvWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Hip::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idRecv, Myint64 nGridPoint)
+{
+
+	printDebug(FULL_DEBUG, "In Grid_Hip::sendRecvWithMPI") ;
+
+	Myfloat *bufSend = grid_3d ;
+	Myfloat *bufRecv = gridDest.grid_3d ;
+
+	// copy from device to host
+	Myint64 idx = 0 ;
+	hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), hipMemcpyDeviceToHost) ;
+
+	MPI_Status status ;
+	MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
+			bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
+			MPI_COMM_WORLD, &status) ;
+	if (status.MPI_ERROR != MPI_SUCCESS)
+	{
+		//printError("MPI ERROR", status.MPI_ERROR) ;
+	}
+
+	// copy from host to device
+	Myfloat *gridDest_d_grid_3d = ((Grid_Hip&) gridDest).d_grid_3d ;
+	hipMemcpy(&(gridDest_d_grid_3d[idx]), &(gridDest.grid_3d[idx]), npoint * sizeof(Myfloat), hipMemcpyHostToDevice) ;
+
+	printDebug(FULL_DEBUG, "Out Grid_Hip::sendRecvWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
 
 } // namespace hpcscan

@@ -111,6 +111,15 @@ public:
 	// get sum of abs diff of grid points
 	virtual Myfloat getSumAbsDiff(Point_type, const Grid&) const;
 
+	// send grid with MPI_Send
+	virtual Rtn_code sendWithMPI(Myint64 nGridPoint, Myint procDestId) ;
+
+	// receive grid with MPI_Recv
+	virtual Rtn_code recvWithMPI(Myint64 nGridPoint, Myint procSrcId) ;
+
+	// send and receive grid with MPI_Sendrecv
+	virtual Rtn_code sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idRecv, Myint64 nGridPoint) ;
+
 protected:
 
 	// pointer to device (GPU) memory
