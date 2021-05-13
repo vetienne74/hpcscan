@@ -2083,4 +2083,76 @@ Myfloat Grid_Cuda::maxErr(Point_type pointType, const Grid& gridIn) const
 	return(err) ;
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Cuda::sendWithMPI(Myint64 nGridPoint, Myint procDestId)
+{
+
+	printDebug(FULL_DEBUG, "In Grid_Cuda::sendWithMPI") ;
+
+	// copy from device to host
+	Myint64 idx = 0 ;
+	cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+
+	MPI_Send(grid_3d, nGridPoint, MPI_MYFLOAT, procDestId, 0, MPI_COMM_WORLD) ;
+
+	printDebug(FULL_DEBUG, "Out Grid_Cuda::sendWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Cuda::recvWithMPI(Myint64 nGridPoint, Myint procSrcId)
+{
+
+	printDebug(FULL_DEBUG, "In Grid_Cuda::recvWithMPI") ;
+
+	MPI_Status status ;
+	MPI_Recv(grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status) ;
+
+	// copy from host to device
+	Myint64 idx = 0 ;
+	cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), npoint * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+
+	if (status.MPI_ERROR != MPI_SUCCESS)
+	{
+		//printError("MPI ERROR", status.MPI_ERROR) ;
+	}
+
+	printDebug(FULL_DEBUG, "Out Grid_Cuda::recvWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Cuda::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idRecv, Myint64 nGridPoint)
+{
+
+	printDebug(FULL_DEBUG, "In Grid_Cuda::sendRecvWithMPI") ;
+
+	Myfloat *bufSend = grid_3d ;
+	Myfloat *bufRecv = gridDest.grid_3d ;
+
+	// copy from device to host
+	Myint64 idx = 0 ;
+	cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+
+	MPI_Status status ;
+	MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
+			bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
+			MPI_COMM_WORLD, &status) ;
+	if (status.MPI_ERROR != MPI_SUCCESS)
+	{
+		//printError("MPI ERROR", status.MPI_ERROR) ;
+	}
+
+	// copy from host to device
+	Myfloat *gridDest_d_grid_3d = ((Grid_Cuda&) gridDest).d_grid_3d ;
+	cudaMemcpy(&(gridDest_d_grid_3d[idx]), &(gridDest.grid_3d[idx]), npoint * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+
+	printDebug(FULL_DEBUG, "Out Grid_Cuda::sendRecvWithMPI") ;
+	return(RTN_CODE_OK) ;
+}
+
+
 } // namespace hpcscan
