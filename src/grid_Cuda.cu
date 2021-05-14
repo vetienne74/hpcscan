@@ -1436,7 +1436,7 @@ Rtn_code Grid_Cuda::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myint fdOr
 	Myfloat * d_w = ((Grid_Cuda&) Wgrid).d_grid_3d ;
 	Myfloat * d_u = this->d_grid_3d ;
 
-	kernel_FD_D2_N1<<<1024,256>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+	kernel_FD_D2_N1<<<gpuGridSize, gpuBlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
@@ -1473,7 +1473,7 @@ Rtn_code Grid_Cuda::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myint fdOr
 	Myfloat * d_w = ((Grid_Cuda&) Wgrid).d_grid_3d ;
 	Myfloat * d_u = this->d_grid_3d ;
 
-	kernel_FD_D2_N2<<<1024,256>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+	kernel_FD_D2_N2<<<gpuGridSize, gpuBlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
@@ -1510,7 +1510,7 @@ Rtn_code Grid_Cuda::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOr
 	Myfloat * d_w = ((Grid_Cuda&) Wgrid).d_grid_3d ;
 	Myfloat * d_u = this->d_grid_3d ;
 
-	kernel_FD_D2_N3<<<1024,256>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+	kernel_FD_D2_N3<<<gpuGridSize, gpuBlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
@@ -1547,7 +1547,7 @@ Rtn_code Grid_Cuda::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint 
 	Myfloat * d_w = ((Grid_Cuda&) Wgrid).d_grid_3d ;
 	Myfloat * d_u = this->d_grid_3d ;
 
-	kernel_FD_LAPLACIAN<<<1024,256>>>(dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+	kernel_FD_LAPLACIAN<<<gpuGridSize, gpuBlkSize>>>(dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
@@ -1579,7 +1579,7 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 	Myfloat *prc_d_grid_3d = ((Grid_Cuda&) prcGridIn).d_grid_3d ;
 	Myfloat *coef_d_grid_3d = ((Grid_Cuda&) coefGridIn).d_grid_3d ;
 	
-	kernel_computePressureWithFD<<<1024,256>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+	kernel_computePressureWithFD<<<gpuGridSize, gpuBlkSize>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
 					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
@@ -1623,7 +1623,7 @@ void Grid_Cuda::fill(Point_type pointType, Myfloat val)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	kernel_fill_const<<<2048,128>>>(d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	kernel_fill_const<<<gpuGridSize, gpuBlkSize>>>(d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	cudaDeviceSynchronize();
 	cudaCheckError();
 
@@ -1654,7 +1654,7 @@ void Grid_Cuda::fillArray(Myfloat val)
 	printDebug(MID_DEBUG, "IN Grid_Cuda::fillArray");
 
 	Myint64 gridSize = n1*n2*n3;
-	kernel_fillArray<<<1024,256>>>(d_grid_3d, val, gridSize) ;
+	kernel_fillArray<<<gpuGridSize, gpuBlkSize>>>(d_grid_3d, val, gridSize) ;
 
 	cudaDeviceSynchronize();
 
@@ -1669,7 +1669,7 @@ void Grid_Cuda::copyArray(const Grid& gridIn)
 
 	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	kernel_copyArray<<<1024,256>>>(d_grid_3d, gridIn_d_grid_3d, gridSize) ;
+	kernel_copyArray<<<gpuGridSize, gpuBlkSize>>>(d_grid_3d, gridIn_d_grid_3d, gridSize) ;
 
 	cudaDeviceSynchronize();
 
@@ -1685,7 +1685,7 @@ void Grid_Cuda::addArray(const Grid& gridIn1, const Grid& gridIn2)
 	Myfloat *gridIn1_d_grid_3d = ((Grid_Cuda&) gridIn1).d_grid_3d ;
 	Myfloat *gridIn2_d_grid_3d = ((Grid_Cuda&) gridIn2).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	kernel_addArray<<<1024,256>>>(d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
+	kernel_addArray<<<gpuGridSize, gpuBlkSize>>>(d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
 
 	cudaDeviceSynchronize();
 
@@ -1701,7 +1701,7 @@ void Grid_Cuda::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
 	Myfloat *gridIn1_d_grid_3d = ((Grid_Cuda&) gridIn1).d_grid_3d ;
 	Myfloat *gridIn2_d_grid_3d = ((Grid_Cuda&) gridIn2).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	kernel_multiplyArray<<<1024,256>>>(d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
+	kernel_multiplyArray<<<gpuGridSize, gpuBlkSize>>>(d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
 
 	cudaDeviceSynchronize();
 
@@ -1716,7 +1716,7 @@ void Grid_Cuda::addUpdateArray(const Grid& gridIn)
 
 	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	kernel_addUpdateArray<<<1024,256>>>(d_grid_3d, gridIn_d_grid_3d, gridSize) ;
+	kernel_addUpdateArray<<<gpuGridSize, gpuBlkSize>>>(d_grid_3d, gridIn_d_grid_3d, gridSize) ;
 
 	cudaDeviceSynchronize();
 
@@ -1897,7 +1897,7 @@ Rtn_code Grid_Cuda::updatePressure(Point_type pointType, const Grid& prcGrid,
 	Myfloat *prcGrid_d_grid_3d = ((Grid_Cuda&) prcGrid).d_grid_3d ;
 	Myfloat *coefGrid_d_grid_3d = ((Grid_Cuda&) coefGrid).d_grid_3d ;
 	Myfloat *laplaGrid_d_grid_3d = ((Grid_Cuda&) laplaGrid).d_grid_3d ;
-	kernel_updatePressure<<<1024,256>>>(d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d,
+	kernel_updatePressure<<<gpuGridSize, gpuBlkSize>>>(d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
 	cudaDeviceSynchronize();
@@ -2182,7 +2182,7 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 	getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
 
 
-	kernel_applyBoundaryCondition<<<1024,256>>>(dim, d_grid_3d, n1, n2, n3,
+	kernel_applyBoundaryCondition<<<gpuGridSize, gpuBlkSize>>>(dim, d_grid_3d, n1, n2, n3,
 			getNeighbourProc(I1HALO1), i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
 			getNeighbourProc(I1HALO2), i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
 			getNeighbourProc(I2HALO1), i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
