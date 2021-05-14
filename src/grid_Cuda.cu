@@ -932,6 +932,351 @@ __global__ void kernel_computePressureWithFD(Dim_type dim, Myint fdOrder, Myfloa
 	}
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_FD_D2_N1(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD along N1
+			if (fdOrder == 2)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 4)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 8)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 12)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 16)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_FD_D2_N2(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD along N2
+			if (fdOrder == 2)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 4)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 8)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 12)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 16)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_FD_D2_N3(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD along N3
+			if (fdOrder == 2)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O2_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 4)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 8)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 12)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 16)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_FD_LAPLACIAN(Dim_type dim, Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
+		{
+			// compute FD Laplacian for 1D
+			if (dim == DIM1)
+			{
+				// same as FD_D2_N1
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+
+			// compute FD Laplacian for 2D
+			else if (dim == DIM2)
+			{
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+
+			// compute FD Laplacian for 3D
+			else if (dim == DIM3)
+			{
+				if (fdOrder == 2)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O2_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 4)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 8)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 12)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 16)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_fillArray(Myfloat *gridOut, Myfloat val, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = val ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_copyArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_addArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn1[tid] + gridIn2[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_multiplyArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn1[tid] * gridIn2[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_addUpdateArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridOut[tid] + gridIn[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
 //*******************************************************************************************************
 // END OF CUDA KERNELS
 //*******************************************************************************************************
@@ -1066,55 +1411,6 @@ void Grid_Cuda::write(string file_name)
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_FD_D2_N1(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			// compute FD along N1
-			if (fdOrder == 2)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 4)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 8)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 12)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 16)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 Rtn_code Grid_Cuda::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
 	printDebug(MID_DEBUG, "IN Grid_Cuda::FD_D2_N1");
@@ -1151,55 +1447,6 @@ Rtn_code Grid_Cuda::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myint fdOr
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_FD_D2_N2(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			// compute FD along N2
-			if (fdOrder == 2)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 4)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 8)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 12)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 16)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-}
 
 Rtn_code Grid_Cuda::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
@@ -1238,55 +1485,6 @@ Rtn_code Grid_Cuda::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myint fdOr
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_FD_D2_N3(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			// compute FD along N3
-			if (fdOrder == 2)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O2_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 4)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 8)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 12)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-			else if (fdOrder == 16)
-			{
-				w[i1+i2*n1+i3*n1*n2] =
-						FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-			}
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 Rtn_code Grid_Cuda::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
 	printDebug(MID_DEBUG, "IN Grid_Cuda::FD_D2_N3");
@@ -1323,134 +1521,6 @@ Rtn_code Grid_Cuda::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOr
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_FD_LAPLACIAN(Dim_type dim, Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			// compute FD Laplacian for 1D
-			if (dim == DIM1)
-			{
-				// same as FD_D2_N1
-				if (fdOrder == 2)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 4)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 8)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 12)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 16)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-			}
-
-			// compute FD Laplacian for 2D
-			else if (dim == DIM2)
-			{
-				if (fdOrder == 2)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 4)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 8)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 12)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 16)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-			}
-
-			// compute FD Laplacian for 3D
-			else if (dim == DIM3)
-			{
-				if (fdOrder == 2)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O2_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 4)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 8)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 12)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 16)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-							+ FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-			}
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-}
 
 Rtn_code Grid_Cuda::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
@@ -1579,16 +1649,6 @@ void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_typ
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_fillArray(Myfloat *gridOut, Myfloat val, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = val ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 void Grid_Cuda::fillArray(Myfloat val)
 {
 	printDebug(MID_DEBUG, "IN Grid_Cuda::fillArray");
@@ -1602,16 +1662,6 @@ void Grid_Cuda::fillArray(Myfloat val)
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_copyArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = gridIn[tid] ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
 
 void Grid_Cuda::copyArray(const Grid& gridIn)
 {
@@ -1627,16 +1677,6 @@ void Grid_Cuda::copyArray(const Grid& gridIn)
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_addArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = gridIn1[tid] + gridIn2[tid] ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
 
 void Grid_Cuda::addArray(const Grid& gridIn1, const Grid& gridIn2)
 {
@@ -1654,16 +1694,6 @@ void Grid_Cuda::addArray(const Grid& gridIn1, const Grid& gridIn2)
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_multiplyArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = gridIn1[tid] * gridIn2[tid] ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 void Grid_Cuda::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
 {
 	printDebug(MID_DEBUG, "IN Grid_Cuda::multiplyArray");
@@ -1679,16 +1709,6 @@ void Grid_Cuda::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_addUpdateArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = gridOut[tid] + gridIn[tid] ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
 
 void Grid_Cuda::addUpdateArray(const Grid& gridIn)
 {
@@ -1843,7 +1863,7 @@ Myfloat Grid_Cuda::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 	Myfloat64 sum1 = 0.0 ;
 	Myfloat64 sum2 = 0.0 ;
 
-	// reduction
+	// MPI reduction
 	MPI_Reduce(&sum1Loc, &sum1, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
 	MPI_Reduce(&sum2Loc, &sum2, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
 
