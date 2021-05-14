@@ -1158,7 +1158,6 @@ Myfloat Grid::maxErr(Point_type pointType, const Grid& gridIn) const
 	}
 
 	Myfloat err = -FLT_MAX, err2 = 0.0 ;
-	//Myfloat ierr1, ierr2, ierr3 ;
 
 	Myfloat* u1 = this->grid_3d ;
 	Myfloat* u2 = gridIn.grid_3d ;

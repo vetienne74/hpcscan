@@ -31,8 +31,6 @@ using namespace std;
 
 namespace hpcscan {
 
-static const int blockSize = 256 ;
-
 //-------------------------------------------------------------------------------------------------------
 
 //Macro for checking cuda errors following a cuda launch or api call
@@ -247,8 +245,8 @@ __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
 }
 
 //-------------------------------------------------------------------------------------------------------
-// sum abs diff values (1st step)
-// multi-block reduction on the input array dataIn
+// sum abs diff values between 2 grids (1st step)
+// multi-block reduction on the input arrays dataIn1 & dataIn2
 // each block does the sum and stores into the array dataOut at entry dataOut[blockIdx.x]
 
 __global__ void kernel_multiBlk_sumAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut,
@@ -317,6 +315,75 @@ __global__ void kernel_singleBlk_sum(Myfloat *dataInOut, int dataInOutSize)
 	}
 }
 
+//-------------------------------------------------------------------------------------------------------
+// max error between 2 grids (1st step)
+// multi-block reduction on the input arrays dataIn1 & dataIn2
+// each block finds its maximum and stores into the array dataOut at entry dataOut[blockIdx.x]
+
+__global__ void kernel_multiBlk_maxErr(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	// dynamic shared memory
+	extern __shared__ Myfloat sdata[];
+
+	// set to min float value
+	sdata[threadIdx.x] = -FLT_MAX ;
+
+	// each thread sums
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
+
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update max
+			Myfloat err2 ;
+
+			// prevent divide by 0
+			if (fabs(dataIn2[tid]) < MAX_ERR_FLOAT)
+			{
+				err2 = fabs(dataIn1[tid] - dataIn2[tid]) ;
+			}
+			else
+			{
+				err2 = fabs(dataIn1[tid] - dataIn2[tid]) / fabs(dataIn2[tid]) ;
+			}
+
+			if (err2 > sdata[threadIdx.x])
+			{
+				sdata[threadIdx.x] = err2 ;
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// find maximum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			if (val > sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -2086,68 +2153,31 @@ Myfloat Grid_Cuda::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void maxErrCommSingleBlock(const Myfloat *a, const Myfloat *b, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End) {
-	int idx = threadIdx.x;
-	Myfloat err = -FLT_MAX, err2 = 0.0 ;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			if (fabs(b[i]) < MAX_ERR_FLOAT)
-			{
-				err2 = fabs(a[i] - b[i]) ;
-			}
-			else
-			{
-				err2 = fabs(a[i] - b[i]) / b[i] ;
-			}
-
-			if (err2 > err)
-			{
-				err = err2 ;
-			}
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = err;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] > r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Cuda::maxErr(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(FULL_DEBUG, "IN Grid_Cuda::maxErr");
 
-	Myfloat err = 0 ;
-	Myfloat *d_err ;
-	cudaMalloc((void**)&d_err, sizeof(Myfloat) * 1);
+	// check grids have same size
+	if (!(this->sameSize(gridIn)))
+	{
+		printError("Grid_Cuda::maxErr, grids have different size") ;
+		return(-1.0) ;
+	}
 
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
-	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
+	Myfloat err = 0 ;
+
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	maxErrCommSingleBlock<<<1, blockSize>>>(grid_d_grid_3d, gridIn_d_grid_3d, d_err,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+
+	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
+	kernel_multiBlk_maxErr<<<gpuGridSize, gpuBlkSize, gpuBlkSize * sizeof(Myfloat)>>>(d_grid_3d, gridIn_d_grid_3d, d_help_3d,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
 	cudaDeviceSynchronize();
-	cudaMemcpy(&err, d_err, sizeof(Myfloat), cudaMemcpyDeviceToHost);
-	cudaFree(d_err);
+
+	kernel_singleBlk_maxval<<<1, gpuBlkSize>>>(d_help_3d, gpuGridSize) ;
+	cudaDeviceSynchronize();
+
+	cudaMemcpy(&err, &(d_help_3d[0]), sizeof(Myfloat), cudaMemcpyDeviceToHost);
 	cudaCheckError();
 
 	printDebug(FULL_DEBUG, "OUT Grid_Cuda::maxErr");
