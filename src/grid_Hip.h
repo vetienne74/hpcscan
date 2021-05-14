@@ -128,6 +128,7 @@ protected:
 
 	// pointer to device (GPU) memory
 	Myfloat * d_help_3d ;
+	Myfloat * d_help_3d_2 ;
 
 	// GPU block size (number of threads per block)
 	Myint gpuBlkSize ;

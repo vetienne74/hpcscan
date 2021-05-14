@@ -32,8 +32,6 @@ using namespace std;
 
 namespace hpcscan {
 
-static const int blockSize = 256 ;
-
 //-------------------------------------------------------------------------------------------------------
 
 //Macro for checking cuda errors following a cuda launch or api call
@@ -248,6 +246,127 @@ __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
 }
 
 //-------------------------------------------------------------------------------------------------------
+// sum abs diff values between 2 grids (1st step)
+// multi-block reduction on the input arrays dataIn1 & dataIn2
+// each block does the sum and stores into the array dataOut at entry dataOut[blockIdx.x]
+
+__global__ void kernel_multiBlk_sumAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	// dynamic shared memory
+	HIP_DYNAMIC_SHARED( Myfloat, sdata)
+
+	// set to zero
+	sdata[threadIdx.x] = 0.0 ;
+
+	// each thread sums
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
+
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update sum
+			Myfloat val = fabs(dataIn1[tid] - dataIn2[tid]) ;
+			sdata[threadIdx.x] += val ;
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// sum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			sdata[threadIdx.x] += val;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
+}
+
+//-------------------------------------------------------------------------------------------------------
+// sum abs values and abs diff between 2 grids (1st step)
+// multi-block reduction on the input arrays dataIn1 and dataIn2
+// each block does the sum abs and stores into the array dataOut1 at entry dataOut1[blockIdx.x]
+// each block does the sum abs diff and stores into the array dataOut2 at entry dataOut2[blockIdx.x]
+
+__global__ void kernel_multiBlk_sumAbsAndAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut1, Myfloat *dataOut2,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	// dynamic shared memory
+	HIP_DYNAMIC_SHARED( float, sdata)
+	float* sdata1 = &(sdata[0]) ;
+	float* sdata2 = &(sdata[blockDim.x]) ;
+	//HIP_DYNAMIC_SHARED( float, sdata2)
+
+	// set to zero
+	sdata1[threadIdx.x] = 0.0 ;
+	sdata2[threadIdx.x] = 0.0 ;
+
+	// each thread sums
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
+
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update sum
+			sdata1[threadIdx.x] += fabs(dataIn1[tid] - dataIn2[tid]) ;
+			sdata2[threadIdx.x] += fabs(dataIn2[tid]) ;
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// sum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			sdata1[threadIdx.x] += sdata1[threadIdx.x + s] ;
+			sdata2[threadIdx.x] += sdata2[threadIdx.x + s] ;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0)
+	{
+		dataOut1[blockIdx.x] = sdata1[0];
+		dataOut2[blockIdx.x] = sdata2[0];
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
 // sum values (absolute values) (2nd step)
 // single block reduction on the input array dataInOut
 // the maximum is stored at first entry dataInOut[0]
@@ -262,6 +381,75 @@ __global__ void kernel_singleBlk_sum(Myfloat *dataInOut, int dataInOutSize)
 	}
 }
 
+//-------------------------------------------------------------------------------------------------------
+// max error between 2 grids (1st step)
+// multi-block reduction on the input arrays dataIn1 & dataIn2
+// each block finds its maximum and stores into the array dataOut at entry dataOut[blockIdx.x]
+
+__global__ void kernel_multiBlk_maxErr(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	// dynamic shared memory
+	HIP_DYNAMIC_SHARED( Myfloat, sdata)
+
+	// set to min float value
+	sdata[threadIdx.x] = -FLT_MAX ;
+
+	// each thread sums
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
+
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update max
+			Myfloat err2 ;
+
+			// prevent divide by 0
+			if (fabs(dataIn2[tid]) < MAX_ERR_FLOAT)
+			{
+				err2 = fabs(dataIn1[tid] - dataIn2[tid]) ;
+			}
+			else
+			{
+				err2 = fabs(dataIn1[tid] - dataIn2[tid]) / fabs(dataIn2[tid]) ;
+			}
+
+			if (err2 > sdata[threadIdx.x])
+			{
+				sdata[threadIdx.x] = err2 ;
+			}
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// find maximum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			Myfloat val = sdata[threadIdx.x + s];
+			if (val > sdata[threadIdx.x]) sdata[threadIdx.x] = val;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -745,137 +933,6 @@ __global__ void kernel_computePressureWithFD(Dim_type dim, Myint fdOrder, Myfloa
 	}
 }
 
-//*******************************************************************************************************
-// END OF HIP KERNELS
-//*******************************************************************************************************
-
-//-------------------------------------------------------------------------------------------------------
-
-Grid_Hip::Grid_Hip(Grid_type gridTypeIn) : Grid(gridTypeIn)
-														{
-	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
-
-	gridMode = GRID_MODE_HIP ;
-
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
-
-	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
-	gpuGridSize = Config::Instance()->gpuGridSize ;
-
-	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
-														}
-
-//-------------------------------------------------------------------------------------------------------
-
-Grid_Hip::Grid_Hip(Grid_type gridTypeIn, Dim_type dimIn,
-		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid(gridTypeIn, dimIn,
-				n1InnerIn, n2InnerIn, n3InnerIn)
-{
-	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
-
-	gridMode = GRID_MODE_HIP ;
-
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
-
-	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
-	gpuGridSize = Config::Instance()->gpuGridSize ;
-
-
-	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-Grid_Hip::~Grid_Hip(void)
-{
-	printDebug(MID_DEBUG, "IN Grid_Hip::~Grid_Hip");
-
-	//delete[] grid_3d ;
-	hipFree(d_grid_3d);
-	hipFree(d_help_3d);
-	cudaCheckError();
-
-	printDebug(MID_DEBUG, "OUT Grid_Hip::~Grid_Hip");
-}
-
-
-//-------------------------------------------------------------------------------------------------------
-
-void Grid_Hip::info(void)
-{
-	printDebug(FULL_DEBUG, "IN Grid_Hip::info");
-
-	// parent class info
-	Grid::info() ;
-
-	// additional info
-	printInfo(MASTER, "") ;
-	printInfo(MASTER, " * GPU parameters * ") ;
-	printInfo(MASTER, " Blocks per grid", gpuGridSize) ;
-	printInfo(MASTER, " Threads per block", gpuBlkSize) ;
-
-	int startDevice = 0;
-	int endDevice = 0;
-	int deviceCount;
-	hipError_t error_id = hipGetDeviceCount(&deviceCount);
-	if (error_id != hipSuccess) {
-		printError(" In Grid_Hip::info, hipGetDeviceCount", (int) error_id) ;
-	}
-
-	if (deviceCount == 0) {
-		printError(" No GPU found") ;
-	}
-	else
-	{
-		printInfo(MASTER, " Number of GPUs found", deviceCount) ;
-	}
-
-	startDevice = 0;
-	endDevice = deviceCount - 1;
-
-	for (int currentDevice = startDevice; currentDevice <= endDevice;
-			currentDevice++) {
-		hipDeviceProp_t deviceProp;
-		hipError_t error_id = hipGetDeviceProperties(&deviceProp, currentDevice);
-
-		if (error_id == hipSuccess) {
-			string deviceStr = " Device #" + to_string(currentDevice) + "\t";
-			printInfo(MASTER, deviceStr, deviceProp.name) ;
-
-			if (deviceProp.computeMode == hipComputeModeProhibited) {
-				printError(" Error: device is running in <Compute Mode Prohibited>") ;
-			}
-		} else {
-			printf("hipGetDeviceProperties returned %d\n-> %s\n", (int)error_id,
-					hipGetErrorString(error_id));
-		}
-	}
-
-	printDebug(FULL_DEBUG, "IN Grid_Hip::info");
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-void Grid_Hip::write(string file_name)
-{
-	printDebug(LIGHT_DEBUG, "IN Grid_Hip::write");
-
-	// each proc write is own file
-
-	if (Config::Instance()->writeGrid)
-	{
-		// copy grid from device to host
-		copyGridDeviceToHost(ALL_POINTS) ;
-
-		Grid::write(file_name) ;
-	}
-
-	printDebug(LIGHT_DEBUG, "OUT Grid_Hip::write");
-}
-
-
 //-------------------------------------------------------------------------------------------------------
 
 __global__ void kernel_FD_D2_N1(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
@@ -925,41 +982,6 @@ __global__ void kernel_FD_D2_N1(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat i
 
 		tid += blockDim.x * gridDim.x;
 	}
-}
-
-Rtn_code Grid_Hip::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
-{
-	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N1");
-
-	// check grids are same size
-	if (this->sameSize(Wgrid) != true)
-	{
-		printError("Grid::FD_D2_N1, grids have not same size") ;
-		return(RTN_CODE_KO) ;
-	}
-
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
-
-	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
-	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
-	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
-
-	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
-	Myfloat * d_u = this->d_grid_3d ;
-
-	hipLaunchKernelGGL(kernel_FD_D2_N1, dim3(1024), dim3(256), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
-			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-
-	cudaCheckError();
-	hipDeviceSynchronize();
-
-	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N1");
-	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1013,40 +1035,7 @@ __global__ void kernel_FD_D2_N2(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat i
 	}
 }
 
-Rtn_code Grid_Hip::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
-{
-	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N2");
-
-	// check grids are same size
-	if (this->sameSize(Wgrid) != true)
-	{
-		printError("Grid::FD_D2_N2, grids have not same size") ;
-		return(RTN_CODE_KO) ;
-	}
-
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
-
-	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
-	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
-	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
-
-	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
-	Myfloat * d_u = this->d_grid_3d ;
-
-	hipLaunchKernelGGL(kernel_FD_D2_N2, dim3(1024), dim3(256), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
-			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-
-	cudaCheckError();
-	hipDeviceSynchronize();
-
-	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N2");
-	return(RTN_CODE_OK) ;
-}
+//-------------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -1097,41 +1086,6 @@ __global__ void kernel_FD_D2_N3(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat i
 
 		tid += blockDim.x * gridDim.x;
 	}
-}
-
-Rtn_code Grid_Hip::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
-{
-	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N3");
-
-	// check grids are same size
-	if (this->sameSize(Wgrid) != true)
-	{
-		printError("Grid::FD_D2_N3, grids have not same size") ;
-		return(RTN_CODE_KO) ;
-	}
-
-	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
-	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
-
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
-
-	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
-	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
-	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
-
-	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
-	Myfloat * d_u = this->d_grid_3d ;
-
-	hipLaunchKernelGGL(kernel_FD_D2_N3, dim3(1024), dim3(256), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
-			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
-
-	cudaCheckError();
-	hipDeviceSynchronize();
-
-	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N3");
-	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1264,6 +1218,311 @@ __global__ void kernel_FD_LAPLACIAN(Dim_type dim, Myint fdOrder, Myfloat *w, Myf
 	}
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_fillArray(Myfloat *gridOut, Myfloat val, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = val ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_copyArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_addArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn1[tid] + gridIn2[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_multiplyArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridIn1[tid] * gridIn2[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_addUpdateArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
+{
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	while (tid < gridSize)
+	{
+		gridOut[tid] = gridOut[tid] + gridIn[tid] ;
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//*******************************************************************************************************
+// END OF HIP KERNELS
+//*******************************************************************************************************
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Hip::Grid_Hip(Grid_type gridTypeIn) : Grid(gridTypeIn)
+														{
+	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
+
+	gridMode = GRID_MODE_HIP ;
+
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
+
+	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
+	gpuGridSize = Config::Instance()->gpuGridSize ;
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
+														}
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Hip::Grid_Hip(Grid_type gridTypeIn, Dim_type dimIn,
+		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) : Grid(gridTypeIn, dimIn,
+				n1InnerIn, n2InnerIn, n3InnerIn)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::Grid_Hip");
+
+	gridMode = GRID_MODE_HIP ;
+
+	d_grid_3d = NULL;
+	d_help_3d = NULL;
+
+	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
+	gpuGridSize = Config::Instance()->gpuGridSize ;
+
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::Grid_Hip");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Grid_Hip::~Grid_Hip(void)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::~Grid_Hip");
+
+	//delete[] grid_3d ;
+	hipFree(d_grid_3d);
+	hipFree(d_help_3d);
+	hipFree(d_help_3d_2);
+	cudaCheckError();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::~Grid_Hip");
+}
+
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid_Hip::info(void)
+{
+	printDebug(FULL_DEBUG, "IN Grid_Hip::info");
+
+	// parent class info
+	Grid::info() ;
+
+	// additional info
+	printInfo(MASTER, "") ;
+	printInfo(MASTER, " * GPU parameters * ") ;
+	printInfo(MASTER, " Blocks per grid", gpuGridSize) ;
+	printInfo(MASTER, " Threads per block", gpuBlkSize) ;
+
+	int startDevice = 0;
+	int endDevice = 0;
+	int deviceCount;
+	hipError_t error_id = hipGetDeviceCount(&deviceCount);
+	if (error_id != hipSuccess) {
+		printError(" In Grid_Hip::info, hipGetDeviceCount", (int) error_id) ;
+	}
+
+	if (deviceCount == 0) {
+		printError(" No GPU found") ;
+	}
+	else
+	{
+		printInfo(MASTER, " Number of GPUs found", deviceCount) ;
+	}
+
+	startDevice = 0;
+	endDevice = deviceCount - 1;
+
+	for (int currentDevice = startDevice; currentDevice <= endDevice;
+			currentDevice++) {
+		hipDeviceProp_t deviceProp;
+		hipError_t error_id = hipGetDeviceProperties(&deviceProp, currentDevice);
+
+		if (error_id == hipSuccess) {
+			string deviceStr = " Device #" + to_string(currentDevice) + "\t";
+			printInfo(MASTER, deviceStr, deviceProp.name) ;
+
+			if (deviceProp.computeMode == hipComputeModeProhibited) {
+				printError(" Error: device is running in <Compute Mode Prohibited>") ;
+			}
+		} else {
+			printf("hipGetDeviceProperties returned %d\n-> %s\n", (int)error_id,
+					hipGetErrorString(error_id));
+		}
+	}
+
+	printDebug(FULL_DEBUG, "IN Grid_Hip::info");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid_Hip::write(string file_name)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_Hip::write");
+
+	// each proc write is own file
+
+	if (Config::Instance()->writeGrid)
+	{
+		// copy grid from device to host
+		copyGridDeviceToHost(ALL_POINTS) ;
+
+		Grid::write(file_name) ;
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_Hip::write");
+}
+
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Hip::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N1");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D2_N1, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
+	Myfloat * d_u = this->d_grid_3d ;
+
+	hipLaunchKernelGGL(kernel_FD_D2_N1, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
+	cudaCheckError();
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N1");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Hip::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N2");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D2_N2, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
+	Myfloat * d_u = this->d_grid_3d ;
+
+	hipLaunchKernelGGL(kernel_FD_D2_N2, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
+	cudaCheckError();
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N2");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Hip::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid_Hip::FD_D2_N3");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D2_N3, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
+	Myfloat * d_u = this->d_grid_3d ;
+
+	hipLaunchKernelGGL(kernel_FD_D2_N3, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+
+	cudaCheckError();
+	hipDeviceSynchronize();
+
+	printDebug(MID_DEBUG, "OUT Grid_Hip::FD_D2_N3");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 Rtn_code Grid_Hip::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint fdOrder)
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::FD_LAPLACIAN");
@@ -1289,7 +1548,7 @@ Rtn_code Grid_Hip::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint f
 	Myfloat * d_w = ((Grid_Hip&) Wgrid).d_grid_3d ;
 	Myfloat * d_u = this->d_grid_3d ;
 
-	hipLaunchKernelGGL(kernel_FD_LAPLACIAN, dim3(1024), dim3(256), 0, 0, dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+	hipLaunchKernelGGL(kernel_FD_LAPLACIAN, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
@@ -1321,7 +1580,7 @@ Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 	Myfloat *prc_d_grid_3d = ((Grid_Hip&) prcGridIn).d_grid_3d ;
 	Myfloat *coef_d_grid_3d = ((Grid_Hip&) coefGridIn).d_grid_3d ;
 	
-	hipLaunchKernelGGL(kernel_computePressureWithFD, dim3(1024), dim3(256), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+	hipLaunchKernelGGL(kernel_computePressureWithFD, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
 					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
@@ -1348,6 +1607,10 @@ void Grid_Hip::initializeGrid(void)
 		// allocate 1d array of the device used to perform reduction operation
 		hipMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
+
+		// allocate 1d array of the device used to perform reduction operation
+		hipMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
+		cudaCheckError();
 	}
 	printDebug(FULL_DEBUG, "Out Grid_Hip::initializeGrid") ;
 }
@@ -1361,7 +1624,7 @@ void Grid_Hip::fill(Point_type pointType, Myfloat val)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
 
-	hipLaunchKernelGGL(kernel_fill_const, dim3(2048), dim3(128), 0, 0, d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	hipLaunchKernelGGL(kernel_fill_const, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, d_grid_3d,val,n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	hipDeviceSynchronize();
 	cudaCheckError();
 
@@ -1387,22 +1650,12 @@ void Grid_Hip::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_type
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_fillArray(Myfloat *gridOut, Myfloat val, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = val ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 void Grid_Hip::fillArray(Myfloat val)
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::fillArray");
 
 	Myint64 gridSize = n1*n2*n3;
-	hipLaunchKernelGGL(kernel_fillArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, val, gridSize) ;
+	hipLaunchKernelGGL(kernel_fillArray, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, d_grid_3d, val, gridSize) ;
 
 	hipDeviceSynchronize();
 
@@ -1411,23 +1664,13 @@ void Grid_Hip::fillArray(Myfloat val)
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_copyArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = gridIn[tid] ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 void Grid_Hip::copyArray(const Grid& gridIn)
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::copyArray");
 
 	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	hipLaunchKernelGGL(kernel_copyArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, gridIn_d_grid_3d, gridSize) ;
+	hipLaunchKernelGGL(kernel_copyArray, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, d_grid_3d, gridIn_d_grid_3d, gridSize) ;
 
 	hipDeviceSynchronize();
 
@@ -1436,16 +1679,6 @@ void Grid_Hip::copyArray(const Grid& gridIn)
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_addArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = gridIn1[tid] + gridIn2[tid] ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 void Grid_Hip::addArray(const Grid& gridIn1, const Grid& gridIn2)
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::addArray");
@@ -1453,7 +1686,7 @@ void Grid_Hip::addArray(const Grid& gridIn1, const Grid& gridIn2)
 	Myfloat *gridIn1_d_grid_3d = ((Grid_Hip&) gridIn1).d_grid_3d ;
 	Myfloat *gridIn2_d_grid_3d = ((Grid_Hip&) gridIn2).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	hipLaunchKernelGGL(kernel_addArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
+	hipLaunchKernelGGL(kernel_addArray, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
 
 	hipDeviceSynchronize();
 
@@ -1462,16 +1695,6 @@ void Grid_Hip::addArray(const Grid& gridIn1, const Grid& gridIn2)
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_multiplyArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = gridIn1[tid] * gridIn2[tid] ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 void Grid_Hip::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::multiplyArray");
@@ -1479,7 +1702,7 @@ void Grid_Hip::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
 	Myfloat *gridIn1_d_grid_3d = ((Grid_Hip&) gridIn1).d_grid_3d ;
 	Myfloat *gridIn2_d_grid_3d = ((Grid_Hip&) gridIn2).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	hipLaunchKernelGGL(kernel_multiplyArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
+	hipLaunchKernelGGL(kernel_multiplyArray, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, d_grid_3d, gridIn1_d_grid_3d, gridIn2_d_grid_3d, gridSize) ;
 
 	hipDeviceSynchronize();
 
@@ -1488,23 +1711,13 @@ void Grid_Hip::multiplyArray(const Grid& gridIn1, const Grid& gridIn2)
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void kernel_addUpdateArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
-{
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
-	while (tid < gridSize)
-	{
-		gridOut[tid] = gridOut[tid] + gridIn[tid] ;
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
 void Grid_Hip::addUpdateArray(const Grid& gridIn)
 {
 	printDebug(MID_DEBUG, "IN Grid_Hip::addUpdateArray");
 
 	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
 	Myint64 gridSize = n1*n2*n3;
-	hipLaunchKernelGGL(kernel_addUpdateArray, dim3(1024), dim3(256), 0, 0, d_grid_3d, gridIn_d_grid_3d, gridSize) ;
+	hipLaunchKernelGGL(kernel_addUpdateArray, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, d_grid_3d, gridIn_d_grid_3d, gridSize) ;
 
 	hipDeviceSynchronize();
 
@@ -1569,9 +1782,34 @@ Myfloat Grid_Hip::L1Err(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(FULL_DEBUG, "In Grid_Hip::L1Err") ;
 
+	// check grids have same size
+	if (!(this->sameSize(gridIn)))
+	{
+		printError("Grid_Hip::L1Err, grids have different size") ;
+		return(-1.0) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
+	hipLaunchKernelGGL(kernel_multiBlk_sumAbsAndAbsDiff, dim3(gpuGridSize), dim3(gpuBlkSize), 2 * gpuBlkSize * sizeof(Myfloat), 0, d_grid_3d, gridIn_d_grid_3d, d_help_3d, d_help_3d_2,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+	hipDeviceSynchronize();
+
+	Myfloat sum1f = 0 ;
+	hipLaunchKernelGGL(kernel_singleBlk_sum, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d, gpuGridSize) ;
+	hipDeviceSynchronize();
+	hipMemcpy(&sum1f, &(d_help_3d[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
+
+	Myfloat sum2f = 0 ;
+	hipLaunchKernelGGL(kernel_singleBlk_sum, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d_2, gpuGridSize) ;
+	hipDeviceSynchronize();
+	hipMemcpy(&sum2f, &(d_help_3d_2[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
+
 	Myfloat64 sum1 , sum2 ;
-	sum1 = getSumAbsDiff(pointType, gridIn) ;
-	sum2 = gridIn.getSumAbs(pointType) ;
+	sum1 = sum1f ;
+	sum2 = sum2f ;
 
 	// prevent divide by zero
 	if (sum2 < MAX_ERR_FLOAT) sum2 = 1.0 * npoint ;
@@ -1596,15 +1834,37 @@ Myfloat Grid_Hip::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(LIGHT_DEBUG, "IN Grid_Hip::allProcL1Err");
 
-	Myfloat64 sum1Loc = 0.0 ;
-	Myfloat64 sum2Loc = 0.0 ;
+	// check grids have same size
+	if (!(this->sameSize(gridIn)))
+	{
+		printError("Grid_Hip::allProcL1Err, grids have different size") ;
+		return(-1.0) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
+	hipLaunchKernelGGL(kernel_multiBlk_sumAbsAndAbsDiff, dim3(gpuGridSize), dim3(gpuBlkSize), 2 * gpuBlkSize * sizeof(Myfloat), 0, d_grid_3d, gridIn_d_grid_3d, d_help_3d, d_help_3d_2,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+	hipDeviceSynchronize();
+
+	Myfloat sum1f = 0 ;
+	hipLaunchKernelGGL(kernel_singleBlk_sum, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d, gpuGridSize) ;
+	hipDeviceSynchronize();
+	hipMemcpy(&sum1f, &(d_help_3d[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
+
+	Myfloat sum2f = 0 ;
+	hipLaunchKernelGGL(kernel_singleBlk_sum, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d_2, gpuGridSize) ;
+	hipDeviceSynchronize();
+	hipMemcpy(&sum2f, &(d_help_3d_2[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
+
+	Myfloat64 sum1Loc = sum1f ;
+	Myfloat64 sum2Loc = sum2f ;
 	Myfloat64 sum1 = 0.0 ;
 	Myfloat64 sum2 = 0.0 ;
 
-	sum1Loc = getSumAbsDiff(pointType, gridIn) ;
-	sum2Loc = gridIn.getSumAbs(pointType) ;
-
-	// reduction
+	// MPI reduction
 	MPI_Reduce(&sum1Loc, &sum1, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
 	MPI_Reduce(&sum2Loc, &sum2, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);
 
@@ -1638,7 +1898,7 @@ Rtn_code Grid_Hip::updatePressure(Point_type pointType, const Grid& prcGrid,
 	Myfloat *prcGrid_d_grid_3d = ((Grid_Hip&) prcGrid).d_grid_3d ;
 	Myfloat *coefGrid_d_grid_3d = ((Grid_Hip&) coefGrid).d_grid_3d ;
 	Myfloat *laplaGrid_d_grid_3d = ((Grid_Hip&) laplaGrid).d_grid_3d ;
-	hipLaunchKernelGGL(kernel_updatePressure, dim3(1024), dim3(256), 0, 0, d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d,
+	hipLaunchKernelGGL(kernel_updatePressure, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, d_grid_3d, prcGrid_d_grid_3d, coefGrid_d_grid_3d, laplaGrid_d_grid_3d,
 			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
 
 	hipDeviceSynchronize();
@@ -1923,7 +2183,7 @@ Rtn_code Grid_Hip::applyBoundaryCondition(BoundCond_type boundCondType)
 	getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
 
 
-	hipLaunchKernelGGL(kernel_applyBoundaryCondition, dim3(1024), dim3(256), 0, 0, dim, d_grid_3d, n1, n2, n3,
+	hipLaunchKernelGGL(kernel_applyBoundaryCondition, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, dim, d_grid_3d, n1, n2, n3,
 			getNeighbourProc(I1HALO1), i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
 			getNeighbourProc(I1HALO2), i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
 			getNeighbourProc(I2HALO1), i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
@@ -1958,7 +2218,7 @@ Myfloat Grid_Hip::getSumAbs(Point_type pointType) const
 	hipMemcpy(&sum, &(d_help_3d[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
 	cudaCheckError();
 
-	// reduction
+	// MPI reduction
 	Myfloat64 sum2Loc = sum ;
 	Myfloat64 sum2 = 0.0 ;
 	if (gridType == GRID_LOCAL)
@@ -1984,62 +2244,28 @@ Myfloat Grid_Hip::getSumAbs(Point_type pointType) const
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void sumAbsDiffCommSingleBlock(const Myfloat *a, const Myfloat *b, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int idx = threadIdx.x;
-	Myfloat64 sum = 0;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-
-			sum += fabs(a[i] - b[i]) ;
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = sum;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			r[idx] += r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Hip::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 {
 
 	printDebug(LIGHT_DEBUG, "IN Grid_Hip::getSumAbsDiff");
 
 	Myfloat sum = 0 ;
-	Myfloat *d_sum ;
-	hipMalloc((void**)&d_sum, sizeof(Myfloat) * 1);
 
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
-	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	hipLaunchKernelGGL(sumAbsDiffCommSingleBlock, dim3(1), dim3(blockSize), 0, 0, grid_d_grid_3d, gridIn_d_grid_3d, d_sum,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
-	hipDeviceSynchronize();
-	hipMemcpy(&sum, d_sum, sizeof(Myfloat), hipMemcpyDeviceToHost);
-	cudaCheckError();
-	hipFree(d_sum);
 
-	// reduction
+	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
+	hipLaunchKernelGGL(kernel_multiBlk_sumAbsDiff, dim3(gpuGridSize), dim3(gpuBlkSize), gpuBlkSize * sizeof(Myfloat), 0, d_grid_3d, gridIn_d_grid_3d, d_help_3d,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+	hipDeviceSynchronize();
+
+	hipLaunchKernelGGL(kernel_singleBlk_sum, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d, gpuGridSize) ;
+	hipDeviceSynchronize();
+
+	hipMemcpy(&sum, &(d_help_3d[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
+	cudaCheckError();
+
+	// MPI reduction
 	Myfloat64 sum1Loc = sum ;
 	Myfloat64 sum1 = 0.0 ;
 	if (gridType == GRID_LOCAL)
@@ -2065,68 +2291,31 @@ Myfloat Grid_Hip::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 
 //-------------------------------------------------------------------------------------------------------
 
-__global__ void maxErrCommSingleBlock(const Myfloat *a, const Myfloat *b, Myfloat *out,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End) {
-	int idx = threadIdx.x;
-	Myfloat err = -FLT_MAX, err2 = 0.0 ;
-	Myint64 arraySize = n1*n2*n3;
-
-	for (Myint64 i = idx; i < arraySize; i += blockSize)
-	{
-		int i3 = i / (n1*n2);
-		int idx2 = i -i3*n1*n2;
-		int i2 = idx2/n1;
-		int i1 = idx2%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			if (fabs(b[i]) < MAX_ERR_FLOAT)
-			{
-				err2 = fabs(a[i] - b[i]) ;
-			}
-			else
-			{
-				err2 = fabs(a[i] - b[i]) / b[i] ;
-			}
-
-			if (err2 > err)
-			{
-				err = err2 ;
-			}
-		}
-	}
-
-	__shared__ Myfloat r[blockSize];
-	r[idx] = err;
-	__syncthreads();
-	for (int size = blockSize/2; size>0; size/=2) { //uniform
-		if (idx<size)
-			if (r[idx+size] > r[idx]) r[idx] = r[idx+size];
-		__syncthreads();
-	}
-	if (idx == 0)
-		*out = r[0];
-}
-
 Myfloat Grid_Hip::maxErr(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(FULL_DEBUG, "IN Grid_Hip::maxErr");
 
-	Myfloat err = 0 ;
-	Myfloat *d_err ;
-	hipMalloc((void**)&d_err, sizeof(Myfloat) * 1);
+	// check grids have same size
+	if (!(this->sameSize(gridIn)))
+	{
+		printError("Grid_Hip::maxErr, grids have different size") ;
+		return(-1.0) ;
+	}
 
-	Myfloat *grid_d_grid_3d = d_grid_3d ;
-	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
+	Myfloat err = 0 ;
+
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
-	hipLaunchKernelGGL(maxErrCommSingleBlock, dim3(1), dim3(blockSize), 0, 0, grid_d_grid_3d, gridIn_d_grid_3d, d_err,
-			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+
+	Myfloat *gridIn_d_grid_3d = ((Grid_Hip&) gridIn).d_grid_3d ;
+	hipLaunchKernelGGL(kernel_multiBlk_maxErr, dim3(gpuGridSize), dim3(gpuBlkSize), gpuBlkSize * sizeof(Myfloat), 0, d_grid_3d, gridIn_d_grid_3d, d_help_3d,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
 	hipDeviceSynchronize();
-	hipMemcpy(&err, d_err, sizeof(Myfloat), hipMemcpyDeviceToHost);
-	hipFree(d_err);
+
+	hipLaunchKernelGGL(kernel_singleBlk_maxval, dim3(1), dim3(gpuBlkSize), 0, 0, d_help_3d, gpuGridSize) ;
+	hipDeviceSynchronize();
+
+	hipMemcpy(&err, &(d_help_3d[0]), sizeof(Myfloat), hipMemcpyDeviceToHost);
 	cudaCheckError();
 
 	printDebug(FULL_DEBUG, "OUT Grid_Hip::maxErr");
