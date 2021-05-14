@@ -1182,27 +1182,16 @@ Myfloat Grid::maxErr(Point_type pointType, const Grid& gridIn) const
 				}
 				else
 				{
-					err2 = fabs(u1[ii] - u2[ii]) / u2[ii] ;
+					err2 = fabs(u1[ii] - u2[ii]) / fabs(u2[ii]) ;
 				}
 
 				if (err2 > err)
 				{
 					err = err2 ;
-					//ierr1 = i1;
-					//ierr2 = i2 ;
-					//ierr3 = i3 ;
 				}
 			}
 		}
 	}
-
-	//printDebug(LIGHT_DEBUG, "ierr1", ierr1) ;
-	//printDebug(LIGHT_DEBUG, "ierr2", ierr2) ;
-	//printDebug(LIGHT_DEBUG, "ierr3", ierr3) ;
-
-	//Myint ii = ierr1 + ierr2*n1 + ierr3*n2*n1 ;
-	//printDebug(LIGHT_DEBUG, "u1", u1[ii]) ;
-	//printDebug(LIGHT_DEBUG, "u2", u2[ii]) ;
 
 	printDebug(FULL_DEBUG, "OUT Grid::maxErr");
 	return(err) ;
