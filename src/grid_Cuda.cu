@@ -301,6 +301,71 @@ __global__ void kernel_multiBlk_sumAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, M
 }
 
 //-------------------------------------------------------------------------------------------------------
+// sum abs values and abs diff between 2 grids (1st step)
+// multi-block reduction on the input arrays dataIn1 and dataIn2
+// each block does the sum abs and stores into the array dataOut1 at entry dataOut1[blockIdx.x]
+// each block does the sum abs diff and stores into the array dataOut2 at entry dataOut2[blockIdx.x]
+
+__global__ void kernel_multiBlk_sumAbsAndAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut1, Myfloat *dataOut2,
+		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	// dynamic shared memory
+	extern __shared__ float sdata[];
+	float* sdata1 = &(sdata[0]) ;
+	float* sdata2 = &(sdata[blockDim.x]) ;
+	//extern __shared__ float sdata2[];
+
+	// set to zero
+	sdata1[threadIdx.x] = 0.0 ;
+	sdata2[threadIdx.x] = 0.0 ;
+
+	// each thread sums
+	while (tid < size)
+	{
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx%n1;
+
+		// check if point fall into target area
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			// update sum
+			sdata1[threadIdx.x] += fabs(dataIn1[tid] - dataIn2[tid]) ;
+			sdata2[threadIdx.x] += fabs(dataIn2[tid]) ;
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+
+	__syncthreads();
+
+	// sum between all threads
+	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	{
+		if (threadIdx.x < s)
+		{
+			sdata1[threadIdx.x] += sdata1[threadIdx.x + s] ;
+			sdata2[threadIdx.x] += sdata2[threadIdx.x + s] ;
+		}
+		__syncthreads();
+	}
+
+	// write result for the block into global array
+	if (threadIdx.x == 0)
+	{
+		dataOut1[blockIdx.x] = sdata1[0];
+		dataOut2[blockIdx.x] = sdata2[0];
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
 // sum values (absolute values) (2nd step)
 // single block reduction on the input array dataInOut
 // the maximum is stored at first entry dataInOut[0]
@@ -917,6 +982,7 @@ Grid_Cuda::~Grid_Cuda(void)
 	//delete[] grid_3d ;
 	cudaFree(d_grid_3d);
 	cudaFree(d_help_3d);
+	cudaFree(d_help_3d_2);
 	cudaCheckError();
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda::~Grid_Cuda");
@@ -1470,6 +1536,10 @@ void Grid_Cuda::initializeGrid(void)
 		// allocate 1d array of the device used to perform reduction operation
 		cudaMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
+
+		// allocate 1d array of the device used to perform reduction operation
+		cudaMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
+		cudaCheckError();
 	}
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::initializeGrid") ;
 }
@@ -1691,6 +1761,13 @@ Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::L1Err") ;
 
+	// check grids have same size
+	if (!(this->sameSize(gridIn)))
+	{
+		printError("Grid_Cuda::L1Err, grids have different size") ;
+		return(-1.0) ;
+	}
+
 	Myfloat64 sum1 , sum2 ;
 	sum1 = getSumAbsDiff(pointType, gridIn) ;
 	sum2 = gridIn.getSumAbs(pointType) ;
@@ -1718,13 +1795,38 @@ Myfloat Grid_Cuda::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::allProcL1Err");
 
-	Myfloat64 sum1Loc = 0.0 ;
-	Myfloat64 sum2Loc = 0.0 ;
+	// check grids have same size
+	if (!(this->sameSize(gridIn)))
+	{
+		printError("Grid_Cuda::allProcL1Err, grids have different size") ;
+		return(-1.0) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
+	kernel_multiBlk_sumAbsAndAbsDiff<<<gpuGridSize, gpuBlkSize, 2 * gpuBlkSize * sizeof(Myfloat)>>>(d_grid_3d, gridIn_d_grid_3d, d_help_3d, d_help_3d_2,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+	cudaDeviceSynchronize();
+
+	Myfloat sum1f = 0 ;
+	kernel_singleBlk_sum<<<1, gpuBlkSize>>>(d_help_3d, gpuGridSize) ;
+	cudaDeviceSynchronize();
+	cudaMemcpy(&sum1f, &(d_help_3d[0]), sizeof(Myfloat), cudaMemcpyDeviceToHost);
+
+	Myfloat sum2f = 0 ;
+	kernel_singleBlk_sum<<<1, gpuBlkSize>>>(d_help_3d_2, gpuGridSize) ;
+	cudaDeviceSynchronize();
+	cudaMemcpy(&sum2f, &(d_help_3d_2[0]), sizeof(Myfloat), cudaMemcpyDeviceToHost);
+
+	//sum1Loc = getSumAbsDiff(pointType, gridIn) ;
+	//sum2Loc = gridIn.getSumAbs(pointType) ;
+
+	Myfloat64 sum1Loc = sum1f ;
+	Myfloat64 sum2Loc = sum2f ;
 	Myfloat64 sum1 = 0.0 ;
 	Myfloat64 sum2 = 0.0 ;
-
-	sum1Loc = getSumAbsDiff(pointType, gridIn) ;
-	sum2Loc = gridIn.getSumAbs(pointType) ;
 
 	// reduction
 	MPI_Reduce(&sum1Loc, &sum1, 1, MPI_MYFLOAT64, MPI_SUM, 0, MPI_COMM_WORLD);

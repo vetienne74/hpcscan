@@ -1275,7 +1275,6 @@ Myfloat Grid::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-
 #pragma omp parallel for collapse(2) reduction(+:sum1Loc,sum2Loc)
 	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 	{
