@@ -1768,9 +1768,27 @@ Myfloat Grid_Cuda::L1Err(Point_type pointType, const Grid& gridIn) const
 		return(-1.0) ;
 	}
 
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	Myfloat *gridIn_d_grid_3d = ((Grid_Cuda&) gridIn).d_grid_3d ;
+	kernel_multiBlk_sumAbsAndAbsDiff<<<gpuGridSize, gpuBlkSize, 2 * gpuBlkSize * sizeof(Myfloat)>>>(d_grid_3d, gridIn_d_grid_3d, d_help_3d, d_help_3d_2,
+			n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+	cudaDeviceSynchronize();
+
+	Myfloat sum1f = 0 ;
+	kernel_singleBlk_sum<<<1, gpuBlkSize>>>(d_help_3d, gpuGridSize) ;
+	cudaDeviceSynchronize();
+	cudaMemcpy(&sum1f, &(d_help_3d[0]), sizeof(Myfloat), cudaMemcpyDeviceToHost);
+
+	Myfloat sum2f = 0 ;
+	kernel_singleBlk_sum<<<1, gpuBlkSize>>>(d_help_3d_2, gpuGridSize) ;
+	cudaDeviceSynchronize();
+	cudaMemcpy(&sum2f, &(d_help_3d_2[0]), sizeof(Myfloat), cudaMemcpyDeviceToHost);
+
 	Myfloat64 sum1 , sum2 ;
-	sum1 = getSumAbsDiff(pointType, gridIn) ;
-	sum2 = gridIn.getSumAbs(pointType) ;
+	sum1 = sum1f ;
+	sum2 = sum2f ;
 
 	// prevent divide by zero
 	if (sum2 < MAX_ERR_FLOAT) sum2 = 1.0 * npoint ;
@@ -1819,9 +1837,6 @@ Myfloat Grid_Cuda::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 	kernel_singleBlk_sum<<<1, gpuBlkSize>>>(d_help_3d_2, gpuGridSize) ;
 	cudaDeviceSynchronize();
 	cudaMemcpy(&sum2f, &(d_help_3d_2[0]), sizeof(Myfloat), cudaMemcpyDeviceToHost);
-
-	//sum1Loc = getSumAbsDiff(pointType, gridIn) ;
-	//sum2Loc = gridIn.getSumAbs(pointType) ;
 
 	Myfloat64 sum1Loc = sum1f ;
 	Myfloat64 sum2Loc = sum2f ;
