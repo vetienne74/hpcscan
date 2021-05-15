@@ -86,6 +86,7 @@ Rtn_code TestCase_Grid::run(void)
 		{
 			double t0 = MPI_Wtime() ;
 			Wgrid.fill(INNER_POINTS, a1) ;
+			//Wgrid.fill(INNER_POINTS, FUNC_CONST, FUNC_CONST, FUNC_CONST, 1.0, 1.0, 1.0, a1) ; // for test
 			// wait all process completed before ending time
 			MPI_Barrier(MPI_COMM_WORLD) ;
 			double t1 = MPI_Wtime() ;

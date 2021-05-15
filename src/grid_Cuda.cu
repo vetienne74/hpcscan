@@ -452,20 +452,10 @@ __global__ void kernel_multiBlk_maxErr(Myfloat *dataIn1, Myfloat *dataIn2, Myflo
 
 //-------------------------------------------------------------------------------------------------------
 
-// there is probably an easier way to implement this (3d blocks?)
 __global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, const int n2, const int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
 {
 	int size = n1*n2*n3;
 	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	// 1D to 3D index
-	// public int[] to3D( int idx ) {
-	// 	final int z = idx / (xMax * yMax);
-	// 	idx -= (z * xMax * yMax);
-	// 	final int y = idx / xMax;
-	// 	final int x = idx % xMax;
-	// 	return new int[]{ x, y, z };
-	// }
 
 	while (tid < size)
 	{
@@ -484,6 +474,33 @@ __global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, cons
 		tid += blockDim.x * gridDim.x;
 	}
 }
+
+//-------------------------------------------------------------------------------------------------------
+
+__global__ void kernel_fill_function(Myfloat *data, Myfloat64 *val1, Myfloat64 *val2, Myfloat64 *val3, Myfloat64 amp, const int n1, const int n2, const int n3,
+		Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+{
+	int size = n1*n2*n3;
+	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		int i3 = tid / (n1*n2);
+		int idx = tid-i3*n1*n2;
+		int i2 = idx/n1;
+		int i1 = idx%n1;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+		{
+			data[tid] =  amp * val1[i1-i1Start] * val2[i2-i2Start] * val3[i3-i3Start];
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -1641,8 +1658,159 @@ void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_typ
 	// it is therefore convenient to build the grid on the CPU
 	// and then copy the grid to the GPU
 
-	Grid::fill(pointType, t1, t2, t3, param1, param2, param3, amp) ;
-	copyGridHostToDevice(pointType) ;
+	//Grid::fill(pointType, t1, t2, t3, param1, param2, param3, amp) ;
+	//copyGridHostToDevice(pointType) ;
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End, s1, s2, s3 ;
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	s1 = i1End - i1Start + 1;
+	s2 = i2End - i2Start + 1;
+	s3 = i3End - i3Start + 1;
+
+	Myfloat64 *val1 = new Myfloat64[s1] ;
+	Myfloat64 *val2 = new Myfloat64[s2] ;
+	Myfloat64 *val3 = new Myfloat64[s3] ;
+
+	// build the 3 1d functions
+	// this is done on the host
+#pragma omp simd
+	for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+	{
+		Myfloat64 coord1 = Myfloat64(Orig1 + i1 * d1) ;
+
+		if (dim >= DIM1)
+		{
+			if (t1 == FUNC_SINE)
+			{
+				val1[i1-i1Start] = sin(coord1 * param1) ;
+			}
+			else if (t1 == FUNC_COSINE)
+			{
+				val1[i1-i1Start] = cos(coord1 * param1) ;
+			}
+			else if (t1 == FUNC_LINEAR)
+			{
+				val1[i1-i1Start] = coord1 ;
+			}
+			else if (t1 == FUNC_CONST)
+			{
+				val1[i1-i1Start] = 1.0 ;
+			}
+			else if (t1 == FUNC_RANDOM)
+			{
+				val1[i1-i1Start] = Myfloat(rand()) / RAND_MAX ;
+			}
+			else
+			{
+				val1[i1-i1Start] = 1.0;
+			}
+		}
+		else
+		{
+			val1[i1-i1Start] = 1.0 ;
+		}
+	}
+
+#pragma omp simd
+	for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+	{
+		Myfloat64 coord2 = Myfloat64(Orig2 + i2 * d2) ;
+		if (dim >= DIM2)
+		{
+			if (t2 == FUNC_SINE)
+			{
+				val2[i2-i2Start] = sin(coord2 * param2) ;
+			}
+			else if (t2 == FUNC_COSINE)
+			{
+				val2[i2-i2Start] = cos(coord2 * param2) ;
+			}
+			else if (t2 == FUNC_LINEAR)
+			{
+				val2[i2-i2Start] = coord2 ;
+			}
+			else if (t2 == FUNC_CONST)
+			{
+				val2[i2-i2Start] = 1.0 ;
+			}
+			else if (t2 == FUNC_RANDOM)
+			{
+				val2[i2-i2Start] = Myfloat(rand()) / RAND_MAX ;
+			}
+			else
+			{
+				val2[i2-i2Start] = 1.0;
+			}
+		}
+		else
+		{
+			val2[i2-i2Start] = 1.0 ;
+		}
+	}
+
+#pragma omp simd
+	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	{
+		Myfloat64 coord3 = Myfloat64(Orig3 + i3 * d3) ;
+		if (dim >= DIM3)
+		{
+			if (t3 == FUNC_SINE)
+			{
+				val3[i3-i3Start] = sin(coord3 * param3) ;
+			}
+			else if (t3 == FUNC_COSINE)
+			{
+				val3[i3-i3Start] = cos(coord3 * param3) ;
+			}
+			else if (t3 == FUNC_LINEAR)
+			{
+				val3[i3-i3Start] = coord3 ;
+			}
+			else if (t3 == FUNC_CONST)
+			{
+				val3[i3-i3Start] = 1.0 ;
+			}
+			else if (t3 == FUNC_RANDOM)
+			{
+				val3[i3-i3Start] = Myfloat(rand()) / RAND_MAX ;
+			}
+			else
+			{
+				val3[i3-i3Start] = 1.0;
+			}
+		}
+		else
+		{
+			val3[i3-i3Start] = 1.0 ;
+		}
+	}
+
+	// copy the 1d functions from host to device
+	Myfloat64 *d_val1 ;
+	cudaMalloc( (void**)&d_val1, s1 * sizeof(Myfloat64) );
+	cudaMemcpy(&(d_val1[0]), &(val1[0]), s1 * sizeof(Myfloat64), cudaMemcpyHostToDevice) ;
+
+	Myfloat64 *d_val2 ;
+	cudaMalloc( (void**)&d_val2, s2 * sizeof(Myfloat64) );
+	cudaMemcpy(&(d_val2[0]), &(val2[0]), s2 * sizeof(Myfloat64), cudaMemcpyHostToDevice) ;
+
+	Myfloat64 *d_val3 ;
+	cudaMalloc( (void**)&d_val3, s3 * sizeof(Myfloat64) );
+	cudaMemcpy(&(d_val3[0]), &(val3[0]), s3 * sizeof(Myfloat64), cudaMemcpyHostToDevice) ;
+
+	// fill the grid
+	kernel_fill_function<<<gpuGridSize, gpuBlkSize>>>(d_grid_3d, d_val1, d_val2, d_val3, amp, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	cudaDeviceSynchronize();
+	cudaCheckError();
+
+	delete[] val1 ;
+	delete[] val2 ;
+	delete[] val3 ;
+
+	cudaFree(d_val1);
+	cudaFree(d_val2);
+	cudaFree(d_val3);
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::fill") ;
 }
