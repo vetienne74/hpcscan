@@ -38,15 +38,15 @@
 
 Version 1.1
 
-Contact: Vincent Etienne (Saudi Aramco / EXPEC ARC / GPT) / Email: vetienne@rocketmail.com
+Contact: Vincent Etienne / Email: vetienne@rocketmail.com
 
 Contributors (chronological order)
-* Vincent Etienne
-* Suha Kayum
-* Marcin Rogowski
-* Laurent Gatineau
-* Philippe Thierry
-* Fabrice Dupros
+* Vincent Etienne (Saudi Aramco)
+* Suha Kayum (Saudi Aramco)
+* Marcin Rogowski (KAUST)
+* Laurent Gatineau (NEC)
+* Philippe Thierry (Intel)
+* Fabrice Dupros (ARM)
 
 # Overview
 
@@ -125,7 +125,7 @@ hpcscan is a self-content package that can be easily installed and executed on y
 Version      | Description | Release date
 ------------ | ----------- | ------------
 v1.0         | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
-v1.1         | Added test modes NEC, CUDA and HIP | Coming soon
+v1.1         | Added test modes NEC, CUDA and HIP | May 22, 2021
 
 # Main features
 
@@ -160,7 +160,7 @@ CUDA         | GPU with CUDA without optimization | Only enabled when compiled w
 HIP          | GPU with HIP without optimization | Only enabled when compiled with hipcc (AMD HIP compiler)
 NEC          | NEC with compiler directives | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
 NEC_SCA      | NEC with Stencil Code Accelerator | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
-OpenAcc      | GPU with OpenACC without optimization | Only enabled when compiled with a C++ compiler that supports OpenACC
+OpenAcc      | GPU with OpenACC without optimization | Only enabled when compiled with a C++ compiler that supports OpenACC **(not yet operational)**
 
 # Environment set-up
 
@@ -242,6 +242,7 @@ SUSE Linux Enterprise Server 15 | icpc (ICC) 19.0.5.281 20190815 | Intel(R) Xeon
 Red Hat 4.8.5-39 | icpc version 19.1.2.254 (gcc version 6.3.1 compatibility) | Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz **(Intel Cascade Lake)** | - | :ballot_box_with_check: | :ballot_box_with_check: | - | - | - | -
 Ubuntu 20.04.1 LTS |  gcc version 9.3.0 / nvcc release 10.1, V10.1.243 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: | - | - | -
 CentOS Linux release 7.7.1908 |  icpc (ICC) 19.1.0.166 20191121 / nvcc release 11.0, V11.0.167 | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | GV100GL [Tesla V100 SXM2 32GB] **(NVIDIA GPU)** | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: | - | - | -
+Ubuntu 20.04.1 LTS | g++ 9.3.0 / hipcc 4.2.21155-37cb3a34 | AMD EPYC 7742 64-Core Processor @ 2.25GHz **(AMD Rome)** | [AMD Instinct MI100] **(AMD GPU)** | :ballot_box_with_check: | :ballot_box_with_check: | - | :ballot_box_with_check: | - | -
 CentOS Linux release 8.1.1911 | nc++ (NCC) 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | :ballot_box_with_check: | :ballot_box_with_check: | - | - | :ballot_box_with_check: | :ballot_box_with_check:
 
 # Execution
