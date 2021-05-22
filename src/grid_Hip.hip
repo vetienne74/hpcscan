@@ -24,10 +24,6 @@
 #include "global.h"
 #include "output_report.h"
 
-#include <hip/hip_cooperative_groups.h>
-
-namespace cg = cooperative_groups;
-
 using namespace std;
 
 namespace hpcscan {
@@ -36,30 +32,31 @@ namespace hpcscan {
 
 //Macro for checking cuda errors following a cuda launch or api call
 #define cudaCheckError() {                                          \
-	hipError_t e=hipGetLastError();                                 \
-	if(e!=hipSuccess) {                                              \
-	  printf("Hip failure %s:%d: '%s'\n",__FILE__,__LINE__,hipGetErrorString(e));           \
-	  exit(0); \
-	}                                                                 \
-   }
+		hipError_t e=hipGetLastError();                                 \
+		if(e!=hipSuccess) {                                              \
+			printf("Hip failure %s:%d: '%s'\n",__FILE__,__LINE__,hipGetErrorString(e));           \
+			exit(0); \
+		}                                                                 \
+}
 
 //*******************************************************************************************************
 // BEGINING OF HIP KERNELS
 //*******************************************************************************************************
 
 //-------------------------------------------------------------------------------------------------------
-// retrieve minimum value (1st step)
+// retrieve minimum value (1st step of global reduction)
 // multi-block reduction on the input array dataIn
 // each block finds its minimum and stores into the array dataOut at entry dataOut[blockIdx.x]
 
 __global__ void kernel_multiBlk_minval(Myfloat *dataIn, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	Myint64 size = n1*n2*n3;
+	const Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	// dynamic shared memory
-	HIP_DYNAMIC_SHARED( float, sdata)
+	extern __shared__ Myfloat sdata[];
 
 	// set to max float value
 	sdata[threadIdx.x] = +FLT_MAX ;
@@ -68,10 +65,10 @@ __global__ void kernel_multiBlk_minval(Myfloat *dataIn, Myfloat *dataOut,
 	while (tid < size)
 	{
 		// convert 1d index to 3d indexes
-		unsigned int i3 = tid / (n1*n2);
-		unsigned int idx = tid-i3*n1*n2;
-		unsigned int i2 = idx/n1;
-		unsigned int i1 = idx%n1;
+		unsigned int i3 = tid / (n1*n2) ;
+		unsigned int idx = tid-i3*n1*n2 ;
+		unsigned int i2 = idx/n1 ;
+		unsigned int i1 = idx - i2*n1 ;
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
@@ -89,7 +86,7 @@ __global__ void kernel_multiBlk_minval(Myfloat *dataIn, Myfloat *dataOut,
 	__syncthreads();
 
 	// find minimum between all threads
-	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
 	{
 		if (threadIdx.x < s)
 		{
@@ -104,14 +101,14 @@ __global__ void kernel_multiBlk_minval(Myfloat *dataIn, Myfloat *dataOut,
 }
 
 //-------------------------------------------------------------------------------------------------------
-// retrieve minimum value (2nd step)
+// retrieve minimum value (2nd step of global reduction)
 // single block reduction on the input array dataInOut
 // the minimum is stored at first entry dataInOut[0]
 
-__global__ void kernel_singleBlk_minval(Myfloat *dataInOut, int dataInOutSize)
+__global__ void kernel_singleBlk_minval(Myfloat *dataInOut, const int dataInOutSize)
 {
 	int idx = threadIdx.x;
-	for (int size = dataInOutSize/2; size>0; size/=2) {
+	for (int size = dataInOutSize/2; size>0; size  >>= 1) {
 		if (idx<size)
 			if (dataInOut[idx+size] < dataInOut[idx]) dataInOut[idx] = dataInOut[idx+size];
 		__syncthreads();
@@ -119,18 +116,19 @@ __global__ void kernel_singleBlk_minval(Myfloat *dataInOut, int dataInOutSize)
 }
 
 //-------------------------------------------------------------------------------------------------------
-// retrieve maximum value (1st step)
+// retrieve maximum value (1st step of global reduction)
 // multi-block reduction on the input array dataIn
 // each block finds its maximum and stores into the array dataOut at entry dataOut[blockIdx.x]
 
 __global__ void kernel_multiBlk_maxval(Myfloat *dataIn, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	Myint64 size = n1*n2*n3;
+	const Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	// dynamic shared memory
-	HIP_DYNAMIC_SHARED( float, sdata)
+	extern __shared__ Myfloat sdata[];
 
 	// set to min float value
 	sdata[threadIdx.x] = -FLT_MAX ;
@@ -142,7 +140,7 @@ __global__ void kernel_multiBlk_maxval(Myfloat *dataIn, Myfloat *dataOut,
 		unsigned int i3 = tid / (n1*n2);
 		unsigned int idx = tid-i3*n1*n2;
 		unsigned int i2 = idx/n1;
-		unsigned int i1 = idx%n1;
+		unsigned int i1 = idx - i2*n1 ;
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
@@ -160,7 +158,7 @@ __global__ void kernel_multiBlk_maxval(Myfloat *dataIn, Myfloat *dataOut,
 	__syncthreads();
 
 	// find maximum between all threads
-	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
 	{
 		if (threadIdx.x < s)
 		{
@@ -175,11 +173,11 @@ __global__ void kernel_multiBlk_maxval(Myfloat *dataIn, Myfloat *dataOut,
 }
 
 //-------------------------------------------------------------------------------------------------------
-// retrieve maximum value (2nd step)
+// retrieve maximum value (2nd step of global reduction)
 // single block reduction on the input array dataInOut
 // the maximum is stored at first entry dataInOut[0]
 
-__global__ void kernel_singleBlk_maxval(Myfloat *dataInOut, int dataInOutSize)
+__global__ void kernel_singleBlk_maxval(Myfloat *dataInOut, const int dataInOutSize)
 {
 	int idx = threadIdx.x;
 	for (int size = dataInOutSize/2; size>0; size/=2) {
@@ -190,18 +188,19 @@ __global__ void kernel_singleBlk_maxval(Myfloat *dataInOut, int dataInOutSize)
 }
 
 //-------------------------------------------------------------------------------------------------------
-// sum abs values (1st step)
+// sum abs values (1st step of global reduction)
 // multi-block reduction on the input array dataIn
 // each block does the sum and stores into the array dataOut at entry dataOut[blockIdx.x]
 
 __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	Myint64 size = n1*n2*n3;
+	const Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	// dynamic shared memory
-	HIP_DYNAMIC_SHARED( float, sdata)
+	extern __shared__ float sdata[];
 
 	// set to zero
 	sdata[threadIdx.x] = 0.0 ;
@@ -213,7 +212,7 @@ __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
 		unsigned int i3 = tid / (n1*n2);
 		unsigned int idx = tid-i3*n1*n2;
 		unsigned int i2 = idx/n1;
-		unsigned int i1 = idx%n1;
+		unsigned int i1 = idx - i2*n1 ;
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
@@ -231,7 +230,7 @@ __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
 	__syncthreads();
 
 	// sum between all threads
-	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
 	{
 		if (threadIdx.x < s)
 		{
@@ -246,18 +245,19 @@ __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
 }
 
 //-------------------------------------------------------------------------------------------------------
-// sum abs diff values between 2 grids (1st step)
+// sum abs diff values between 2 grids (1st step of global reduction)
 // multi-block reduction on the input arrays dataIn1 & dataIn2
 // each block does the sum and stores into the array dataOut at entry dataOut[blockIdx.x]
 
 __global__ void kernel_multiBlk_sumAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	Myint64 size = n1*n2*n3;
+	const Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	// dynamic shared memory
-	HIP_DYNAMIC_SHARED( Myfloat, sdata)
+	extern __shared__ Myfloat sdata[];
 
 	// set to zero
 	sdata[threadIdx.x] = 0.0 ;
@@ -269,7 +269,7 @@ __global__ void kernel_multiBlk_sumAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, M
 		unsigned int i3 = tid / (n1*n2);
 		unsigned int idx = tid-i3*n1*n2;
 		unsigned int i2 = idx/n1;
-		unsigned int i1 = idx%n1;
+		unsigned int i1 = idx - i2*n1 ;
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
@@ -287,7 +287,7 @@ __global__ void kernel_multiBlk_sumAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, M
 	__syncthreads();
 
 	// sum between all threads
-	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
 	{
 		if (threadIdx.x < s)
 		{
@@ -302,22 +302,24 @@ __global__ void kernel_multiBlk_sumAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, M
 }
 
 //-------------------------------------------------------------------------------------------------------
-// sum abs values and abs diff between 2 grids (1st step)
+// sum abs values and abs diff between 2 grids (1st step of global reduction)
 // multi-block reduction on the input arrays dataIn1 and dataIn2
-// each block does the sum abs and stores into the array dataOut1 at entry dataOut1[blockIdx.x]
-// each block does the sum abs diff and stores into the array dataOut2 at entry dataOut2[blockIdx.x]
+// each block does the sum abs diff and stores into the array dataOut1 at entry dataOut1[blockIdx.x]
+// each block does the sum abs and stores into the array dataOut2 at entry dataOut2[blockIdx.x]
 
 __global__ void kernel_multiBlk_sumAbsAndAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut1, Myfloat *dataOut2,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	Myint64 size = n1*n2*n3;
+	const Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	// dynamic shared memory
-	HIP_DYNAMIC_SHARED( float, sdata)
-	float* sdata1 = &(sdata[0]) ;
-	float* sdata2 = &(sdata[blockDim.x]) ;
-	//HIP_DYNAMIC_SHARED( float, sdata2)
+	extern __shared__ Myfloat sdata[];
+
+	// split array into 2, 1st half for sum abs diff, 2nd half for sum abs
+	Myfloat* sdata1 = &(sdata[0]) ;
+	Myfloat* sdata2 = &(sdata[blockDim.x]) ;
 
 	// set to zero
 	sdata1[threadIdx.x] = 0.0 ;
@@ -330,7 +332,7 @@ __global__ void kernel_multiBlk_sumAbsAndAbsDiff(Myfloat *dataIn1, Myfloat *data
 		unsigned int i3 = tid / (n1*n2);
 		unsigned int idx = tid-i3*n1*n2;
 		unsigned int i2 = idx/n1;
-		unsigned int i1 = idx%n1;
+		unsigned int i1 = idx - i2*n1 ;
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
@@ -348,7 +350,7 @@ __global__ void kernel_multiBlk_sumAbsAndAbsDiff(Myfloat *dataIn1, Myfloat *data
 	__syncthreads();
 
 	// sum between all threads
-	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
 	{
 		if (threadIdx.x < s)
 		{
@@ -367,11 +369,11 @@ __global__ void kernel_multiBlk_sumAbsAndAbsDiff(Myfloat *dataIn1, Myfloat *data
 }
 
 //-------------------------------------------------------------------------------------------------------
-// sum values (absolute values) (2nd step)
+// sum values (absolute values) (2nd step of global reduction)
 // single block reduction on the input array dataInOut
 // the maximum is stored at first entry dataInOut[0]
 
-__global__ void kernel_singleBlk_sum(Myfloat *dataInOut, int dataInOutSize)
+__global__ void kernel_singleBlk_sum(Myfloat *dataInOut, const Myint dataInOutSize)
 {
 	int idx = threadIdx.x;
 	for (int size = dataInOutSize/2; size>0; size/=2) {
@@ -382,18 +384,19 @@ __global__ void kernel_singleBlk_sum(Myfloat *dataInOut, int dataInOutSize)
 }
 
 //-------------------------------------------------------------------------------------------------------
-// max error between 2 grids (1st step)
+// max error between 2 grids (1st step of global reduction)
 // multi-block reduction on the input arrays dataIn1 & dataIn2
 // each block finds its maximum and stores into the array dataOut at entry dataOut[blockIdx.x]
 
 __global__ void kernel_multiBlk_maxErr(Myfloat *dataIn1, Myfloat *dataIn2, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	Myint64 size = n1*n2*n3;
+	const Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	// dynamic shared memory
-	HIP_DYNAMIC_SHARED( Myfloat, sdata)
+	extern __shared__ Myfloat sdata[];
 
 	// set to min float value
 	sdata[threadIdx.x] = -FLT_MAX ;
@@ -405,7 +408,7 @@ __global__ void kernel_multiBlk_maxErr(Myfloat *dataIn1, Myfloat *dataIn2, Myflo
 		unsigned int i3 = tid / (n1*n2);
 		unsigned int idx = tid-i3*n1*n2;
 		unsigned int i2 = idx/n1;
-		unsigned int i1 = idx%n1;
+		unsigned int i1 = idx - i2*n1 ;
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
@@ -437,7 +440,7 @@ __global__ void kernel_multiBlk_maxErr(Myfloat *dataIn1, Myfloat *dataIn2, Myflo
 	__syncthreads();
 
 	// find maximum between all threads
-	for (unsigned int s = blockDim.x / 2; s > 0; s/=2)
+	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
 	{
 		if (threadIdx.x < s)
 		{
@@ -452,34 +455,28 @@ __global__ void kernel_multiBlk_maxErr(Myfloat *dataIn1, Myfloat *dataIn2, Myflo
 }
 
 //-------------------------------------------------------------------------------------------------------
+// fill grid with constant values
 
-// there is probably an easier way to implement this (3d blocks?)
-__global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, const int n2, const int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_fill_const(Myfloat *dataOut, const Myfloat val,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	// 1D to 3D index
-	// public int[] to3D( int idx ) {
-	// 	final int z = idx / (xMax * yMax);
-	// 	idx -= (z * xMax * yMax);
-	// 	final int y = idx / xMax;
-	// 	final int x = idx % xMax;
-	// 	return new int[]{ x, y, z };
-	// }
+	const Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2) ;
+		unsigned int idx = tid-i3*n1*n2 ;
+		unsigned int i2 = idx/n1 ;
+		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
 			i2 >= i2Start && i2 <= i2End &&
 			i3 >= i3Start && i3 <= i3End   )
 		{
-			data[tid] = val;
+			dataOut[tid] = val;
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -487,31 +484,27 @@ __global__ void kernel_fill_const(Myfloat *data, Myfloat val, const int n1, cons
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3 )
+// fill grid with predefined functions val1, val2, val3, val4
+//
+__global__ void kernel_fill_function(Myfloat *dataOut, Myfloat64 *val1, Myfloat64 *val2, Myfloat64 *val3, const Myfloat64 val4,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+	const Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
 			i2 >= i2Start && i2 <= i2End &&
 			i3 >= i3Start && i3 <= i3End   )
 		{
-			Myfloat64 coord1 = Myfloat64(Orig1 + i1 * d1);
-			Myfloat64 coord2 = Myfloat64(Orig2 + i2 * d2);
-			Myfloat64 coord3 = Myfloat64(Orig3 + i3 * d3);
-
-			Myfloat val = amp * sin(coord1 * param1) * sin(coord2 * param2) * sin(coord3 * param3);
-
-			data[tid] = val;
-			//printf("data[%d]=%f\n",tid,val);
+			dataOut[tid] =  val4 * val1[i1-i1Start] * val2[i2-i2Start] * val3[i3-i3Start];
 		}
 
 		tid += blockDim.x * gridDim.x;
@@ -519,181 +512,57 @@ __global__ void kernel_fill_sine(Myfloat *data, Myfloat64 param1, Myfloat64 para
 }
 
 //-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_fill_linear(Myfloat *data, Myfloat64 param1, Myfloat64 param2, Myfloat64 param3, Myfloat64 amp, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End, Myfloat Orig1, Myfloat Orig2, Myfloat Orig3, Myfloat64 d1, Myfloat64 d2, Myfloat64 d3)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			Myfloat64 coord1 = Myfloat64(Orig1 + i1 * d1);
-			Myfloat64 coord2 = Myfloat64(Orig2 + i2 * d2);
-			Myfloat64 coord3 = Myfloat64(Orig3 + i3 * d3);
-
-			Myfloat val = amp * coord1 * coord2 * coord3;
-
-			data[tid] = val;
-			//printf("data[%d]=%f\n",tid,val);
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_diff(Myfloat *data1, Myfloat *data2, Myfloat *dataOut,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	cg::thread_block cta = cg::this_thread_block();
-	__shared__ float sdata[256];
-
-	sdata[threadIdx.x]=0;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			sdata[threadIdx.x] += fabsf(data1[tid]-data2[tid]);
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-
-	cg::sync(cta);
-	for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1) 
-	{
-		if (threadIdx.x < s) 
-		{
-		  sdata[threadIdx.x] += sdata[threadIdx.x + s];
-		}	
-		cg::sync(cta);
-	  }
-	
-	  // write result for this block to global mem
-	  if (threadIdx.x == 0) dataOut[blockIdx.x] = sdata[0];
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_fabsf(Myfloat *data, Myfloat *dataOut, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		dataOut[tid]=0;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			dataOut[tid] = fabsf(data[tid]);
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-__global__ void kernel_mask(Myfloat *data, Myfloat *dataOut, Myfloat val, int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		dataOut[tid]=val;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
-		{
-			dataOut[tid] = data[tid];
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
+// update array prn (input/output)
+// input arrays prc, coef, lapla
 
 __global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat *lapla,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+		const Myint n1, const Myint n2, const int n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	const Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+
+	while (tid < size)
+	{
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx - i2*n1 ;
+
+		if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End)
+		{
+			prn[tid] = TWO * prc[tid] - prn[tid] + coef[tid] * lapla[tid];
+		}
+
+		tid += blockDim.x * gridDim.x;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+// perform boundaray condition
+// copy grid inner points in to halos and revert sign of values
+
+__global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint I1HALO1_neigh, const Myint64 i1halo1_i1Start, const Myint64 i1halo1_i1End, const Myint64 i1halo1_i2Start, const Myint64 i1halo1_i2End, const Myint64 i1halo1_i3Start, const Myint64 i1halo1_i3End,
+		const Myint I1HALO2_neigh, const Myint64 i1halo2_i1Start, const Myint64 i1halo2_i1End, const Myint64 i1halo2_i2Start, const Myint64 i1halo2_i2End, const Myint64 i1halo2_i3Start, const Myint64 i1halo2_i3End,
+		const Myint I2HALO1_neigh, const Myint64 i2halo1_i1Start, const Myint64 i2halo1_i1End, const Myint64 i2halo1_i2Start, const Myint64 i2halo1_i2End, const Myint64 i2halo1_i3Start, const Myint64 i2halo1_i3End,
+		const Myint I2HALO2_neigh, const Myint64 i2halo2_i1Start, const Myint64 i2halo2_i1End, const Myint64 i2halo2_i2Start, const Myint64 i2halo2_i2End, const Myint64 i2halo2_i3Start, const Myint64 i2halo2_i3End,
+		const Myint I3HALO1_neigh, const Myint64 i3halo1_i1Start, const Myint64 i3halo1_i1End, const Myint64 i3halo1_i2Start, const Myint64 i3halo1_i2End, const Myint64 i3halo1_i3Start, const Myint64 i3halo1_i3End,
+		const Myint I3HALO2_neigh, const Myint64 i3halo2_i1Start, const Myint64 i3halo2_i1End, const Myint64 i3halo2_i2Start, const Myint64 i3halo2_i2End, const Myint64 i3halo2_i3Start, const Myint64 i3halo2_i3End)
+
 {
 	Myint64 size = n1*n2*n3;
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
-
-		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End)
-		{
-			prn[tid] = Myfloat(2.0) * prc[tid] - prn[tid] + coef[tid] * lapla[tid];
-		}
-
-		tid += blockDim.x * gridDim.x;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data, int n1, int n2, int n3,
-			Myint I1HALO1_neigh, Myint64 i1halo1_i1Start, Myint64 i1halo1_i1End, Myint64 i1halo1_i2Start, Myint64 i1halo1_i2End, Myint64 i1halo1_i3Start, Myint64 i1halo1_i3End,
-			Myint I1HALO2_neigh, Myint64 i1halo2_i1Start, Myint64 i1halo2_i1End, Myint64 i1halo2_i2Start, Myint64 i1halo2_i2End, Myint64 i1halo2_i3Start, Myint64 i1halo2_i3End,
-			Myint I2HALO1_neigh, Myint64 i2halo1_i1Start, Myint64 i2halo1_i1End, Myint64 i2halo1_i2Start, Myint64 i2halo1_i2End, Myint64 i2halo1_i3Start, Myint64 i2halo1_i3End,
-			Myint I2HALO2_neigh, Myint64 i2halo2_i1Start, Myint64 i2halo2_i1End, Myint64 i2halo2_i2Start, Myint64 i2halo2_i2End, Myint64 i2halo2_i3Start, Myint64 i2halo2_i3End,
-			Myint I3HALO1_neigh, Myint64 i3halo1_i1Start, Myint64 i3halo1_i1End, Myint64 i3halo1_i2Start, Myint64 i3halo1_i2End, Myint64 i3halo1_i3Start, Myint64 i3halo1_i3End,
-			Myint I3HALO2_neigh, Myint64 i3halo2_i1Start, Myint64 i3halo2_i1End, Myint64 i3halo2_i2Start, Myint64 i3halo2_i2End, Myint64 i3halo2_i3Start, Myint64 i3halo2_i3End)
-			
-{
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
-
-	while (tid < size)
-	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx - i2*n1 ;
 
 		// I1HALO1
 		if (I1HALO1_neigh == MPI_PROC_NULL)
@@ -790,19 +659,24 @@ __global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data, int n
 }
 
 //-------------------------------------------------------------------------------------------------------
+// update pressure wavefield (used in progator)
+// input/output prn
+// input prc
 
-__global__ void kernel_computePressureWithFD(Dim_type dim, Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_computePressureWithFD(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
+		unsigned int i3 = tid / (n1*n2);
+		unsigned int idx = tid-i3*n1*n2;
+		unsigned int i2 = idx/n1;
+		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
 				i2 >= i2Start && i2 <= i2End &&
@@ -934,19 +808,25 @@ __global__ void kernel_computePressureWithFD(Dim_type dim, Myint fdOrder, Myfloa
 }
 
 //-------------------------------------------------------------------------------------------------------
+// compute derivative along axis 1
+// input u
+// output w
 
-__global__ void kernel_FD_D2_N1(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_FD_D2_N1(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2) ;
+		unsigned int idx = tid-i3*n1*n2 ;
+		unsigned int i2 = idx/n1 ;
+		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
 				i2 >= i2Start && i2 <= i2End &&
@@ -985,19 +865,25 @@ __global__ void kernel_FD_D2_N1(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat i
 }
 
 //-------------------------------------------------------------------------------------------------------
+// compute derivative along axis 2
+// input u
+// output w
 
-__global__ void kernel_FD_D2_N2(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_FD_D2_N2(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2) ;
+		unsigned int idx = tid-i3*n1*n2 ;
+		unsigned int i2 = idx/n1 ;
+		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
 				i2 >= i2Start && i2 <= i2End &&
@@ -1036,21 +922,25 @@ __global__ void kernel_FD_D2_N2(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat i
 }
 
 //-------------------------------------------------------------------------------------------------------
+// compute derivative along axis 3
+// input u
+// output w
 
-//-------------------------------------------------------------------------------------------------------
-
-__global__ void kernel_FD_D2_N3(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_FD_D2_N3(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2) ;
+		unsigned int idx = tid-i3*n1*n2 ;
+		unsigned int i2 = idx/n1 ;
+		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
 				i2 >= i2Start && i2 <= i2End &&
@@ -1089,19 +979,25 @@ __global__ void kernel_FD_D2_N3(Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat i
 }
 
 //-------------------------------------------------------------------------------------------------------
+// compute Laplacian
+// input u
+// output w
 
-__global__ void kernel_FD_LAPLACIAN(Dim_type dim, Myint fdOrder, Myfloat *w, Myfloat *u, Myfloat inv2_d1, Myfloat inv2_d2, Myfloat inv2_d3,
-		int n1, int n2, int n3, Myint64 i1Start, Myint64 i1End, Myint64 i2Start, Myint64 i2End, Myint64 i3Start, Myint64 i3End)
+__global__ void kernel_FD_LAPLACIAN(const Dim_type dim, const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	int size = n1*n2*n3;
-	int tid = threadIdx.x + blockIdx.x*blockDim.x;
+	Myint64 size = n1*n2*n3;
+	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	while (tid < size)
 	{
-		int i3 = tid / (n1*n2);
-		int idx = tid-i3*n1*n2;
-		int i2 = idx/n1;
-		int i1 = idx%n1;
+		// convert 1d index to 3d indexes
+		unsigned int i3 = tid / (n1*n2) ;
+		unsigned int idx = tid-i3*n1*n2 ;
+		unsigned int i2 = idx/n1 ;
+		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
 				i2 >= i2Start && i2 <= i2End &&
@@ -1219,8 +1115,9 @@ __global__ void kernel_FD_LAPLACIAN(Dim_type dim, Myint fdOrder, Myfloat *w, Myf
 }
 
 //-------------------------------------------------------------------------------------------------------
+// fill gridOut with val
 
-__global__ void kernel_fillArray(Myfloat *gridOut, Myfloat val, Myint64 gridSize)
+__global__ void kernel_fillArray(Myfloat *gridOut, const Myfloat val, const Myint64 gridSize)
 {
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 	while (tid < gridSize)
@@ -1231,8 +1128,9 @@ __global__ void kernel_fillArray(Myfloat *gridOut, Myfloat val, Myint64 gridSize
 }
 
 //-------------------------------------------------------------------------------------------------------
+// copy gridIn into gridOut
 
-__global__ void kernel_copyArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
+__global__ void kernel_copyArray(Myfloat *gridOut, Myfloat *gridIn, const Myint64 gridSize)
 {
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 	while (tid < gridSize)
@@ -1243,8 +1141,9 @@ __global__ void kernel_copyArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 grid
 }
 
 //-------------------------------------------------------------------------------------------------------
+// sum gridIn1 and gridIn2 and stores into gridOut
 
-__global__ void kernel_addArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
+__global__ void kernel_addArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, const Myint64 gridSize)
 {
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 	while (tid < gridSize)
@@ -1255,8 +1154,9 @@ __global__ void kernel_addArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gri
 }
 
 //-------------------------------------------------------------------------------------------------------
+// multiply gridIn1 and gridIn2 and stores into gridOut
 
-__global__ void kernel_multiplyArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, Myint64 gridSize)
+__global__ void kernel_multiplyArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat *gridIn2, const Myint64 gridSize)
 {
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 	while (tid < gridSize)
@@ -1267,8 +1167,9 @@ __global__ void kernel_multiplyArray(Myfloat *gridOut, Myfloat *gridIn1, Myfloat
 }
 
 //-------------------------------------------------------------------------------------------------------
+// add gridIn and gridOut and stores into gridOut
 
-__global__ void kernel_addUpdateArray(Myfloat *gridOut, Myfloat *gridIn, Myint64 gridSize)
+__global__ void kernel_addUpdateArray(Myfloat *gridOut, Myfloat *gridIn, const Myint64 gridSize)
 {
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 	while (tid < gridSize)
@@ -1565,6 +1466,13 @@ Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 
 	printDebug(FULL_DEBUG, "In Grid_Hip::computePressureWithFD") ;
 
+	// check grids are same size
+	if (this->sameSize(prcGridIn) != true)
+	{
+		printError("In Grid_Hip::computePressureWithFD, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
 	//pointType
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
@@ -1637,13 +1545,159 @@ void Grid_Hip::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_type
 {
 	printDebug(FULL_DEBUG, "In Grid_Hip::fill") ;
 
-	// this function is critical for validation purpose of most of functions
+	// this function is critical for validation purpose of hpcscan
 	// however, it is not included in the performance benchmark
-	// it is therefore convenient to build the grid on the CPU
-	// and then copy the grid to the GPU
 
-	Grid::fill(pointType, t1, t2, t3, param1, param2, param3, amp) ;
-	copyGridHostToDevice(pointType) ;
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End, s1, s2, s3 ;
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	s1 = i1End - i1Start + 1;
+	s2 = i2End - i2Start + 1;
+	s3 = i3End - i3Start + 1;
+
+	Myfloat64 *val1 = new Myfloat64[s1] ;
+	Myfloat64 *val2 = new Myfloat64[s2] ;
+	Myfloat64 *val3 = new Myfloat64[s3] ;
+
+	// build the 3 1d functions
+	// this is done on the host
+#pragma omp simd
+	for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+	{
+		Myfloat64 coord1 = Myfloat64(Orig1 + i1 * d1) ;
+
+		if (dim >= DIM1)
+		{
+			if (t1 == FUNC_SINE)
+			{
+				val1[i1-i1Start] = sin(coord1 * param1) ;
+			}
+			else if (t1 == FUNC_COSINE)
+			{
+				val1[i1-i1Start] = cos(coord1 * param1) ;
+			}
+			else if (t1 == FUNC_LINEAR)
+			{
+				val1[i1-i1Start] = coord1 ;
+			}
+			else if (t1 == FUNC_CONST)
+			{
+				val1[i1-i1Start] = 1.0 ;
+			}
+			else if (t1 == FUNC_RANDOM)
+			{
+				val1[i1-i1Start] = Myfloat(rand()) / RAND_MAX ;
+			}
+			else
+			{
+				val1[i1-i1Start] = 1.0;
+			}
+		}
+		else
+		{
+			val1[i1-i1Start] = 1.0 ;
+		}
+	}
+
+#pragma omp simd
+	for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+	{
+		Myfloat64 coord2 = Myfloat64(Orig2 + i2 * d2) ;
+		if (dim >= DIM2)
+		{
+			if (t2 == FUNC_SINE)
+			{
+				val2[i2-i2Start] = sin(coord2 * param2) ;
+			}
+			else if (t2 == FUNC_COSINE)
+			{
+				val2[i2-i2Start] = cos(coord2 * param2) ;
+			}
+			else if (t2 == FUNC_LINEAR)
+			{
+				val2[i2-i2Start] = coord2 ;
+			}
+			else if (t2 == FUNC_CONST)
+			{
+				val2[i2-i2Start] = 1.0 ;
+			}
+			else if (t2 == FUNC_RANDOM)
+			{
+				val2[i2-i2Start] = Myfloat(rand()) / RAND_MAX ;
+			}
+			else
+			{
+				val2[i2-i2Start] = 1.0;
+			}
+		}
+		else
+		{
+			val2[i2-i2Start] = 1.0 ;
+		}
+	}
+
+#pragma omp simd
+	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	{
+		Myfloat64 coord3 = Myfloat64(Orig3 + i3 * d3) ;
+		if (dim >= DIM3)
+		{
+			if (t3 == FUNC_SINE)
+			{
+				val3[i3-i3Start] = sin(coord3 * param3) ;
+			}
+			else if (t3 == FUNC_COSINE)
+			{
+				val3[i3-i3Start] = cos(coord3 * param3) ;
+			}
+			else if (t3 == FUNC_LINEAR)
+			{
+				val3[i3-i3Start] = coord3 ;
+			}
+			else if (t3 == FUNC_CONST)
+			{
+				val3[i3-i3Start] = 1.0 ;
+			}
+			else if (t3 == FUNC_RANDOM)
+			{
+				val3[i3-i3Start] = Myfloat(rand()) / RAND_MAX ;
+			}
+			else
+			{
+				val3[i3-i3Start] = 1.0;
+			}
+		}
+		else
+		{
+			val3[i3-i3Start] = 1.0 ;
+		}
+	}
+
+	// copy the 1d functions from host to device
+	Myfloat64 *d_val1 ;
+	hipMalloc( (void**)&d_val1, s1 * sizeof(Myfloat64) );
+	hipMemcpy(&(d_val1[0]), &(val1[0]), s1 * sizeof(Myfloat64), hipMemcpyHostToDevice) ;
+
+	Myfloat64 *d_val2 ;
+	hipMalloc( (void**)&d_val2, s2 * sizeof(Myfloat64) );
+	hipMemcpy(&(d_val2[0]), &(val2[0]), s2 * sizeof(Myfloat64), hipMemcpyHostToDevice) ;
+
+	Myfloat64 *d_val3 ;
+	hipMalloc( (void**)&d_val3, s3 * sizeof(Myfloat64) );
+	hipMemcpy(&(d_val3[0]), &(val3[0]), s3 * sizeof(Myfloat64), hipMemcpyHostToDevice) ;
+
+	// fill the grid
+	hipLaunchKernelGGL(kernel_fill_function, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, d_grid_3d, d_val1, d_val2, d_val3, amp, n1, n2, n3, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	hipDeviceSynchronize();
+	cudaCheckError();
+
+	delete[] val1 ;
+	delete[] val2 ;
+	delete[] val3 ;
+
+	hipFree(d_val1);
+	hipFree(d_val2);
+	hipFree(d_val3);
 
 	printDebug(FULL_DEBUG, "Out Grid_Hip::fill") ;
 }
@@ -2062,6 +2116,10 @@ Rtn_code Grid_Hip::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTyp
 			return(RTN_CODE_KO) ;
 		}
 
+		//===============================================
+		// TODO UPDATE NEEDED FOR HIP AWARE MPI LIBRARY
+		//===============================================
+
 		// copy halo to send from device to host
 		if (rankSend != MPI_PROC_NULL)
 			copyGridDeviceToHost(bufSendPointType) ;
@@ -2163,35 +2221,45 @@ Rtn_code Grid_Hip::applyBoundaryCondition(BoundCond_type boundCondType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Hip::applyBoundaryCondition") ;
 
-	if (boundCondType != BOUND_COND_ANTI_MIRROR)
+
+	if (boundCondType == NO_BOUND_COND)
 	{
-		printError("HIP: only BOUND_COND_ANTI_MIRROR boundary condition for now");
+		// nothing to do
 	}
 
-	Myint64 	i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
-				i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
-				i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
-				i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
-				i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
-				i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End;
-	
-	getGridIndex(I1HALO1, &i1halo1_i1Start, &i1halo1_i1End, &i1halo1_i2Start, &i1halo1_i2End, &i1halo1_i3Start, &i1halo1_i3End);
-	getGridIndex(I1HALO2, &i1halo2_i1Start, &i1halo2_i1End, &i1halo2_i2Start, &i1halo2_i2End, &i1halo2_i3Start, &i1halo2_i3End);
-	getGridIndex(I2HALO1, &i2halo1_i1Start, &i2halo1_i1End, &i2halo1_i2Start, &i2halo1_i2End, &i2halo1_i3Start, &i2halo1_i3End);
-	getGridIndex(I2HALO2, &i2halo2_i1Start, &i2halo2_i1End, &i2halo2_i2Start, &i2halo2_i2End, &i2halo2_i3Start, &i2halo2_i3End);
-	getGridIndex(I3HALO1, &i3halo1_i1Start, &i3halo1_i1End, &i3halo1_i2Start, &i3halo1_i2End, &i3halo1_i3Start, &i3halo1_i3End);
-	getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
+	else if (boundCondType == BOUND_COND_ANTI_MIRROR)
+	{
+		Myint64 	i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
+		i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
+		i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
+		i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
+		i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
+		i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End;
+
+		getGridIndex(I1HALO1, &i1halo1_i1Start, &i1halo1_i1End, &i1halo1_i2Start, &i1halo1_i2End, &i1halo1_i3Start, &i1halo1_i3End);
+		getGridIndex(I1HALO2, &i1halo2_i1Start, &i1halo2_i1End, &i1halo2_i2Start, &i1halo2_i2End, &i1halo2_i3Start, &i1halo2_i3End);
+		getGridIndex(I2HALO1, &i2halo1_i1Start, &i2halo1_i1End, &i2halo1_i2Start, &i2halo1_i2End, &i2halo1_i3Start, &i2halo1_i3End);
+		getGridIndex(I2HALO2, &i2halo2_i1Start, &i2halo2_i1End, &i2halo2_i2Start, &i2halo2_i2End, &i2halo2_i3Start, &i2halo2_i3End);
+		getGridIndex(I3HALO1, &i3halo1_i1Start, &i3halo1_i1End, &i3halo1_i2Start, &i3halo1_i2End, &i3halo1_i3Start, &i3halo1_i3End);
+		getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
 
 
-	hipLaunchKernelGGL(kernel_applyBoundaryCondition, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, dim, d_grid_3d, n1, n2, n3,
-			getNeighbourProc(I1HALO1), i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
-			getNeighbourProc(I1HALO2), i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
-			getNeighbourProc(I2HALO1), i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
-			getNeighbourProc(I2HALO2), i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
-			getNeighbourProc(I3HALO1), i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
-			getNeighbourProc(I3HALO2), i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End);
+		hipLaunchKernelGGL(kernel_applyBoundaryCondition, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, dim, d_grid_3d, n1, n2, n3,
+				getNeighbourProc(I1HALO1), i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
+				getNeighbourProc(I1HALO2), i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
+				getNeighbourProc(I2HALO1), i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
+				getNeighbourProc(I2HALO2), i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
+				getNeighbourProc(I3HALO1), i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
+				getNeighbourProc(I3HALO2), i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End);
 
-	hipDeviceSynchronize();
+		hipDeviceSynchronize();
+	}
+	else
+	{
+		printError("IN Grid_Hip::applyBoundaryCondition, invalid boundCondType", boundCondType) ;
+		return(RTN_CODE_KO) ;
+	}
+
 
 	printDebug(FULL_DEBUG, "Out Grid_Hip::applyBoundaryCondition") ;
 	return(RTN_CODE_OK) ;
@@ -2248,6 +2316,13 @@ Myfloat Grid_Hip::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 {
 
 	printDebug(LIGHT_DEBUG, "IN Grid_Hip::getSumAbsDiff");
+
+	// check grids have same size
+	if (!(this->sameSize(gridIn)))
+	{
+		printError("Grid_Hip::getSumAbsDiff, grids have different size") ;
+		return(-1.0) ;
+	}
 
 	Myfloat sum = 0 ;
 
@@ -2329,6 +2404,10 @@ Rtn_code Grid_Hip::sendWithMPI(Myint64 nGridPoint, Myint procDestId)
 
 	printDebug(FULL_DEBUG, "In Grid_Hip::sendWithMPI") ;
 
+	//===============================================
+	// TODO UPDATE NEEDED FOR HIP AWARE MPI LIBRARY
+	//===============================================
+
 	// copy from device to host
 	Myint64 idx = 0 ;
 	hipMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), hipMemcpyDeviceToHost) ;
@@ -2345,6 +2424,10 @@ Rtn_code Grid_Hip::recvWithMPI(Myint64 nGridPoint, Myint procSrcId)
 {
 
 	printDebug(FULL_DEBUG, "In Grid_Hip::recvWithMPI") ;
+
+	//===============================================
+	// TODO UPDATE NEEDED FOR HIP AWARE MPI LIBRARY
+	//===============================================
 
 	MPI_Status status ;
 	MPI_Recv(grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status) ;
@@ -2369,6 +2452,10 @@ Rtn_code Grid_Hip::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idR
 
 	printDebug(FULL_DEBUG, "In Grid_Hip::sendRecvWithMPI") ;
 
+	//===============================================
+	// TODO UPDATE NEEDED FOR HIP AWARE MPI LIBRARY
+	//===============================================
+
 	Myfloat *bufSend = grid_3d ;
 	Myfloat *bufRecv = gridDest.grid_3d ;
 
@@ -2392,6 +2479,5 @@ Rtn_code Grid_Hip::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idR
 	printDebug(FULL_DEBUG, "Out Grid_Hip::sendRecvWithMPI") ;
 	return(RTN_CODE_OK) ;
 }
-
 
 } // namespace hpcscan
