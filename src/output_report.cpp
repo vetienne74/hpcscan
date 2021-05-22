@@ -22,7 +22,7 @@ using namespace std;
 
 namespace hpcscan {
 
-static const string CURRENT_VERSION = "1.1" ;
+static const string CURRENT_VERSION = "1.2" ;
 
 static const string LINE_REPORT_T1 = "================================================================================" ;
 static const string LINE_REPORT_T2 = "--------------------------------------------------------------------------------" ;

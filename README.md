@@ -36,7 +36,7 @@
 
 # Welcome to hpcscan
 
-Version 1.1
+**Version 1.2**
 
 Contact: Vincent Etienne / Email: vetienne@rocketmail.com
 
@@ -126,6 +126,7 @@ Version      | Description | Release date
 ------------ | ----------- | ------------
 v1.0         | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
 v1.1         | Added test modes NEC, CUDA and HIP | May 22, 2021
+v1.2         | Added test mode DPC++ (on going) | Coming soon
 
 # Main features
 
