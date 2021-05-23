@@ -211,11 +211,12 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -testMode <string>   = test mode") ;
 			printInfo(MASTER, "     Baseline         * CPU without optimization (DEFAULT)") ;
 			printInfo(MASTER, "     CacheBlk         * CPU with cache blocking techniques") ;
-			printInfo(MASTER, "     CUDA             * GPU with CUDA without optimization") ;
-			printInfo(MASTER, "     HIP              * GPU with HIP without optimization") ;
-			printInfo(MASTER, "     NEC              * NEC with compiler directives") ;
-			printInfo(MASTER, "     NEC_SCA          * NEC with Stencil Code Accelerator") ;
-			printInfo(MASTER, "     OpenAcc          * GPU with OpenAcc without optimization") ;
+			printInfo(MASTER, "     CUDA             * NVIDIA GPU with CUDA without optimization") ;
+			printInfo(MASTER, "     DPC++            * CPU/GPU/FPGA with DPC++ without optimization") ;
+			printInfo(MASTER, "     HIP              * AMD GPU with HIP without optimization") ;
+			printInfo(MASTER, "     NEC              * NEC SX-Aurora with compiler directives") ;
+			printInfo(MASTER, "     NEC_SCA          * NEC SX-Aurora with Stencil Code Accelerator") ;
+//			printInfo(MASTER, "     OpenAcc          * GPU with OpenAcc without optimization") ;
 			printInfo(MASTER, " -tmax <float>        = max. time (s) for propagator") ;
 			printInfo(MASTER, "     (if specified tmax overrides nt)") ;
 			printInfo(MASTER, " -version or -v       = print version information") ;

@@ -62,17 +62,23 @@ Rtn_code print_header_of_output_report(void)
 		printInfo(MASTER, " Mode CUDA", "DISABLED") ;
 #endif
 
+#ifdef __DPCPP__
+		printInfo(MASTER, " Mode DPC++", "ENABLED") ;
+#else
+		printInfo(MASTER, " Mode DPC++", "DISABLED") ;
+#endif
+
 #ifdef __HIP__
 		printInfo(MASTER, " Mode HIP", "ENABLED") ;
 #else
 		printInfo(MASTER, " Mode HIP", "DISABLED") ;
 #endif
 
-#ifdef __OPENACC__
-		printInfo(MASTER, " Mode OpenAcc", "ENABLED") ;
-#else
-		printInfo(MASTER, " Mode OpenAcc", "DISABLED") ;
-#endif
+//#ifdef __OPENACC__
+//		printInfo(MASTER, " Mode OpenAcc", "ENABLED") ;
+//#else
+//		printInfo(MASTER, " Mode OpenAcc", "DISABLED") ;
+//#endif
 
 #ifdef __NEC__
 		printInfo(MASTER, " Mode NEC", "ENABLED") ;

@@ -155,12 +155,13 @@ Util         | Utility tests to check internal functions | Reserved for developp
 
 Test mode name | Description | Remark
 ------------ | ----------- | ------------
-Baseline     | CPU standard implementation | :arrow_right: **This mode is the reference implementation without any optimization.** <br> Always enabled
+Baseline     | CPU standard implementation | :arrow_right: **This mode is the reference implementation without any optimization.** <br> **Default test mode.** Always enabled
 CacheBlk     | CPU with cache blocking optimization techniques | Always enabled
-CUDA         | GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
-HIP          | GPU with HIP without optimization | Only enabled when compiled with hipcc (AMD HIP compiler)
-NEC          | NEC with compiler directives | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
-NEC_SCA      | NEC with Stencil Code Accelerator | Only enabled when compiled with nc++ (NEC C++ compiler for SX-Aurora TSUBASA)
+CUDA         | NVIDIA GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
+DPC++        | CPU/GPU/FPGA with DPC++ without optimization | Only enabled when compiled with dpcpp (Intel OneAPI DPC++ compiler)
+HIP          | AMD GPU with HIP without optimization | Only enabled when compiled with hipcc (AMD HIP compiler)
+NEC          | NEC SX-Aurora with compiler directives | Only enabled when compiled with nc++ (NEC C++ compiler)
+NEC_SCA      | NEC SX-Aurora with Stencil Code Accelerator | Only enabled when compiled with nc++ (NEC C++ compiler)
 OpenAcc      | GPU with OpenACC without optimization | Only enabled when compiled with a C++ compiler that supports OpenACC **(not yet operational)**
 
 # Environment set-up

@@ -46,6 +46,11 @@ ifneq ($(strip $(HPCSCAN_CUDA)),)
 HPCSCAN_CPP_FLAGCOMP+=-D__CUDA__
 endif
 
+# WITH DPC++
+ifeq ($(findstring dpcpp,$(HPCSCAN_CPP)), dpcpp)
+HPCSCAN_CPP_FLAGCOMP+=-D__DPCPP__
+endif
+
 # WITH HIP
 ifneq ($(strip $(HPCSCAN_HIP)),)
 HPCSCAN_CPP_FLAGCOMP+=-D__HIP__

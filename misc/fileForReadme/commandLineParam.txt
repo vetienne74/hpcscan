@@ -50,11 +50,11 @@
  -testMode <string>   = test mode
      Baseline         * CPU without optimization (DEFAULT)
      CacheBlk         * CPU with cache blocking techniques
-     CUDA             * GPU with CUDA without optimization
-     HIP              * GPU with HIP without optimization
-     NEC              * NEC with compiler directives
-     NEC_SCA          * NEC with Stencil Code Accelerator
-     OpenAcc          * GPU with OpenAcc without optimization
+     CUDA             * NVIDIA GPU with CUDA without optimization
+     DPC++            * CPU/GPU/FPGA with DPC++ without optimization
+     HIP              * AMD GPU with HIP without optimization
+     NEC              * NEC SX-Aurora with compiler directives
+     NEC_SCA          * NEC SX-Aurora with Stencil Code Accelerator
  -tmax <float>        = max. time (s) for propagator
      (if specified tmax overrides nt)
  -version or -v       = print version information
