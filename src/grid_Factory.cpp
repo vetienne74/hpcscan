@@ -43,17 +43,18 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	}
 #endif
 
+#ifdef __DPCPP__
+	else if (gridMode.compare(GRID_MODE_DPCPP) == 0)
+	{
+		// TO DO: ADD Grid_Dpcpp
+		Rgrid = new Grid(gridType) ;
+	}
+#endif
+
 #ifdef __HIP__
 	else if (gridMode.compare(GRID_MODE_HIP) == 0)
 	{
 		Rgrid = new Grid_Hip(gridType) ;
-	}
-#endif
-
-#ifdef __OPENACC__
-	else if (gridMode.compare(GRID_MODE_OPENACC) == 0)
-	{
-		Rgrid = new Grid_OpenAcc(gridType) ;
 	}
 #endif
 
@@ -65,6 +66,13 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	else if (gridMode.compare(GRID_MODE_NEC_SCA) == 0)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType) ;
+	}
+#endif
+
+#ifdef __OPENACC__
+	else if (gridMode.compare(GRID_MODE_OPENACC) == 0)
+	{
+		Rgrid = new Grid_OpenAcc(gridType) ;
 	}
 #endif
 
@@ -110,17 +118,18 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	}
 #endif
 
+#ifdef __DPCPP__
+	else if (gridMode.compare(GRID_MODE_DPCPP) == 0)
+	{
+		// TO DO: ADD Grid_Dpcpp
+		Rgrid = new Grid(gridType, dim, n1, n2, n3) ;
+	}
+#endif
+
 #ifdef __HIP__
 	else if (gridMode.compare(GRID_MODE_HIP) == 0)
 	{
 		Rgrid = new Grid_Hip(gridType, dim, n1, n2, n3) ;
-	}
-#endif
-
-#ifdef __OPENACC__
-	else if (gridMode.compare(GRID_MODE_OPENACC) == 0)
-	{
-		Rgrid = new Grid_OpenAcc(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
@@ -132,6 +141,13 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	else if (gridMode.compare(GRID_MODE_NEC_SCA) == 0)
 	{
 		Rgrid = new Grid_NEC_SCA(gridType, dim, n1, n2, n3) ;
+	}
+#endif
+
+#ifdef __OPENACC__
+	else if (gridMode.compare(GRID_MODE_OPENACC) == 0)
+	{
+		Rgrid = new Grid_OpenAcc(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 

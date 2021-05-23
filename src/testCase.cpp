@@ -49,15 +49,15 @@ Rtn_code TestCase::initialize(void)
 		}
 #endif
 
-#ifdef __HIP__
-		else if (Config::Instance()->testMode.compare(GRID_MODE_HIP) == 0)
+#ifdef __DPCPP__
+		else if (Config::Instance()->testMode.compare(GRID_MODE_DPCPP) == 0)
 		{
 
 		}
 #endif
 
-#ifdef __OPENACC__
-		else if (Config::Instance()->testMode.compare(GRID_MODE_OPENACC) == 0)
+#ifdef __HIP__
+		else if (Config::Instance()->testMode.compare(GRID_MODE_HIP) == 0)
 		{
 
 		}
@@ -69,6 +69,13 @@ Rtn_code TestCase::initialize(void)
 
 		}
 		else if (Config::Instance()->testMode.compare(GRID_MODE_NEC_SCA) == 0)
+		{
+
+		}
+#endif
+
+#ifdef __OPENACC__
+		else if (Config::Instance()->testMode.compare(GRID_MODE_OPENACC) == 0)
 		{
 
 		}

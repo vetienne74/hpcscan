@@ -25,6 +25,7 @@ const Myfloat TWO = 2.0 ;
 const string   GRID_MODE_BASELINE      = "Baseline" ;
 const string   GRID_MODE_CACHEBLK      = "CacheBlk" ;
 const string   GRID_MODE_CUDA          = "CUDA" ;
+const string   GRID_MODE_DPCPP         = "DPC++" ;
 const string   GRID_MODE_HIP           = "HIP" ;
 const string   GRID_MODE_OPENACC       = "OpenAcc" ;
 const string   GRID_MODE_NEC           = "NEC" ;
