@@ -9,6 +9,7 @@
 #include "constant.h"
 #include "grid_CacheBlk.h"
 #include "grid_Cuda.h"
+#include "grid_DPCPP.h"
 #include "grid_Hip.h"
 #include "grid_NEC.h"
 #include "grid_NEC_SCA.h"
@@ -46,8 +47,7 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 #ifdef __DPCPP__
 	else if (gridMode.compare(GRID_MODE_DPCPP) == 0)
 	{
-		// TO DO: ADD Grid_Dpcpp
-		Rgrid = new Grid(gridType) ;
+		Rgrid = new Grid_DPCPP(gridType) ;
 	}
 #endif
 
@@ -121,8 +121,7 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 #ifdef __DPCPP__
 	else if (gridMode.compare(GRID_MODE_DPCPP) == 0)
 	{
-		// TO DO: ADD Grid_Dpcpp
-		Rgrid = new Grid(gridType, dim, n1, n2, n3) ;
+		Rgrid = new Grid_DPCPP(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 

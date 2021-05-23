@@ -85,11 +85,17 @@ CPP_OPENACC_OBJ = grid_OpenAcc.o
 # Cuda objects
 CUDA_OBJ = grid_Cuda.o
 
+# DPC++ objects
+DPCPP_OBJ = grid_DPCPP.o
+
 # Hip objects
 HIP_OBJ = grid_Hip.o
 
 # NEC objects
 CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o
+
+# OpenACC objects
+CPP_OPENACC_OBJ = grid_OpenAcc.o
 
 # build list of needed objects
 #-----------------------------
@@ -106,14 +112,19 @@ ifneq ($(strip $(HPCSCAN_HIP)),)
 ALL_OBJ += ${HIP_OBJ}
 endif
 
-# OpenACC objects
-ifneq ($(strip $(HPCSCAN_CPP_OPENACC_FLAG)),)
-ALL_OBJ += ${CPP_OPENACC_OBJ}
+# DPC++ objects
+ifeq ($(findstring dpcpp,$(HPCSCAN_CPP)), dpcpp)
+ALL_OBJ += ${DPCPP_OBJ}
 endif
 
 # NEC objects
 ifeq ($(HPCSCAN_CPP), mpinc++)
 ALL_OBJ += ${CPP_NEC_OBJ}
+endif
+
+# OpenACC objects
+ifneq ($(strip $(HPCSCAN_CPP_OPENACC_FLAG)),)
+ALL_OBJ += ${CPP_OPENACC_OBJ}
 endif
 
 .SUFFIXES: .o .cpp .cu .hip
