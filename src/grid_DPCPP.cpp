@@ -64,7 +64,7 @@ Grid_DPCPP::~Grid_DPCPP(void)
 	printDebug(MID_DEBUG, "IN Grid_DPCPP::~Grid_DPCPP");
 
 	//delete[] grid_3d ;
-	//free(d_grid_3d);
+	sycl::free(d_grid_3d, Q);
 	//free(d_help_3d);
 	//free(d_help_3d_2);
 
