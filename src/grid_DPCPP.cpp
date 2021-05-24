@@ -15,9 +15,6 @@
 #include <fstream>
 #include <stdio.h>
 
-#include <CL/sycl.hpp>
-#include "mpi.h"
-
 #include "config.h"
 #include "constant.h"
 #include "fdm.h"
@@ -36,8 +33,9 @@ Grid_DPCPP::Grid_DPCPP(Grid_type gridTypeIn) : Grid(gridTypeIn)
 
 	gridMode = GRID_MODE_DPCPP ;
 
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
+	d_grid_3d   = NULL ;
+	d_help_3d   = NULL ;
+	d_help_3d_2 = NULL ;
 
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::Grid_DPCPP");
 														}
@@ -52,8 +50,9 @@ Grid_DPCPP::Grid_DPCPP(Grid_type gridTypeIn, Dim_type dimIn,
 
 	gridMode = GRID_MODE_DPCPP ;
 
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
+	d_grid_3d   = NULL;
+	d_help_3d   = NULL;
+	d_help_3d_2 = NULL ;
 
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::Grid_DPCPP");
 }
@@ -72,6 +71,32 @@ Grid_DPCPP::~Grid_DPCPP(void)
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::~Grid_DPCPP");
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+void Grid_DPCPP::initializeGrid(void)
+{
+	printDebug(FULL_DEBUG, "In Grid_DPCPP::initializeGrid") ;
+
+	Grid::initializeGrid() ;
+
+	// initialize device queue
+	//*Q = sycl::queue() ;
+
+	if (d_grid_3d == NULL)
+	{
+		// allocate the grid on the device
+		d_grid_3d = sycl::malloc_shared<Myfloat>(npoint, Q) ;
+
+		// allocate 1d array of the device used to perform reduction operation
+		//cudaMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
+		//cudaCheckError();
+
+		// allocate 1d array of the device used to perform reduction operation
+		//cudaMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
+		//cudaCheckError();
+	}
+	printDebug(FULL_DEBUG, "Out Grid_DPCPP::initializeGrid") ;
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -83,7 +108,13 @@ void Grid_DPCPP::info(void)
 	Grid::info() ;
 
 	// additional info
-	printDebug(FULL_DEBUG, "IN Grid_DPCPP::info");
+	printInfo(MASTER, "") ;
+	printInfo(MASTER, " * Device parameters * ") ;
+
+	printInfo(MASTER, " Selected device", Q.get_device().get_info<sycl::info::device::name>() ) ;
+	printInfo(MASTER, " Device vendor\t", Q.get_device().get_info<sycl::info::device::vendor>() ) ;
+
+	printDebug(FULL_DEBUG, "OUT Grid_DPCPP::info");
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -93,16 +124,7 @@ void Grid_DPCPP::fillArray(Myfloat val)
 	printDebug(MID_DEBUG, "IN Grid_DPCPP::fillArray");
 
 	Myfloat * const w = grid_3d ;
-
-//#pragma omp parallel for
-//	for (Myint64 ii=0; ii<npoint; ii++)
-//	{
-//		w[ii] = val ;
-//	}
-
-	sycl::queue Q ;
-
-	Myfloat* w_d = sycl::malloc_shared<Myfloat>(npoint, Q) ;
+	Myfloat* w_d = d_grid_3d ;
 
 	Q.parallel_for(npoint,[=](int ii)
 	{
@@ -110,11 +132,6 @@ void Grid_DPCPP::fillArray(Myfloat val)
 	}).wait() ;
 
 	Q.memcpy(w, w_d, npoint*sizeof(Myfloat)).wait() ;
-
-	//for (int i=0; i<npoint; i++)
-	//{
-	//	w[i] = w_d[i] ;
-	//}
 
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::fillArray");
 }

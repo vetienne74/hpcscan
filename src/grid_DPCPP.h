@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include <CL/sycl.hpp>
 #include "mpi.h"
 
 #include "grid.h"
@@ -33,6 +34,9 @@ public:
 	// print info
 	virtual void info(void) ;
 
+	// initialise grid index and MPI data structure
+	virtual void initializeGrid(void) ;
+
 	// fill array with constant value
 	virtual void fillArray(Myfloat val) ;
 
@@ -45,6 +49,10 @@ protected:
 	// pointer to device memory
 	Myfloat * d_help_3d ;
 	Myfloat * d_help_3d_2 ;
+
+	// pointer to device queue
+	// TO DO it should be initialized in initializeGrid
+	sycl::queue Q ;
 
 } ;
 

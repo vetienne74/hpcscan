@@ -35,6 +35,14 @@ else
     echo 'SKIP testMode CUDA'
 fi
 
+# run all tests with -testMode DPC++
+if [ "$HPCSCAN_CPP" = "mpiicpc -cxx=dpcpp" ]
+then
+    sh testDriver.sh DPC++
+else
+    echo 'SKIP testMode DPC++'
+fi
+
 # run all tests with -testMode HIP
 if [ "$HPCSCAN_HIP" = "hipcc" ]
 then

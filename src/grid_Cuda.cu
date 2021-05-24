@@ -1190,8 +1190,9 @@ Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn) : Grid(gridTypeIn)
 
 	gridMode = GRID_MODE_CUDA ;
 
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
+	d_grid_3d   = NULL ;
+	d_help_3d   = NULL ;
+	d_help_3d_2 = NULL ;
 
 	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
 	gpuGridSize = Config::Instance()->gpuGridSize ;
@@ -1209,8 +1210,9 @@ Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn, Dim_type dimIn,
 
 	gridMode = GRID_MODE_CUDA ;
 
-	d_grid_3d = NULL;
-	d_help_3d = NULL;
+	d_grid_3d   = NULL ;
+	d_help_3d   = NULL ;
+	d_help_3d_2 = NULL ;
 
 	gpuBlkSize  = Config::Instance()->gpuBlkSize ;
 	gpuGridSize = Config::Instance()->gpuGridSize ;
@@ -1287,7 +1289,7 @@ void Grid_Cuda::info(void)
 		}
 	}
 
-	printDebug(FULL_DEBUG, "IN Grid_Cuda::info");
+	printDebug(FULL_DEBUG, "OUT Grid_Cuda::info");
 }
 
 //-------------------------------------------------------------------------------------------------------
