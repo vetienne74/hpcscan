@@ -9,7 +9,9 @@
 #include "constant.h"
 #include "grid_CacheBlk.h"
 #include "grid_Cuda.h"
+#ifdef __DPCPP__
 #include "grid_DPCPP.h"
+#endif
 #include "grid_Hip.h"
 #include "grid_NEC.h"
 #include "grid_NEC_SCA.h"
