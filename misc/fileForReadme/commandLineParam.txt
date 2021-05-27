@@ -13,6 +13,7 @@
  -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]
  -gpuBlkSize <int>    = GPU, number of threads per block
  -gpuGridSize <int>   = GPU, number of blocks per grid
+ -gpuMpiAware         = use MPI GPU-aware library
  -help or -h          = list of command line parameters
  -n1 <int>            = inner domain size axis 1 [grid pts]
  -n2 <int>            = inner domain size axis 2 [grid pts]

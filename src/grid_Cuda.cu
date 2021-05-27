@@ -71,8 +71,8 @@ __global__ void kernel_multiBlk_minval(Myfloat *dataIn, Myfloat *dataOut,
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
 			// update min value
 			Myfloat val = dataIn[tid];
@@ -143,8 +143,8 @@ __global__ void kernel_multiBlk_maxval(Myfloat *dataIn, Myfloat *dataOut,
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
 			// update max value
 			Myfloat val = dataIn[tid];
@@ -215,8 +215,8 @@ __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
 			// update sum
 			Myfloat val = fabs(dataIn[tid]) ;
@@ -272,8 +272,8 @@ __global__ void kernel_multiBlk_sumAbsDiff(Myfloat *dataIn1, Myfloat *dataIn2, M
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
 			// update sum
 			Myfloat val = fabs(dataIn1[tid] - dataIn2[tid]) ;
@@ -335,8 +335,8 @@ __global__ void kernel_multiBlk_sumAbsAndAbsDiff(Myfloat *dataIn1, Myfloat *data
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
 			// update sum
 			sdata1[threadIdx.x] += fabs(dataIn1[tid] - dataIn2[tid]) ;
@@ -411,8 +411,8 @@ __global__ void kernel_multiBlk_maxErr(Myfloat *dataIn1, Myfloat *dataIn2, Myflo
 
 		// check if point fall into target area
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
 			// update max
 			Myfloat err2 ;
@@ -472,8 +472,8 @@ __global__ void kernel_fill_const(Myfloat *dataOut, const Myfloat val,
 		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
 			dataOut[tid] = val;
 		}
@@ -500,8 +500,8 @@ __global__ void kernel_fill_function(Myfloat *dataOut, Myfloat64 *val1, Myfloat6
 		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End   )
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End   )
 		{
 			dataOut[tid] =  val4 * val1[i1-i1Start] * val2[i2-i2Start] * val3[i3-i3Start];
 		}
@@ -529,8 +529,8 @@ __global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		unsigned int i1 = idx - i2*n1 ;
 
 		if (i1 >= i1Start && i1 <= i1End &&
-			i2 >= i2Start && i2 <= i2End &&
-			i3 >= i3Start && i3 <= i3End)
+				i2 >= i2Start && i2 <= i2End &&
+				i3 >= i3Start && i3 <= i3End)
 		{
 			prn[tid] = TWO * prc[tid] - prn[tid] + coef[tid] * lapla[tid];
 		}
@@ -1185,7 +1185,7 @@ __global__ void kernel_addUpdateArray(Myfloat *gridOut, Myfloat *gridIn, const M
 //-------------------------------------------------------------------------------------------------------
 
 Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn) : Grid(gridTypeIn)
-														{
+{
 	printDebug(MID_DEBUG, "IN Grid_Cuda::Grid_Cuda");
 
 	gridMode = GRID_MODE_CUDA ;
@@ -1198,7 +1198,7 @@ Grid_Cuda::Grid_Cuda(Grid_type gridTypeIn) : Grid(gridTypeIn)
 	gpuGridSize = Config::Instance()->gpuGridSize ;
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda::Grid_Cuda");
-														}
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -1251,14 +1251,14 @@ void Grid_Cuda::info(void)
 	printInfo(MASTER, " * GPU parameters * ") ;
 	printInfo(MASTER, " Blocks per grid", gpuGridSize) ;
 	printInfo(MASTER, " Threads per block", gpuBlkSize) ;
-	
+
 	if (Config::Instance()->gpuMpiAware)
 	{
-	printInfo(MASTER, " MPI GPU-Aware Library", "ENABLED") ;
+		printInfo(MASTER, " MPI GPU-Aware Library", "ENABLED") ;
 	}
 	else
 	{
-	printInfo(MASTER, " MPI GPU-Aware Library", "DISABLED") ;
+		printInfo(MASTER, " MPI GPU-Aware Library", "DISABLED") ;
 	}
 
 	int startDevice = 0;
@@ -1297,7 +1297,7 @@ void Grid_Cuda::info(void)
 					cudaGetErrorString(error_id));
 		}
 	}
-	
+
 
 	printDebug(FULL_DEBUG, "OUT Grid_Cuda::info");
 }
@@ -1461,7 +1461,7 @@ Rtn_code Grid_Cuda::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint 
 	Myfloat * d_u = this->d_grid_3d ;
 
 	kernel_FD_LAPLACIAN<<<gpuGridSize, gpuBlkSize>>>(dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
-				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
 	cudaDeviceSynchronize();
@@ -1498,13 +1498,13 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 
 	Myfloat *prc_d_grid_3d = ((Grid_Cuda&) prcGridIn).d_grid_3d ;
 	Myfloat *coef_d_grid_3d = ((Grid_Cuda&) coefGridIn).d_grid_3d ;
-	
+
 	kernel_computePressureWithFD<<<gpuGridSize, gpuBlkSize>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
-					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 	cudaCheckError();
 	cudaDeviceSynchronize();
-	
+
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::computePressureWithFD") ;
 	return(RTN_CODE_OK) ;
 }
@@ -1516,7 +1516,7 @@ void Grid_Cuda::initializeGrid(void)
 	printDebug(FULL_DEBUG, "In Grid_Cuda::initializeGrid") ;
 
 	Grid::initializeGrid() ;
-	
+
 	// set device to this MPI rank
 	Myint deviceCount;
 	cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
@@ -1524,7 +1524,7 @@ void Grid_Cuda::initializeGrid(void)
 		printError(" In Grid_Cuda::initializeGrid, cudaGetDeviceCount", (int) error_id) ;
 	}
 	printDebug(FULL_DEBUG, "Device Count", deviceCount) ;
-	
+
 	Myint myDevice = myid_world % deviceCount ;
 	error_id = cudaSetDevice(myDevice);
 	if (error_id != cudaSuccess) {
@@ -1552,7 +1552,7 @@ void Grid_Cuda::initializeGrid(void)
 		cudaMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
 	}
-	
+
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::initializeGrid") ;
 }
 
@@ -2125,37 +2125,37 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 			printError("IN Grid_Cuda::exchangeHalo, invalid pointType", pointType) ;
 			return(RTN_CODE_KO) ;
 		}
-	
+
 		if (!(Config::Instance()->gpuMpiAware))
 		{
-		
-		Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
-		Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
-		bufSend = &(grid_3d[idxSend]) ;
-		bufRecv = &(grid_3d[idxRecv]) ;
-		
-		// copy halo to send from device to host
-		if (rankSend != MPI_PROC_NULL)
-			copyGridDeviceToHost(bufSendPointType) ;
 
-		// call MPI_Sendrecv
-		printDebug(FULL_DEBUG, "MPI_Sendrecv", rankSend, rankRecv) ;
-		MPI_Sendrecv(bufSend, 1, typeSend, rankSend, 0,
-				bufRecv, 1, typeRecv, rankRecv, 0,
-				MPI_COMM_WORLD, &status);
+			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+			bufSend = &(grid_3d[idxSend]) ;
+			bufRecv = &(grid_3d[idxRecv]) ;
 
-		// copy halo received from host to device
-		if (rankRecv != MPI_PROC_NULL)
-			copyGridHostToDevice(bufRecvPointType) ;
-			
-			}
+			// copy halo to send from device to host
+			if (rankSend != MPI_PROC_NULL)
+				copyGridDeviceToHost(bufSendPointType) ;
+
+			// call MPI_Sendrecv
+			printDebug(FULL_DEBUG, "MPI_Sendrecv", rankSend, rankRecv) ;
+			MPI_Sendrecv(bufSend, 1, typeSend, rankSend, 0,
+					bufRecv, 1, typeRecv, rankRecv, 0,
+					MPI_COMM_WORLD, &status);
+
+			// copy halo received from host to device
+			if (rankRecv != MPI_PROC_NULL)
+				copyGridHostToDevice(bufRecvPointType) ;
+
+		}
 		else
 		{
 			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
-		Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
-		bufSend = &(d_grid_3d[idxSend]) ;
-		bufRecv = &(d_grid_3d[idxRecv]) ;
-		
+			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+			bufSend = &(d_grid_3d[idxSend]) ;
+			bufRecv = &(d_grid_3d[idxRecv]) ;
+
 			// call MPI_Sendrecv
 			printDebug(FULL_DEBUG, "MPI_Sendrecv", rankSend, rankRecv) ;
 			MPI_Sendrecv(bufSend, 1, typeSend, rankSend, 0,
@@ -2432,14 +2432,14 @@ Rtn_code Grid_Cuda::sendWithMPI(Myint64 nGridPoint, Myint procDestId)
 {
 
 	printDebug(FULL_DEBUG, "In Grid_Cuda::sendWithMPI") ;
-	
+
 	if (!Config::Instance()->gpuMpiAware)	
 	{
-	// copy from device to host
-	Myint64 idx = 0 ;
-	cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+		// copy from device to host
+		Myint64 idx = 0 ;
+		cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
 
-	MPI_Send(grid_3d, nGridPoint, MPI_MYFLOAT, procDestId, 0, MPI_COMM_WORLD) ;
+		MPI_Send(grid_3d, nGridPoint, MPI_MYFLOAT, procDestId, 0, MPI_COMM_WORLD) ;
 	}
 	else
 	{
@@ -2458,7 +2458,7 @@ Rtn_code Grid_Cuda::recvWithMPI(Myint64 nGridPoint, Myint procSrcId)
 	printDebug(FULL_DEBUG, "In Grid_Cuda::recvWithMPI") ;
 
 	MPI_Status status ;
-	
+
 	if (!Config::Instance()->gpuMpiAware)	
 	{
 		MPI_Recv(grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status) ;
@@ -2489,7 +2489,7 @@ Rtn_code Grid_Cuda::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint id
 	printDebug(FULL_DEBUG, "In Grid_Cuda::sendRecvWithMPI") ;
 
 	MPI_Status status ;
-	
+
 	if (!Config::Instance()->gpuMpiAware)
 	{
 		Myfloat *bufSend = grid_3d ;
@@ -2498,7 +2498,7 @@ Rtn_code Grid_Cuda::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint id
 		// copy from device to host
 		Myint64 idx = 0 ;
 		cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
-	
+
 		MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
 				bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
 				MPI_COMM_WORLD, &status) ;
@@ -2515,7 +2515,7 @@ Rtn_code Grid_Cuda::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint id
 	{
 		Myfloat *bufSend = d_grid_3d ;
 		Myfloat *bufRecv = ((Grid_Cuda&) gridDest).d_grid_3d ;
-	
+
 		MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
 				bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
 				MPI_COMM_WORLD, &status) ;

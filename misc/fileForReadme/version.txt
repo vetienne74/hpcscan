@@ -1,9 +1,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 081d54db4a48b3b0ffa25e2f9c414dccb99d0d25
-		Author: vincent <vetienne@rocketmail.com>
-		Date:   Sat May 22 11:07:15 2021 +0300
+ Git version	commit b69f3580321119ba9a531f56bab47ae438e5b956
+		Author: Vincent Etienne <vincent.etienne@aramco.com>
+		
 
  Host name	mars
  User name	vincent

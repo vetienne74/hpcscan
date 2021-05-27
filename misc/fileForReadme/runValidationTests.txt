@@ -42,12 +42,13 @@ Running -testCase Comm ...
 Running -testCase Propa ...
 End testDriver.sh
 ------------------------------------------------------------------------
+SKIP testMode DPC++
 SKIP testMode HIP
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Sun 23 May 2021 12:05:59 PM +03
-# Ended    :  Sun 23 May 2021 12:07:21 PM +03
+# Started  :  Thu 27 May 2021 08:30:14 AM +03
+# Ended    :  Thu 27 May 2021 08:31:36 AM +03
 On machine :  mars
 Done by    :  vincent
 * SUMMARY
