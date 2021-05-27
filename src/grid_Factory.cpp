@@ -8,14 +8,22 @@
 
 #include "constant.h"
 #include "grid_CacheBlk.h"
+#ifdef __CUDA__
 #include "grid_Cuda.h"
+#endif
 #ifdef __DPCPP__
 #include "grid_DPCPP.h"
 #endif
+#ifdef __HIP__
 #include "grid_Hip.h"
+#endif
+#ifdef __NEC__
 #include "grid_NEC.h"
 #include "grid_NEC_SCA.h"
+#endif
+#ifdef __OPENACC__
 #include "grid_OpenAcc.h"
+#endif
 #include "output_report.h"
 
 using namespace std;

@@ -1619,7 +1619,7 @@ void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_typ
 			}
 			else if (t1 == FUNC_RANDOM)
 			{
-				val1[i1-i1Start] = Myfloat(rand()) / RAND_MAX ;
+				val1[i1-i1Start] = Myfloat(rand()) / Myfloat(RAND_MAX) ;
 			}
 			else
 			{
@@ -1656,7 +1656,7 @@ void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_typ
 			}
 			else if (t2 == FUNC_RANDOM)
 			{
-				val2[i2-i2Start] = Myfloat(rand()) / RAND_MAX ;
+				val2[i2-i2Start] = Myfloat(rand()) / Myfloat(RAND_MAX) ;
 			}
 			else
 			{
@@ -1693,7 +1693,7 @@ void Grid_Cuda::fill(Point_type pointType, Func_type t1,  Func_type t2, Func_typ
 			}
 			else if (t3 == FUNC_RANDOM)
 			{
-				val3[i3-i3Start] = Myfloat(rand()) / RAND_MAX ;
+				val3[i3-i3Start] = Myfloat(rand()) / Myfloat(RAND_MAX) ;
 			}
 			else
 			{
