@@ -1251,6 +1251,15 @@ void Grid_Cuda::info(void)
 	printInfo(MASTER, " * GPU parameters * ") ;
 	printInfo(MASTER, " Blocks per grid", gpuGridSize) ;
 	printInfo(MASTER, " Threads per block", gpuBlkSize) ;
+	
+	if (Config::Instance()->gpuMpiAware)
+	{
+	printInfo(MASTER, " MPI GPU-Aware Library", "ENABLED") ;
+	}
+	else
+	{
+	printInfo(MASTER, " MPI GPU-Aware Library", "DISABLED") ;
+	}
 
 	int startDevice = 0;
 	int endDevice = 0;
@@ -1288,6 +1297,7 @@ void Grid_Cuda::info(void)
 					cudaGetErrorString(error_id));
 		}
 	}
+	
 
 	printDebug(FULL_DEBUG, "OUT Grid_Cuda::info");
 }
@@ -1506,21 +1516,43 @@ void Grid_Cuda::initializeGrid(void)
 	printDebug(FULL_DEBUG, "In Grid_Cuda::initializeGrid") ;
 
 	Grid::initializeGrid() ;
+	
+	// set device to this MPI rank
+	Myint deviceCount;
+	cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
+	if (error_id != cudaSuccess) {
+		printError(" In Grid_Cuda::initializeGrid, cudaGetDeviceCount", (int) error_id) ;
+	}
+	printDebug(FULL_DEBUG, "Device Count", deviceCount) ;
+	
+	Myint myDevice = myid_world % deviceCount ;
+	error_id = cudaSetDevice(myDevice);
+	if (error_id != cudaSuccess) {
+		printError(" In Grid_Cuda::initializeGrid, cudaSetDevice", (int) error_id) ;
+	}
+	printDebug(FULL_DEBUG, "Device Id" ,myDevice) ;
 
 	if (d_grid_3d == NULL)
 	{
 		// allocate the grid on the device
 		cudaMalloc( (void**)&d_grid_3d, npoint * sizeof(Myfloat) );
 		cudaCheckError();
+	}		
 
+	if (d_help_3d == NULL)
+	{
 		// allocate 1d array of the device used to perform reduction operation
 		cudaMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
+	}
 
+	if (d_help_3d_2 == NULL)
+	{
 		// allocate 1d array of the device used to perform reduction operation
 		cudaMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
 	}
+	
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::initializeGrid") ;
 }
 
@@ -1976,22 +2008,19 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 		Myint rankSend, rankRecv ;
 		MPI_Datatype typeSend, typeRecv ;
 		Myfloat *bufSend, *bufRecv ;
+		Myint64 i1Send, i2Send, i3Send, i1Recv, i2Recv, i3Recv ;
 
 		Point_type bufSendPointType, bufRecvPointType ;
 
 		if (pointType == I1HALO1)
 		{
 			printDebug(FULL_DEBUG, "I1HALO1") ;
-			Myint64 i1Send = i1InnerEnd - haloWidth + 1 ;
-			Myint64 i2Send = i2InnerStart ;
-			Myint64 i3Send = i3InnerStart ;
-			Myint64 i1Recv = i1Halo1Start ;
-			Myint64 i2Recv = i2InnerStart ;
-			Myint64 i3Recv = i3InnerStart ;
-			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
-			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
-			bufSend = &(grid_3d[idxSend]) ;
-			bufRecv = &(grid_3d[idxRecv]) ;
+			i1Send = i1InnerEnd - haloWidth + 1 ;
+			i2Send = i2InnerStart ;
+			i3Send = i3InnerStart ;
+			i1Recv = i1Halo1Start ;
+			i2Recv = i2InnerStart ;
+			i3Recv = i3InnerStart ;			
 			typeSend = i1HaloDataType ;
 			typeRecv = i1HaloDataType ;
 			rankSend = i1ProcIdEnd ;
@@ -2004,16 +2033,12 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 		else if (pointType == I1HALO2)
 		{
 			printDebug(FULL_DEBUG, "I1HALO2") ;
-			Myint64 i1Send = i1InnerStart ;
-			Myint64 i2Send = i2InnerStart ;
-			Myint64 i3Send = i3InnerStart ;
-			Myint64 i1Recv = i1Halo2Start ;
-			Myint64 i2Recv = i2InnerStart ;
-			Myint64 i3Recv = i3InnerStart ;
-			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
-			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
-			bufSend = &(grid_3d[idxSend]) ;
-			bufRecv = &(grid_3d[idxRecv]) ;
+			i1Send = i1InnerStart ;
+			i2Send = i2InnerStart ;
+			i3Send = i3InnerStart ;
+			i1Recv = i1Halo2Start ;
+			i2Recv = i2InnerStart ;
+			i3Recv = i3InnerStart ;		
 			typeSend = i1HaloDataType ;
 			typeRecv = i1HaloDataType ;
 			rankSend = i1ProcIdStart ;
@@ -2026,16 +2051,12 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 		else if (pointType == I2HALO1)
 		{
 			printDebug(FULL_DEBUG, "I2HALO1") ;
-			Myint64 i1Send = i1InnerStart ;
-			Myint64 i2Send = i2InnerEnd - haloWidth + 1 ;
-			Myint64 i3Send = i3InnerStart ;
-			Myint64 i1Recv = i1InnerStart ;
-			Myint64 i2Recv = i2Halo1Start ;
-			Myint64 i3Recv = i3InnerStart ;
-			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
-			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
-			bufSend = &(grid_3d[idxSend]) ;
-			bufRecv = &(grid_3d[idxRecv]) ;
+			i1Send = i1InnerStart ;
+			i2Send = i2InnerEnd - haloWidth + 1 ;
+			i3Send = i3InnerStart ;
+			i1Recv = i1InnerStart ;
+			i2Recv = i2Halo1Start ;
+			i3Recv = i3InnerStart ;			
 			typeSend = i2HaloDataType ;
 			typeRecv = i2HaloDataType ;
 			rankSend = i2ProcIdEnd ;
@@ -2048,16 +2069,12 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 		else if (pointType == I2HALO2)
 		{
 			printDebug(FULL_DEBUG, "I2HALO2") ;
-			Myint64 i1Send = i1InnerStart ;
-			Myint64 i2Send = i2InnerStart ;
-			Myint64 i3Send = i3InnerStart ;
-			Myint64 i1Recv = i1InnerStart ;
-			Myint64 i2Recv = i2Halo2Start ;
-			Myint64 i3Recv = i3InnerStart ;
-			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
-			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
-			bufSend = &(grid_3d[idxSend]) ;
-			bufRecv = &(grid_3d[idxRecv]) ;
+			i1Send = i1InnerStart ;
+			i2Send = i2InnerStart ;
+			i3Send = i3InnerStart ;
+			i1Recv = i1InnerStart ;
+			i2Recv = i2Halo2Start ;
+			i3Recv = i3InnerStart ;		
 			typeSend = i2HaloDataType ;
 			typeRecv = i2HaloDataType ;
 			rankSend = i2ProcIdStart ;
@@ -2070,16 +2087,12 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 		else if (pointType == I3HALO1)
 		{
 			printDebug(FULL_DEBUG, "I3HALO1") ;
-			Myint64 i1Send = i1InnerStart ;
-			Myint64 i2Send = i2InnerStart ;
-			Myint64 i3Send = i3InnerEnd - haloWidth + 1 ;
-			Myint64 i1Recv = i1InnerStart ;
-			Myint64 i2Recv = i2InnerStart ;
-			Myint64 i3Recv = i3Halo1Start ;
-			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
-			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
-			bufSend = &(grid_3d[idxSend]) ;
-			bufRecv = &(grid_3d[idxRecv]) ;
+			i1Send = i1InnerStart ;
+			i2Send = i2InnerStart ;
+			i3Send = i3InnerEnd - haloWidth + 1 ;
+			i1Recv = i1InnerStart ;
+			i2Recv = i2InnerStart ;
+			i3Recv = i3Halo1Start ;			
 			typeSend = i3HaloDataType ;
 			typeRecv = i3HaloDataType ;
 			rankSend = i3ProcIdEnd ;
@@ -2092,16 +2105,12 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 		else if (pointType == I3HALO2)
 		{
 			printDebug(FULL_DEBUG, "I3HALO2") ;
-			Myint64 i1Send = i1InnerStart ;
-			Myint64 i2Send = i2InnerStart ;
-			Myint64 i3Send = i3InnerStart ;
-			Myint64 i1Recv = i1InnerStart ;
-			Myint64 i2Recv = i2InnerStart ;
-			Myint64 i3Recv = i3Halo2Start ;
-			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
-			Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
-			bufSend = &(grid_3d[idxSend]) ;
-			bufRecv = &(grid_3d[idxRecv]) ;
+			i1Send = i1InnerStart ;
+			i2Send = i2InnerStart ;
+			i3Send = i3InnerStart ;
+			i1Recv = i1InnerStart ;
+			i2Recv = i2InnerStart ;
+			i3Recv = i3Halo2Start ;		
 			typeSend = i3HaloDataType ;
 			typeRecv = i3HaloDataType ;
 			rankSend = i3ProcIdStart ;
@@ -2116,11 +2125,15 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 			printError("IN Grid_Cuda::exchangeHalo, invalid pointType", pointType) ;
 			return(RTN_CODE_KO) ;
 		}
-
-		//===============================================
-		// TODO UPDATE NEEDED FOR CUDA AWARE MPI LIBRARY
-		//===============================================
-
+	
+		if (!(Config::Instance()->gpuMpiAware))
+		{
+		
+		Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+		Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+		bufSend = &(grid_3d[idxSend]) ;
+		bufRecv = &(grid_3d[idxRecv]) ;
+		
 		// copy halo to send from device to host
 		if (rankSend != MPI_PROC_NULL)
 			copyGridDeviceToHost(bufSendPointType) ;
@@ -2134,6 +2147,21 @@ Rtn_code Grid_Cuda::exchangeHalo(MPI_comm_mode_type commMode, Point_type pointTy
 		// copy halo received from host to device
 		if (rankRecv != MPI_PROC_NULL)
 			copyGridHostToDevice(bufRecvPointType) ;
+			
+			}
+		else
+		{
+			Myint64 idxSend = i1Send+i2Send*n1+i3Send*n1*n2 ;
+		Myint64 idxRecv = i1Recv+i2Recv*n1+i3Recv*n1*n2 ;
+		bufSend = &(d_grid_3d[idxSend]) ;
+		bufRecv = &(d_grid_3d[idxRecv]) ;
+		
+			// call MPI_Sendrecv
+			printDebug(FULL_DEBUG, "MPI_Sendrecv", rankSend, rankRecv) ;
+			MPI_Sendrecv(bufSend, 1, typeSend, rankSend, 0,
+					bufRecv, 1, typeRecv, rankRecv, 0,
+					MPI_COMM_WORLD, &status);
+		}
 
 	}
 	else
@@ -2404,16 +2432,19 @@ Rtn_code Grid_Cuda::sendWithMPI(Myint64 nGridPoint, Myint procDestId)
 {
 
 	printDebug(FULL_DEBUG, "In Grid_Cuda::sendWithMPI") ;
-
-	//===============================================
-	// TODO UPDATE NEEDED FOR CUDA AWARE MPI LIBRARY
-	//===============================================
-
+	
+	if (!Config::Instance()->gpuMpiAware)	
+	{
 	// copy from device to host
 	Myint64 idx = 0 ;
 	cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
 
 	MPI_Send(grid_3d, nGridPoint, MPI_MYFLOAT, procDestId, 0, MPI_COMM_WORLD) ;
+	}
+	else
+	{
+		MPI_Send(d_grid_3d, nGridPoint, MPI_MYFLOAT, procDestId, 0, MPI_COMM_WORLD) ;
+	}
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::sendWithMPI") ;
 	return(RTN_CODE_OK) ;
@@ -2426,21 +2457,25 @@ Rtn_code Grid_Cuda::recvWithMPI(Myint64 nGridPoint, Myint procSrcId)
 
 	printDebug(FULL_DEBUG, "In Grid_Cuda::recvWithMPI") ;
 
-	//===============================================
-	// TODO UPDATE NEEDED FOR CUDA AWARE MPI LIBRARY
-	//===============================================
-
 	MPI_Status status ;
-	MPI_Recv(grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status) ;
+	
+	if (!Config::Instance()->gpuMpiAware)	
+	{
+		MPI_Recv(grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status) ;
 
-	// copy from host to device
-	Myint64 idx = 0 ;
-	cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), npoint * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+		// copy from host to device
+		Myint64 idx = 0 ;
+		cudaMemcpy(&(d_grid_3d[idx]), &(grid_3d[idx]), npoint * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+	}
+	else
+	{
+		MPI_Recv(d_grid_3d, nGridPoint, MPI_MYFLOAT, procSrcId, 0, MPI_COMM_WORLD, &status) ;
+	}
 
 	if (status.MPI_ERROR != MPI_SUCCESS)
 	{
 		//printError("MPI ERROR", status.MPI_ERROR) ;
-	}
+	}	
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::recvWithMPI") ;
 	return(RTN_CODE_OK) ;
@@ -2453,29 +2488,38 @@ Rtn_code Grid_Cuda::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint id
 
 	printDebug(FULL_DEBUG, "In Grid_Cuda::sendRecvWithMPI") ;
 
-	//===============================================
-	// TODO UPDATE NEEDED FOR CUDA AWARE MPI LIBRARY
-	//===============================================
-
-	Myfloat *bufSend = grid_3d ;
-	Myfloat *bufRecv = gridDest.grid_3d ;
-
-	// copy from device to host
-	Myint64 idx = 0 ;
-	cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
-
 	MPI_Status status ;
-	MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
-			bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
-			MPI_COMM_WORLD, &status) ;
-	if (status.MPI_ERROR != MPI_SUCCESS)
+	
+	if (!Config::Instance()->gpuMpiAware)
 	{
-		//printError("MPI ERROR", status.MPI_ERROR) ;
-	}
+		Myfloat *bufSend = grid_3d ;
+		Myfloat *bufRecv = gridDest.grid_3d ;
 
-	// copy from host to device
-	Myfloat *gridDest_d_grid_3d = ((Grid_Cuda&) gridDest).d_grid_3d ;
-	cudaMemcpy(&(gridDest_d_grid_3d[idx]), &(gridDest.grid_3d[idx]), npoint * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+		// copy from device to host
+		Myint64 idx = 0 ;
+		cudaMemcpy(&(grid_3d[idx]), &(d_grid_3d[idx]), nGridPoint * sizeof(Myfloat), cudaMemcpyDeviceToHost) ;
+	
+		MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
+				bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
+				MPI_COMM_WORLD, &status) ;
+		if (status.MPI_ERROR != MPI_SUCCESS)
+		{
+			//printError("MPI ERROR", status.MPI_ERROR) ;
+		}
+
+		// copy from host to device
+		Myfloat *gridDest_d_grid_3d = ((Grid_Cuda&) gridDest).d_grid_3d ;
+		cudaMemcpy(&(gridDest_d_grid_3d[idx]), &(gridDest.grid_3d[idx]), npoint * sizeof(Myfloat), cudaMemcpyHostToDevice) ;
+	}
+	else
+	{
+		Myfloat *bufSend = d_grid_3d ;
+		Myfloat *bufRecv = ((Grid_Cuda&) gridDest).d_grid_3d ;
+	
+		MPI_Sendrecv(bufSend, nGridPoint, MPI_MYFLOAT, idSend, 0,
+				bufRecv, nGridPoint, MPI_MYFLOAT, idRecv, 0,
+				MPI_COMM_WORLD, &status) ;
+	}	
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::sendRecvWithMPI") ;
 	return(RTN_CODE_OK) ;

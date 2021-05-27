@@ -39,6 +39,7 @@ static const Myfloat64 DEFAULT_DT             = 0.0 ; // stable dt will be used
 static const Myint     DEFAULT_FD_ORDER       = 8 ;
 static const Myint     DEFAULT_GPU_BLKSIZE    = 256 ;
 static const Myint     DEFAULT_GPU_GRIDSIZE   = 512 ;
+static const bool      DEFAULT_GPU_MPI_AWARE  = false ;
 static const Myfloat64 DEFAULT_H              = PI / 30 ;
 static const Myint     DEFAULT_INNER_N1       = 61 ;
 static const Myint     DEFAULT_INNER_N2       = 61 ;
@@ -108,6 +109,7 @@ Config::Config(void)
 	fdOrder      = DEFAULT_FD_ORDER ;
 	gpuBlkSize   = DEFAULT_GPU_BLKSIZE ;
 	gpuGridSize  = DEFAULT_GPU_GRIDSIZE ;
+	gpuMpiAware  = DEFAULT_GPU_MPI_AWARE ;
 	h            = DEFAULT_H ;
 	n1           = DEFAULT_INNER_N1 ;
 	n2           = DEFAULT_INNER_N2 ;
@@ -174,6 +176,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]") ;
 			printInfo(MASTER, " -gpuBlkSize <int>    = GPU, number of threads per block") ;
 			printInfo(MASTER, " -gpuGridSize <int>   = GPU, number of blocks per grid") ;
+			printInfo(MASTER, " -gpuMpiAware         = use MPI GPU-aware library") ;
 			printInfo(MASTER, " -help or -h          = list of command line parameters") ;
 			printInfo(MASTER, " -n1 <int>            = inner domain size axis 1 [grid pts]") ;
 			printInfo(MASTER, " -n2 <int>            = inner domain size axis 2 [grid pts]") ;
@@ -435,6 +438,12 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 					printError(" gpuGridSize should be > 0") ;
 					return(RTN_CODE_KO) ;
 				}
+			}
+
+			else if (string(argv[ii]) == "-gpuMpiAware")
+			{
+				gpuMpiAware = true ;
+				printInfo(MASTER, " gpuMpiAware\t", "ON") ;
 			}
 
 			else if (string(argv[ii]) == "-n1")

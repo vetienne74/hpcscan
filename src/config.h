@@ -53,6 +53,9 @@ public:
 	// GPU block size (number of threads per block)
 	Myint gpuBlkSize ;
 
+	// GPU MPI aware flag
+	bool gpuMpiAware ;
+
 	// GPU grid size (number of blocks per grid)
 	Myint gpuGridSize ;
 
