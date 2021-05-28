@@ -21,17 +21,17 @@
 hpcscan::Debug_level hpcscan::debug = NO_DEBUG ;
 
 // global number of MPI process
-int hpcscan::nproc_world ;
+int hpcscan::nMpiProc ;
 
 // global rank of MPI process
-int hpcscan::myid_world ;
+int hpcscan::myMpiRank ;
 
 int main(int argc, char* argv[])
 {
 	// start MPI environment
 	MPI_Init(&argc, &argv) ;
-	MPI_Comm_size(MPI_COMM_WORLD, &hpcscan::nproc_world) ;
-	MPI_Comm_rank(MPI_COMM_WORLD, &hpcscan::myid_world) ;
+	MPI_Comm_size(MPI_COMM_WORLD, &hpcscan::nMpiProc) ;
+	MPI_Comm_rank(MPI_COMM_WORLD, &hpcscan::myMpiRank) ;
 
 	// start timer
 	double tStart = MPI_Wtime() ;

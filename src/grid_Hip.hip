@@ -1526,7 +1526,7 @@ void Grid_Hip::initializeGrid(void)
 	}
 	printDebug(FULL_DEBUG, "Device Count", deviceCount) ;
 
-	Myint myDevice = myid_world % deviceCount ;
+	Myint myDevice = myMpiRank % deviceCount ;
 	error_id = hipSetDevice(myDevice);
 	if (error_id != hipSuccess) {
 		printError(" In Grid_Hip::initializeGrid, hipSetDevice", (int) error_id) ;

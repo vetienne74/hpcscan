@@ -52,7 +52,7 @@ Rtn_code TestCase_Memory::run(void)
 	Wgrid.initializeGrid() ;
 	Rgrid.initializeGrid() ;
 
-	if (myid_world == 0) Ugrid.info() ;
+	if (myMpiRank == 0) Ugrid.info() ;
 
 	const Myint64 nGridPoint = Ugrid.getNumberOfGridPoint(GRID_GLOBAL, ALL_POINTS) ;
 
@@ -289,7 +289,7 @@ Rtn_code TestCase_Memory::run(void)
 	}
 
 	// log perf
-	if (myid_world == 0)
+	if (myMpiRank == 0)
 	{
 		perfLogFile
 		// 10, 11, 12, 13

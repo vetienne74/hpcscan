@@ -88,7 +88,7 @@ Rtn_code TestCase::initialize(void)
 		}
 
 		// open perf log file
-		if (myid_world == 0)
+		if (myMpiRank == 0)
 		{
 			string file_name = "hpcscan.perf." + testCaseName + ".log";
 			perfLogFile.open(file_name, ios::app) ;
@@ -101,7 +101,7 @@ Rtn_code TestCase::initialize(void)
 			perfLogFile << Config::Instance()->propagator << " " ;
 
 			// numeric values follow
-			perfLogFile << nproc_world << " " ; // 1
+			perfLogFile << nMpiProc << " " ; // 1
 			perfLogFile << Config::Instance()->nsub1 << " " ; // 2
 			perfLogFile << Config::Instance()->nsub2 << " " ; // 3
 			perfLogFile << Config::Instance()->nsub3 << " " ; // 4
@@ -138,7 +138,7 @@ void TestCase::finalize(void)
 	testCaseEnd = MPI_Wtime() ;
 
 	// close perf log file
-	if (myid_world == 0)
+	if (myMpiRank == 0)
 	{
 		perfLogFile.close() ;
 	}

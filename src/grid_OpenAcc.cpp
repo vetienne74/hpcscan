@@ -163,10 +163,10 @@ void Grid_OpenAcc::initializeGrid(void)
 	{
 		// retrieve index of subdomain in global grid
 		//-------------------------------------------
-		subIdx3 = myid_world / (Config::Instance()->nsub1*Config::Instance()->nsub2) ;
-		subIdx2 = (myid_world - subIdx3 *
+		subIdx3 = myMpiRank / (Config::Instance()->nsub1*Config::Instance()->nsub2) ;
+		subIdx2 = (myMpiRank - subIdx3 *
 				(Config::Instance()->nsub1*Config::Instance()->nsub2)) / Config::Instance()->nsub1 ;
-		subIdx1 = myid_world
+		subIdx1 = myMpiRank
 				- subIdx3 * (Config::Instance()->nsub1*Config::Instance()->nsub2)
 				- subIdx2 * (Config::Instance()->nsub1) ;
 
@@ -221,7 +221,7 @@ void Grid_OpenAcc::initializeGrid(void)
 			}
 			else
 			{
-				i1ProcIdStart = myid_world - 1 ;
+				i1ProcIdStart = myMpiRank - 1 ;
 			}
 
 			if (subIdx1 == Config::Instance()->nsub1-1)
@@ -230,7 +230,7 @@ void Grid_OpenAcc::initializeGrid(void)
 			}
 			else
 			{
-				i1ProcIdEnd = myid_world + 1 ;
+				i1ProcIdEnd = myMpiRank + 1 ;
 			}
 		}
 
@@ -247,7 +247,7 @@ void Grid_OpenAcc::initializeGrid(void)
 			}
 			else
 			{
-				i2ProcIdStart = myid_world - Config::Instance()->nsub1 ;
+				i2ProcIdStart = myMpiRank - Config::Instance()->nsub1 ;
 			}
 
 			if (subIdx2 == Config::Instance()->nsub2-1)
@@ -256,7 +256,7 @@ void Grid_OpenAcc::initializeGrid(void)
 			}
 			else
 			{
-				i2ProcIdEnd = myid_world + Config::Instance()->nsub1 ;
+				i2ProcIdEnd = myMpiRank + Config::Instance()->nsub1 ;
 			}
 		}
 
@@ -273,7 +273,7 @@ void Grid_OpenAcc::initializeGrid(void)
 			}
 			else
 			{
-				i3ProcIdStart = myid_world -
+				i3ProcIdStart = myMpiRank -
 						(Config::Instance()->nsub1 * Config::Instance()->nsub2);
 			}
 
@@ -283,7 +283,7 @@ void Grid_OpenAcc::initializeGrid(void)
 			}
 			else
 			{
-				i3ProcIdEnd = myid_world +
+				i3ProcIdEnd = myMpiRank +
 						(Config::Instance()->nsub1 * Config::Instance()->nsub2);
 			}
 		}

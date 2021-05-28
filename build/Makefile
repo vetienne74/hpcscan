@@ -76,7 +76,7 @@ $(info HPCSCAN_CPP_FLAGCOMP="$(HPCSCAN_CPP_FLAGCOMP)")
 # cpp standard objects
 CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
 	main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o \
-	testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
+	table_Results.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
 	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
 
 # cpp OpenACC objects

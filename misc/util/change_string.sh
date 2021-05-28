@@ -1,12 +1,12 @@
 
-dir='../../script'
+dir='../../src'
 
 echo 'change_string start!'
 
 for file in $(find ${dir} -name '*')
 do
     echo 'process ' ${file}
-    sed -i -e 's/KMP_AFFINITY=scatter,1,0,granularity=fine/KMP_AFFINITY=granularity=fine,compact/g' $file
+    sed -i -e 's/nproc_world/nMpiProc/g' $file
 done
 
 echo 'change_string done!'

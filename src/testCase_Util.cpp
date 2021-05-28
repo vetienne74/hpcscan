@@ -83,7 +83,7 @@ Rtn_code TestCase_Util::run(void)
 		gridLoc1.initializeGrid() ;
 
 		bool sameSize2 = gridGlob1.sameSize(gridLoc1) ;
-		if (nproc_world == 1)
+		if (nMpiProc == 1)
 		{
 			checkBoolDiff(sameSize2, true) ;
 		}
@@ -139,7 +139,7 @@ Rtn_code TestCase_Util::run(void)
 		MPI_Reduce(&nNeighLoc, &nNeighGlobMin, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
 		MPI_Reduce(&nNeighLoc, &nNeighGlobMax, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
 
-		if (nproc_world == 1)
+		if (nMpiProc == 1)
 		{
 			bool checkTest = ((nNeighGlobMin == 0) && (nNeighGlobMax == 0)) ;
 			if (checkBoolDiff(checkTest, true) != RTN_CODE_OK)
@@ -227,12 +227,12 @@ Rtn_code TestCase_Util::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		// fill gridLoc with proc rank
-		gridLoc.fill(ALL_POINTS, myid_world) ;
+		gridLoc.fill(ALL_POINTS, myMpiRank) ;
 		gridLoc.exchangeHalo(MPI_COMM_MODE_SENDRECV, I1HALO1) ;
 		gridLoc.write(caseName+"Loc") ;
 
 		// fill gridRef with expected values
-		gridRef.fill(ALL_POINTS, myid_world) ;
+		gridRef.fill(ALL_POINTS, myMpiRank) ;
 		// set values in halo
 		Myint rankRecv = gridLoc.getNeighbourProc(I1HALO1) ;
 		if (rankRecv != MPI_PROC_NULL) gridRef.fill(I1HALO1, rankRecv) ;
@@ -250,12 +250,12 @@ Rtn_code TestCase_Util::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		// fill gridLoc with proc rank
-		gridLoc.fill(ALL_POINTS, myid_world) ;
+		gridLoc.fill(ALL_POINTS, myMpiRank) ;
 		gridLoc.exchangeHalo(MPI_COMM_MODE_SENDRECV, I1HALO2) ;
 		gridLoc.write(caseName+"Loc") ;
 
 		// fill gridRef with expected values
-		gridRef.fill(ALL_POINTS, myid_world) ;
+		gridRef.fill(ALL_POINTS, myMpiRank) ;
 		// set values in halo
 		Myint rankRecv = gridLoc.getNeighbourProc(I1HALO2) ;
 		if (rankRecv != MPI_PROC_NULL) gridRef.fill(I1HALO2, rankRecv) ;
@@ -273,12 +273,12 @@ Rtn_code TestCase_Util::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		// fill gridLoc with proc rank
-		gridLoc.fill(ALL_POINTS, myid_world) ;
+		gridLoc.fill(ALL_POINTS, myMpiRank) ;
 		gridLoc.exchangeHalo(MPI_COMM_MODE_SENDRECV, I2HALO1) ;
 		gridLoc.write(caseName+"Loc") ;
 
 		// fill gridRef with expected values
-		gridRef.fill(ALL_POINTS, myid_world) ;
+		gridRef.fill(ALL_POINTS, myMpiRank) ;
 		// set values in halo
 		Myint rankRecv = gridLoc.getNeighbourProc(I2HALO1) ;
 		if (rankRecv != MPI_PROC_NULL) gridRef.fill(I2HALO1, rankRecv) ;
@@ -296,12 +296,12 @@ Rtn_code TestCase_Util::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		// fill gridLoc with proc rank
-		gridLoc.fill(ALL_POINTS, myid_world) ;
+		gridLoc.fill(ALL_POINTS, myMpiRank) ;
 		gridLoc.exchangeHalo(MPI_COMM_MODE_SENDRECV, I2HALO2) ;
 		gridLoc.write(caseName+"Loc") ;
 
 		// fill gridRef with expected values
-		gridRef.fill(ALL_POINTS, myid_world) ;
+		gridRef.fill(ALL_POINTS, myMpiRank) ;
 		// set values in halo
 		Myint rankRecv = gridLoc.getNeighbourProc(I2HALO2) ;
 		if (rankRecv != MPI_PROC_NULL) gridRef.fill(I2HALO2, rankRecv) ;
@@ -319,12 +319,12 @@ Rtn_code TestCase_Util::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		// fill gridLoc with proc rank
-		gridLoc.fill(ALL_POINTS, myid_world) ;
+		gridLoc.fill(ALL_POINTS, myMpiRank) ;
 		gridLoc.exchangeHalo(MPI_COMM_MODE_SENDRECV, I3HALO1) ;
 		gridLoc.write(caseName+"Loc") ;
 
 		// fill gridRef with expected values
-		gridRef.fill(ALL_POINTS, myid_world) ;
+		gridRef.fill(ALL_POINTS, myMpiRank) ;
 		// set values in halo
 		Myint rankRecv = gridLoc.getNeighbourProc(I3HALO1) ;
 		if (rankRecv != MPI_PROC_NULL) gridRef.fill(I3HALO1, rankRecv) ;
@@ -342,12 +342,12 @@ Rtn_code TestCase_Util::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		// fill gridLoc with proc rank
-		gridLoc.fill(ALL_POINTS, myid_world) ;
+		gridLoc.fill(ALL_POINTS, myMpiRank) ;
 		gridLoc.exchangeHalo(MPI_COMM_MODE_SENDRECV, I3HALO2) ;
 		gridLoc.write(caseName+"Loc") ;
 
 		// fill gridRef with expected values
-		gridRef.fill(ALL_POINTS, myid_world) ;
+		gridRef.fill(ALL_POINTS, myMpiRank) ;
 		// set values in halo
 		Myint rankRecv = gridLoc.getNeighbourProc(I3HALO2) ;
 		if (rankRecv != MPI_PROC_NULL) gridRef.fill(I3HALO2, rankRecv) ;

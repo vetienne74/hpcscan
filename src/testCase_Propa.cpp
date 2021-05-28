@@ -61,7 +61,7 @@ Rtn_code TestCase_Propa::run(void)
 	refGrid->initializeGrid() ;
 	refGrid->defineUnitGrid() ;
 
-	if (myid_world == 0) prnGrid->info() ;
+	if (myMpiRank == 0) prnGrid->info() ;
 
 	// Number of points exchanged in Halos
 	Myint64 nGridPointHaloLoc  = prnGrid->getNumberOfGridPointCommHalo(GRID_LOCAL) ;
@@ -196,7 +196,7 @@ Rtn_code TestCase_Propa::run(void)
 	}
 
 	// log perf
-	if (myid_world == 0)
+	if (myMpiRank == 0)
 	{
 		perfLogFile
 		// 10, 11, 12, 13

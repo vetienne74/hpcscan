@@ -117,7 +117,7 @@ Rtn_code TestCase_Grid::run(void)
 	Wgrid.fill(INNER_POINTS, a2) ;
 
 	// change value of only one point
-	if (myid_world == 0) Wgrid.fill(MIDDLE_POINT, 2*a2) ;
+	if (myMpiRank == 0) Wgrid.fill(MIDDLE_POINT, 2*a2) ;
 
 	{
 		//============================================
@@ -498,7 +498,7 @@ Rtn_code TestCase_Grid::run(void)
 	}
 
 	// log perf
-	if (myid_world == 0)
+	if (myMpiRank == 0)
 	{
 		perfLogFile
 		// 10, 11, 12, 13

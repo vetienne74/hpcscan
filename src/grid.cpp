@@ -150,10 +150,10 @@ void Grid::initializeGrid(void)
 	{
 		// retrieve index of subdomain in global grid
 		//-------------------------------------------
-		subIdx3 = myid_world / (Config::Instance()->nsub1*Config::Instance()->nsub2) ;
-		subIdx2 = (myid_world - subIdx3 *
+		subIdx3 = myMpiRank / (Config::Instance()->nsub1*Config::Instance()->nsub2) ;
+		subIdx2 = (myMpiRank - subIdx3 *
 				(Config::Instance()->nsub1*Config::Instance()->nsub2)) / Config::Instance()->nsub1 ;
-		subIdx1 = myid_world
+		subIdx1 = myMpiRank
 				- subIdx3 * (Config::Instance()->nsub1*Config::Instance()->nsub2)
 				- subIdx2 * (Config::Instance()->nsub1) ;
 
@@ -208,7 +208,7 @@ void Grid::initializeGrid(void)
 			}
 			else
 			{
-				i1ProcIdStart = myid_world - 1 ;
+				i1ProcIdStart = myMpiRank - 1 ;
 			}
 
 			if (subIdx1 == Config::Instance()->nsub1-1)
@@ -217,7 +217,7 @@ void Grid::initializeGrid(void)
 			}
 			else
 			{
-				i1ProcIdEnd = myid_world + 1 ;
+				i1ProcIdEnd = myMpiRank + 1 ;
 			}
 		}
 
@@ -234,7 +234,7 @@ void Grid::initializeGrid(void)
 			}
 			else
 			{
-				i2ProcIdStart = myid_world - Config::Instance()->nsub1 ;
+				i2ProcIdStart = myMpiRank - Config::Instance()->nsub1 ;
 			}
 
 			if (subIdx2 == Config::Instance()->nsub2-1)
@@ -243,7 +243,7 @@ void Grid::initializeGrid(void)
 			}
 			else
 			{
-				i2ProcIdEnd = myid_world + Config::Instance()->nsub1 ;
+				i2ProcIdEnd = myMpiRank + Config::Instance()->nsub1 ;
 			}
 		}
 
@@ -260,7 +260,7 @@ void Grid::initializeGrid(void)
 			}
 			else
 			{
-				i3ProcIdStart = myid_world -
+				i3ProcIdStart = myMpiRank -
 						(Config::Instance()->nsub1 * Config::Instance()->nsub2);
 			}
 
@@ -270,7 +270,7 @@ void Grid::initializeGrid(void)
 			}
 			else
 			{
-				i3ProcIdEnd = myid_world +
+				i3ProcIdEnd = myMpiRank +
 						(Config::Instance()->nsub1 * Config::Instance()->nsub2);
 			}
 		}
@@ -815,7 +815,7 @@ void Grid::write(string file_name)
 	if (Config::Instance()->writeGrid)
 	{
 		// write grid in binary format
-		string file_name_bin = file_name + ".proc" + to_string(myid_world) + ".grid.bin" ;
+		string file_name_bin = file_name + ".proc" + to_string(myMpiRank) + ".grid.bin" ;
 		printInfo(MASTER, "* write on disk\t", file_name_bin.c_str());
 		printDebug(LIGHT_DEBUG, "* write on disk\t", file_name_bin.c_str());
 		ofstream out_file ;
@@ -825,7 +825,7 @@ void Grid::write(string file_name)
 		out_file.close() ;
 
 		// write grid info
-		string file_name_info = file_name + ".proc" + to_string(myid_world) + ".grid.info" ;
+		string file_name_info = file_name + ".proc" + to_string(myMpiRank) + ".grid.info" ;
 		printDebug(LIGHT_DEBUG, "* write on disk\t", file_name_info.c_str());
 		ofstream out_file2(file_name_info) ;
 		out_file2 << this->n1 << "\n" ;

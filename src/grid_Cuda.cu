@@ -1525,7 +1525,7 @@ void Grid_Cuda::initializeGrid(void)
 	}
 	printDebug(FULL_DEBUG, "Device Count", deviceCount) ;
 
-	Myint myDevice = myid_world % deviceCount ;
+	Myint myDevice = myMpiRank % deviceCount ;
 	error_id = cudaSetDevice(myDevice);
 	if (error_id != cudaSuccess) {
 		printError(" In Grid_Cuda::initializeGrid, cudaSetDevice", (int) error_id) ;

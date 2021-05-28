@@ -11,10 +11,10 @@ namespace hpcscan {
 extern Debug_level debug ;
 
 // global number of MPI process
-extern int nproc_world ;
+extern int nMpiProc ;
 
 // global rank of MPI process
-extern int myid_world ;
+extern int myMpiRank ;
 
 // total memory
 extern Myint64 max_mem, current_mem ;

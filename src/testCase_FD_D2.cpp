@@ -435,7 +435,7 @@ Rtn_code TestCase_FD_D2::run(void)
 	}
 
 	// log perf
-	if (myid_world == 0)
+	if (myMpiRank == 0)
 	{
 		perfLogFile
 		// 10, 11, 12, 13

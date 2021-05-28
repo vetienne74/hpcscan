@@ -17,6 +17,7 @@
 #include "global.h"
 #include "grid_Factory.h"
 #include "output_report.h"
+#include "table_Results.h"
 
 namespace hpcscan {
 
@@ -36,16 +37,16 @@ Rtn_code TestCase_Comm::run(void)
 	if (this->initialize() == RTN_CODE_KO) return (RTN_CODE_KO) ;
 
 	// test case requires at least 2 MPI proc
-	if (nproc_world <= 1)
+	if (nMpiProc <= 1)
 	{
 		printWarning(" This test case requires at least 2 MPI procs") ;
 		return(RTN_CODE_OK) ;
 	}
 
 	// for perf log file
-	Myfloat SendGB[nproc_world-1]     , SendRecvGB[nproc_world-1]     , HaloExchGB=0 ;
-	Myfloat SendGPoint[nproc_world-1] , SendRecvGPoint[nproc_world-1] , HaloExchGPoint=0 ;
-	for (Myint iproc = 1; iproc < nproc_world; iproc++)
+	Myfloat SendGB[nMpiProc-1]     , SendRecvGB[nMpiProc-1]     , HaloExchGB=0 ;
+	Myfloat SendGPoint[nMpiProc-1] , SendRecvGPoint[nMpiProc-1] , HaloExchGPoint=0 ;
+	for (Myint iproc = 1; iproc < nMpiProc; iproc++)
 	{
 		SendGPoint[iproc-1] = 0 ;
 		SendRecvGB[iproc-1] = 0 ;
@@ -86,93 +87,96 @@ Rtn_code TestCase_Comm::run(void)
 		string caseName = testCaseName + "MPI_Send" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
+		Table_Results tabRes = Table_Results(caseName, nMpiProc, nMpiProc) ;
+
 		Myint procSrcId, procDestId ;
 		Myint ntry = Config::Instance()->ntry ;
 
-		// loop on the number of MPI procs
-		for (Myint iproc = 1; iproc < nproc_world; iproc++)
+		// loop on the number of MPI procs => senders
+		for (Myint iprocSend = 0; iprocSend < nMpiProc; iprocSend++)
 		{
-			// sender is iproc and receiver is 0
-			// other procs are not involved in communication
-			if (myid_world == 0)
+			// loop on the number of MPI procs => receivers
+			for (Myint iprocRecv = 0; iprocRecv < nMpiProc; iprocRecv++)
 			{
-				procSrcId = iproc ;
-			}
-			else
-			{
-				procSrcId = MPI_PROC_NULL ;
-			}
 
-			if (myid_world == iproc)
-			{
-				procDestId = 0 ;
-			}
-			else
-			{
-				procDestId = MPI_PROC_NULL ;
-			}
+				procSrcId  = iprocSend ;
+				procDestId = iprocRecv ;
 
-			// loop on the number of tries
-			double testCase_time_best = FLT_MAX ;
-			for (Myint itry = 0; itry < ntry; itry++)
-			{
-				gridSrc.fill(ALL_POINTS, iproc) ;
-				gridDest.fill(ALL_POINTS, -1) ;
-
-				// start MPI_Send & MPI_Recv
-				double t0 = MPI_Wtime() ;
-
-				// receive grid with MPI_Recv
-				gridDest.recvWithMPI(nGridPoint, procSrcId) ;
-
-				// send grid with MPI_Send
-				gridSrc.sendWithMPI(nGridPoint, procDestId) ;
-
-				double t1 = MPI_Wtime() ;
-				// end MPI comm
-
-				double testCase_time = t1-t0 ;
-				Myfloat testCase_bw = nGridPoint*sizeof(Myfloat)/testCase_time/1e9 ;
-				printDebug(LIGHT_DEBUG, "Time", testCase_time) ;
-				printDebug(LIGHT_DEBUG, "Speed", testCase_bw) ;
-				testCase_time_best = min(testCase_time_best, testCase_time) ;
-
-				// check grid
-				if (itry == 0)
+				if (procSrcId != procDestId)
 				{
-					printInfo(MASTER, " * MPI_Send ===>", procSrcId, 0) ;
-					if (myid_world == 0)
+					printInfo(MASTER, " * MPI_Send ===>", iprocSend, iprocRecv) ;
+
+					// loop on the number of tries
+					double testCase_time_best = FLT_MAX ;
+					for (Myint itry = 0; itry < ntry; itry++)
 					{
-						gridDest.write(caseName+to_string(procSrcId)+to_string(0)) ;
+						gridSrc.fill(ALL_POINTS, iprocSend) ;
+						gridDest.fill(ALL_POINTS, -1) ;
+
+						// start MPI_Send & MPI_Recv
+						double t0 = MPI_Wtime() ;
+
+						// send grid with MPI_Send
+						if (myMpiRank == procSrcId) gridSrc.sendWithMPI(nGridPoint, procDestId) ;
+
+						// receive grid with MPI_Recv
+						if (myMpiRank == procDestId) gridDest.recvWithMPI(nGridPoint, procSrcId) ;
+
+						// send grid with MPI_Send
+						//if (myMpiRank == procSrcId) gridSrc.sendWithMPI(nGridPoint, procDestId) ;
+
+						double t1 = MPI_Wtime() ;
+						// end MPI comm
+
+						double testCase_time = t1-t0 ;
+						Myfloat testCase_bw = nGridPoint*sizeof(Myfloat)/testCase_time/1e9 ;
+						printDebug(LIGHT_DEBUG, "Time", testCase_time) ;
+						printDebug(LIGHT_DEBUG, "Speed", testCase_bw) ;
+						testCase_time_best = min(testCase_time_best, testCase_time) ;
+
+						// check grid
+						if (itry == 0)
+						{
+							if (myMpiRank == 0)
+							{
+								gridDest.write(caseName+to_string(procSrcId)+to_string(0)) ;
+							}
+
+							Myint nbFailed = 0 ;
+							if (myMpiRank == procDestId)
+							{
+								Myfloat minVal = gridDest.getMin(ALL_POINTS) ;
+								if (relErr(minVal, procSrcId) > MAX_ERR_FLOAT) nbFailed++ ;
+							}
+
+							if (myMpiRank == procDestId)
+							{
+								Myfloat maxVal = gridDest.getMax(ALL_POINTS) ;
+								if (relErr(maxVal, procSrcId) > MAX_ERR_FLOAT) nbFailed++ ;
+							}
+
+							Myint nbFailedTot ;
+							MPI_Reduce(&nbFailed, &nbFailedTot, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+							checkIntegerDiff(nbFailedTot, 0) ;
+						}
+					} // for (Myint itry = 0; itry < ntry; itry++)
+
+					if (myMpiRank == procDestId)
+					{
+						SendGPoint[procSrcId] = nGridPoint/testCase_time_best/1.e9 ;
+						SendGB[procSrcId] = SendGPoint[procSrcId] *sizeof(Myfloat) ;
+						printInfo(ALL, " Best achieved GByte/s", SendGB[procSrcId]) ;
+						printInfo(ALL, " Best achieved GPoint/s", SendGPoint[procSrcId]) ;
 					}
 
-					Myint nbFailed = 0 ;
-					if (myid_world == 0)
-					{
-						Myfloat minVal = gridDest.getMin(ALL_POINTS) ;
-						if (relErr(minVal, iproc) > MAX_ERR_FLOAT) nbFailed++ ;
-					}
+				} // if ((procSrcId != MPI_PROC_NULL) && (procDestId != MPI_PROC_NULL))
 
-					if (myid_world == 0)
-					{
-						Myfloat maxVal = gridDest.getMax(ALL_POINTS) ;
-						if (relErr(maxVal, iproc) > MAX_ERR_FLOAT) nbFailed++ ;
-					}
+				MPI_Barrier(MPI_COMM_WORLD) ;
 
-					Myint nbFailedTot ;
-					MPI_Reduce(&nbFailed, &nbFailedTot, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-					checkIntegerDiff(nbFailedTot, 0) ;
-				}
-			} // for (Myint itry = 0; itry < ntry; itry++)
+			} // for (Myint iprocRecv = 0; iprocRecv < nMpiProc; iprocRecv++)
+		} // for (Myint iprocSend = 0; iprocSend < nMpiProc; iprocSend++)
 
-			SendGPoint[iproc-1] = nGridPoint/testCase_time_best/1.e9 ;
-			SendGB[iproc-1] = SendGPoint[iproc-1] *sizeof(Myfloat) ;
-			printInfo(MASTER, " Best achieved GByte/s", SendGB[iproc-1]) ;
-			printInfo(MASTER, " Best achieved GPoint/s", SendGPoint[iproc-1]) ;
-
-			MPI_Barrier(MPI_COMM_WORLD) ;
-
-		} // for (Myint iproc = 1; iproc < nproc_world; iproc++)
+		tabRes.display() ;
 	}
 
 	{
@@ -210,7 +214,7 @@ Rtn_code TestCase_Comm::run(void)
 		Myint procDestId = 0 ;
 
 		// loop on the number of MPI procs
-		for (Myint iproc = 1; iproc < nproc_world; iproc++)
+		for (Myint iproc = 1; iproc < nMpiProc; iproc++)
 		{
 			Myint procSrcId = iproc ;
 
@@ -222,17 +226,17 @@ Rtn_code TestCase_Comm::run(void)
 				Myfloat *bufSend, *bufRecv ;
 				Myint idSend, idRecv ;
 
-				gridSrc.fill(ALL_POINTS, myid_world) ;
+				gridSrc.fill(ALL_POINTS, myMpiRank) ;
 				gridDest.fill(ALL_POINTS, -1) ;
 				bufSend = gridSrc.grid_3d ;
 				bufRecv = gridDest.grid_3d ;
 
-				if (myid_world == procSrcId)
+				if (myMpiRank == procSrcId)
 				{
 					idSend  = procDestId ;
 					idRecv  = procDestId ;
 				}
-				else if (myid_world == procDestId)
+				else if (myMpiRank == procDestId)
 				{
 					idSend  = procSrcId ;
 					idRecv  = procSrcId ;
@@ -265,13 +269,13 @@ Rtn_code TestCase_Comm::run(void)
 				{
 					printInfo(MASTER, " * MPI_Sendrecv <==>", procSrcId, procDestId) ;
 
-					if ((myid_world == procSrcId) || (myid_world == procDestId))
+					if ((myMpiRank == procSrcId) || (myMpiRank == procDestId))
 					{
 						gridDest.write(caseName+to_string(procSrcId)+to_string(procDestId)) ;
 					}
 
 					Myint nbFailed = 0 ;
-					if (myid_world == procSrcId)
+					if (myMpiRank == procSrcId)
 					{
 						Myfloat minVal = gridDest.getMin(ALL_POINTS) ;
 						if (relErr(minVal, procDestId) > MAX_ERR_FLOAT) nbFailed++ ;
@@ -279,7 +283,7 @@ Rtn_code TestCase_Comm::run(void)
 						if (relErr(maxVal, procDestId) > MAX_ERR_FLOAT) nbFailed++ ;
 					}
 
-					else if (myid_world == procDestId)
+					else if (myMpiRank == procDestId)
 					{
 						Myfloat minVal = gridDest.getMin(ALL_POINTS) ;
 						if (relErr(minVal, procSrcId) > MAX_ERR_FLOAT) nbFailed++ ;
@@ -300,7 +304,7 @@ Rtn_code TestCase_Comm::run(void)
 			printInfo(MASTER, " Best achieved GByte/s", SendRecvGB[iproc-1]) ;
 			printInfo(MASTER, " Best achieved GPoint/s", SendRecvGPoint[iproc-1]) ;
 
-		} // for (Myint iproc = 1; iproc < nproc_world; iproc++)
+		} // for (Myint iproc = 1; iproc < nMpiProc; iproc++)
 	}
 
 	{
@@ -375,14 +379,14 @@ Rtn_code TestCase_Comm::run(void)
 	}
 
 	// log perf
-	if (myid_world == 0)
+	if (myMpiRank == 0)
 	{
 		// first number is at position 10 in log file for numeric values
-		for (Myint iproc = 1; iproc < nproc_world; iproc++)
+		for (Myint iproc = 1; iproc < nMpiProc; iproc++)
 		{
 			perfLogFile << SendGB[iproc-1] << " " << SendGPoint[iproc-1] << " " ;
 		}
-		for (Myint iproc = 1; iproc < nproc_world; iproc++)
+		for (Myint iproc = 1; iproc < nMpiProc; iproc++)
 		{
 			perfLogFile << SendRecvGB[iproc-1] << " " << SendRecvGPoint[iproc-1] << " " ;
 		}

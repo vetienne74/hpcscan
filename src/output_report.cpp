@@ -34,7 +34,7 @@ static const string LINE_REPORT_T5 = "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 Rtn_code print_header_of_output_report(void)
 {
-	if (myid_world == 0)
+	if (myMpiRank == 0)
 	{
 		print_line1() ;
 		cout << "\t\t\t H P C S C A N - ver " << CURRENT_VERSION << "\n\n" ;
@@ -97,7 +97,7 @@ Rtn_code print_header_of_output_report(void)
 
 Rtn_code print_end_of_output_report(Rtn_code rtnCode)
 {
-	if (myid_world == 0)
+	if (myMpiRank == 0)
 	{
 		cout << "\n" ;
 		if (rtnCode == RTN_CODE_OK)
@@ -201,34 +201,34 @@ void printDebug(Debug_level debug_l, const char* text, const char* text2)
 
 void print_line1(void)
 {
-	if (myid_world == 0) cout << LINE_REPORT_T1 << "\n" << flush ;
+	if (myMpiRank == 0) cout << LINE_REPORT_T1 << "\n" << flush ;
 }
 void print_line2(void)
 {
-	if (myid_world == 0) cout << LINE_REPORT_T2 << "\n" << flush ;
+	if (myMpiRank == 0) cout << LINE_REPORT_T2 << "\n" << flush ;
 }
 void print_line3(void)
 {
-	if (myid_world == 0) cout << LINE_REPORT_T3 << "\n" << flush ;
+	if (myMpiRank == 0) cout << LINE_REPORT_T3 << "\n" << flush ;
 }
 void print_line4(void)
 {
-	if (myid_world == 0) cout << LINE_REPORT_T4 << "\n" << flush ;
+	if (myMpiRank == 0) cout << LINE_REPORT_T4 << "\n" << flush ;
 }
 void print_line5(void)
 {
-	if (myid_world == 0) cout << LINE_REPORT_T5 << "\n" << flush ;
+	if (myMpiRank == 0) cout << LINE_REPORT_T5 << "\n" << flush ;
 }
 void print_blank(void)
 {
-	if (myid_world == 0) cout << "\n" << flush ;
+	if (myMpiRank == 0) cout << "\n" << flush ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void printInfo(Display_type display_t, const char* text)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\n" << flush ;
 	}
@@ -238,7 +238,7 @@ void printInfo(Display_type display_t, const char* text)
 
 void printInfo(Display_type display_t, const char* text, Myint nb)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << nb << "\n" << flush ;
 	}
@@ -248,7 +248,7 @@ void printInfo(Display_type display_t, const char* text, Myint nb)
 
 void printInfo(Display_type display_t, const char* text, Myint nb, Myint nb2)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << nb << " " << nb2 << "\n" << flush ;
 	}
@@ -258,7 +258,7 @@ void printInfo(Display_type display_t, const char* text, Myint nb, Myint nb2)
 
 void printInfo(Display_type display_t, const char* text, Myint64 nb)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << nb << "\n" << flush ;
 	}
@@ -268,7 +268,7 @@ void printInfo(Display_type display_t, const char* text, Myint64 nb)
 
 void printInfo(Display_type display_t, const char* text, Myfloat32 nb)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << nb << "\n" << flush ;
 	}
@@ -278,7 +278,7 @@ void printInfo(Display_type display_t, const char* text, Myfloat32 nb)
 
 void printInfo(Display_type display_t, const char* text, Myfloat64 nb)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << nb << "\n" << flush ;
 	}
@@ -288,7 +288,7 @@ void printInfo(Display_type display_t, const char* text, Myfloat64 nb)
 
 void printInfo(Display_type display_t, const char* text, string text2)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << text2 << "\n" << flush ;
 	}
@@ -298,7 +298,7 @@ void printInfo(Display_type display_t, const char* text, string text2)
 
 void printInfo(Display_type display_t, const char* text, const char* text2)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << text2 << "\n" << flush ;
 	}
@@ -308,7 +308,7 @@ void printInfo(Display_type display_t, const char* text, const char* text2)
 
 void printInfo(Display_type display_t, string text, const char* text2)
 {
-	if ((display_t == ALL) || ((display_t == MASTER) && (myid_world == 0)))
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << text2 << "\n" << flush ;
 	}

@@ -839,7 +839,7 @@ Rtn_code Config::info(void)
 	// print main config. param.
 	print_blank() ;
 	print_line5() ;
-	Myint nproc = hpcscan::nproc_world ;
+	Myint nproc = hpcscan::nMpiProc ;
 	printInfo(MASTER, " Configuration parameters") ;
 	printInfo(MASTER, " TestCase name\t", testCaseName) ;
 
@@ -938,7 +938,7 @@ Rtn_code Config::initialize(void)
 	// open log files
 	if (debug > NO_DEBUG)
 	{
-		string file_name = "hpcscan.debug.proc" + to_string(myid_world) + ".log";
+		string file_name = "hpcscan.debug.proc" + to_string(myMpiRank) + ".log";
 		debugLogFile.open(file_name);
 	}
 

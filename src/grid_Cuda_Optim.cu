@@ -913,7 +913,7 @@ Myfloat Grid_Cuda::getMax(Point_type pointType)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::getMax") ;
 
-	if (hpcscan::nproc_world > 1)
+	if (hpcscan::nMpiProc > 1)
 	{
 		//pointType
 		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
