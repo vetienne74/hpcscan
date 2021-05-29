@@ -22,6 +22,9 @@ public:
 	// output table in terminal
 	void display(void) ;
 
+	// set on values in the table
+	void seOneValue(Myint iLine, Myint iCol, Myfloat value) ;
+
 	// table name
 	string tableName ;
 

@@ -173,10 +173,11 @@ OpenAcc      | GPU with OpenACC without optimization | Only enabled when compile
 
 ## Optional requirements
 
-* C++ compiler with OpenACC support 
 * CUDA compiler
+* DPC++ compiler
 * HIP compiler
 * NEC compiler
+* C++ compiler with OpenACC support
 
 ## Environment script (mandatory)
 
@@ -227,7 +228,7 @@ This script runs a set a light test cases and should complete within few minutes
 
 You should get in the ouptput report (displayed on the terminal)
 
-* All tests marked as PASSED (324 tests passed per test mode enabled)
+* All tests marked as PASSED (329 tests passed per test mode enabled)
 * No test marked as FAILED
 
 Check the summary at the end of report to have a quick look on this.

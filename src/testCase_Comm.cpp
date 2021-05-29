@@ -48,10 +48,10 @@ Rtn_code TestCase_Comm::run(void)
 	Myfloat SendGPoint[nMpiProc-1] , SendRecvGPoint[nMpiProc-1] , HaloExchGPoint=0 ;
 	for (Myint iproc = 1; iproc < nMpiProc; iproc++)
 	{
-		SendGPoint[iproc-1] = 0 ;
-		SendRecvGB[iproc-1] = 0 ;
-		SendGPoint[iproc-1] = 0 ;
-		SendRecvGPoint[iproc-1] = 0 ;
+		SendGPoint[iproc-1] = UNSPECIFIED ;
+		SendRecvGB[iproc-1] = UNSPECIFIED ;
+		SendGPoint[iproc-1] = UNSPECIFIED ;
+		SendRecvGPoint[iproc-1] = UNSPECIFIED ;
 	}
 
 	const string gridMode = Config::Instance()->testMode ;
@@ -99,6 +99,8 @@ Rtn_code TestCase_Comm::run(void)
 			for (Myint iprocRecv = 0; iprocRecv < nMpiProc; iprocRecv++)
 			{
 
+				Myfloat perfGB     = UNSPECIFIED ;
+				Myfloat perfGPoint = UNSPECIFIED ;
 				procSrcId  = iprocSend ;
 				procDestId = iprocRecv ;
 
@@ -163,15 +165,18 @@ Rtn_code TestCase_Comm::run(void)
 
 					if (myMpiRank == procDestId)
 					{
-						SendGPoint[procSrcId] = nGridPoint/testCase_time_best/1.e9 ;
-						SendGB[procSrcId] = SendGPoint[procSrcId] *sizeof(Myfloat) ;
-						printInfo(ALL, " Best achieved GByte/s", SendGB[procSrcId]) ;
-						printInfo(ALL, " Best achieved GPoint/s", SendGPoint[procSrcId]) ;
+						perfGPoint = nGridPoint/testCase_time_best/1.e9 ;
+						perfGB = perfGPoint *sizeof(Myfloat) ;
+						printInfo(ALL, " Best achieved GByte/s", perfGB) ;
+						printInfo(ALL, " Best achieved GPoint/s", perfGPoint) ;
 					}
 
 				} // if ((procSrcId != MPI_PROC_NULL) && (procDestId != MPI_PROC_NULL))
 
-				MPI_Barrier(MPI_COMM_WORLD) ;
+				// get perf on master node
+				Myfloat perfGBglob ;
+				MPI_Reduce(&perfGB, &perfGBglob, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
+				tabRes.seOneValue(procSrcId, procDestId, perfGBglob) ;
 
 			} // for (Myint iprocRecv = 0; iprocRecv < nMpiProc; iprocRecv++)
 		} // for (Myint iprocSend = 0; iprocSend < nMpiProc; iprocSend++)

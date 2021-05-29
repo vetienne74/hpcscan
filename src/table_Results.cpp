@@ -48,6 +48,28 @@ Table_Results::~Table_Results(void)
 
 //-------------------------------------------------------------------------------------------------------
 
+void Table_Results::seOneValue(Myint iLine, Myint iCol, Myfloat value)
+{
+	printDebug(FULL_DEBUG, "IN Table_Results::setOneValue");
+
+	if ((iLine) < 0 || (iLine > nLine))
+	{
+		printError("Table_Results::seOneValue, invalid iLine", iLine) ;
+		return ;
+	}
+	if ((iCol) < 0 || (iCol > nCol))
+	{
+		printError("Table_Results::seOneValue, invalid iCol", iCol) ;
+		return ;
+	}
+	Myint idx = iLine + iCol * nLine ;
+	val[idx] = value ;
+
+	printDebug(FULL_DEBUG, "OUT Table_Results::setOneValue");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 void Table_Results::display(void)
 {
 	printDebug(MID_DEBUG, "IN Table_Results::display");
@@ -56,17 +78,40 @@ void Table_Results::display(void)
 	{
 		cout << "\n * Table " << tableName << " *\n" ;
 
-		for (Myint iCol=0; iCol<nCol; iCol++)
+		// display column labels
+		cout << "         | " ;
+		for (Myint iCol = 0; iCol < nCol ; iCol++)
 		{
-			cout << " | " ;
-			for (Myint iLine=0; iLine<nLine; iLine++)
+			printf("%6d | ", iCol) ;
+		}
+		cout << "\n" ;
+
+		// display line delimiter
+		cout << "|--------|" ;
+		for (Myint iCol = 0; iCol < nCol ; iCol++)
+		{
+			cout << "--------|" ;
+		}
+		cout << "\n" ;
+
+		// display values
+		for (Myint iLine = 0; iLine < nLine; iLine++)
+		{
+			printf("| %6d | ", iLine) ;
+			for (Myint iCol = 0; iCol < nCol ; iCol++)
 			{
 				Myint idx = iLine + iCol * nLine ;
-				cout << val[idx] << " | " ;
+				if (val[idx] != UNSPECIFIED)
+				{
+					printf("%6.2f | ", val[idx]) ;
+				}
+				else
+				{
+					cout << "   -   | " ;
+				}
 			}
 			cout << "\n" ;
 		}
-
 	}
 
 	printDebug(MID_DEBUG, "OUT Table_Results::display");
