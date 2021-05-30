@@ -76,7 +76,7 @@ void Table_Results::display(void)
 
 	if (myMpiRank == 0)
 	{
-		cout << "\n * Table " << tableName << " *\n" ;
+		cout << "\n *** " << tableName << " ***\n" ;
 
 		// display column labels
 		cout << "         | " ;
