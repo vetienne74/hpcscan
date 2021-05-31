@@ -47,12 +47,12 @@ SKIP testMode HIP
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Thu 27 May 2021 08:30:14 AM +03
-# Ended    :  Thu 27 May 2021 08:31:36 AM +03
+# Started  :  Sun 30 May 2021 11:38:01 AM +03
+# Ended    :  Sun 30 May 2021 11:39:25 AM +03
 On machine :  mars
 Done by    :  vincent
 * SUMMARY
-# PASSED  : 972
+# PASSED  : 1002
 # FAILED  : 0
 # ERROR   : 0
 # WARNING : 0
