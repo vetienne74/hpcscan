@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+#PBS -q default
+#PBS -T necmpi
+#PBS -l cpunum_job=2
+#PBS -l elapstim_req=600
+#PBS -l coresz_prc=0
+#PBS --venode=8
+#PBS --venum-lhost=4         # Mandatory to benefit from Infiniband between VE 0-3 and VE 4-7
+#PBS --use-hca=1             # Mandatory to enabled Infiniband
+#PBS -N test
+#PBS -j o
+#PBS -v NMPI_PREFIX=/opt/nec/ve/mpi/2.12.0
+#PBS -v NMPI_DAEMON_PATH=/opt/nec/ve/mpi/libexec/mpid
+#
+source ${NMPI_PREFIX}/bin/necmpivars.sh
+cd ${PBS_O_WORKDIR}
+
+# source hpcscan env
+source ../../env/setEnvSX-AuroraNcc.sh
+
+script='hpcscanComm'
+sh ${script}.sh > ${script}SX-Aurora.out
+
+perfLog='hpcscan.perf.Comm.log'
+mv ${perfLog} ${script}SX-Aurora.log
+
+exit 0

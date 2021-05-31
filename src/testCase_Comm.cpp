@@ -55,7 +55,7 @@ Rtn_code TestCase_Comm::run(void)
 	//}
 
 	Table_Results *tabSend, *tabSendRecv ;
-	Myfloat HaloExchGB=0, HaloExchGPoint=0 ;
+	Myfloat HaloExchGB = 0, HaloExchGPoint = 0, HaloExchBestTime = 0, HaloExchSize = 0 ;
 
 	const string gridMode = Config::Instance()->testMode ;
 
@@ -331,7 +331,8 @@ Rtn_code TestCase_Comm::run(void)
 
 	{
 		//============================================
-		// Exchange Halos
+		// Exchange Halos with Sendrecv
+		// All procs to all procs
 		//============================================
 
 		print_blank() ;
@@ -393,7 +394,9 @@ Rtn_code TestCase_Comm::run(void)
 
 		}
 
-		HaloExchGPoint = nGridPointHaloGlob/testCase_time_best/1.e9 ;
+		HaloExchBestTime = testCase_time_best ;
+		HaloExchSize = nGridPointHaloGlob * sizeof(Myfloat) ;
+		HaloExchGPoint = nGridPointHaloGlob / HaloExchBestTime / 1.e9 ;
 		HaloExchGB = HaloExchGPoint * sizeof(Myfloat) ;
 
 		printInfo(MASTER, " Best achieved GByte/s", HaloExchGB) ;
@@ -412,19 +415,19 @@ Rtn_code TestCase_Comm::run(void)
 	delete(tabSend) ;
 	delete(tabSendRecv) ;
 
-	// log perf TO DO
+	// log perf
 	if (myMpiRank == 0)
 	{
 		// first number is at position 10 in log file for numeric values
-		//for (Myint iproc = 1; iproc < nMpiProc; iproc++)
-		//{
-		//	perfLogFile << SendGB[iproc-1] << " " << SendGPoint[iproc-1] << " " ;
-		//}
-		//for (Myint iproc = 1; iproc < nMpiProc; iproc++)
-		//{
-		//	perfLogFile << SendRecvGB[iproc-1] << " " << SendRecvGPoint[iproc-1] << " " ;
-		//}
-		//perfLogFile << HaloExchGB << " " << HaloExchGPoint << "\n" ;
+		for (Myint ii = 0; ii < tabSend->nVal ; ii++)
+		{
+			perfLogFile << tabSend->val[ii] << " " ;
+		}
+		for (Myint ii = 0; ii < tabSendRecv->nVal ; ii++)
+		{
+			perfLogFile << tabSendRecv->val[ii] << " " ;
+		}
+		perfLogFile << HaloExchSize/1e6 << " " << HaloExchBestTime << " " << HaloExchGB << "\n" ;
 	}
 
 	this->finalize() ;
