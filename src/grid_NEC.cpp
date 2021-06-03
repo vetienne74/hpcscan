@@ -1425,7 +1425,7 @@ void Grid_NEC::padGridn3(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_NEC::initializeGrid(void)
+Rtn_code Grid_NEC::initializeGrid(void)
 {
 	printDebug(MID_DEBUG, "IN Grid_NEC::initializeGrid");
 
@@ -1450,6 +1450,7 @@ void Grid_NEC::initializeGrid(void)
 	tmp_grid_3d = new Myfloat[npoint] ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC::initializeGrid");
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------

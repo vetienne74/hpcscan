@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 8fa96d57186ac71c34fd2239462f142c5cf38416
+ Git version	commit 2232510da4e2012f97b4d670f4dbb2855e51d957
 		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		Date:   Sun May 30 11:28:59 2021 +0300
+		
 
  Host name	mars
  User name	vincent
@@ -17,7 +17,7 @@
  Mode Baseline	ENABLED
  Mode CacheBlk	ENABLED
  Mode CUDA	ENABLED
- Mode DPC++	DISABLED
+ Mode DPC++	ENABLED
  Mode HIP	DISABLED
  Mode NEC	DISABLED
  Mode NEC_SCA	DISABLED
@@ -114,18 +114,18 @@
  Check at time	0.135857
  Check at time	0.143404
  ntCheck	20
- errTestCase2	8.3911e-06
+ errTestCase2	8.52057e-06
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	13.0798
- Best Gpoint/s eff.	0.272496
- Best Gpoint/s in FD	0.272496
- Best Apparent BW GB/s	31.6095
+ Best GFlop/s in FD	14.9065
+ Best Gpoint/s eff.	0.310551
+ Best Gpoint/s in FD	0.310551
+ Best Apparent BW GB/s	36.0239
 
- Case run time (s)	0.200544
+ Case run time (s)	0.192302
 --------------------------------------------------------------------------------
- Total run time (s)	0.202567
+ Total run time (s)	0.195687
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

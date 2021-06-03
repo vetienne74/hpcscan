@@ -43,7 +43,7 @@ public:
 	~Grid(void) ;
 
 	// initialise grid index and MPI data structure
-	virtual void initializeGrid(void) ;
+	virtual Rtn_code initializeGrid(void) ;
 
 	// print info
 	virtual void info(void) ;

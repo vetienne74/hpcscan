@@ -217,13 +217,14 @@ Rtn_code Grid_NEC_SCA::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint f
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_NEC_SCA::initializeGrid(void)
+Rtn_code Grid_NEC_SCA::initializeGrid(void)
 {
 	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::initializeGrid");
 
 	Grid_NEC::initializeGrid() ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC_SCA::initializeGrid");
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------

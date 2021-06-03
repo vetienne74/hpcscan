@@ -1511,7 +1511,7 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_Cuda::initializeGrid(void)
+Rtn_code Grid_Cuda::initializeGrid(void)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::initializeGrid") ;
 
@@ -1522,6 +1522,7 @@ void Grid_Cuda::initializeGrid(void)
 	cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
 	if (error_id != cudaSuccess) {
 		printError(" In Grid_Cuda::initializeGrid, cudaGetDeviceCount", (int) error_id) ;
+		return(RTN_CODE_KO) ;
 	}
 	printDebug(FULL_DEBUG, "Device Count", deviceCount) ;
 
@@ -1529,6 +1530,7 @@ void Grid_Cuda::initializeGrid(void)
 	error_id = cudaSetDevice(myDevice);
 	if (error_id != cudaSuccess) {
 		printError(" In Grid_Cuda::initializeGrid, cudaSetDevice", (int) error_id) ;
+		return(RTN_CODE_KO) ;
 	}
 	printDebug(FULL_DEBUG, "Device Id" ,myDevice) ;
 
@@ -1552,8 +1554,8 @@ void Grid_Cuda::initializeGrid(void)
 		cudaMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
 	}
-
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::initializeGrid") ;
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------

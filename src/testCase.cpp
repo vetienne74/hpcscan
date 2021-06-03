@@ -14,6 +14,7 @@
 #include "config.h"
 #include "constant.h"
 #include "global.h"
+#include "grid_Factory.h"
 #include "output_report.h"
 
 namespace hpcscan {
@@ -34,56 +35,16 @@ Rtn_code TestCase::initialize(void)
 		printInfo(MASTER, " TestCase version", testCaseVersion) ;
 		printInfo(MASTER, " TestCase mode\t", Config::Instance()->testMode) ;
 
-		if (Config::Instance()->testMode.compare(GRID_MODE_BASELINE) == 0)
-		{
-
-		}
-		else if (Config::Instance()->testMode.compare(GRID_MODE_CACHEBLK) == 0)
-		{
-
-		}
-#ifdef __CUDA__
-		else if (Config::Instance()->testMode.compare(GRID_MODE_CUDA) == 0)
-		{
-
-		}
-#endif
-
-#ifdef __DPCPP__
-		else if (Config::Instance()->testMode.compare(GRID_MODE_DPCPP) == 0)
-		{
-
-		}
-#endif
-
-#ifdef __HIP__
-		else if (Config::Instance()->testMode.compare(GRID_MODE_HIP) == 0)
-		{
-
-		}
-#endif
-
-#ifdef __NEC__
-		else if (Config::Instance()->testMode.compare(GRID_MODE_NEC) == 0)
-		{
-
-		}
-		else if (Config::Instance()->testMode.compare(GRID_MODE_NEC_SCA) == 0)
-		{
-
-		}
-#endif
-
-#ifdef __OPENACC__
-		else if (Config::Instance()->testMode.compare(GRID_MODE_OPENACC) == 0)
-		{
-
-		}
-#endif
-
-		else
+		// try to create and initialize a grid to see if everything is all right
+		auto gridTest = Grid_Factory::create(Config::Instance()->testMode, GRID_LOCAL) ;
+		if (gridTest == nullptr)
 		{
 			printError("In TestCase::initialize, Not supported or invalid testMode") ;
+			return(RTN_CODE_KO) ;
+		}
+		if (gridTest->initializeGrid() != RTN_CODE_OK)
+		{
+			printError("In TestCase::initialize, Can not initialize grid with testMode") ;
 			return(RTN_CODE_KO) ;
 		}
 

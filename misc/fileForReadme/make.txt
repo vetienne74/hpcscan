@@ -1,30 +1,30 @@
-hpcscan will be compiled with mpic++
-HPCSCAN_CPP_FLAGCOMP="-g -O3 -mavx2 -fopenmp -D__CUDA__"
+hpcscan will be compiled with mpiicpc -cxx=dpcpp
+HPCSCAN_CPP_FLAGCOMP="-w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__"
 Files version and ../src/version_hpcscan.h differ
 version has changed, regenerating version info
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/config.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid_CacheBlk.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid_Factory.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/main.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/output_report.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/propagator_Factory.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/propagator_Ac2.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/propagator_Ac2SplitComp.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/table_Results.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Comm.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_FD_D2.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Grid.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Propa.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Memory.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Template.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Util.cpp
-nvcc -c -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda.cu
-mpic++ -g -O3 -mavx2 -fopenmp -D__CUDA__ -o ../bin/hpcscan config.o grid.o grid_CacheBlk.o grid_Factory.o main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o table_Results.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o grid_Cuda.o  -L/usr/local/cuda/lib64 -lcuda -lcudart 
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/config.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/grid.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/grid_CacheBlk.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/grid_Factory.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/main.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/output_report.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/propagator_Factory.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/propagator_Ac2.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/propagator_Ac2SplitComp.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/table_Results.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/testCase.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/testCase_Comm.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/testCase_FD_D2.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/testCase_Grid.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/testCase_Propa.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/testCase_Memory.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/testCase_Template.cpp
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/testCase_Util.cpp
+nvcc -c -I /opt/intel/oneapi/mpi/2021.2.0/include/ ../src/grid_Cuda.cu
+mpiicpc -cxx=dpcpp -c -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ ../src/grid_DPCPP.cpp
+mpiicpc -cxx=dpcpp -w -g -O3 -fopenmp -xHost -ffast-math -D__CUDA__ -D__DPCPP__ -o ../bin/hpcscan config.o grid.o grid_CacheBlk.o grid_Factory.o main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o table_Results.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o grid_Cuda.o grid_DPCPP.o  -L/usr/local/cuda/lib64 -lcuda -lcudart 
 *** BUILD OK (SINGLE PRECISION) *** 
-g++ (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
-Copyright (C) 2019 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
+Intel(R) oneAPI DPC++ Compiler 2021.2.0 (2021.2.0.20210317)
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /opt/intel/oneapi/compiler/2021.2.0/linux/bin

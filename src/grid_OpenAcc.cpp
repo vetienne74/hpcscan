@@ -107,7 +107,7 @@ Rtn_code Grid_OpenAcc::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, 
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_OpenAcc::initializeGrid(void)
+Rtn_code Grid_OpenAcc::initializeGrid(void)
 {
 	printDebug(FULL_DEBUG, "In Grid_OpenAcc::initializeGrid") ;
 
@@ -543,6 +543,7 @@ void Grid_OpenAcc::initializeGrid(void)
 #pragma acc enter data copyin(this[0:1]) create(grid_3d[0:(n1*n2*n3)])
 
 	printDebug(FULL_DEBUG, "Out Grid_OpenAcc::initializeGrid") ;
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------

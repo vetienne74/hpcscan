@@ -34,7 +34,7 @@ public:
 	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;
 
 	// initialise grid index and MPI data structure
-	virtual void initializeGrid(void) ;
+	virtual Rtn_code initializeGrid(void) ;
 
 	// print info
 	virtual void info(void) ;

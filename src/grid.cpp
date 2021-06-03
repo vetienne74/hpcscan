@@ -97,7 +97,7 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid::initializeGrid(void)
+Rtn_code Grid::initializeGrid(void)
 {
 	printDebug(MID_DEBUG, "IN Grid::initializeGrid");
 
@@ -529,6 +529,7 @@ void Grid::initializeGrid(void)
 	grid_3d = new Myfloat[npoint] ;
 
 	printDebug(MID_DEBUG, "OUT Grid::initializeGrid");
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------

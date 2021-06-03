@@ -9,6 +9,11 @@
  -cb3 <int>           = cache block size axis 3 [grid pts}
  -debug <OPT>         = debug trace [OPT=none/light/mid/full]
  -dim <int>           = space dimension [1,2 or 3]
+ -dpcppSelect <char>  = device selector for DPC++
+     Host             * Launch kernels on Host (DEFAULT)
+     CPU              * Launch kernels on CPU
+     GPU              * Launch kernels on GPU
+     FPGA             * Launch kernels on FPGA
  -dt <float>          = time step (s) for propagator
  -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]
  -gpuBlkSize <int>    = GPU, number of threads per block

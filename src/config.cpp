@@ -35,6 +35,7 @@ static const Myint     DEFAULT_CB1            = 9999 ;
 static const Myint     DEFAULT_CB2            = 4 ;
 static const Myint     DEFAULT_CB3            = 16 ;
 static const Dim_type  DEFAULT_DIM            = DIM3 ;
+static const string    DEFAULT_DPCPP_SELECTOR = "Host" ;
 static const Myfloat64 DEFAULT_DT             = 0.0 ; // stable dt will be used
 static const Myint     DEFAULT_FD_ORDER       = 8 ;
 static const Myint     DEFAULT_GPU_BLKSIZE    = 256 ;
@@ -106,6 +107,7 @@ Config::Config(void)
 	cb3          = DEFAULT_CB3 ;
 	dim          = DEFAULT_DIM ;
 	dt           = DEFAULT_DT ;
+	dpcppSelect  = DEFAULT_DPCPP_SELECTOR ;
 	fdOrder      = DEFAULT_FD_ORDER ;
 	gpuBlkSize   = DEFAULT_GPU_BLKSIZE ;
 	gpuGridSize  = DEFAULT_GPU_GRIDSIZE ;
@@ -172,6 +174,11 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -cb3 <int>           = cache block size axis 3 [grid pts}") ;
 			printInfo(MASTER, " -debug <OPT>         = debug trace [OPT=none/light/mid/full]") ;
 			printInfo(MASTER, " -dim <int>           = space dimension [1,2 or 3]") ;
+			printInfo(MASTER, " -dpcppSelect <char>  = device selector for DPC++") ;
+			printInfo(MASTER, "     Host             * Launch kernels on Host (DEFAULT)") ;
+			printInfo(MASTER, "     CPU              * Launch kernels on CPU") ;
+			printInfo(MASTER, "     GPU              * Launch kernels on GPU") ;
+			printInfo(MASTER, "     FPGA             * Launch kernels on FPGA") ;
 			printInfo(MASTER, " -dt <float>          = time step (s) for propagator") ;
 			printInfo(MASTER, " -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]") ;
 			printInfo(MASTER, " -gpuBlkSize <int>    = GPU, number of threads per block") ;
@@ -370,6 +377,18 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 					printError(" Space dimension should be 1, 2 or 3") ;
 					return(RTN_CODE_KO) ;
 				}
+			}
+
+			else if (string(argv[ii]) == "-dpcppSelect")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -dpcppSelect") ;
+					return(RTN_CODE_KO) ;
+				}
+				dpcppSelect = argv[ii];
+				printInfo(MASTER, " DPC++ selector\t", dpcppSelect) ;
 			}
 
 			else if (string(argv[ii]) == "-dt")

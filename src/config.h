@@ -44,6 +44,9 @@ public:
 	// time step (for propagator)
 	Myfloat64 dt ;
 
+	// DPC++ device selector
+	string dpcppSelect ;
+
 	// fd order
 	Myint fdOrder ;
 

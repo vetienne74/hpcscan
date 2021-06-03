@@ -678,7 +678,7 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_Cuda::initializeGrid(void)
+Rtn_code Grid_Cuda::initializeGrid(void)
 {
 	printDebug(FULL_DEBUG, "In Grid_Cuda::initializeGrid") ;
 
@@ -693,6 +693,7 @@ void Grid_Cuda::initializeGrid(void)
 		cudaCheckError();
 	}
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::initializeGrid") ;
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------

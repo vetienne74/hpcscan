@@ -49,7 +49,6 @@ public:
 	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;
 
 protected:
-	//virtual void initializeGrid(Grid_type, Dim_type, Myint64, Myint64, Myint64) ;
 
 } ;
 

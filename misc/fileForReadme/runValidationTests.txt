@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------
 Start testDriver.sh
 >>> Test Mode Baseline <<<
-Launch MPI with mpirun --oversubscribe
+Launch MPI with mpirun
 Running -testCase Util ...
 Running -testCase Template ...
 Running -testCase Memory ...
@@ -19,7 +19,7 @@ End testDriver.sh
 ------------------------------------------------------------------------
 Start testDriver.sh
 >>> Test Mode CacheBlk <<<
-Launch MPI with mpirun --oversubscribe
+Launch MPI with mpirun
 Running -testCase Util ...
 Running -testCase Template ...
 Running -testCase Memory ...
@@ -32,7 +32,7 @@ End testDriver.sh
 ------------------------------------------------------------------------
 Start testDriver.sh
 >>> Test Mode CUDA <<<
-Launch MPI with mpirun --oversubscribe
+Launch MPI with mpirun
 Running -testCase Util ...
 Running -testCase Template ...
 Running -testCase Memory ...
@@ -42,17 +42,29 @@ Running -testCase Comm ...
 Running -testCase Propa ...
 End testDriver.sh
 ------------------------------------------------------------------------
-SKIP testMode DPC++
+------------------------------------------------------------------------
+Start testDriver.sh
+>>> Test Mode DPC++ <<<
+Launch MPI with mpirun
+Running -testCase Util ...
+Running -testCase Template ...
+Running -testCase Memory ...
+Running -testCase FD_D2 ...
+Running -testCase Grid ...
+Running -testCase Comm ...
+Running -testCase Propa ...
+End testDriver.sh
+------------------------------------------------------------------------
 SKIP testMode HIP
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Sun 30 May 2021 11:38:01 AM +03
-# Ended    :  Sun 30 May 2021 11:39:25 AM +03
+# Started  :  Thu 03 Jun 2021 06:46:52 AM +03
+# Ended    :  Thu 03 Jun 2021 06:47:49 AM +03
 On machine :  mars
 Done by    :  vincent
 * SUMMARY
-# PASSED  : 1002
+# PASSED  : 1336
 # FAILED  : 0
 # ERROR   : 0
 # WARNING : 0

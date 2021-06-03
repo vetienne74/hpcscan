@@ -35,7 +35,7 @@ public:
 	virtual void info(void) ;
 
 	// initialise grid index and MPI data structure
-	virtual void initializeGrid(void) ;
+	virtual Rtn_code initializeGrid(void) ;
 
 	// fill array with constant value
 	virtual void fillArray(Myfloat val) ;
@@ -51,8 +51,7 @@ protected:
 	Myfloat * d_help_3d_2 ;
 
 	// pointer to device queue
-	// TO DO it should be initialized in initializeGrid
-	sycl::queue Q ;
+	sycl::queue *myQ ;
 
 } ;
 

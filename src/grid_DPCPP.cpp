@@ -37,6 +37,8 @@ Grid_DPCPP::Grid_DPCPP(Grid_type gridTypeIn) : Grid(gridTypeIn)
 	d_help_3d   = NULL ;
 	d_help_3d_2 = NULL ;
 
+	myQ = NULL ;
+
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::Grid_DPCPP");
 														}
 
@@ -54,6 +56,8 @@ Grid_DPCPP::Grid_DPCPP(Grid_type gridTypeIn, Dim_type dimIn,
 	d_help_3d   = NULL;
 	d_help_3d_2 = NULL ;
 
+	myQ = NULL ;
+
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::Grid_DPCPP");
 }
 
@@ -64,28 +68,56 @@ Grid_DPCPP::~Grid_DPCPP(void)
 	printDebug(MID_DEBUG, "IN Grid_DPCPP::~Grid_DPCPP");
 
 	//delete[] grid_3d ;
-	sycl::free(d_grid_3d, Q);
+	sycl::free(d_grid_3d, *myQ);
 	//free(d_help_3d);
 	//free(d_help_3d_2);
+	delete(myQ) ;
 
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::~Grid_DPCPP");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_DPCPP::initializeGrid(void)
+Rtn_code Grid_DPCPP::initializeGrid(void)
 {
 	printDebug(FULL_DEBUG, "In Grid_DPCPP::initializeGrid") ;
 
+	// initialize parent grid
 	Grid::initializeGrid() ;
 
 	// initialize device queue
-	//*Q = sycl::queue() ;
+	//myQ = new sycl::queue( sycl::default_selector{} ) ;
+	//myQ = new sycl::queue( sycl:: host_selector{} ) ;
+	//myQ = new sycl::queue( sycl:: cpu_selector{} ) ;
+	//myQ = new sycl::queue( sycl:: gpu_selector{} ) ;
+
+	try {
+		if (Config::Instance()->dpcppSelect.compare("Host") == 0)
+		{
+			myQ = new sycl::queue( sycl:: host_selector{} ) ;
+		}
+		else if (Config::Instance()->dpcppSelect.compare("CPU") == 0)
+		{
+			myQ = new sycl::queue( sycl:: cpu_selector{} ) ;
+		}
+		else if (Config::Instance()->dpcppSelect.compare("GPU") == 0)
+		{
+			myQ = new sycl::queue( sycl:: gpu_selector{} ) ;
+		}
+		else
+		{
+			printError("In Grid_DPCPP::initializeGrid, invalid dpcpp selector") ;
+			return(RTN_CODE_KO) ;
+		}
+	} catch (exception const& ex) {
+		printError("In Grid_DPCPP::initializeGrid, requested device is not available") ;
+		return(RTN_CODE_KO) ;
+	}
 
 	if (d_grid_3d == NULL)
 	{
 		// allocate the grid on the device
-		d_grid_3d = sycl::malloc_shared<Myfloat>(npoint, Q) ;
+		d_grid_3d = sycl::malloc_shared<Myfloat>(npoint, *myQ) ;
 
 		// allocate 1d array of the device used to perform reduction operation
 		//cudaMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
@@ -96,6 +128,7 @@ void Grid_DPCPP::initializeGrid(void)
 		//cudaCheckError();
 	}
 	printDebug(FULL_DEBUG, "Out Grid_DPCPP::initializeGrid") ;
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -111,8 +144,8 @@ void Grid_DPCPP::info(void)
 	printInfo(MASTER, "") ;
 	printInfo(MASTER, " * Device parameters * ") ;
 
-	printInfo(MASTER, " Selected device", Q.get_device().get_info<sycl::info::device::name>() ) ;
-	printInfo(MASTER, " Device vendor\t", Q.get_device().get_info<sycl::info::device::vendor>() ) ;
+	printInfo(MASTER, " Selected device", myQ->get_device().get_info<sycl::info::device::name>() ) ;
+	printInfo(MASTER, " Device vendor\t", myQ->get_device().get_info<sycl::info::device::vendor>() ) ;
 
 	printDebug(FULL_DEBUG, "OUT Grid_DPCPP::info");
 }
@@ -126,12 +159,12 @@ void Grid_DPCPP::fillArray(Myfloat val)
 	Myfloat * const w = grid_3d ;
 	Myfloat* w_d = d_grid_3d ;
 
-	Q.parallel_for(npoint,[=](int ii)
+	myQ->parallel_for(npoint,[=](int ii)
 	{
 		w_d[ii] = val ;
 	}).wait() ;
 
-	Q.memcpy(w, w_d, npoint*sizeof(Myfloat)).wait() ;
+	myQ->memcpy(w, w_d, npoint*sizeof(Myfloat)).wait() ;
 
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::fillArray");
 }

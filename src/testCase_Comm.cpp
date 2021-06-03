@@ -43,17 +43,7 @@ Rtn_code TestCase_Comm::run(void)
 		return(RTN_CODE_OK) ;
 	}
 
-	// for perf log file
-	//Myfloat SendGB[nMpiProc-1]     , SendRecvGB[nMpiProc-1]     , HaloExchGB=0 ;
-	//Myfloat SendGPoint[nMpiProc-1] , SendRecvGPoint[nMpiProc-1] , HaloExchGPoint=0 ;
-	//for (Myint iproc = 1; iproc < nMpiProc; iproc++)
-	//{
-	//	SendGPoint[iproc-1] = UNSPECIFIED ;
-	//	SendRecvGB[iproc-1] = UNSPECIFIED ;
-	//	SendGPoint[iproc-1] = UNSPECIFIED ;
-	//	SendRecvGPoint[iproc-1] = UNSPECIFIED ;
-	//}
-
+	// for perf logging
 	Table_Results *tabSend, *tabSendRecv ;
 	Myfloat HaloExchGB = 0, HaloExchGPoint = 0, HaloExchBestTime = 0, HaloExchSize = 0 ;
 

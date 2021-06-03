@@ -1,9 +1,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 8fa96d57186ac71c34fd2239462f142c5cf38416
+ Git version	commit 2232510da4e2012f97b4d670f4dbb2855e51d957
 		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		Date:   Sun May 30 11:28:59 2021 +0300
+		
 
  Host name	mars
  User name	vincent
@@ -11,7 +11,7 @@
  Mode Baseline	ENABLED
  Mode CacheBlk	ENABLED
  Mode CUDA	ENABLED
- Mode DPC++	DISABLED
+ Mode DPC++	ENABLED
  Mode HIP	DISABLED
  Mode NEC	DISABLED
  Mode NEC_SCA	DISABLED
