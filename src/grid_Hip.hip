@@ -1512,7 +1512,7 @@ Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_Hip::initializeGrid(void)
+Rtn_code Grid_Hip::initializeGrid(void)
 {
 	printDebug(FULL_DEBUG, "In Grid_Hip::initializeGrid") ;
 
@@ -1523,6 +1523,7 @@ void Grid_Hip::initializeGrid(void)
 	hipError_t error_id = hipGetDeviceCount(&deviceCount);
 	if (error_id != hipSuccess) {
 		printError(" In Grid_Hip::initializeGrid, hipGetDeviceCount", (int) error_id) ;
+		return(RTN_CODE_KO) ;
 	}
 	printDebug(FULL_DEBUG, "Device Count", deviceCount) ;
 
@@ -1530,6 +1531,7 @@ void Grid_Hip::initializeGrid(void)
 	error_id = hipSetDevice(myDevice);
 	if (error_id != hipSuccess) {
 		printError(" In Grid_Hip::initializeGrid, hipSetDevice", (int) error_id) ;
+		return(RTN_CODE_KO) ;
 	}
 	printDebug(FULL_DEBUG, "Device Id" ,myDevice) ;
 
@@ -1553,8 +1555,8 @@ void Grid_Hip::initializeGrid(void)
 		hipMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
 	}
-
 	printDebug(FULL_DEBUG, "Out Grid_Hip::initializeGrid") ;
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
