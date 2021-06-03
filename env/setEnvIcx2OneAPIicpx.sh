@@ -1,9 +1,6 @@
 
 # Load needed modules
-#source /raid/opt/intel/parallel_studio_xe_2020.4.912/psxevars.sh
 source /raid/opt/intel/oneapi/setvars.sh
-#module load cuda/11.0.1
-#module load intel/2020 intelmpi/2020
 
 # MPI config
 export HPCSCAN_MPI_INVOKER='mpirun'
@@ -14,7 +11,7 @@ export KMP_AFFINITY=granularity=fine,compact
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
 # C++ compiler
-export HPCSCAN_CPP='mpiicpc -cxx=dpcpp'
+export HPCSCAN_CPP='mpiicpc -cxx=icpx'
 export HPCSCAN_CPP_OPENACC_FLAG=
 #export HPCSCAN_CPP_FLAGCOMP='-w -g -O3 -fopenmp -std=c++11 -xHost -ffast-math -fpermissive'
 export HPCSCAN_CPP_FLAGCOMP='-w -g -O3 -fopenmp -std=c++11 -xHost -ffast-math'
