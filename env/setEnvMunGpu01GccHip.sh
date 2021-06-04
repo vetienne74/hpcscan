@@ -28,5 +28,5 @@ export HPCSCAN_HIP=hipcc
 export HPCSCAN_HIP_FLAGCOMP='-fPIC -I /opt/mpi/ompi/include/'
 export HPCSCAN_HIP_LIB='-L/opt/rocm/lib -lamdhip64 '
 
-echo HPCSCAN set for MunGpu01 with $HPCSCAN_CPP and $HPCSCAN_HIP.
-
+# display Hpcscan settings
+sh ./displayHpcscanEnv.sh

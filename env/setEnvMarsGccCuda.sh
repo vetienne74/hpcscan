@@ -21,4 +21,10 @@ export HPCSCAN_CUDA=nvcc
 export HPCSCAN_CUDA_FLAGCOMP='-I /usr/lib/x86_64-linux-gnu/openmpi/include/'
 export HPCSCAN_CUDA_LIB='-L/usr/local/cuda/lib64 -lcuda -lcudart'
 
-echo HPCSCAN set for Mars with $HPCSCAN_CPP and $HPCSCAN_CUDA.
+# HIP compiler
+export HPCSCAN_HIP=
+export HPCSCAN_HIP_FLAGCOMP=
+export HPCSCAN_HIP_LIB=
+
+# display Hpcscan settings
+sh ./displayHpcscanEnv.sh

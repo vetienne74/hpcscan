@@ -183,9 +183,13 @@ OpenAcc      | GPU with OpenACC without optimization | Only enabled when compile
 
 In order to compile and run hpcscan, you need to source one of the files in the directory `./env`
 
-Example
+`cd ./env`
 
-`source ./env/setEnvMarsGccCuda.sh`
+Example to set up the environment for hpcscan with GCC and CUDA compilers:
+
+`source ./setEnvNeptuneGccCuda.sh`
+
+[Display command output](misc/fileForReadme/setEnvNeptuneGccCuda.txt)
 
 :bell: **For a new system, you would need to create a file for your system** (take example from one of the existing files)
 

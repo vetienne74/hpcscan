@@ -1,0 +1,20 @@
+HPCscan set for neptune with:
+- C++ Compiler
+g++ (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
+Copyright (C) 2019 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+- CUDA Compiler
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2021 NVIDIA Corporation
+Built on Sun_Mar_21_19:15:46_PDT_2021
+Cuda compilation tools, release 11.3, V11.3.58
+Build cuda_11.3.r11.3/compiler.29745058_0
+- No HIP compiler set
+- MPI library
+mpirun (Open MPI) 4.0.3
+
+Report bugs to http://www.open-mpi.org/community/help/
+- Number of OpenMP threads 2
+Ready to go!

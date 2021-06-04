@@ -22,4 +22,10 @@ export HPCSCAN_CUDA=
 export HPCSCAN_CUDA_FLAGCOMP=
 export HPCSCAN_CUDA_LIB=
 
-echo HPCSCAN set for Icx2 with $HPCSCAN_CPP.
+# HIP compiler
+export HPCSCAN_HIP=
+export HPCSCAN_HIP_FLAGCOMP=
+export HPCSCAN_HIP_LIB=
+
+# display Hpcscan settings
+sh ./displayHpcscanEnv.sh

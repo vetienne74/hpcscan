@@ -7,17 +7,17 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 2232510da4e2012f97b4d670f4dbb2855e51d957
-		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		
+ Git version	commit 558a3df94a7815719b900e34e94420ffe9aa4315
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Thu Jun 3 06:26:08 2021 +0200
 
- Host name	mars
+ Host name	neptune
  User name	vincent
  Computation	SINGLE PRECISION
  Mode Baseline	ENABLED
  Mode CacheBlk	ENABLED
  Mode CUDA	ENABLED
- Mode DPC++	ENABLED
+ Mode DPC++	DISABLED
  Mode HIP	DISABLED
  Mode NEC	DISABLED
  Mode NEC_SCA	DISABLED
@@ -30,7 +30,7 @@
  No. subdomains axis1	1
  No. subdomains axis2	1
  No. subdomains axis3	1
- OpenMP threads / MPI	4
+ OpenMP threads / MPI	2
  Number of tries	10
  FD space order		8
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -114,18 +114,18 @@
  Check at time	0.135857
  Check at time	0.143404
  ntCheck	20
- errTestCase2	8.52057e-06
+ errTestCase2	8.3911e-06
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	14.9065
- Best Gpoint/s eff.	0.310551
- Best Gpoint/s in FD	0.310551
- Best Apparent BW GB/s	36.0239
+ Best GFlop/s in FD	12.2831
+ Best Gpoint/s eff.	0.255899
+ Best Gpoint/s in FD	0.255899
+ Best Apparent BW GB/s	29.6843
 
- Case run time (s)	0.192302
+ Case run time (s)	0.214837
 --------------------------------------------------------------------------------
- Total run time (s)	0.195687
+ Total run time (s)	0.216176
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

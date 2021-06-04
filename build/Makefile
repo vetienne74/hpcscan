@@ -5,9 +5,9 @@
 ifeq ($(strip $(HPCSCAN_CPP)),)
 $(info It seems hpcscan environment has not been set.)
 $(info Source one of the env files in ../env or create a new one for your machine.)
-$(error HPCSCAN_CPP is $(HPCSCAN_CPP))
-else
-$(info hpcscan will be compiled with $(HPCSCAN_CPP))
+$(error HPCSCAN_CPP is set to $(HPCSCAN_CPP))
+#else
+#$(info hpcscan will be compiled with $(HPCSCAN_CPP))
 endif
 
 #=====================#
@@ -67,7 +67,7 @@ ifeq ($(HPCSCAN_CPP), mpinc++)
 HPCSCAN_CPP_FLAGCOMP+=-D__NEC__
 endif
 
-$(info HPCSCAN_CPP_FLAGCOMP="$(HPCSCAN_CPP_FLAGCOMP)")
+#$(info HPCSCAN_CPP_FLAGCOMP="$(HPCSCAN_CPP_FLAGCOMP)")
 
 #=====================#
 #     objects         #
@@ -142,7 +142,7 @@ hpcscan: $(ALL_OBJ)
 	@mkdir -p $(BIN_DIR)
 	$(HPCSCAN_CPP) $(HPCSCAN_CPP_FLAGCOMP) -o $(BIN_DIR)/$@ $(ALL_OBJ) $(HPCSCAN_CPP_LIB) $(HPCSCAN_CUDA_LIB) $(HPCSCAN_HIP_LIB)
 	@echo $(BUILD_MESSAGE)
-	@$(HPCSCAN_CPP) --version
+#@$(HPCSCAN_CPP) --version
 
 clean:
 	rm -f *.L *.o *.mod *~ ./version $(BIN_DIR)/hpcscan

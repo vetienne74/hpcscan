@@ -1,9 +1,5 @@
 
 # Load needed modules
-#source /opt/nec/ve/nlc/2.1.0/bin/nlcvars.sh mpi
-#source /opt/nec/ve/mpi/2.12.0/bin/necmpivars.sh
-#export NMPI_CXX=/opt/nec/ve/ncc/3.1.0/bin/nc++
-
 source /opt/nec/ve/nlc/2.3.0/bin/nlcvars.sh mpi
 source /opt/nec/ve/mpi/2.15.0/bin/necmpivars.sh
 
@@ -24,4 +20,10 @@ export HPCSCAN_CUDA=
 export HPCSCAN_CUDA_FLAGCOMP=
 export HPCSCAN_CUDA_LIB=
 
-echo HPCSCAN set for NEC SX-Aurora with $HPCSCAN_CPP.
+# HIP compiler
+export HPCSCAN_HIP=
+export HPCSCAN_HIP_FLAGCOMP=
+export HPCSCAN_HIP_LIB=
+
+# display Hpcscan settings
+sh ./displayHpcscanEnv.sh
