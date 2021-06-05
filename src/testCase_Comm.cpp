@@ -55,17 +55,22 @@ Rtn_code TestCase_Comm::run(void)
 		// grid (proc x) -> grid (proc y)
 		//============================================
 
-		// *** NOTE ***
-		// For this test case, we overwrite config parameters
-		// to keep grid size constant whatever the config is
+		// size of the MPI message corresponds to the number of point
+		// in one halo in n1 direction (n2 * n3 * fdOrder)
+		// min is 1000 points
 
-		Dim_type dim = DIM3 ;
-		Myint64 n1 = 1000 ;
-		Myint64 n2 = 100 ;
-		Myint64 n3 = 100 ;
+		// create the grid used in the MPI comm.
+		Dim_type dim = DIM1 ;
+		auto n1      = Config::Instance()->n1 ;
+		auto n2      = Config::Instance()->n2 ;
+		auto n3      = Config::Instance()->n3 ;
+		auto fdOrder = Config::Instance()->fdOrder ;
 
-		auto gridSrc2  = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, n1, n2, n3) ;
-		auto gridDest2 = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, n1, n2, n3) ;
+		Myint64 messageSize = (n2 * n3 - 1) *  Config::Instance()->fdOrder ;
+		if (messageSize < 1000) messageSize = 1000 ;
+
+		auto gridSrc2  = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, messageSize, 0, 0) ;
+		auto gridDest2 = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, messageSize, 0, 0) ;
 		Grid &gridSrc  = *gridSrc2 ;
 		Grid &gridDest = *gridDest2 ;
 		gridSrc.initializeGrid() ;
@@ -174,17 +179,23 @@ Rtn_code TestCase_Comm::run(void)
 		// grid (proc x) <--> grid (proc y)
 		//============================================
 
-		// *** NOTE ***
-		// For this test case, we overwrite config parameters
-		// to keep grid size constant whatever the config is
+		// size of the MPI message corresponds to the number of point
+		// in one halo in n1 direction (n2 * n3 * fdOrder)
+		// min is 1000 points
 
-		Dim_type dim = DIM3 ;
-		Myint64 n1 = 1000 ;
-		Myint64 n2 = 100 ;
-		Myint64 n3 = 100 ;
+		// create the grid used in the MPI comm.
+		Dim_type dim = DIM1 ;
+		auto n1      = Config::Instance()->n1 ;
+		auto n2      = Config::Instance()->n2 ;
+		auto n3      = Config::Instance()->n3 ;
+		auto fdOrder = Config::Instance()->fdOrder ;
 
-		auto gridSrc2  = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, n1, n2, n3) ;
-		auto gridDest2 = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, n1, n2, n3) ;
+		Myint64 messageSize = (n2 * n3 - 1) *  Config::Instance()->fdOrder ;
+		if (messageSize < 1000) messageSize = 1000 ;
+
+		auto gridSrc2  = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, messageSize, 0, 0) ;
+		auto gridDest2 = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, messageSize, 0, 0) ;
+
 		Grid &gridSrc  = *gridSrc2 ;
 		Grid &gridDest = *gridDest2 ;
 		gridSrc.initializeGrid() ;
