@@ -66,9 +66,11 @@ Rtn_code TestCase_Util::run(void)
 		bool sameSize = gridGlob1.sameSize(gridGlob2) ;
 		checkBoolDiff(sameSize, true) ;
 	}
+
 	{
 		//-----------------------------------------
 		// check size between global and local grid
+		// are different when nMpiProc > 1
 		//-----------------------------------------
 		print_blank() ;
 		string caseName = testCaseName + "GridSizeGlobalLocal" ;
@@ -92,10 +94,12 @@ Rtn_code TestCase_Util::run(void)
 			checkBoolDiff(sameSize2, false) ;
 		}
 	}
+
 	{
-		//-----------------------------
-		// check number of Inner points
-		//-----------------------------
+		//-----------------------------------------------------------
+		// check number of Inner points between global and local grid
+		// are different when nMpiProc > 1
+		//------------------------------------------------------------
 		print_blank() ;
 		string caseName = testCaseName + "GridSizeGlobalLocal" ;
 		printInfo(MASTER, " * Case", caseName) ;
@@ -116,6 +120,51 @@ Rtn_code TestCase_Util::run(void)
 		{
 			printInfo(MASTER, "globalSize", globalSize) ;
 			printInfo(MASTER, "sumSize", sumLocalSize) ;
+		}
+	}
+
+	{
+		//---------------------------------------------
+		// check number of Halos comm points is correct
+		//---------------------------------------------
+		print_blank() ;
+		string caseName = testCaseName + "NumberOfHaloCommPoint" ;
+		printInfo(MASTER, " * Case", caseName) ;
+
+		auto gridLoc12 = Grid_Factory::create(gridMode, GRID_LOCAL) ;
+		Grid &gridLoc1 = *gridLoc12 ;
+		gridLoc1.initializeGrid() ;
+
+		Myint64 nGridPointHaloGlob = gridLoc1.getNumberOfGridPointCommHalo(GRID_GLOBAL) ;
+
+		// compute number of halo comm point
+		auto dim     = gridLoc1.dim ;
+		auto nsub1   = Config::Instance()->nsub1 ;
+		auto nsub2   = Config::Instance()->nsub2 ;
+		auto nsub3   = Config::Instance()->nsub3 ;
+		auto n1      = Config::Instance()->n1 ;
+		auto n2      = Config::Instance()->n2 ;
+		auto n3      = Config::Instance()->n3 ;
+		auto fdOrder = Config::Instance()->fdOrder ;
+
+		Myint64 nGridPointHaloGlob2 = 0 ;
+
+		if (dim ==DIM1)
+		{
+			nGridPointHaloGlob2 = (nsub1 - 1) * fdOrder ;
+		}
+		else if (dim ==DIM2)
+		{
+			nGridPointHaloGlob2 = (nsub1 - 1) * n2*fdOrder + (nsub2 - 1) * n1*fdOrder ;
+		}
+		else if (dim ==DIM3)
+		{
+			nGridPointHaloGlob2 = (nsub1 - 1) * n2*n3*fdOrder + (nsub2 - 1) * n1*n3*fdOrder + (nsub3 - 1) * n1*n2*fdOrder ;
+		}
+		if (checkIntegerDiff(nGridPointHaloGlob, nGridPointHaloGlob2) != RTN_CODE_OK)
+		{
+			printInfo(MASTER, "nGridPointHaloGlob", nGridPointHaloGlob) ;
+			printInfo(MASTER, "nGridPointHaloGlob2", nGridPointHaloGlob2) ;
 		}
 	}
 
@@ -449,9 +498,9 @@ Rtn_code TestCase_Util::run(void)
 
 
 	{
-		//-----------------------
-		// check grid coordinates
-		//-----------------------
+		//------------------------------------
+		// check grid coordinates in unit grid
+		//------------------------------------
 		print_blank() ;
 		string caseName = testCaseName + "UnitGridCoord" ;
 		printInfo(MASTER, " * Case", caseName) ;
@@ -507,9 +556,9 @@ Rtn_code TestCase_Util::run(void)
 	}
 
 	{
-		//---------------------
-		// check exchangeHalos
-		//---------------------
+		//---------------------------------
+		// check exchangeHalos in unit grid
+		//---------------------------------
 		print_blank() ;
 		string caseName = testCaseName + "UnitGridExchangeHalos" ;
 		printInfo(MASTER, " * Case", caseName) ;

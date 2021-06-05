@@ -7,7 +7,7 @@ cd -
 # build
 cd ../../build
 make clean
-make | tee ../misc/fileForReadme/make.txt
+make -j $HPCSCAN_NTHREADS | tee ../misc/fileForReadme/make.txt
 cd -
 
 # command line parameters

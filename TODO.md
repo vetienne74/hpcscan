@@ -1,13 +1,11 @@
 
 # Current version
 
-## Test mode OpenAcc
+## testCase_Memory and testCase_Grid.cpp
 
-Finalize implementation
+Add case identical to STREAM triad
 
-## Test mode Cuda
-
-Finalize implementation
+Same cases should implemented on both test cases
 
 ## propagator_Ac2.cpp
 
@@ -31,6 +29,8 @@ For accelerators: add function to measure transfer between device to CPU and vic
 
 Computation of spatial derivatives with FFT
 
+Add missing stencil order O6, O10 and O14
+
 ## Propagator
 
 Propagator with pseudo spectral method (based on FFT)
@@ -38,3 +38,7 @@ Propagator with pseudo spectral method (based on FFT)
 More complex propagator (such as elastic wave equation)
 
 Implement higher order in time than 2nd order
+
+## Test mode OpenAcc
+
+Finalize implementation

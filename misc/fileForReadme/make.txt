@@ -1,6 +1,6 @@
+mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/config.cpp
 Files version and ../src/version_hpcscan.h differ
 version has changed, regenerating version info
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/config.cpp
 mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid.cpp
 mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid_CacheBlk.cpp
 mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid_Factory.cpp
