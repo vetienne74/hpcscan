@@ -1,0 +1,10 @@
+
+* step 1: download the STREAM benchmark
+
+git clone https://github.com/jeffhammond/STREAM.git
+
+* step 2: to do
+icx -fopenmp -O3 -mavx2 stream.c -o stream
+export OMP_NUM_THREADS=2
+export GOMP_CPU_AFFINITY=0,1
+./stream
