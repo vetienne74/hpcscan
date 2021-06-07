@@ -9,7 +9,8 @@ start_time=$(date)
 sh ../clean_dir.sh
 
 # set thread affinity
-export KMP_AFFINITY=granularity=fine,compact
+#export KMP_AFFINITY=granularity=fine,compact
+export KMP_AFFINITY=scatter,1,0,granularity=fine
 
 nthread=1
 while [ $nthread -le $HPCSCAN_NTHREADS ]
