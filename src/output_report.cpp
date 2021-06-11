@@ -61,7 +61,7 @@ Rtn_code print_header_of_output_report(void)
 		printInfo(MASTER, " Mode CUDA_Opt", "ENABLED") ;
 #else
 		printInfo(MASTER, " Mode CUDA", "DISABLED") ;
-		printInfo(MASTER, " Mode CUDA_Opt", "ENABLED") ;
+		printInfo(MASTER, " Mode CUDA_Opt", "DISABLE") ;
 #endif
 
 #ifdef __DPCPP__
@@ -72,8 +72,10 @@ Rtn_code print_header_of_output_report(void)
 
 #ifdef __HIP__
 		printInfo(MASTER, " Mode HIP", "ENABLED") ;
+		printInfo(MASTER, " Mode HIP_Opt", "ENABLED") ;
 #else
 		printInfo(MASTER, " Mode HIP", "DISABLED") ;
+		printInfo(MASTER, " Mode HIP_Opt", "DISABLED") ;
 #endif
 
 //#ifdef __OPENACC__
