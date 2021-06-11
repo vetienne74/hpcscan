@@ -39,6 +39,9 @@ static const string    DEFAULT_DPCPP_SELECTOR = "Host" ;
 static const Myfloat64 DEFAULT_DT             = 0.0 ; // stable dt will be used
 static const Myint     DEFAULT_FD_ORDER       = 8 ;
 static const Myint     DEFAULT_GPU_BLKSIZE    = 256 ;
+static const Myint     DEFAULT_GPU_BLKSIZE1   = 32 ;
+static const Myint     DEFAULT_GPU_BLKSIZE2   = 4 ;
+static const Myint     DEFAULT_GPU_BLKSIZE3   = 8 ;
 static const Myint     DEFAULT_GPU_GRIDSIZE   = 512 ;
 static const bool      DEFAULT_GPU_MPI_AWARE  = false ;
 static const Myfloat64 DEFAULT_H              = PI / 30 ;
@@ -110,6 +113,9 @@ Config::Config(void)
 	dpcppSelect  = DEFAULT_DPCPP_SELECTOR ;
 	fdOrder      = DEFAULT_FD_ORDER ;
 	gpuBlkSize   = DEFAULT_GPU_BLKSIZE ;
+	gpuBlkSize1  = DEFAULT_GPU_BLKSIZE1 ;
+	gpuBlkSize2  = DEFAULT_GPU_BLKSIZE2 ;
+	gpuBlkSize3  = DEFAULT_GPU_BLKSIZE3 ;
 	gpuGridSize  = DEFAULT_GPU_GRIDSIZE ;
 	gpuMpiAware  = DEFAULT_GPU_MPI_AWARE ;
 	h            = DEFAULT_H ;
@@ -438,6 +444,57 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				if (gpuBlkSize <= 0)
 				{
 					printError(" gpuBlkSize should be > 0") ;
+					return(RTN_CODE_KO) ;
+				}
+			}
+
+			else if (string(argv[ii]) == "-gpuBlkSize1")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -gpuBlkSize1") ;
+					return(RTN_CODE_KO) ;
+				}
+				gpuBlkSize1 = atoi(argv[ii]);
+				printInfo(MASTER, " gpuBlkSize1\t", n1) ;
+				if (gpuBlkSize1 <= 0)
+				{
+					printError(" gpuBlkSize1 should be > 0") ;
+					return(RTN_CODE_KO) ;
+				}
+			}
+
+			else if (string(argv[ii]) == "-gpuBlkSize2")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -gpuBlkSize2") ;
+					return(RTN_CODE_KO) ;
+				}
+				gpuBlkSize2 = atoi(argv[ii]);
+				printInfo(MASTER, " gpuBlkSize2\t", n1) ;
+				if (gpuBlkSize1 <= 0)
+				{
+					printError(" gpuBlkSize2 should be > 0") ;
+					return(RTN_CODE_KO) ;
+				}
+			}
+
+			else if (string(argv[ii]) == "-gpuBlkSize3")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -gpuBlkSize3") ;
+					return(RTN_CODE_KO) ;
+				}
+				gpuBlkSize3 = atoi(argv[ii]);
+				printInfo(MASTER, " gpuBlkSize3\t", n1) ;
+				if (gpuBlkSize3 <= 0)
+				{
+					printError(" gpuBlkSize3 should be > 0") ;
 					return(RTN_CODE_KO) ;
 				}
 			}

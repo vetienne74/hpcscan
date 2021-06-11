@@ -1315,7 +1315,7 @@ void Grid_Cuda::write(string file_name)
 		// copy grid from device to host
 		copyGridDeviceToHost(ALL_POINTS) ;
 
-		Grid::write(file_name) ;
+		Grid_Cuda::write(file_name) ;
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::write");
@@ -1331,7 +1331,7 @@ Rtn_code Grid_Cuda::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myint fdOr
 	// check grids are same size
 	if (this->sameSize(Wgrid) != true)
 	{
-		printError("Grid::FD_D2_N1, grids have not same size") ;
+		printError("Grid_Cuda::FD_D2_N1, grids have not same size") ;
 		return(RTN_CODE_KO) ;
 	}
 
@@ -1368,7 +1368,7 @@ Rtn_code Grid_Cuda::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myint fdOr
 	// check grids are same size
 	if (this->sameSize(Wgrid) != true)
 	{
-		printError("Grid::FD_D2_N2, grids have not same size") ;
+		printError("Grid_Cuda::FD_D2_N2, grids have not same size") ;
 		return(RTN_CODE_KO) ;
 	}
 
@@ -1405,7 +1405,7 @@ Rtn_code Grid_Cuda::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOr
 	// check grids are same size
 	if (this->sameSize(Wgrid) != true)
 	{
-		printError("Grid::FD_D2_N3, grids have not same size") ;
+		printError("Grid_Cuda::FD_D2_N3, grids have not same size") ;
 		return(RTN_CODE_KO) ;
 	}
 
@@ -1442,7 +1442,7 @@ Rtn_code Grid_Cuda::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint 
 	// check grids are same size
 	if (this->sameSize(Wgrid) != true)
 	{
-		printError("Grid::FD_LAPLACIAN, grids have not same size") ;
+		printError("Grid_Cuda::FD_LAPLACIAN, grids have not same size") ;
 		return(RTN_CODE_KO) ;
 	}
 

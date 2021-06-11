@@ -10,12 +10,14 @@
 #include "grid_CacheBlk.h"
 #ifdef __CUDA__
 #include "grid_Cuda.h"
+#include "grid_Cuda_Optim.h"
 #endif
 #ifdef __DPCPP__
 #include "grid_DPCPP.h"
 #endif
 #ifdef __HIP__
 #include "grid_Hip.h"
+#include "grid_Hip_Optim.h"
 #endif
 #ifdef __NEC__
 #include "grid_NEC.h"
@@ -52,6 +54,10 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	{
 		Rgrid = new Grid_Cuda(gridType) ;
 	}
+	else if (gridMode.compare(GRID_MODE_CUDA_OPTIM) == 0)
+	{
+		Rgrid = new Grid_Cuda_Optim(gridType) ;
+	}
 #endif
 
 #ifdef __DPCPP__
@@ -65,6 +71,10 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	else if (gridMode.compare(GRID_MODE_HIP) == 0)
 	{
 		Rgrid = new Grid_Hip(gridType) ;
+	}
+	else if (gridMode.compare(GRID_MODE_HIP_OPTIM) == 0)
+	{
+		Rgrid = new Grid_Hip_Optim(gridType) ;
 	}
 #endif
 
@@ -126,6 +136,10 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	{
 		Rgrid = new Grid_Cuda(gridType, dim, n1, n2, n3) ;
 	}
+	else if (gridMode.compare(GRID_MODE_CUDA_OPTIM) == 0)
+		{
+			Rgrid = new Grid_Cuda_Optim(gridType, dim, n1, n2, n3) ;
+		}
 #endif
 
 #ifdef __DPCPP__
@@ -139,6 +153,10 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	else if (gridMode.compare(GRID_MODE_HIP) == 0)
 	{
 		Rgrid = new Grid_Hip(gridType, dim, n1, n2, n3) ;
+	}
+	else if (gridMode.compare(GRID_MODE_HIP_OPTIM) == 0)
+	{
+		Rgrid = new Grid_Hip_Optim(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 

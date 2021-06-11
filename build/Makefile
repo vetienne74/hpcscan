@@ -83,13 +83,13 @@ CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
 CPP_OPENACC_OBJ = grid_OpenAcc.o
 
 # Cuda objects
-CUDA_OBJ = grid_Cuda.o
+CUDA_OBJ = grid_Cuda.o grid_Cuda_Optim.o
 
 # DPC++ objects
 DPCPP_OBJ = grid_DPCPP.o
 
 # Hip objects
-HIP_OBJ = grid_Hip.o
+HIP_OBJ = grid_Hip.o grid_Hip_Optim.o
 
 # NEC objects
 CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o

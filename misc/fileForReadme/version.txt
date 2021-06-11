@@ -1,9 +1,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 15cb63ced37f7b635173621ae5b6c2109743bc3f
+ Git version	commit 09cb139c941e6297c4cba0beb17c33b863c689c6
 		Author: vincent <vetienne@rocketmail.com>
-		Date:   Fri Jun 4 11:20:44 2021 +0300
+		Date:   Tue Jun 8 13:50:29 2021 +0300
 
  Host name	neptune
  User name	vincent
@@ -11,6 +11,7 @@
  Mode Baseline	ENABLED
  Mode CacheBlk	ENABLED
  Mode CUDA	ENABLED
+ Mode CUDA_Opt	ENABLED
  Mode DPC++	DISABLED
  Mode HIP	DISABLED
  Mode NEC	DISABLED

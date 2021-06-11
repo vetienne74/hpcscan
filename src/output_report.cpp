@@ -58,8 +58,10 @@ Rtn_code print_header_of_output_report(void)
 
 #ifdef __CUDA__
 		printInfo(MASTER, " Mode CUDA", "ENABLED") ;
+		printInfo(MASTER, " Mode CUDA_Opt", "ENABLED") ;
 #else
 		printInfo(MASTER, " Mode CUDA", "DISABLED") ;
+		printInfo(MASTER, " Mode CUDA_Opt", "ENABLED") ;
 #endif
 
 #ifdef __DPCPP__

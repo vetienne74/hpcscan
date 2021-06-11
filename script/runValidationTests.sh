@@ -31,8 +31,10 @@ sh testDriver.sh CacheBlk
 if [ "$HPCSCAN_CUDA" = "nvcc" ]
 then
     sh testDriver.sh CUDA
+    sh testDriver.sh CUDA_Opt
 else
     echo 'SKIP testMode CUDA'
+    echo 'SKIP testMode CUDA_Opt'
 fi
 
 # run all tests with -testMode DPC++
@@ -55,15 +57,9 @@ fi
 if [ "$HPCSCAN_CPP" = "mpinc++" ]
 then
     sh testDriver.sh NEC
-else
-    echo 'SKIP testMode NEC'
-fi
-
-# run all tests with -testMode NEC_SCA
-if [ "$HPCSCAN_CPP" = "mpinc++" ]
-then
     sh testDriver.sh NEC_SCA
 else
+    echo 'SKIP testMode NEC'
     echo 'SKIP testMode NEC_SCA'
 fi
 

@@ -53,8 +53,13 @@ public:
 	// grid sampling
 	Myfloat64 h ;
 
-	// GPU block size (number of threads per block)
+	// GPU block size in 1 dimension (number of threads per block)
 	Myint gpuBlkSize ;
+
+	// GPU block size in 3 dimension (number of threads per block)
+	Myint gpuBlkSize1 ;
+	Myint gpuBlkSize2 ;
+	Myint gpuBlkSize3 ;
 
 	// GPU MPI aware flag
 	bool gpuMpiAware ;
