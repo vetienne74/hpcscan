@@ -49,8 +49,10 @@ fi
 if [ "$HPCSCAN_HIP" = "hipcc" ]
 then
     sh testDriver.sh HIP
+    sh testDriver.sh HIP_Opt
 else
     echo 'SKIP testMode HIP'
+    echo 'SKIP testMode HIP_Opt'
 fi
 
 # run all tests with -testMode NEC
