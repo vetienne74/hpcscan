@@ -47,7 +47,7 @@ namespace hpcscan {
 // input u
 // output w
 
-__global__ void kernel_FD_D2_N1_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
+__global__ void kernelOpt_FD_D2_N1_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
@@ -70,7 +70,7 @@ __global__ void kernel_FD_D2_N1_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 // input u
 // output w
 
-__global__ void kernel_FD_D2_N2_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
+__global__ void kernelOpt_FD_D2_N2_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
@@ -93,7 +93,7 @@ __global__ void kernel_FD_D2_N2_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 // input u
 // output w
 
-__global__ void kernel_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
+__global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
@@ -117,7 +117,7 @@ __global__ void kernel_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *w, Myfloat 
 // input u
 // output w
 
-__global__ void kernel_FD_D2_N3_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
+__global__ void kernelOpt_FD_D2_N3_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
@@ -214,6 +214,8 @@ Rtn_code Grid_Cuda_Optim::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myin
 {
 	printDebug(MID_DEBUG, "IN Grid_Cuda_Optim::FD_D2_N1");
 
+	// TO DO
+	Grid_Cuda::FD_D2_N1(pointType, Wgrid, fdOrder) ;
 	// check grids are same size
 	if (this->sameSize(Wgrid) != true)
 	{
@@ -242,7 +244,7 @@ Rtn_code Grid_Cuda_Optim::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myin
 		int GridSize3 = n3 / gpuBlkSize3 + 1 ;
 		dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;
 		dim3 GridSize(GridSize1, GridSize2, GridSize3) ;
-		kernel_FD_D2_N1_O8<<<GridSize, BlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+		kernelOpt_FD_D2_N1_O8<<<GridSize, BlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 		cudaCheckError();
@@ -291,7 +293,7 @@ Rtn_code Grid_Cuda_Optim::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myin
 		int GridSize3 = n3 / gpuBlkSize3 + 1 ;
 		dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;
 		dim3 GridSize(GridSize1, GridSize2, GridSize3) ;
-		kernel_FD_D2_N2_O8<<<GridSize, BlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+		kernelOpt_FD_D2_N2_O8<<<GridSize, BlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 		cudaCheckError();
@@ -340,7 +342,7 @@ Rtn_code Grid_Cuda_Optim::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myin
 		int GridSize3 = n3 / gpuBlkSize3 + 1 ;
 		dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;
 		dim3 GridSize(GridSize1, GridSize2, GridSize3) ;
-		kernel_FD_D2_N3_O8<<<GridSize, BlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+		kernelOpt_FD_D2_N3_O8<<<GridSize, BlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 		cudaCheckError();
@@ -389,7 +391,7 @@ Rtn_code Grid_Cuda_Optim::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, 
 		int GridSize3 = n3 / gpuBlkSize3 + 1 ;
 		dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;
 		dim3 GridSize(GridSize1, GridSize2, GridSize3) ;
-		kernel_FD_LAPLACIAN_O8<<<GridSize, BlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+		kernelOpt_FD_LAPLACIAN_O8<<<GridSize, BlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 
 		cudaCheckError();

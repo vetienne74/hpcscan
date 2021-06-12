@@ -130,11 +130,21 @@ protected:
 	Myfloat * d_help_3d ;
 	Myfloat * d_help_3d_2 ;
 
-	// GPU block size (number of threads per block)
+	// GPU block size - 1D block - (number of threads per block)
 	Myint gpuBlkSize ;
 
-	// GPU grid size (number of blocks per grid)
+	// GPU grid size - 1D grid - (number of blocks per grid)
 	Myint gpuGridSize ;
+
+	// GPU block size - 3D block - (number of threads per block)
+	Myint gpuBlkSize1 ;
+	Myint gpuBlkSize2 ;
+	Myint gpuBlkSize3 ;
+
+	// GPU grid size - 3D grid - (number of blocks per grid)
+	Myint gpuGridSize1 ;
+	Myint gpuGridSize2 ;
+	Myint gpuGridSize3 ;
 
 } ;
 
