@@ -26,6 +26,7 @@ const string   GRID_MODE_BASELINE      = "Baseline" ;
 const string   GRID_MODE_CACHEBLK      = "CacheBlk" ;
 const string   GRID_MODE_CUDA          = "CUDA" ;
 const string   GRID_MODE_CUDA_OPTIM    = "CUDA_Opt" ;
+const string   GRID_MODE_CUDA_REF      = "CUDA_Ref" ;
 const string   GRID_MODE_DPCPP         = "DPC++" ;
 const string   GRID_MODE_HIP           = "HIP" ;
 const string   GRID_MODE_HIP_OPTIM     = "HIP_Opt" ;

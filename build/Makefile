@@ -83,7 +83,7 @@ CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
 CPP_OPENACC_OBJ = grid_OpenAcc.o
 
 # Cuda objects
-CUDA_OBJ = grid_Cuda.o grid_Cuda_Optim.o
+CUDA_OBJ = grid_Cuda.o grid_Cuda_Optim.o grid_Cuda_Ref.o
 
 # DPC++ objects
 DPCPP_OBJ = grid_DPCPP.o

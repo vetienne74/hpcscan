@@ -11,6 +11,7 @@
 #ifdef __CUDA__
 #include "grid_Cuda.h"
 #include "grid_Cuda_Optim.h"
+#include "grid_Cuda_Ref.h"
 #endif
 #ifdef __DPCPP__
 #include "grid_DPCPP.h"
@@ -57,6 +58,10 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	else if (gridMode.compare(GRID_MODE_CUDA_OPTIM) == 0)
 	{
 		Rgrid = new Grid_Cuda_Optim(gridType) ;
+	}
+	else if (gridMode.compare(GRID_MODE_CUDA_REF) == 0)
+	{
+		Rgrid = new Grid_Cuda_Ref(gridType) ;
 	}
 #endif
 
@@ -137,9 +142,13 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 		Rgrid = new Grid_Cuda(gridType, dim, n1, n2, n3) ;
 	}
 	else if (gridMode.compare(GRID_MODE_CUDA_OPTIM) == 0)
-		{
-			Rgrid = new Grid_Cuda_Optim(gridType, dim, n1, n2, n3) ;
-		}
+	{
+		Rgrid = new Grid_Cuda_Optim(gridType, dim, n1, n2, n3) ;
+	}
+	else if (gridMode.compare(GRID_MODE_CUDA_REF) == 0)
+	{
+		Rgrid = new Grid_Cuda_Ref(gridType, dim, n1, n2, n3) ;
+	}
 #endif
 
 #ifdef __DPCPP__
