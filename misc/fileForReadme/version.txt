@@ -1,9 +1,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 6bd5e0c38ba6eb9dec9354b875ff660fb69bd030
-		Author: Vincent Etienne <vetienne@rocketmail.com>
-		Date:   Sat Jun 12 06:08:00 2021 +0200
+ Git version	commit d11c5c1c78b8f178fe49189d0fc2fcc73162a3aa
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Sat Jun 12 07:12:05 2021 +0300
 
  Host name	neptune
  User name	vincent

@@ -29,14 +29,15 @@ namespace hpcscan {
 
 //-------------------------------------------------------------------------------------------------------
 
-//Macro for checking cuda errors following a cuda launch or api call
-#define cudaCheckError() {                                          \
-	cudaError_t e=cudaGetLastError();                                 \
-	if(e!=cudaSuccess) {                                              \
-	  printf("Cuda failure %s:%d: '%s'\n",__FILE__,__LINE__,cudaGetErrorString(e));           \
-	  exit(0); \
-	}                                                                 \
-   }
+// Macro for checking cuda errors following a cuda launch or api call
+#define cudaCheckError() { \
+		cudaError_t e=cudaGetLastError(); \
+		if(e!=cudaSuccess) { \
+			printf("Cuda failure %s:%d: '%s'\n",__FILE__,__LINE__,cudaGetErrorString(e)); \
+			printError(" CUDA ERROR") ; \
+			exit(0); \
+		} \
+}
 
 //*******************************************************************************************************
 // BEGINING OF CUDA KERNELS
@@ -143,10 +144,6 @@ Grid_Cuda_Optim::Grid_Cuda_Optim(Grid_type gridTypeIn) : Grid_Cuda(gridTypeIn)
 
 	gridMode = GRID_MODE_CUDA_OPTIM ;
 
-	gpuBlkSize1  = Config::Instance()->gpuBlkSize1 ;
-	gpuBlkSize2  = Config::Instance()->gpuBlkSize2 ;
-	gpuBlkSize3  = Config::Instance()->gpuBlkSize3 ;
-
 	printDebug(MID_DEBUG, "OUT Grid_Cuda_Optim::Grid_Cuda_Optim");
 }
 
@@ -159,10 +156,6 @@ Grid_Cuda_Optim::Grid_Cuda_Optim(Grid_type gridTypeIn, Dim_type dimIn,
 	printDebug(MID_DEBUG, "IN Grid_Cuda_Optim::Grid_Cuda_Optim");
 
 	gridMode = GRID_MODE_CUDA_OPTIM ;
-
-	gpuBlkSize1  = Config::Instance()->gpuBlkSize1 ;
-	gpuBlkSize2  = Config::Instance()->gpuBlkSize2 ;
-	gpuBlkSize3  = Config::Instance()->gpuBlkSize3 ;
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda_Optim::Grid_Cuda_Optim");
 }

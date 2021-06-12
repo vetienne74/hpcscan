@@ -45,10 +45,6 @@ public:
 
 protected:
 
-	int gpuBlkSize1 ;
-	int gpuBlkSize2 ;
-	int gpuBlkSize3 ;
-
 } ;
 
 } // namespace hpcscan
