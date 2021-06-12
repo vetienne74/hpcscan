@@ -30,14 +30,15 @@ namespace hpcscan {
 
 //-------------------------------------------------------------------------------------------------------
 
-//Macro for checking cuda errors following a cuda launch or api call
-#define cudaCheckError() {                                          \
-	hipError_t e=hipGetLastError();                                 \
-	if(e!=hipSuccess) {                                              \
-	  printf("Hip failure %s:%d: '%s'\n",__FILE__,__LINE__,hipGetErrorString(e));           \
-	  exit(0); \
-	}                                                                 \
-   }
+// Macro for checking cuda errors following a cuda launch or api call
+#define cudaCheckError() { \
+		hipError_t e=hipGetLastError(); \
+		if(e!=hipSuccess) { \
+			printf("Hip failure %s:%d: '%s'\n",__FILE__,__LINE__,hipGetErrorString(e)); \
+			printError(" HIP ERROR") ; \
+			exit(0); \
+		} \
+}
 
 //*******************************************************************************************************
 // BEGINING OF HIP KERNELS
@@ -144,10 +145,6 @@ Grid_Hip_Optim::Grid_Hip_Optim(Grid_type gridTypeIn) : Grid_Hip(gridTypeIn)
 
 	gridMode = GRID_MODE_HIP_OPTIM ;
 
-	gpuBlkSize1  = Config::Instance()->gpuBlkSize1 ;
-	gpuBlkSize2  = Config::Instance()->gpuBlkSize2 ;
-	gpuBlkSize3  = Config::Instance()->gpuBlkSize3 ;
-
 	printDebug(MID_DEBUG, "OUT Grid_Hip_Optim::Grid_Hip_Optim");
 }
 
@@ -160,10 +157,6 @@ Grid_Hip_Optim::Grid_Hip_Optim(Grid_type gridTypeIn, Dim_type dimIn,
 	printDebug(MID_DEBUG, "IN Grid_Hip_Optim::Grid_Hip_Optim");
 
 	gridMode = GRID_MODE_HIP_OPTIM ;
-
-	gpuBlkSize1  = Config::Instance()->gpuBlkSize1 ;
-	gpuBlkSize2  = Config::Instance()->gpuBlkSize2 ;
-	gpuBlkSize3  = Config::Instance()->gpuBlkSize3 ;
 
 	printDebug(MID_DEBUG, "OUT Grid_Hip_Optim::Grid_Hip_Optim");
 }
