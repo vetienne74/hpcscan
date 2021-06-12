@@ -20,5 +20,6 @@ mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Template.cpp
 mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Util.cpp
 nvcc -c -gencode arch=compute_50,code=sm_50 -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda.cu
 nvcc -c -gencode arch=compute_50,code=sm_50 -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda_Optim.cu
-mpic++ -g -O3 -mavx2 -fopenmp -D__CUDA__ -o ../bin/hpcscan config.o grid.o grid_CacheBlk.o grid_Factory.o main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o table_Results.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o grid_Cuda.o grid_Cuda_Optim.o  -L/usr/local/cuda/lib64 -lcuda -lcudart 
+nvcc -c -gencode arch=compute_50,code=sm_50 -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda_Ref.cu
+mpic++ -g -O3 -mavx2 -fopenmp -D__CUDA__ -o ../bin/hpcscan config.o grid.o grid_CacheBlk.o grid_Factory.o main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o table_Results.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o grid_Cuda.o grid_Cuda_Optim.o grid_Cuda_Ref.o  -L/usr/local/cuda/lib64 -lcuda -lcudart 
 *** BUILD OK (SINGLE PRECISION) *** 

@@ -55,17 +55,31 @@ Running -testCase Comm ...
 Running -testCase Propa ...
 End testDriver.sh
 ------------------------------------------------------------------------
+------------------------------------------------------------------------
+Start testDriver.sh
+>>> Test Mode CUDA_Ref <<<
+Launch MPI with mpirun --oversubscribe
+Running -testCase Util ...
+Running -testCase Template ...
+Running -testCase Memory ...
+Running -testCase FD_D2 ...
+Running -testCase Grid ...
+Running -testCase Comm ...
+Running -testCase Propa ...
+End testDriver.sh
+------------------------------------------------------------------------
 SKIP testMode DPC++
 SKIP testMode HIP
+SKIP testMode HIP_Opt
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Fri 11 Jun 2021 04:37:15 PM +03
-# Ended    :  Fri 11 Jun 2021 04:39:10 PM +03
+# Started  :  Sat 12 Jun 2021 07:09:22 AM +03
+# Ended    :  Sat 12 Jun 2021 07:11:47 AM +03
 On machine :  neptune
 Done by    :  vincent
 * SUMMARY
-# PASSED  : 1376
+# PASSED  : 1710
 # FAILED  : 0
 # ERROR   : 0
 # WARNING : 0

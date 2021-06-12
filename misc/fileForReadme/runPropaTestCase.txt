@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 09cb139c941e6297c4cba0beb17c33b863c689c6
-		Author: vincent <vetienne@rocketmail.com>
-		Date:   Tue Jun 8 13:50:29 2021 +0300
+ Git version	commit 6bd5e0c38ba6eb9dec9354b875ff660fb69bd030
+		Author: Vincent Etienne <vetienne@rocketmail.com>
+		Date:   Sat Jun 12 06:08:00 2021 +0200
 
  Host name	neptune
  User name	vincent
@@ -18,8 +18,10 @@
  Mode CacheBlk	ENABLED
  Mode CUDA	ENABLED
  Mode CUDA_Opt	ENABLED
+ Mode CUDA_Ref	ENABLED
  Mode DPC++	DISABLED
  Mode HIP	DISABLED
+ Mode HIP_Opt	DISABLED
  Mode NEC	DISABLED
  Mode NEC_SCA	DISABLED
 ================================================================================
@@ -119,14 +121,14 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	12.258
- Best Gpoint/s eff.	0.255375
- Best Gpoint/s in FD	0.255375
- Best Apparent BW GB/s	29.6236
+ Best GFlop/s in FD	12.3301
+ Best Gpoint/s eff.	0.256877
+ Best Gpoint/s in FD	0.256877
+ Best Apparent BW GB/s	29.7977
 
- Case run time (s)	0.216488
+ Case run time (s)	0.216109
 --------------------------------------------------------------------------------
- Total run time (s)	0.217807
+ Total run time (s)	0.217528
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY
