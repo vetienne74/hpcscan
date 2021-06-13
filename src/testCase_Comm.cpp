@@ -55,9 +55,10 @@ Rtn_code TestCase_Comm::run(void)
 		// grid (proc x) -> grid (proc y)
 		//============================================
 
-		// size of the MPI message corresponds to the number of point
-		// in one halo in n1 direction (n2 * n3 * fdOrder)
-		// min is 1000 points
+		print_blank() ;
+		string caseName = testCaseName + "MPI_Send" ;
+		printInfo(MASTER, " * Case", caseName) ;
+		tabSend = new Table_Results(caseName, nMpiProc, nMpiProc) ;
 
 		// create the grid used in the MPI comm.
 		Dim_type dim = DIM1 ;
@@ -66,29 +67,45 @@ Rtn_code TestCase_Comm::run(void)
 		auto n3      = Config::Instance()->n3 ;
 		auto fdOrder = Config::Instance()->fdOrder ;
 
-		Myint64 messageSize = (n2 * n3 - 1) *  Config::Instance()->fdOrder ;
-		if (messageSize < 1000) messageSize = 1000 ;
+		// the size of MPI message is set to the number of points in one halo in n1 direction
 
-		auto gridSrc2  = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, messageSize, 0, 0) ;
-		auto gridDest2 = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, messageSize, 0, 0) ;
+		// number of points in halo
+		Myint64 nHaloGridPoint = (n2 * n3) *  Config::Instance()->fdOrder / 2 ;
+
+		// minimum is set to 1000 points
+		if (nHaloGridPoint < 1000) nHaloGridPoint = 1000 ;
+
+		// halo size
+		Myint64 haloSize = nHaloGridPoint * sizeof(Myfloat) ;
+
+		// total number of values in MPI comm
+		Myint64 nCommPoint = nHaloGridPoint ;
+
+		// MPI comm size
+		Myint64 commSize = nCommPoint * sizeof(Myfloat) ;
+		printInfo(MASTER, " Total comm size (MB)", commSize / 1e6) ;
+
+		Myint64 nPointForCreateGrid = nHaloGridPoint - Config::Instance()->fdOrder ;
+		auto gridSrc2  = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, nPointForCreateGrid, 0, 0) ;
+		auto gridDest2 = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, nPointForCreateGrid, 0, 0) ;
 		Grid &gridSrc  = *gridSrc2 ;
 		Grid &gridDest = *gridDest2 ;
 		gridSrc.initializeGrid() ;
 		gridDest.initializeGrid() ;
 
 		Myint64 nGridPoint = gridSrc.getNumberOfGridPoint(GRID_GLOBAL, ALL_POINTS) ;
-
-		// display grid info
-		gridSrc.info() ;
-
-		print_blank() ;
-		string caseName = testCaseName + "MPI_Send" ;
-		printInfo(MASTER, " * Case", caseName) ;
-		tabSend = new Table_Results(caseName, nMpiProc, nMpiProc) ;
+		if (nGridPoint != nHaloGridPoint)
+		{
+			printError("In TestCase_Comm::run, nGridPoint != nHaloGridPoint") ;
+			printInfo(MASTER, "nGridPoint", nGridPoint) ;
+			printInfo(MASTER, "nHaloGridPoint", nHaloGridPoint) ;
+			return(RTN_CODE_KO) ;
+		}
 
 		Myint procSrcId, procDestId ;
 		Myint ntry = Config::Instance()->ntry ;
 
+		print_blank() ;
 		// loop on the number of MPI procs senders
 		for (Myint iprocSend = 0; iprocSend < nMpiProc; iprocSend++)
 		{
@@ -126,7 +143,7 @@ Rtn_code TestCase_Comm::run(void)
 						// end MPI comm
 
 						double testCase_time = t1-t0 ;
-						Myfloat testCase_bw = nGridPoint*sizeof(Myfloat)/testCase_time/1e9 ;
+						Myfloat testCase_bw = nCommPoint*sizeof(Myfloat)/testCase_time/1e9 ;
 						printDebug(LIGHT_DEBUG, "Time", testCase_time) ;
 						printDebug(LIGHT_DEBUG, "Speed", testCase_bw) ;
 						testCase_time_best = min(testCase_time_best, testCase_time) ;
@@ -154,20 +171,22 @@ Rtn_code TestCase_Comm::run(void)
 
 					if (myMpiRank == procDestId)
 					{
-						perfGPoint = nGridPoint/testCase_time_best/1.e9 ;
-						perfGB = perfGPoint *sizeof(Myfloat) ;
-						printInfo(ALL, " Best achieved GByte/s", perfGB) ;
-						printInfo(ALL, " Best achieved GPoint/s", perfGPoint) ;
+						perfGPoint = nCommPoint/testCase_time_best/1.e9 ;
 					}
 
 				} // if ((procSrcId != MPI_PROC_NULL) && (procDestId != MPI_PROC_NULL))
 
 				// get perf on master node
-				Myfloat perfGBglob ;
-				MPI_Reduce(&perfGB, &perfGBglob, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
-
-				// store perf in table
-				tabSend->seOneValue(procSrcId, procDestId, perfGBglob) ;
+				Myfloat perfGPointglob ;
+				MPI_Reduce(&perfGPoint, &perfGPointglob, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
+				if (perfGPointglob != UNSPECIFIED)
+				{
+					perfGB = perfGPointglob *sizeof(Myfloat) ;
+					printInfo(MASTER, " Best achieved GByte/s", perfGB) ;
+					printInfo(MASTER, " Best achieved GPoint/s", perfGPointglob) ;
+					// store perf in table
+					tabSend->seOneValue(procSrcId, procDestId, perfGB) ;
+				}
 
 			} // for (Myint iprocRecv = 0; iprocRecv < nMpiProc; iprocRecv++)
 		} // for (Myint iprocSend = 0; iprocSend < nMpiProc; iprocSend++)
@@ -179,8 +198,14 @@ Rtn_code TestCase_Comm::run(void)
 		// grid (proc x) <--> grid (proc y)
 		//============================================
 
+		print_blank() ;
+		string caseName = testCaseName + "MPI_Sendrecv" ;
+		printInfo(MASTER, " * Case", caseName) ;
+		tabSendRecv = new Table_Results(caseName, nMpiProc, nMpiProc) ;
+
 		// size of the MPI message corresponds to the number of point
-		// in one halo in n1 direction (n2 * n3 * fdOrder)
+		// in one halo in n1 direction (n2 * n3 * fdOrder / 2)
+		// the total size is x2 (send and receive)
 		// min is 1000 points
 
 		// create the grid used in the MPI comm.
@@ -190,30 +215,46 @@ Rtn_code TestCase_Comm::run(void)
 		auto n3      = Config::Instance()->n3 ;
 		auto fdOrder = Config::Instance()->fdOrder ;
 
-		Myint64 messageSize = (n2 * n3 - 1) *  Config::Instance()->fdOrder ;
-		if (messageSize < 1000) messageSize = 1000 ;
+		// the size of MPI message is set to the number of points in one halo in n1 direction
 
-		auto gridSrc2  = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, messageSize, 0, 0) ;
-		auto gridDest2 = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, messageSize, 0, 0) ;
+		// number of points in halo
+		Myint64 nHaloGridPoint = (n2 * n3) *  Config::Instance()->fdOrder / 2 ;
 
+		// minimum is set to 1000 points
+		if (nHaloGridPoint < 1000) nHaloGridPoint = 1000 ;
+
+		// halo size
+		Myint64 haloSize = nHaloGridPoint * sizeof(Myfloat) ;
+
+		// total number of values in MPI comm
+		// x2 halo because send and receive
+		Myint64 nCommPoint = nHaloGridPoint * 2 ;
+
+		// MPI comm size
+		Myint64 commSize = nCommPoint * sizeof(Myfloat) ;
+		printInfo(MASTER, " Total comm size (MB)", commSize / 1e6) ;
+
+		Myint64 nPointForCreateGrid = nHaloGridPoint - Config::Instance()->fdOrder ;
+		auto gridSrc2  = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, nPointForCreateGrid, 0, 0) ;
+		auto gridDest2 = Grid_Factory::create(gridMode, GRID_GLOBAL, dim, nPointForCreateGrid, 0, 0) ;
 		Grid &gridSrc  = *gridSrc2 ;
 		Grid &gridDest = *gridDest2 ;
 		gridSrc.initializeGrid() ;
 		gridDest.initializeGrid() ;
 
 		Myint64 nGridPoint = gridSrc.getNumberOfGridPoint(GRID_GLOBAL, ALL_POINTS) ;
-
-		// display grid info
-		gridSrc.info() ;
-
-		print_blank() ;
-		string caseName = testCaseName + "MPI_Sendrecv" ;
-		printInfo(MASTER, " * Case", caseName) ;
-		tabSendRecv = new Table_Results(caseName, nMpiProc, nMpiProc) ;
+		if (nGridPoint != nHaloGridPoint)
+		{
+			printError("In TestCase_Comm::run, nGridPoint != nHaloGridPoint") ;
+			printInfo(MASTER, "nGridPoint", nGridPoint) ;
+			printInfo(MASTER, "nHaloGridPoint", nHaloGridPoint) ;
+			return(RTN_CODE_KO) ;
+		}
 
 		Myint procSrcId, procDestId ;
 		Myint ntry = Config::Instance()->ntry ;
 
+		print_blank() ;
 		// loop on the number of MPI procs senders
 		for (Myint iprocSend = 0; iprocSend < nMpiProc; iprocSend++)
 		{
@@ -272,7 +313,7 @@ Rtn_code TestCase_Comm::run(void)
 						// end MPI comm
 
 						double testCase_time = t1-t0 ;
-						Myfloat testCase_bw = 2*nGridPoint*sizeof(Myfloat)/testCase_time/1e9 ;
+						Myfloat testCase_bw = nCommPoint*sizeof(Myfloat)/testCase_time/1e9 ;
 						printDebug(LIGHT_DEBUG, "Time", testCase_time) ;
 						printDebug(LIGHT_DEBUG, "Speed", testCase_bw) ;
 						testCase_time_best = min(testCase_time_best, testCase_time) ;
@@ -311,20 +352,22 @@ Rtn_code TestCase_Comm::run(void)
 
 					if (myMpiRank == procDestId)
 					{
-						perfGPoint = 2*nGridPoint/testCase_time_best/1.e9 ;
-						perfGB = perfGPoint * sizeof(Myfloat) ;
-						printInfo(ALL, " Best achieved GByte/s", perfGB) ;
-						printInfo(ALL, " Best achieved GPoint/s", perfGPoint) ;
+						perfGPoint = nCommPoint/testCase_time_best/1.e9 ;
 					}
 
-				} // if ((procSrcId != MPI_PROC_NULL) && (procDestId != MPI_PROC_NULL))
+				} // if (procSrcId != procDestId)
 
 				// get perf on master node
-				Myfloat perfGBglob ;
-				MPI_Reduce(&perfGB, &perfGBglob, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
-
-				// store perf in table
-				tabSendRecv->seOneValue(procSrcId, procDestId, perfGBglob) ;
+				Myfloat perfGPointglob ;
+				MPI_Reduce(&perfGPoint, &perfGPointglob, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
+				if (perfGPointglob != UNSPECIFIED)
+				{
+					perfGB = perfGPointglob * sizeof(Myfloat) ;
+					printInfo(MASTER, " Best achieved GByte/s", perfGB) ;
+					printInfo(MASTER, " Best achieved GPoint/s", perfGPointglob) ;
+					// store perf in table
+					tabSendRecv->seOneValue(procSrcId, procDestId, perfGB) ;
+				}
 
 			} // for (Myint iprocRecv = 0; iprocRecv < nMpiProc; iprocRecv++)
 		} // for (Myint iprocSend = 0; iprocSend < nMpiProc; iprocSend++)
