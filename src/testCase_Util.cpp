@@ -592,9 +592,10 @@ Rtn_code TestCase_Util::run(void)
 	}
 
 	{
-		//---------------------------------
-		// check FD coef
-		//---------------------------------
+		//----------------------------------
+		// check FD coefficients
+		// Sum of coef should be equal to 0
+		//----------------------------------
 		print_blank() ;
 		string caseName = testCaseName + "FDcoef" ;
 		printInfo(MASTER, " * Case", caseName) ;

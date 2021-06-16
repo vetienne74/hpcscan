@@ -91,6 +91,34 @@ const Myint   FD_D2_O4_NOP  = 8 ;
 				+ FD_D2_O4_A2 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])) \
 				* inv2_d3)
 
+// -------------------------------------%%%%%%%%%%%% D2 FD space O6 %%%%%%%%%%%%%-------------------------------------
+const Myint   FD_D2_O6_HSTL = 3 ; //half stencil
+const Myfloat FD_D2_O6_A0   =  -49./18. ;
+const Myfloat FD_D2_O6_A1   =  3./2. ;
+const Myfloat FD_D2_O6_A2   =  -3./20. ;
+const Myfloat FD_D2_O6_A3   =  1./90. ;
+const Myint   FD_D2_O6_NOP  = 999 ;
+
+#define FD_D2_O6_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+		(        (FD_D2_O6_A0 *  U[i1   + i2*n1 + i3*n2*n1] \
+				+ FD_D2_O6_A1 * (U[i1+1 + i2*n1 + i3*n2*n1] + U[i1-1 + i2*n1 + i3*n2*n1])  \
+				+ FD_D2_O6_A2 * (U[i1+1 + i2*n1 + i3*n2*n1] + U[i1-1 + i2*n1 + i3*n2*n1])  \
+				+ FD_D2_O6_A3 * (U[i1+2 + i2*n1 + i3*n2*n1] + U[i1-2 + i2*n1 + i3*n2*n1])) \
+				* inv2_d1)
+
+#define FD_D2_O6_N2(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+		(        (FD_D2_O6_A0 *  U[i1 + i2    *n1 + i3*n2*n1] \
+				+ FD_D2_O6_A1 * (U[i1 + (i2+1)*n1 + i3*n2*n1] + U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+				+ FD_D2_O6_A2 * (U[i1 + (i2+1)*n1 + i3*n2*n1] + U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+				+ FD_D2_O6_A3 * (U[i1 + (i2+2)*n1 + i3*n2*n1] + U[i1 + (i2-2)*n1 + i3*n2*n1])) \
+				* inv2_d2)
+
+#define FD_D2_O6_N3(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
+		(        (FD_D2_O6_A0 *  U[i1 + i2*n1 + i3    *n2*n1] \
+				+ FD_D2_O6_A1 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+				+ FD_D2_O6_A2 * (U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+				+ FD_D2_O6_A3 * (U[i1 + i2*n1 + (i3+2)*n2*n1] + U[i1 + i2*n1 + (i3-2)*n2*n1])) \
+				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space O8 %%%%%%%%%%%%-------------------------------------
 const Myint   FD_D2_O8_HSTL = 4 ;
@@ -239,7 +267,8 @@ static Myfloat64 getSumAbsFD_D2Coef(Myint fdOrder)
 	else if (fdOrder == 12)
 	{
 		sumCoef = fabs(FD_D2_O12_A0) + 2*fabs(FD_D2_O12_A1) + 2*fabs(FD_D2_O12_A2)
-		+ 2*fabs(FD_D2_O12_A3) + 2*fabs(FD_D2_O12_A4);
+		+ 2*fabs(FD_D2_O12_A3) + 2*fabs(FD_D2_O12_A4)
+		+ 2*fabs(FD_D2_O12_A5) + 2*fabs(FD_D2_O12_A6) ;
 	}
 	else if (fdOrder == 16)
 	{
@@ -262,7 +291,7 @@ static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
 	Myfloat64 sumCoef = UNSPECIFIED ;
 	if (fdOrder == 2)
 	{
-		sumCoef = FD_D2_O2_A0 + FD_D2_O2_A1 ;
+		sumCoef = FD_D2_O2_A0 + 2*FD_D2_O2_A1 ;
 	}
 	else if (fdOrder == 4)
 	{
@@ -276,7 +305,8 @@ static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
 	else if (fdOrder == 12)
 	{
 		sumCoef = FD_D2_O12_A0 + 2*FD_D2_O12_A1 + 2*FD_D2_O12_A2
-		+ 2*FD_D2_O12_A3 + 2*FD_D2_O12_A4;
+		+ 2*FD_D2_O12_A3 + 2*FD_D2_O12_A4
+		+ 2*FD_D2_O12_A5 + 2*FD_D2_O12_A6 ;
 	}
 	else if (fdOrder == 16)
 	{

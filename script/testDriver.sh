@@ -30,7 +30,12 @@ echo Launch MPI with $HPCSCAN_MPI_INVOKER
 
 # test case Util
 echo Running -testCase Util ...
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 4 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 8 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 12 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 16 >> ${report_file}
+
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub1 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub2 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub3 2 >> ${report_file}
