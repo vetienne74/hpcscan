@@ -808,6 +808,33 @@ __global__ void kernel_computePressureWithFD(const Dim_type dim, const Myint fdO
 }
 
 //-------------------------------------------------------------------------------------------------------
+// update pressure wavefield (used in progator)
+// input/output prn
+// input prc
+
+__global__ void kernel_computePressureWithFD_3D_O8(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+	   i2 >= i2Start && i2 <= i2End &&
+	   i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O8_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+
+//-------------------------------------------------------------------------------------------------------
 // compute derivative along axis 1
 // input u
 // output w
@@ -1848,8 +1875,18 @@ Rtn_code Grid_Cuda::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myi
 	Myfloat *prc_d_grid_3d = ((Grid_Cuda&) prcGridIn).d_grid_3d ;
 	Myfloat *coef_d_grid_3d = ((Grid_Cuda&) coefGridIn).d_grid_3d ;
 
+	if ((dim == DIM3) && (fdOrder == 8))
+	{
+	dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;
+	dim3 GridSize(gpuGridSize1, gpuGridSize2, gpuGridSize3) ;
+	kernel_computePressureWithFD_3D_O8<<<GridSize, BlkSize>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
+	else
+	{
 	kernel_computePressureWithFD<<<gpuGridSize, gpuBlkSize>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
 			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
 
 	cudaCheckError();
 	cudaDeviceSynchronize();
