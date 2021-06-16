@@ -15,6 +15,7 @@
 
 #include "config.h"
 #include "constant.h"
+#include "fdm.h"
 #include "global.h"
 #include "grid_Factory.h"
 #include "output_report.h"
@@ -588,6 +589,18 @@ Rtn_code TestCase_Util::run(void)
 		gridRef.write(caseName+"Ref") ;
 
 		checkAllProcGridL1Err(ALL_POINTS, gridLoc, gridRef, MAX_ERR_FLOAT) ;
+	}
+
+	{
+		//---------------------------------
+		// check FD coef
+		//---------------------------------
+		print_blank() ;
+		string caseName = testCaseName + "FDcoef" ;
+		printInfo(MASTER, " * Case", caseName) ;
+
+		auto fdOrder = Config::Instance()->fdOrder ;
+		checkFloatDiff(0.0, getSumFD_D2Coef(fdOrder), MAX_ERR_FLOAT) ;
 	}
 
 	this->finalize() ;

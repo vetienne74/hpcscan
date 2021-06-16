@@ -1,6 +1,12 @@
 
-// FD operators
+//-------------------------------------------------------------------------------------------------------
+// Definition of FD operators:
+// - FD_D2_OX_N1 = 2nd derivative along N1 axis with stencil order X (for grids 1D, 2D and 3D)
+// - FD_D2_OX_N2 = 2nd derivative along N2 axis with stencil order X (for grids 2D and 3D)
+// - FD_D2_OX_N3 = 2nd derivative along N3 axis with stencil order X (for grids 3D)
+//
 // All operators apply on 1d array (grid->3d_grid)
+//-------------------------------------------------------------------------------------------------------
 
 #ifndef HPCSCAN_FDM_H_
 #define HPCSCAN_FDM_H_
@@ -17,7 +23,6 @@ const Myfloat FD_D1_O8_A1   = 1225./1024. ;
 const Myfloat FD_D1_O8_A2   = -245./3072. ;
 const Myfloat FD_D1_O8_A3   = 49./5120. ;
 const Myfloat FD_D1_O8_A4   = -5./7168. ;
-const Myfloat FD_D1_O8_CFL  = 0.777 ;
 const Myint   FD_D1_O8_NOP  = 12 ;
 
 #define FD_D1_O8_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -47,7 +52,6 @@ const Myint   FD_D1_O8_NOP  = 12 ;
 const Myint   FD_D2_O2_HSTL = 1 ;
 const Myfloat FD_D2_O2_A0   = -2.0 ;
 const Myfloat FD_D2_O2_A1   = 1.0 ;
-const Myfloat FD_D2_O2_CFL  = 1.0 / sqrt(3.0) ;
 const Myint   FD_D2_O2_NOP  = 4 ;
 
 #define FD_D2_O2_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -67,7 +71,6 @@ const Myint   FD_D2_O4_HSTL = 2 ; //half stencil
 const Myfloat FD_D2_O4_A0   =  -5./2. ;
 const Myfloat FD_D2_O4_A1   =  4./3. ;
 const Myfloat FD_D2_O4_A2   =  -1./12. ;
-const Myfloat FD_D2_O4_CFL  = 0.857 ;
 const Myint   FD_D2_O4_NOP  = 8 ;
 
 #define FD_D2_O4_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -96,7 +99,6 @@ const Myfloat FD_D2_O8_A1   = 8./5. ;
 const Myfloat FD_D2_O8_A2   = -1/5. ;
 const Myfloat FD_D2_O8_A3   = 8./315. ;
 const Myfloat FD_D2_O8_A4   = -1/560. ;
-const Myfloat FD_D2_O8_CFL  = FD_D1_O8_CFL ;
 const Myint   FD_D2_O8_NOP  = 14 ;
 
 #define FD_D2_O8_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -132,7 +134,6 @@ const Myfloat FD_D2_O12_A3   =  10./189.;
 const Myfloat FD_D2_O12_A4   = -1./112. ;
 const Myfloat FD_D2_O12_A5   =  2./1925.;
 const Myfloat FD_D2_O12_A6   = -1./16632. ;
-const Myfloat FD_D2_O12_CFL  = 0.746 ;
 const Myint   FD_D2_O12_NOP  = 20 ;
 
 #define FD_D2_O12_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -177,7 +178,6 @@ const Myfloat FD_D2_O16_A5   = 65./18673. ;
 const Myfloat FD_D2_O16_A6   =  -2./3861.;
 const Myfloat FD_D2_O16_A7   =  5./98536.;
 const Myfloat FD_D2_O16_A8   = -1./411840. ;
-const Myfloat FD_D2_O16_CFL  = 0.729 ;
 const Myint   FD_D2_O16_NOP  = 26 ;
 
 #define FD_D2_O16_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -216,9 +216,13 @@ const Myint   FD_D2_O16_NOP  = 26 ;
 				+ FD_D2_O16_A8 * (U[i1 + i2*n1 + (i3+8)*n2*n1] + U[i1 + i2*n1 + (i3-8)*n2*n1])) \
 				* inv2_d3)
 
+//-------------------------------------------------------------------------------------------------------
+// compute sum of abs(FD coefficients)
+// this is used to compute the CFL for the propagator
+//
 static Myfloat64 getSumAbsFD_D2Coef(Myint fdOrder)
 {
-	Myfloat64 sumCoef = 0.0 ;
+	Myfloat64 sumCoef = UNSPECIFIED ;
 	if (fdOrder == 2)
 	{
 		sumCoef = fabs(FD_D2_O2_A0) + 2*fabs(FD_D2_O2_A1) ;
@@ -243,6 +247,43 @@ static Myfloat64 getSumAbsFD_D2Coef(Myint fdOrder)
 		+ 2*fabs(FD_D2_O16_A3) + 2*fabs(FD_D2_O16_A4)
 		+ 2*fabs(FD_D2_O16_A5) + 2*fabs(FD_D2_O16_A6)
 		+ 2*fabs(FD_D2_O16_A7) + 2*fabs(FD_D2_O16_A8) ;
+	}
+
+	return(sumCoef) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+// compute sum FD coefficients
+// this is used for validation purpose only (in testCase_Util)
+// this sum is expected to be equal to 0
+//
+static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
+{
+	Myfloat64 sumCoef = UNSPECIFIED ;
+	if (fdOrder == 2)
+	{
+		sumCoef = FD_D2_O2_A0 + FD_D2_O2_A1 ;
+	}
+	else if (fdOrder == 4)
+	{
+		sumCoef = FD_D2_O4_A0 + 2*FD_D2_O4_A1 + 2*FD_D2_O4_A2 ;
+	}
+	else if (fdOrder == 8)
+	{
+		sumCoef = FD_D2_O8_A0 + 2*FD_D2_O8_A1 + 2*FD_D2_O8_A2
+		+ 2*FD_D2_O8_A3 + 2*FD_D2_O8_A4 ;
+	}
+	else if (fdOrder == 12)
+	{
+		sumCoef = FD_D2_O12_A0 + 2*FD_D2_O12_A1 + 2*FD_D2_O12_A2
+		+ 2*FD_D2_O12_A3 + 2*FD_D2_O12_A4;
+	}
+	else if (fdOrder == 16)
+	{
+		sumCoef = FD_D2_O16_A0 + 2*FD_D2_O16_A1 + 2*FD_D2_O16_A2
+		+ 2*FD_D2_O16_A3 + 2*FD_D2_O16_A4
+		+ 2*FD_D2_O16_A5 + 2*FD_D2_O16_A6
+		+ 2*FD_D2_O16_A7 + 2*FD_D2_O16_A8 ;
 	}
 
 	return(sumCoef) ;
