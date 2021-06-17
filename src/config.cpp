@@ -187,7 +187,10 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, "     FPGA             * Launch kernels on FPGA") ;
 			printInfo(MASTER, " -dt <float>          = time step (s) for propagator") ;
 			printInfo(MASTER, " -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]") ;
-			printInfo(MASTER, " -gpuBlkSize <int>    = GPU, number of threads per block") ;
+			printInfo(MASTER, " -gpuBlkSize <int>    = GPU, no. of threads / 1D block ") ;
+			printInfo(MASTER, " -gpuBlkSize1 <int>   = GPU, no. of threads / 3D block axis 1") ;
+			printInfo(MASTER, " -gpuBlkSize2 <int>   = GPU, no. of threads / 3D block axis 2") ;
+			printInfo(MASTER, " -gpuBlkSize3 <int>   = GPU, no. of threads / 3D block axis 3") ;
 			printInfo(MASTER, " -gpuGridSize <int>   = GPU, number of blocks per grid") ;
 			printInfo(MASTER, " -gpuMpiAware         = use MPI GPU-aware library") ;
 			printInfo(MASTER, " -help or -h          = list of command line parameters") ;
@@ -422,11 +425,14 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 
 				if ((fdOrder != 2)
 						&& (fdOrder != 4)
+						&& (fdOrder != 6)
 						&& (fdOrder != 8)
+						&& (fdOrder != 10)
 						&& (fdOrder != 12)
+						&& (fdOrder != 14)
 						&& (fdOrder != 16))
 				{
-					printError(" FD space order should be 2, 4, 8, 12 or 16") ;
+					printError(" FD space order should be 2,4,8,10,12,14 or 16") ;
 					return(RTN_CODE_KO) ;
 				}
 			}
@@ -475,7 +481,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				}
 				gpuBlkSize2 = atoi(argv[ii]);
 				printInfo(MASTER, " gpuBlkSize2\t", n1) ;
-				if (gpuBlkSize1 <= 0)
+				if (gpuBlkSize2 <= 0)
 				{
 					printError(" gpuBlkSize2 should be > 0") ;
 					return(RTN_CODE_KO) ;
