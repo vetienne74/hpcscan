@@ -698,17 +698,35 @@ __global__ void kernelRef_computePressureWithFD(const Dim_type dim, const Myint 
 							coef[i1+i2*n1+i3*n1*n2] *
 							FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
+				else if (fdOrder == 6)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
 				else if (fdOrder == 8)
 				{
 					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 							coef[i1+i2*n1+i3*n1*n2] *
 							FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
+				else if (fdOrder == 10)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
 				else if (fdOrder == 12)
 				{
 					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 							coef[i1+i2*n1+i3*n1*n2] *
 							FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 14)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
 				else if (fdOrder == 16)
 				{
@@ -735,6 +753,13 @@ __global__ void kernelRef_computePressureWithFD(const Dim_type dim, const Myint 
 							(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 				}
+				else if (fdOrder == 6)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
 				else if (fdOrder == 8)
 				{
 					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
@@ -742,12 +767,26 @@ __global__ void kernelRef_computePressureWithFD(const Dim_type dim, const Myint 
 							(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 				}
+				else if (fdOrder == 10)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
 				else if (fdOrder == 12)
 				{
 					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 							coef[i1+i2*n1+i3*n1*n2] *
 							(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 14)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 				}
 				else if (fdOrder == 16)
 				{
@@ -777,6 +816,14 @@ __global__ void kernelRef_computePressureWithFD(const Dim_type dim, const Myint 
 									+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 				}
+				else if (fdOrder == 6)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
 				else if (fdOrder == 8)
 				{
 					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
@@ -785,6 +832,14 @@ __global__ void kernelRef_computePressureWithFD(const Dim_type dim, const Myint 
 									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O8_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 				}
+				else if (fdOrder == 10)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
 				else if (fdOrder == 12)
 				{
 					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
@@ -792,6 +847,14 @@ __global__ void kernelRef_computePressureWithFD(const Dim_type dim, const Myint 
 							(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+				}
+				else if (fdOrder == 14)
+				{
+					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+							coef[i1+i2*n1+i3*n1*n2] *
+							(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 				}
 				else if (fdOrder == 16)
 				{
@@ -844,15 +907,30 @@ __global__ void kernelRef_FD_D2_N1(const Myint fdOrder, Myfloat *w, Myfloat *u,
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
+			else if (fdOrder == 6)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
 			else if (fdOrder == 8)
 			{
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
+			else if (fdOrder == 10)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
 			else if (fdOrder == 12)
 			{
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 14)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
 			else if (fdOrder == 16)
 			{
@@ -901,15 +979,30 @@ __global__ void kernelRef_FD_D2_N2(const Myint fdOrder, Myfloat *w, Myfloat *u,
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
+			else if (fdOrder == 6)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
 			else if (fdOrder == 8)
 			{
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
+			else if (fdOrder == 10)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
 			else if (fdOrder == 12)
 			{
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 14)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
 			else if (fdOrder == 16)
 			{
@@ -958,15 +1051,30 @@ __global__ void kernelRef_FD_D2_N3(const Myint fdOrder, Myfloat *w, Myfloat *u,
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
+			else if (fdOrder == 6)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
 			else if (fdOrder == 8)
 			{
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
+			else if (fdOrder == 10)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
 			else if (fdOrder == 12)
 			{
 				w[i1+i2*n1+i3*n1*n2] =
 						FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+			}
+			else if (fdOrder == 14)
+			{
+				w[i1+i2*n1+i3*n1*n2] =
+						FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 			}
 			else if (fdOrder == 16)
 			{
@@ -980,7 +1088,7 @@ __global__ void kernelRef_FD_D2_N3(const Myint fdOrder, Myfloat *w, Myfloat *u,
 }
 
 //-------------------------------------------------------------------------------------------------------
-// compute Laplacian
+// compute Laplacian 2D and 3D
 // input u
 // output w
 
@@ -1004,39 +1112,8 @@ __global__ void kernelRef_FD_LAPLACIAN(const Dim_type dim, const Myint fdOrder, 
 				i2 >= i2Start && i2 <= i2End &&
 				i3 >= i3Start && i3 <= i3End   )
 		{
-			// compute FD Laplacian for 1D
-			if (dim == DIM1)
-			{
-				// same as FD_D2_N1
-				if (fdOrder == 2)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 4)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 8)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 12)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 16)
-				{
-					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-			}
-
 			// compute FD Laplacian for 2D
-			else if (dim == DIM2)
+			if (dim == DIM2)
 			{
 				if (fdOrder == 2)
 				{
@@ -1050,17 +1127,35 @@ __global__ void kernelRef_FD_LAPLACIAN(const Dim_type dim, const Myint fdOrder, 
 							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
+				else if (fdOrder == 6)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
 				else if (fdOrder == 8)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
 							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
+				else if (fdOrder == 10)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
 				else if (fdOrder == 12)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
 							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 14)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
 				else if (fdOrder == 16)
 				{
@@ -1087,6 +1182,13 @@ __global__ void kernelRef_FD_LAPLACIAN(const Dim_type dim, const Myint fdOrder, 
 							+ FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 							+ FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
+				else if (fdOrder == 6)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
 				else if (fdOrder == 8)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
@@ -1094,12 +1196,26 @@ __global__ void kernelRef_FD_LAPLACIAN(const Dim_type dim, const Myint fdOrder, 
 							+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 							+ FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
+				else if (fdOrder == 10)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
 				else if (fdOrder == 12)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
 							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 							+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 							+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+				else if (fdOrder == 14)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+							+ FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
 				else if (fdOrder == 16)
 				{
@@ -1462,8 +1578,16 @@ Rtn_code Grid_Cuda_Ref::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, My
 	Myfloat * d_w = ((Grid_Cuda_Ref&) Wgrid).d_grid_3d ;
 	Myfloat * d_u = this->d_grid_3d ;
 
-	kernelRef_FD_LAPLACIAN<<<gpuGridSize, gpuBlkSize>>>(dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
-			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	if (dim == DIM1)
+	{
+		kernelRef_FD_D2_N1<<<gpuGridSize, gpuBlkSize>>>(fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
+	else
+	{
+		kernelRef_FD_LAPLACIAN<<<gpuGridSize, gpuBlkSize>>>(dim, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
 
 	cudaCheckError();
 	cudaDeviceSynchronize();

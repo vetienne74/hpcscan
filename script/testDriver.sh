@@ -9,7 +9,7 @@
 export OMP_NUM_THREADS=2
 
 echo '------------------------------------------------------------------------'
-echo Start testDriver.sh
+echo Start testDriverDev.sh --DEV VERSION--
 
 # if not specified, testMode is set to Baseline
 if [ -z $1 ]
@@ -59,23 +59,33 @@ $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Memor
 
 # test case FD_D2
 echo Running -testCase FD_D2 ...
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 2  -dim 1 -n1 1000 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 4  -dim 1 -n1 1000 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 8  -dim 1 -n1 1000 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 12 -dim 1 -n1 1000 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 1 -n1 1000 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 2  -dim 1 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 4  -dim 1 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 6  -dim 1 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 8  -dim 1 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 10 -dim 1 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 12 -dim 1 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 14 -dim 1 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 1 >> ${report_file}
 
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 2  -dim 2 -n1 20 -n2 20 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 4  -dim 2 -n1 20 -n2 20 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 8  -dim 2 -n1 20 -n2 20 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 12 -dim 2 -n1 20 -n2 20 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 2 -n1 20 -n2 20 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 2  -dim 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 4  -dim 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 6  -dim 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 8  -dim 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 10 -dim 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 12 -dim 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 14 -dim 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 2 >> ${report_file}
 
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 2  -dim 3 -n1 20 -n2 20 -n3 20 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 4  -dim 3 -n1 20 -n2 20 -n3 20 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 8  -dim 3 -n1 20 -n2 20 -n3 20 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 12 -dim 3 -n1 20 -n2 20 -n3 20 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 3 -n1 20 -n2 20 -n3 20 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 2  -dim 3 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 4  -dim 3 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 6  -dim 3 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 8  -dim 3 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 10 -dim 3 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 12 -dim 3 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 14 -dim 3 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 3 >> ${report_file}
+
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 3 -n1 27 -n2 36 -n3 41 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
@@ -103,6 +113,33 @@ $HPCSCAN_MPI_INVOKER -n 3 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Comm 
 echo Running -testCase Propa ...
 
 # -propagator Ac2Standard (default)
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 2  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 4  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 6  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 8  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 10 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 12 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 14 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 16 >> ${report_file}
+
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 2  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 4  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 6  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 8  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 10 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 12 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 14 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 16 >> ${report_file}
+
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 2  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 4  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 6  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 8  >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 10 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 12 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 14 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 16 >> ${report_file}
+
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -param1 2 -snapInc 20 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 >> ${report_file}
@@ -112,6 +149,33 @@ $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 -nsub3 2 >> ${report_file}
 
 # -propagator Ac2SplitComp
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 2  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 4  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 6  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 8  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 10 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 12 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 14 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -fdOrder 16 -propagator Ac2SplitComp >> ${report_file}
+
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 2  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 4  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 6  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 8  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 10 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 12 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 14 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -fdOrder 16 -propagator Ac2SplitComp >> ${report_file}
+
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 2  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 4  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 6  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 8  -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 10 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 12 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 14 -propagator Ac2SplitComp >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -fdOrder 16 -propagator Ac2SplitComp >> ${report_file}
+
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 1 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -param1 2 -snapInc 20 -propagator Ac2SplitComp >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 -propagator Ac2SplitComp >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 -propagator Ac2SplitComp >> ${report_file}
@@ -120,5 +184,5 @@ $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 2 -nt 50 -dt 0.001 -fdOrder 8 -n1 100 -n2 100 -param2 2 -param1 2 -snapInc 20 -nsub2 2 -propagator Ac2SplitComp >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Propa -dim 3 -nt 50 -dt 0.001 -param1 2 -param1 2 -param3 2 -snapInc 20 -nsub3 2 -propagator Ac2SplitComp >> ${report_file}
 
-echo End testDriver.sh
+echo End testDriverDev.sh
 echo '------------------------------------------------------------------------'
