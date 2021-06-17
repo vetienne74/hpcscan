@@ -63,7 +63,7 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Grid::Grid(Grid_type gridTypeIn)
-				{
+{
 	printDebug(MID_DEBUG, "IN Grid::Grid");
 
 	gridMode = GRID_MODE_BASELINE ;
@@ -75,7 +75,7 @@ Grid::Grid(Grid_type gridTypeIn)
 	grid_3d  = NULL;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
-				}
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -2665,22 +2665,22 @@ Rtn_code Grid::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 		}
 	}
 	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 		{
-	#pragma omp parallel for collapse(2)
-			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 			{
-				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
-	#pragma omp simd
-					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-					}
-
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
+
 			}
 		}
+	}
 	else if (fdOrder == 8)
 	{
 #pragma omp parallel for collapse(2)
@@ -2699,22 +2699,22 @@ Rtn_code Grid::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 		}
 	}
 	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
 		{
-	#pragma omp parallel for collapse(2)
-			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
 			{
-				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
-	#pragma omp simd
-					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-					{
-						w[i1+i2*n1+i3*n1*n2] =
-								FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-					}
-
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
+
 			}
 		}
+	}
 	else if (fdOrder == 12)
 	{
 #pragma omp parallel for collapse(2)
