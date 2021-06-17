@@ -178,6 +178,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOr
 			}
 		}
 	}
+	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
 	else if (fdOrder == 8)
 	{
 #pragma omp parallel for collapse(3)
@@ -210,6 +242,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOr
 			}
 		}
 	}
+	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
 	else if (fdOrder == 12)
 	{
 #pragma omp parallel for collapse(3)
@@ -234,6 +298,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOr
 
 								w[i1+i2*n1+i3*n1*n2] =
 										FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 							}
 
 						}
@@ -376,6 +472,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOr
 			}
 		}
 	}
+	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
 	else if (fdOrder == 8)
 	{
 #pragma omp parallel for collapse(3)
@@ -408,6 +536,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOr
 			}
 		}
 	}
+	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
 	else if (fdOrder == 12)
 	{
 #pragma omp parallel for collapse(3)
@@ -432,6 +592,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOr
 
 								w[i1+i2*n1+i3*n1*n2] =
 										FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 							}
 
 						}
@@ -573,6 +765,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOr
 			}
 		}
 	}
+	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
 	else if (fdOrder == 8)
 	{
 #pragma omp parallel for collapse(3)
@@ -605,6 +829,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOr
 			}
 		}
 	}
+	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
 	else if (fdOrder == 12)
 	{
 #pragma omp parallel for collapse(3)
@@ -629,6 +885,38 @@ Rtn_code Grid_CacheBlk::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOr
 
 								w[i1+i2*n1+i3*n1*n2] =
 										FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(3)
+		for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+		{
+			for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+			{
+				for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+				{
+					const Myint64 end3 = min(i3End, b3+cb3-1) ;
+					const Myint64 end2 = min(i2End, b2+cb2-1) ;
+					const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+					// loop on grid points inside block
+					for (Myint64 i3 = b3; i3 <= end3; i3++)
+					{
+						for (Myint64 i2 = b2; i2 <= end2; i2++)
+						{
+#pragma omp simd
+							for (Myint64 i1 = b1; i1 <= end1; i1++)
+							{
+
+								w[i1+i2*n1+i3*n1*n2] =
+										FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 							}
 
 						}
@@ -781,6 +1069,40 @@ Rtn_code Grid_CacheBlk::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint 
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+
+									w[i1+i2*n1+i3*n1*n2] =
+											FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
+
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(3)
@@ -814,6 +1136,39 @@ Rtn_code Grid_CacheBlk::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint 
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+
+									w[i1+i2*n1+i3*n1*n2] =
+											FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(3)
@@ -839,6 +1194,39 @@ Rtn_code Grid_CacheBlk::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint 
 									w[i1+i2*n1+i3*n1*n2] =
 											FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+
+									w[i1+i2*n1+i3*n1*n2] =
+											FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 								}
 
 							}
@@ -953,6 +1341,40 @@ Rtn_code Grid_CacheBlk::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint 
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+
+									w[i1+i2*n1+i3*n1*n2] =
+											FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(3)
@@ -987,6 +1409,40 @@ Rtn_code Grid_CacheBlk::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint 
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+
+									w[i1+i2*n1+i3*n1*n2] =
+											FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(3)
@@ -1013,6 +1469,40 @@ Rtn_code Grid_CacheBlk::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint 
 											FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+
+									w[i1+i2*n1+i3*n1*n2] =
+											FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 								}
 
 							}
@@ -1159,6 +1649,37 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(3)
@@ -1190,6 +1711,37 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(3)
@@ -1214,6 +1766,37 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 											coef[i1+i2*n1+i3*n1*n2] *
 											FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 								}
 							}
 						}
@@ -1322,6 +1905,38 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(3)
@@ -1354,6 +1969,38 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(3)
@@ -1379,6 +2026,38 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 											coef[i1+i2*n1+i3*n1*n2] *
 											(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 													+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 								}
 							}
 						}
@@ -1489,6 +2168,39 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O6_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(3)
@@ -1522,6 +2234,39 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O10_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(3)
@@ -1548,6 +2293,39 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 											(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 													+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 													+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(3)
+			for (Myint64 b3 = i3Start; b3 <= i3End; b3 += cb3)
+			{
+				for (Myint64 b2 = i2Start; b2 <= i2End; b2 += cb2)
+				{
+					for (Myint64 b1 = i1Start; b1 <= i1End; b1 += cb1)
+					{
+						const Myint64 end3 = min(i3End, b3+cb3-1) ;
+						const Myint64 end2 = min(i2End, b2+cb2-1) ;
+						const Myint64 end1 = min(i1End, b1+cb1-1) ;
+
+						// loop on grid points inside block
+						for (Myint64 i3 = b3; i3 <= end3; i3++)
+						{
+							for (Myint64 i2 = b2; i2 <= end2; i2++)
+							{
+#pragma omp simd
+								for (Myint64 i1 = b1; i1 <= end1; i1++)
+								{
+									prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+											coef[i1+i2*n1+i3*n1*n2] *
+											(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+													+ FD_D2_O14_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 								}
 							}
 						}
@@ -1593,7 +2371,5 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 	printDebug(FULL_DEBUG, "Out Grid_CacheBlk::computePressureWithFD") ;
 	return(RTN_CODE_OK) ;
 }
-
-
 
 } // namespace hpcscan
