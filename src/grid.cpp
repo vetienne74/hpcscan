@@ -103,29 +103,11 @@ Rtn_code Grid::initializeGrid(void)
 
 	Myint nlayer = Config::Instance()->nlayer ;
 
-	if (Config::Instance()->fdOrder == 2)
+	haloWidth = getFD_D2haloWidth(Config::Instance()->fdOrder) ;
+	if (haloWidth == UNSPECIFIED)
 	{
-		haloWidth = FD_D2_O2_HSTL ;
-	}
-	else if (Config::Instance()->fdOrder == 4)
-	{
-		haloWidth = FD_D2_O4_HSTL ;
-	}
-	else if (Config::Instance()->fdOrder == 8)
-	{
-		haloWidth = FD_D2_O8_HSTL ;
-	}
-	else if (Config::Instance()->fdOrder == 12)
-	{
-		haloWidth = FD_D2_O12_HSTL ;
-	}
-	else if (Config::Instance()->fdOrder == 16)
-	{
-		haloWidth = FD_D2_O16_HSTL ;
-	}
-	else
-	{
-		haloWidth = 0 ;
+		printError(" In Grid::initializeGrid, haloWidth = UNSPECIFIED") ;
+		return(RTN_CODE_OK) ;
 	}
 
 	// get global grid size (Inner points)
@@ -1485,28 +1467,8 @@ Myint Grid::getFlopPerPtFD_D2(Myint fdOrder)
 {
 	printDebug(FULL_DEBUG, "IN Grid::getFlopPerPtFD_D2");
 
-	Myint nOpDer=0, val=0 ;
-
-	if (fdOrder == 2)
-	{
-		nOpDer = FD_D2_O2_NOP ;
-	}
-	else if (fdOrder == 4)
-	{
-		nOpDer = FD_D2_O4_NOP ;
-	}
-	else if (fdOrder == 8)
-	{
-		nOpDer = FD_D2_O8_NOP ;
-	}
-	else if (fdOrder == 12)
-	{
-		nOpDer = FD_D2_O12_NOP ;
-	}
-	else if (fdOrder == 16)
-	{
-		nOpDer = FD_D2_O16_NOP ;
-	}
+	Myint nOpDer = getFD_D2nMathOp(fdOrder) ;
+	Myint val= UNSPECIFIED ;
 
 	if (dim ==DIM1) val = nOpDer ;
 	else if (dim == DIM2) val = nOpDer ;
@@ -2364,6 +2326,23 @@ Rtn_code Grid::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 			}
 		}
 	}
+	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
 	else if (fdOrder == 8)
 	{
 #pragma omp parallel for collapse(2)
@@ -2381,6 +2360,23 @@ Rtn_code Grid::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 			}
 		}
 	}
+	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
 	else if (fdOrder == 12)
 	{
 #pragma omp parallel for collapse(2)
@@ -2393,6 +2389,23 @@ Rtn_code Grid::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
 							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -2482,6 +2495,23 @@ Rtn_code Grid::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 			}
 		}
 	}
+	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
 	else if (fdOrder == 8)
 	{
 #pragma omp parallel for collapse(2)
@@ -2499,6 +2529,23 @@ Rtn_code Grid::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 			}
 		}
 	}
+	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
 	else if (fdOrder == 12)
 	{
 #pragma omp parallel for collapse(2)
@@ -2511,6 +2558,23 @@ Rtn_code Grid::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
 							FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -2600,6 +2664,23 @@ Rtn_code Grid::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 			}
 		}
 	}
+	else if (fdOrder == 6)
+		{
+	#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+	#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
 	else if (fdOrder == 8)
 	{
 #pragma omp parallel for collapse(2)
@@ -2617,6 +2698,23 @@ Rtn_code Grid::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 			}
 		}
 	}
+	else if (fdOrder == 10)
+		{
+	#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+	#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
 	else if (fdOrder == 12)
 	{
 #pragma omp parallel for collapse(2)
@@ -2629,6 +2727,23 @@ Rtn_code Grid::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
 							FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -2729,6 +2844,24 @@ Rtn_code Grid::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(2)
@@ -2747,6 +2880,24 @@ Rtn_code Grid::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(2)
@@ -2760,6 +2911,24 @@ Rtn_code Grid::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 						w[i1+i2*n1+i3*n1*n2] =
 								FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 								+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 					}
 
 				}
@@ -2826,6 +2995,25 @@ Rtn_code Grid::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(2)
@@ -2845,6 +3033,25 @@ Rtn_code Grid::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(2)
@@ -2859,6 +3066,25 @@ Rtn_code Grid::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 								FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 								+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 								+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+								+ FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 					}
 
 				}
@@ -2990,6 +3216,24 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(2)
@@ -3003,6 +3247,24 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 								coef[i1+i2*n1+i3*n1*n2] *
 								FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 					}
 
 				}
@@ -3026,6 +3288,24 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 				}
 			}
 		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 16)
 		{
 #pragma omp parallel for collapse(2)
@@ -3044,7 +3324,6 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 				}
 			}
 		}
-
 	}
 
 	// compute FD for 2D
@@ -3088,6 +3367,25 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(2)
@@ -3107,6 +3405,25 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(2)
@@ -3121,6 +3438,25 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 								coef[i1+i2*n1+i3*n1*n2] *
 								(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 										+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+					}
+
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 					}
 
 				}
@@ -3190,6 +3526,26 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O6_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(2)
@@ -3210,6 +3566,26 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O10_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+					}
+
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(2)
@@ -3225,6 +3601,26 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 								(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 										+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 										+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+					}
+
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma omp simd
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+								coef[i1+i2*n1+i3*n1*n2] *
+								(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+										+ FD_D2_O14_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 					}
 
 				}

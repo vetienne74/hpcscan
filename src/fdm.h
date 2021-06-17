@@ -20,7 +20,7 @@ namespace hpcscan {
 // NOTE: 1st differentials are not yet used in this version, for future use cases
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O8 %%%%%%%%%%%%%%-------------------------------------
-const Myint   FD_D1_O8_HSTL = 4 ;
+const Myint   FD_D1_O8_HSTL = 4 ; //half stencil
 const Myfloat FD_D1_O8_A1   =  1225./1024. ;
 const Myfloat FD_D1_O8_A2   = -245./3072. ;
 const Myfloat FD_D1_O8_A3   =  49./5120. ;
@@ -51,7 +51,7 @@ const Myint   FD_D1_O8_NOP  = 12 ;
 //-=============================================== 2nd differential ==========================================================
 
 //-------------------------------------%%%%%%%%%%% D2 FD space O2 %%%%%%%%%%%%%%------------------------------------
-const Myint   FD_D2_O2_HSTL = 1 ;
+const Myint   FD_D2_O2_HSTL = 1 ; //half stencil
 const Myfloat FD_D2_O2_A0   = -2.0 ;
 const Myfloat FD_D2_O2_A1   =  1.0 ;
 const Myint   FD_D2_O2_NOP  = 4 ;
@@ -123,7 +123,7 @@ const Myint   FD_D2_O6_NOP  = 11 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space O8 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O8_HSTL = 4 ;
+const Myint   FD_D2_O8_HSTL = 4 ; //half stencil
 const Myfloat FD_D2_O8_A0   = -205./72. ;
 const Myfloat FD_D2_O8_A1   =  8./5. ;
 const Myfloat FD_D2_O8_A2   = -1/5. ;
@@ -156,7 +156,7 @@ const Myint   FD_D2_O8_NOP  = 14 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 10 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O10_HSTL = 5 ;
+const Myint   FD_D2_O10_HSTL = 5 ; //half stencil
 const Myfloat FD_D2_O10_A0   = -5269./1800. ;
 const Myfloat FD_D2_O10_A1   =  5./3. ;
 const Myfloat FD_D2_O10_A2   = -5./21. ;
@@ -193,7 +193,7 @@ const Myint   FD_D2_O10_NOP  = 17 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 12 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O12_HSTL = 6 ;
+const Myint   FD_D2_O12_HSTL = 6 ; //half stencil
 const Myfloat FD_D2_O12_A0   = -2598./871. ;
 const Myfloat FD_D2_O12_A1   =  12./7.;
 const Myfloat FD_D2_O12_A2   = -15./56. ;
@@ -234,7 +234,7 @@ const Myint   FD_D2_O12_NOP  = 20 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 14 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O14_HSTL = 7 ;
+const Myint   FD_D2_O14_HSTL = 7 ; //half stencil
 const Myfloat FD_D2_O14_A0   = -266681./88200. ;
 const Myfloat FD_D2_O14_A1   =  7./4.;
 const Myfloat FD_D2_O14_A2   = -7./24. ;
@@ -252,7 +252,8 @@ const Myint   FD_D2_O14_NOP  = 23 ;
 				+ FD_D2_O14_A3 * (U[i1+3 + i2*n1 + i3*n2*n1] + U[i1-3 + i2*n1 + i3*n2*n1])  \
 				+ FD_D2_O14_A4 * (U[i1+4 + i2*n1 + i3*n2*n1] + U[i1-4 + i2*n1 + i3*n2*n1])  \
 				+ FD_D2_O14_A5 * (U[i1+5 + i2*n1 + i3*n2*n1] + U[i1-5 + i2*n1 + i3*n2*n1])  \
-				+ FD_D2_O14_A6 * (U[i1+6 + i2*n1 + i3*n2*n1] + U[i1-6 + i2*n1 + i3*n2*n1])) \
+				+ FD_D2_O14_A6 * (U[i1+6 + i2*n1 + i3*n2*n1] + U[i1-6 + i2*n1 + i3*n2*n1])  \
+				+ FD_D2_O14_A7 * (U[i1+7 + i2*n1 + i3*n2*n1] + U[i1-7 + i2*n1 + i3*n2*n1])) \
 				* inv2_d1)
 
 #define FD_D2_O14_N2(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -262,7 +263,8 @@ const Myint   FD_D2_O14_NOP  = 23 ;
 				+ FD_D2_O14_A3 * (U[i1 + (i2+3)*n1 + i3*n2*n1] + U[i1 + (i2-3)*n1 + i3*n2*n1])  \
 				+ FD_D2_O14_A4 * (U[i1 + (i2+4)*n1 + i3*n2*n1] + U[i1 + (i2-4)*n1 + i3*n2*n1])  \
 				+ FD_D2_O14_A5 * (U[i1 + (i2+5)*n1 + i3*n2*n1] + U[i1 + (i2-5)*n1 + i3*n2*n1])  \
-				+ FD_D2_O14_A6 * (U[i1 + (i2+6)*n1 + i3*n2*n1] + U[i1 + (i2-6)*n1 + i3*n2*n1])) \
+				+ FD_D2_O14_A6 * (U[i1 + (i2+6)*n1 + i3*n2*n1] + U[i1 + (i2-6)*n1 + i3*n2*n1])  \
+				+ FD_D2_O14_A7 * (U[i1 + (i2+7)*n1 + i3*n2*n1] + U[i1 + (i2-7)*n1 + i3*n2*n1])) \
 				* inv2_d2)
 
 #define FD_D2_O14_N3(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -272,11 +274,12 @@ const Myint   FD_D2_O14_NOP  = 23 ;
 				+ FD_D2_O14_A3 * (U[i1 + i2*n1 + (i3+3)*n2*n1] + U[i1 + i2*n1 + (i3-3)*n2*n1])  \
 				+ FD_D2_O14_A4 * (U[i1 + i2*n1 + (i3+4)*n2*n1] + U[i1 + i2*n1 + (i3-4)*n2*n1])  \
 				+ FD_D2_O14_A5 * (U[i1 + i2*n1 + (i3+5)*n2*n1] + U[i1 + i2*n1 + (i3-5)*n2*n1])  \
-				+ FD_D2_O14_A6 * (U[i1 + i2*n1 + (i3+6)*n2*n1] + U[i1 + i2*n1 + (i3-6)*n2*n1])) \
+				+ FD_D2_O14_A6 * (U[i1 + i2*n1 + (i3+6)*n2*n1] + U[i1 + i2*n1 + (i3-6)*n2*n1])  \
+				+ FD_D2_O14_A7 * (U[i1 + i2*n1 + (i3+7)*n2*n1] + U[i1 + i2*n1 + (i3-7)*n2*n1])) \
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 16 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O16_HSTL = 8 ;
+const Myint   FD_D2_O16_HSTL = 8 ; //half stencil
 const Myfloat FD_D2_O16_A0   = -1671./547. ;
 const Myfloat FD_D2_O16_A1   =  16./9. ;
 const Myfloat FD_D2_O16_A2   = -14./45. ;
@@ -434,6 +437,94 @@ static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
 
 	return(sumCoef) ;
 }
+
+//-------------------------------------------------------------------------------------------------------
+// get halo width associated with a given FD order
+//
+static Myint getFD_D2haloWidth(Myint fdOrder)
+{
+	Myint haloWidth = UNSPECIFIED ;
+
+	if (fdOrder == 2)
+	{
+		haloWidth = FD_D2_O2_HSTL ;
+	}
+	else if (fdOrder == 4)
+	{
+		haloWidth = FD_D2_O4_HSTL ;
+	}
+	else if (fdOrder == 6)
+	{
+		haloWidth = FD_D2_O6_HSTL ;
+	}
+	else if (fdOrder == 8)
+	{
+		haloWidth = FD_D2_O8_HSTL ;
+	}
+	else if (fdOrder == 10)
+	{
+		haloWidth = FD_D2_O10_HSTL ;
+	}
+	else if (fdOrder == 12)
+	{
+		haloWidth = FD_D2_O12_HSTL ;
+	}
+	else if (fdOrder == 14)
+	{
+		haloWidth = FD_D2_O14_HSTL ;
+	}
+	else if (fdOrder == 16)
+	{
+		haloWidth = FD_D2_O16_HSTL ;
+	}
+
+	return(haloWidth) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+// get number of mathematical operations for a given FD order
+// for derivative computations along one axis
+//
+static Myint getFD_D2nMathOp(Myint fdOrder)
+{
+	Myint nMathOp = UNSPECIFIED ;
+
+	if (fdOrder == 2)
+	{
+		nMathOp = FD_D2_O2_NOP ;
+	}
+	else if (fdOrder == 4)
+	{
+		nMathOp = FD_D2_O4_NOP ;
+	}
+	else if (fdOrder == 6)
+	{
+		nMathOp = FD_D2_O6_NOP ;
+	}
+	else if (fdOrder == 8)
+	{
+		nMathOp = FD_D2_O8_NOP ;
+	}
+	else if (fdOrder == 10)
+	{
+		nMathOp = FD_D2_O10_NOP ;
+	}
+	else if (fdOrder == 12)
+	{
+		nMathOp = FD_D2_O12_NOP ;
+	}
+	else if (fdOrder == 14)
+	{
+		nMathOp = FD_D2_O14_NOP ;
+	}
+	else if (fdOrder == 16)
+	{
+		nMathOp = FD_D2_O16_NOP ;
+	}
+
+	return(nMathOp) ;
+}
+
 
 } // namespace hpcscan
 

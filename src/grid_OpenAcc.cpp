@@ -116,29 +116,11 @@ Rtn_code Grid_OpenAcc::initializeGrid(void)
 
 	Myint nlayer = Config::Instance()->nlayer ;
 
-	if (Config::Instance()->fdOrder == 2)
+	haloWidth = getFD_D2haloWidth(Config::Instance()->fdOrder) ;
+	if (haloWidth == UNSPECIFIED)
 	{
-		haloWidth = FD_D2_O2_HSTL ;
-	}
-	else if (Config::Instance()->fdOrder == 4)
-	{
-		haloWidth = FD_D2_O4_HSTL ;
-	}
-	else if (Config::Instance()->fdOrder == 8)
-	{
-		haloWidth = FD_D2_O8_HSTL ;
-	}
-	else if (Config::Instance()->fdOrder == 12)
-	{
-		haloWidth = FD_D2_O12_HSTL ;
-	}
-	else if (Config::Instance()->fdOrder == 16)
-	{
-		haloWidth = FD_D2_O16_HSTL ;
-	}
-	else
-	{
-		haloWidth = 0 ;
+		printError(" In Grid_OpenAcc::initializeGrid, haloWidth = UNSPECIFIED") ;
+		return(RTN_CODE_OK) ;
 	}
 
 	// get global grid size (Inner points)
