@@ -61,7 +61,7 @@ It features several categories of test cases aiming to measure memory, computati
 * Easy to add new test cases
 * Design centered on a unique class that handles all operations on multi-dimension (1, 2 \& 3D) Cartesian grids
 * Hybrid OpenMP/MPI parallelism
-* Support for CUDA (NVIDIA GPUs), HIP (AMD GPUs)  and other specific features are available depending on compiler/architecture
+* Support scalar and vector CPUs, GPUs and other accelerators (depending on compiler/architecture)
 * All configuration parameters on command line
 * Support single and double precision computation
 * Compilation with standard Makefile
@@ -126,7 +126,7 @@ Version      | Description | Release date
 ------------ | ----------- | ------------
 v1.0         | Initial version with test modes Baseline, CacheBlk and NEC_SCA  | Nov 28, 2020
 v1.1         | Added test modes NEC, CUDA and HIP | May 22, 2021
-v1.2         | Added test mode DPC++ (on going) | Coming soon
+v1.2         | Added test mode DPC++, CUDA_Opt, CUDA_Ref and HIP_Opt (on going) | Coming soon
 
 # Main features
 
@@ -144,7 +144,7 @@ v1.2         | Added test mode DPC++ (on going) | Coming soon
 Test case name | Description | Remark
 ------------ | ----------- | ------------
 Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes <br> Depending on the placement of MPI processes, intra-node or inter-node bandwidth can be measured <br> Width of halos depends on the selected FD stencil order <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** </p>
-FD_D2        | **Finite-difference (second derivatives in space) computations bandwidth** <ul><li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_1^2} \: (V)"> (for grid dim. 1, 2 or 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_2^2} \: (V)"> (for grid dim. 2 or 3) </li>  <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_3^2} \: (V)"> (for grid dim. 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U= \Delta (V)"> (for grid dim 2 or 3) </li> </ul> | <p>Accuracy is checked against multi-dimensional sine function <br> Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of periods in the sine function <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
+FD_D2        | **Finite-difference (second derivatives in space) computations bandwidth** <ul><li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_1^2} \: (V)"> (for grid dim. 1, 2 or 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_2^2} \: (V)"> (for grid dim. 2 or 3) </li>  <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_3^2} \: (V)"> (for grid dim. 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U= \Delta (V)"> (for grid dim 2 or 3) </li> </ul> | <p> Available FD stencil orders: 2, 4, 6, 8, 10, 12, 14 and 16 <br> Accuracy is checked against multi-dimensional sine function <br> Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of periods in the sine function <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
 Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Max. diff. between grids U and V </li> <li> L1 norm between U and V </li> <li> Sum of abs(U) </li> <li> Sum of abs(U-V) </li> <li> Max. of U </li> <li> Min. of U </li> <li> Complex grid manipulation (wavefield update in propagator) U = 2 x V - U + C x L </li> <li> Boundary condition (free surface) at all edges of U </li> </ul> | <p>Operations on grids include manipulation of multi-dimensional indexes and specific portions of the grids (for instance, excluding halos) <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
 Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p> Conversely to Test Case Grid, operations are done on continuous memory arrays <br> This test case is similar to the Stream benchmark <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
 Propa        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> <img src="https://render.githubusercontent.com/render/math?math={\partial^2}/{\partial t^2} (P)=c^2 \: \Delta (P)"> </li> <li> Domain size is 1 m in every dimension </li> <li> c is constant and equals to 1 m/s </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against the multi-dimensional analytical solution (Eigen modes) of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of Eigen modes <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
@@ -153,16 +153,22 @@ Util         | Utility tests to check internal functions | Reserved for developp
 
 ## List of test modes
 
-Test mode name | Description | Remark
------------- | ----------- | ------------
-Baseline     | CPU standard implementation | :arrow_right: **This mode is the reference implementation without any optimization.** <br> **Default test mode.** Always enabled
-CacheBlk     | CPU with cache blocking optimization techniques | Always enabled
-CUDA         | NVIDIA GPU with CUDA without optimization | Only enabled when compiled with nvcc (NVIDIA CUDA compiler)
-DPC++        | CPU/GPU/FPGA with DPC++ without optimization | Only enabled when compiled with dpcpp (Intel OneAPI DPC++ compiler)
-HIP          | AMD GPU with HIP without optimization | Only enabled when compiled with hipcc (AMD HIP compiler)
-NEC          | NEC SX-Aurora with compiler directives | Only enabled when compiled with nc++ (NEC C++ compiler)
-NEC_SCA      | NEC SX-Aurora with Stencil Code Accelerator | Only enabled when compiled with nc++ (NEC C++ compiler)
-OpenAcc      | GPU with OpenACC without optimization | Only enabled when compiled with a C++ compiler that supports OpenACC **(not yet operational)**
+All available test modes are listed below.
+Activation of each test mode depends on the compilers defined in the hpscan environment script, see [Environment script (mandatory)](#environment-script-mandatory). 
+
+Test mode name | Target hardware | Description | Remark
+-------------- | --------------- | ----------- | ------
+Baseline       | Generic CPU     | Standard implementation without optimization | :arrow_right: **This mode is the reference implementation** <br> **Default test mode.** Always enabled
+CacheBlk       | Generic CPU     | Optimized with cache blocking techniques | Always enabled
+CUDA           | NVIDIA GPU      | Regular CUDA implementation without optimization | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
+CUDA_Opt       | NVIDIA GPU      | Optimized CUDA implementation | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
+CUDA_Ref       | NVIDIA GPU      | Reference CUDA implementation (for developpers) | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
+DPC++          | Intel CPU/GPU/FPGA | Regular DPC++ implementation without optimization | Enabled when compiled with dpcpp (Intel OneAPI DPC++ compiler)
+HIP            | AMD GPU         | Regular HIP implementation without optimization | Enabled when compiled with hipcc (AMD HIP compiler)
+HIP_Opt        | AMD GPU         | Optimized HIP implementation | Enabled when compiled with hipcc (AMD HIP compiler)
+NEC            | NEC SX-Aurora   | With NEC compiler directives | Enabled when compiled with nc++ (NEC C++ compiler)
+NEC_SCA        | NEC SX-Aurora   | With NEC Library Stencil Code Accelerator | Enabled when compiled with nc++ (NEC C++ compiler)
+OpenAcc        | NVIDIA GPU      | Regular OpenACC implementation without optimization | Enabled when compiled with a C++ compiler that supports OpenACC **(not yet operational)**
 
 # Environment set-up
 
@@ -173,10 +179,10 @@ OpenAcc      | GPU with OpenACC without optimization | Only enabled when compile
 
 ## Optional requirements
 
-* CUDA compiler
-* DPC++ compiler
-* HIP compiler
-* NEC compiler
+* NVIDIA CUDA compiler
+* Intel DPC++ compiler
+* AMD HIP compiler
+* NEC C++ compiler
 * C++ compiler with OpenACC support
 
 ## Environment script (mandatory)
@@ -232,7 +238,7 @@ This script runs a set a light test cases and should complete within few minutes
 
 You should get in the ouptput report (displayed on the terminal)
 
-* All tests marked as PASSED (344 tests passed per test mode enabled)
+* All tests marked as PASSED (555 tests passed for each test mode enabled)
 * No test marked as FAILED
 
 Check the summary at the end of report to have a quick look on this.
@@ -241,16 +247,17 @@ Check the summary at the end of report to have a quick look on this.
 
 ## Validated hardware, operating systems and compilers
 
-hpcscan has been successfully tested on the hardware, operating systems and compilers listed below
+hpcscan has been successfully tested on the hardware, operating systems and compilers listed below.
 
-Operating system | Compiler | Host (H) | Device (D) | Baseline | CacheBlk | CUDA | HIP | NEC <br> NEC_SCA 
+Operating system | Compiler | Host (H) | Device (D) | Baseline <br> CacheBlk | CUDA <br> CUDA_Opt <br> CUDA_Ref| DPC++ | HIP <br> HIP_Opt| NEC <br> NEC_SCA 
 |----------------|----------|----------|------------|----------|----------|------|-----|-----------------
-SUSE Linux Enterprise Server 15 | icpc (ICC) 19.0.5.281 20190815 | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | :ballot_box_with_check: | :ballot_box_with_check: | - | - | - 
-Red Hat 4.8.5-39 | icpc version 19.1.2.254 (gcc version 6.3.1 compatibility) | Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz **(Intel Cascade Lake)** | - | :ballot_box_with_check: | :ballot_box_with_check: | - | - | - 
-Ubuntu 20.04.1 LTS |  gcc version 9.3.0 / nvcc release 10.1, V10.1.243 | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: | - | - 
-CentOS Linux release 7.7.1908 |  icpc (ICC) 19.1.0.166 20191121 / nvcc release 11.0, V11.0.167 | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | GV100GL [Tesla V100 SXM2 32GB] **(NVIDIA GPU)** | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: | - | - 
-Ubuntu 20.04.1 LTS | g++ 9.3.0 / hipcc 4.2.21155-37cb3a34 | AMD EPYC 7742 64-Core Processor @ 2.25GHz **(AMD Rome)** | [AMD Instinct MI100] **(AMD GPU)** | :ballot_box_with_check: | :ballot_box_with_check: | - | :ballot_box_with_check: | - 
-CentOS Linux release 8.1.1911 | nc++ (NCC) 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | :ballot_box_with_check: | :ballot_box_with_check: | - | - | :ballot_box_with_check: 
+SUSE Linux Enterprise Server 15 | <li> Intel icpc (ICC) 19.0.5.281 20190815 </li> | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | **H** :ballot_box_with_check: | - | - | - | - 
+Red Hat 4.8.5-39 | <li> Intel icpc version 19.1.2.254 </li> | Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz **(Intel Cascade Lake)** | - | **H** :ballot_box_with_check: | - | - | - | - 
+Ubuntu 20.04.1 LTS |  <li> gcc version 9.3.0 </li> <li> NVIDIA nvcc release 11.3, V11.3.109 </li> | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | **H** :ballot_box_with_check: | **D** :ballot_box_with_check: | - | - | - 
+CentOS Linux release 7.7.1908 |  <li> Intel icpc (ICC) 19.1.0.166 20191121 </li> <li> NVIDIA nvcc release 11.0, V11.0.167 </li> | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | GV100GL [Tesla V100 SXM2 32GB] **(NVIDIA GPU)** | **H** :ballot_box_with_check: | **D** :ballot_box_with_check: | - | - | - 
+Ubuntu 20.04.1 LTS | <li> Intel(R) oneAPI DPC++ Compiler 2021.2.0 </li> | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | - | **H** :ballot_box_with_check: | - | **H** :ballot_box_with_check: | - | - 
+Ubuntu 20.04.1 LTS | <li> g++ 9.3.0 </li> <li> AMD hipcc 4.2.21155-37cb3a34 </li> | AMD EPYC 7742 64-Core Processor @ 2.25GHz **(AMD Rome)** | [AMD Instinct MI100] **(AMD GPU)** | **H** :ballot_box_with_check: | - | - | **D** :ballot_box_with_check: | - 
+CentOS Linux release 8.1.1911 | <li> NEC nc++ (NCC) 3.1.0 </li> | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | **D** :ballot_box_with_check: | - | - | - | **D** :ballot_box_with_check: 
 
 # Execution
 

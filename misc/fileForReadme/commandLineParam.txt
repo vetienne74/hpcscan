@@ -16,8 +16,11 @@
      FPGA             * Launch kernels on FPGA
  -dt <float>          = time step (s) for propagator
  -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]
- -gpuBlkSize <int>    = GPU, number of threads per block
- -gpuGridSize <int>   = GPU, number of blocks per grid
+ -gpuBlkSize <int>    = GPU, no. of threads / 1D block 
+ -gpuBlkSize1 <int>   = GPU, no. of threads / 3D block axis 1
+ -gpuBlkSize2 <int>   = GPU, no. of threads / 3D block axis 2
+ -gpuBlkSize3 <int>   = GPU, no. of threads / 3D block axis 3
+ -gpuGridSize <int>   = GPU, no. of 1D blocks per grid
  -gpuMpiAware         = use MPI GPU-aware library
  -help or -h          = list of command line parameters
  -n1 <int>            = inner domain size axis 1 [grid pts]
@@ -54,13 +57,16 @@
      Propa            * Propagator
      Util             * Utility for developers
  -testMode <string>   = test mode
-     Baseline         * CPU without optimization (DEFAULT)
-     CacheBlk         * CPU with cache blocking techniques
-     CUDA             * NVIDIA GPU with CUDA without optimization
-     DPC++            * CPU/GPU/FPGA with DPC++ without optimization
-     HIP              * AMD GPU with HIP without optimization
-     NEC              * NEC SX-Aurora with compiler directives
-     NEC_SCA          * NEC SX-Aurora with Stencil Code Accelerator
+     Baseline         * Generic CPU reference implementation (DEFAULT test mode)
+     CacheBlk         * Generic CPU optimized with cache blocking techniques
+     CUDA             * NVIDIA GPU CUDA regular implementation
+     CUDA_Opt         * NVIDIA GPU CUDA optimized implementation
+     CUDA_ref         * NVIDIA GPU CUDA reference implementation (for developers)
+     DPC++            * Intel CPU/GPU/FPGA regular DPC++ implementation
+     HIP              * AMD GPU HIP regular implementation
+     HIP_Opt          * AMD GPU HIP optimized implementation
+     NEC              * NEC SX-Aurora with NEC compiler directives
+     NEC_SCA          * NEC SX-Aurora with NEC Stencil Code Accelerator Library
  -tmax <float>        = max. time (s) for propagator
      (if specified tmax overrides nt)
  -version or -v       = print version information

@@ -1,5 +1,13 @@
 
-# Current version
+# To be done for current version
+
+## Test mode DPC++
+
+Finalize implementation
+
+## Test modes CUDA_Opt and HIP_Opt
+
+Finalize implementation
 
 ## testCase_Memory and testCase_Grid.cpp
 
@@ -10,6 +18,8 @@ Same cases should implemented on both test cases
 ## propagator_Ac2.cpp
 
 Optimal time step is not optimal when spacing grid sampling is not the same in the different axis
+
+Implement 4th order in time
 
 ## testCase_Propa.cpp
 
@@ -23,21 +33,17 @@ Add an option to select the type of grid points to consider: inner or all points
 
 For accelerators: add function to measure transfer between device to CPU and vice versa
 
-# Additions for future versions
+# To be done for future versions
 
 ## FD computations
 
 Computation of spatial derivatives with FFT
-
-Add missing stencil order O6, O10 and O14
 
 ## Propagator
 
 Propagator with pseudo spectral method (based on FFT)
 
 More complex propagator (such as elastic wave equation)
-
-Implement higher order in time than 2nd order
 
 ## Test mode OpenAcc
 
