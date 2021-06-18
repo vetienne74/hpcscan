@@ -660,151 +660,497 @@ __global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data,
 }
 
 //-------------------------------------------------------------------------------------------------------
-// update pressure wavefield (used in progator)
+// update pressure wavefield (used in propagator) - 1D
 // input/output prn
 // input prc
 
-__global__ void kernel_computePressureWithFD(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+__global__ void kernel_computePressureWithFD_1D_O2(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
 {
-	Myint64 size = n1*n2*n3;
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
 
-	while (tid < size)
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
 	{
-		unsigned int i3 = tid / (n1*n2);
-		unsigned int idx = tid-i3*n1*n2;
-		unsigned int i2 = idx/n1;
-		unsigned int i1 = idx - i2*n1 ;
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
 
-		if (i1 >= i1Start && i1 <= i1End &&
-				i2 >= i2Start && i2 <= i2End &&
-				i3 >= i3Start && i3 <= i3End   )
-		{
-			// compute FD for 1D
-			if (dim == DIM1)
-			{
-				if (fdOrder == 2)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 4)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 8)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 12)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-				else if (fdOrder == 16)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
-				}
-			}
+__global__ void kernel_computePressureWithFD_1D_O4(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
 
-			// compute FD for 2D
-			else if (dim == DIM2)
-			{
-				if (fdOrder == 2)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O2_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-				else if (fdOrder == 4)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-				else if (fdOrder == 8)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-				else if (fdOrder == 12)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-				else if (fdOrder == 16)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O16_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-			}
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
 
-			// compute FD for 3D
-			else if (dim == DIM3)
-			{
-				if (fdOrder == 2)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O2_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O2_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-				else if (fdOrder == 4)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-				else if (fdOrder == 8)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O8_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-				else if (fdOrder == 12)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-				else if (fdOrder == 16)
-				{
-					prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
-							coef[i1+i2*n1+i3*n1*n2] *
-							(FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O16_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
-									+ FD_D2_O16_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
-				}
-			}
-		}
+__global__ void kernel_computePressureWithFD_1D_O6(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
 
-		tid += blockDim.x * gridDim.x;
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_1D_O8(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_1D_O10(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_1D_O12(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_1D_O14(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_1D_O16(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+// update pressure wavefield (used in propagator) - 2D
+// input/output prn
+// input prc
+
+__global__ void kernel_computePressureWithFD_2D_O2(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O2_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_2D_O4(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_2D_O6(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_2D_O8(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_2D_O10(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_2D_O12(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_2D_O14(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_2D_O16(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O16_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+// update pressure wavefield (used in propagator) - 3D
+// input/output prn
+// input prc
+
+__global__ void kernel_computePressureWithFD_3D_O2(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O2_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O2_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O2_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_3D_O4(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O4_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O4_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O4_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_3D_O6(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O6_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_3D_O8(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O8_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O8_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O8_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_3D_O10(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O10_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_3D_O12(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_3D_O14(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O14_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+	}
+}
+
+__global__ void kernel_computePressureWithFD_3D_O16(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+				coef[i1+i2*n1+i3*n1*n2] *
+				(FD_D2_O16_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O16_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+						+ FD_D2_O16_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 	}
 }
 
@@ -849,6 +1195,24 @@ __global__ void kernel_FD_D2_N1_O4(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	}
 }
 
+__global__ void kernel_FD_D2_N1_O6(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_D2_N1_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -867,6 +1231,24 @@ __global__ void kernel_FD_D2_N1_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	}
 }
 
+__global__ void kernel_FD_D2_N1_O10(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_D2_N1_O12(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -882,6 +1264,24 @@ __global__ void kernel_FD_D2_N1_O12(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	{
 		w[i1+i2*n1+i3*n1*n2] =
 				FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_FD_D2_N1_O14(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 	}
 }
 
@@ -944,6 +1344,24 @@ __global__ void kernel_FD_D2_N2_O4(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	}
 }
 
+__global__ void kernel_FD_D2_N2_O6(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_D2_N2_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -962,6 +1380,24 @@ __global__ void kernel_FD_D2_N2_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	}
 }
 
+__global__ void kernel_FD_D2_N2_O10(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_D2_N2_O12(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -977,6 +1413,24 @@ __global__ void kernel_FD_D2_N2_O12(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	{
 		w[i1+i2*n1+i3*n1*n2] =
 				FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_FD_D2_N2_O14(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 	}
 }
 
@@ -1039,6 +1493,24 @@ __global__ void kernel_FD_D2_N3_O4(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	}
 }
 
+__global__ void kernel_FD_D2_N3_O6(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_D2_N3_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1057,6 +1529,24 @@ __global__ void kernel_FD_D2_N3_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	}
 }
 
+__global__ void kernel_FD_D2_N3_O10(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_D2_N3_O12(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1072,6 +1562,24 @@ __global__ void kernel_FD_D2_N3_O12(const Myint fdOrder, Myfloat *w, Myfloat *u,
 	{
 		w[i1+i2*n1+i3*n1*n2] =
 				FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_FD_D2_N3_O14(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 	}
 }
 
@@ -1136,6 +1644,25 @@ __global__ void kernel_FD_LAPLACIAN_2D_O4(const Myint fdOrder, Myfloat *w, Myflo
 	}
 }
 
+__global__ void kernel_FD_LAPLACIAN_2D_O6(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_LAPLACIAN_2D_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1155,6 +1682,25 @@ __global__ void kernel_FD_LAPLACIAN_2D_O8(const Myint fdOrder, Myfloat *w, Myflo
 	}
 }
 
+__global__ void kernel_FD_LAPLACIAN_2D_O10(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_LAPLACIAN_2D_O12(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1171,6 +1717,25 @@ __global__ void kernel_FD_LAPLACIAN_2D_O12(const Myint fdOrder, Myfloat *w, Myfl
 		w[i1+i2*n1+i3*n1*n2] =
 				FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 				+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_FD_LAPLACIAN_2D_O14(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 	}
 }
 
@@ -1238,6 +1803,26 @@ __global__ void kernel_FD_LAPLACIAN_3D_O4(const Myint fdOrder, Myfloat *w, Myflo
 	}
 }
 
+__global__ void kernel_FD_LAPLACIAN_3D_O6(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_LAPLACIAN_3D_O8(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1255,6 +1840,26 @@ __global__ void kernel_FD_LAPLACIAN_3D_O8(const Myint fdOrder, Myfloat *w, Myflo
 				FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 				+ FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 				+ FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
+__global__ void kernel_FD_LAPLACIAN_3D_O10(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 	}
 }
 
@@ -1278,6 +1883,26 @@ __global__ void kernel_FD_LAPLACIAN_3D_O12(const Myint fdOrder, Myfloat *w, Myfl
 	}
 }
 
+__global__ void kernel_FD_LAPLACIAN_3D_O14(const Myint fdOrder, Myfloat *w, Myfloat *u,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End)
+{
+	unsigned int i1 = threadIdx.x + blockIdx.x * blockDim.x ;
+	unsigned int i2 = threadIdx.y + blockIdx.y * blockDim.y ;
+	unsigned int i3 = threadIdx.z + blockIdx.z * blockDim.z ;
+
+	if (i1 >= i1Start && i1 <= i1End &&
+			i2 >= i2Start && i2 <= i2End &&
+			i3 >= i3Start && i3 <= i3End   )
+	{
+		w[i1+i2*n1+i3*n1*n2] =
+				FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+				+ FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+	}
+}
+
 __global__ void kernel_FD_LAPLACIAN_3D_O16(const Myint fdOrder, Myfloat *w, Myfloat *u,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1297,7 +1922,6 @@ __global__ void kernel_FD_LAPLACIAN_3D_O16(const Myint fdOrder, Myfloat *w, Myfl
 				+ FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 	}
 }
-
 
 //-------------------------------------------------------------------------------------------------------
 // fill gridOut with val
@@ -1573,14 +2197,29 @@ Rtn_code Grid_Hip::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myint fdOrd
 		hipLaunchKernelGGL(kernel_FD_D2_N1_O4, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
+	else if (fdOrder == 6)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N1_O6, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
 	else if (fdOrder == 8)
 	{
 		hipLaunchKernelGGL(kernel_FD_D2_N1_O8, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
+	else if (fdOrder == 10)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N1_O10, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
 	else if (fdOrder == 12)
 	{
 		hipLaunchKernelGGL(kernel_FD_D2_N1_O12, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
+	else if (fdOrder == 14)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N1_O14, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	else if (fdOrder == 16)
@@ -1636,14 +2275,29 @@ Rtn_code Grid_Hip::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myint fdOrd
 		hipLaunchKernelGGL(kernel_FD_D2_N2_O4, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
+	else if (fdOrder == 6)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N2_O6, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
 	else if (fdOrder == 8)
 	{
 		hipLaunchKernelGGL(kernel_FD_D2_N2_O8, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
+	else if (fdOrder == 10)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N2_O10, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
 	else if (fdOrder == 12)
 	{
 		hipLaunchKernelGGL(kernel_FD_D2_N2_O12, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
+	else if (fdOrder == 14)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N2_O14, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	else if (fdOrder == 16)
@@ -1699,14 +2353,29 @@ Rtn_code Grid_Hip::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myint fdOrd
 		hipLaunchKernelGGL(kernel_FD_D2_N3_O4, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
+	else if (fdOrder == 6)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N3_O6, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
 	else if (fdOrder == 8)
 	{
 		hipLaunchKernelGGL(kernel_FD_D2_N3_O8, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
+	else if (fdOrder == 10)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N3_O10, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
 	else if (fdOrder == 12)
 	{
 		hipLaunchKernelGGL(kernel_FD_D2_N3_O12, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	}
+	else if (fdOrder == 14)
+	{
+		hipLaunchKernelGGL(kernel_FD_D2_N3_O14, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 	}
 	else if (fdOrder == 16)
@@ -1768,14 +2437,29 @@ Rtn_code Grid_Hip::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint f
 			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_2D_O4, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		}
+		else if (fdOrder == 6)
+		{
+			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_2D_O6, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
 		else if (fdOrder == 8)
 		{
 			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_2D_O8, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		}
+		else if (fdOrder == 10)
+		{
+			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_2D_O10, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
 		else if (fdOrder == 12)
 		{
 			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_2D_O12, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 14)
+		{
+			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_2D_O14, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		}
 		else if (fdOrder == 16)
@@ -1796,14 +2480,29 @@ Rtn_code Grid_Hip::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, Myint f
 			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_3D_O4, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		}
+		else if (fdOrder == 6)
+		{
+			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_3D_O6, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
 		else if (fdOrder == 8)
 		{
 			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_3D_O8, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		}
+		else if (fdOrder == 10)
+		{
+			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_3D_O10, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
 		else if (fdOrder == 12)
 		{
 			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_3D_O12, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 14)
+		{
+			hipLaunchKernelGGL(kernel_FD_LAPLACIAN_3D_O14, dim3(GridSize), dim3(BlkSize), 0, 0, fdOrder, d_w, d_u,inv2_d1,inv2_d2,inv2_d3,
 					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
 		}
 		else if (fdOrder == 16)
@@ -1849,8 +2548,138 @@ Rtn_code Grid_Hip::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 	Myfloat *prc_d_grid_3d = ((Grid_Hip&) prcGridIn).d_grid_3d ;
 	Myfloat *coef_d_grid_3d = ((Grid_Hip&) coefGridIn).d_grid_3d ;
 
-	hipLaunchKernelGGL(kernel_computePressureWithFD, dim3(gpuGridSize), dim3(gpuBlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
-			n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+	dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;
+	dim3 GridSize(gpuGridSize1, gpuGridSize2, gpuGridSize3) ;
+
+	if (dim == DIM1)
+	{
+		if (fdOrder == 2)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_1D_O2, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 4)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_1D_O4, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 6)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_1D_O6, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 8)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_1D_O8, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 10)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_1D_O10, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 12)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_1D_O12, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 14)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_1D_O14, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 16)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_1D_O16, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+	}
+	else if (dim == DIM2)
+	{
+		if (fdOrder == 2)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_2D_O2, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 4)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_2D_O4, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 6)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_2D_O6, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 8)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_2D_O8, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 10)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_2D_O10, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 12)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_2D_O12, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 14)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_2D_O14, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 16)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_2D_O16, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+	}
+	else if (dim == DIM3)
+	{
+		if (fdOrder == 2)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_3D_O2, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 4)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_3D_O4, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 6)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_3D_O6, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 8)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_3D_O8, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 10)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_3D_O10, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 12)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_3D_O12, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 14)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_3D_O14, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+		else if (fdOrder == 16)
+		{
+			hipLaunchKernelGGL(kernel_computePressureWithFD_3D_O16, dim3(GridSize), dim3(BlkSize), 0, 0, dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End);
+		}
+	}
 
 	cudaCheckError();
 	hipDeviceSynchronize();
