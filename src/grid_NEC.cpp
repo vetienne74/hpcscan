@@ -2,7 +2,7 @@
 //-------------------------------------------------------------------------------------------------------
 // This grid is activated with command line option -testMode NEC
 // Derived class from Grid
-// NEC compiler directives (target NEC Aurora Vector Engine)
+// NEC compiler directives (target NEC SX-Aurora Vector Engine)
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_NEC.h"
@@ -38,13 +38,13 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Grid_NEC::Grid_NEC(Grid_type gridTypeIn) : Grid(gridTypeIn)
-						{
+{
 	printDebug(MID_DEBUG, "IN Grid_NEC::Grid_NEC");
 
 	gridMode = GRID_MODE_NEC ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC::Grid_NEC");
-						}
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -106,10 +106,11 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
 	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
 	// Workaround for compiler not correctly applying packed_stencil directive.
-        const int ln1 = n1;
-        const int ln2 = n2;
-        const int ln3 = n3;
+	const int ln1 = n1;
+	const int ln2 = n2;
+	const int ln3 = n3;
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -151,6 +152,22 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(2)
@@ -167,6 +184,22 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(2)
@@ -179,6 +212,22 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 					{
 						w[i1+i2*ln1+i3*ln1*ln2] =
 								FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -234,6 +283,21 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for collapse(2)
@@ -249,6 +313,21 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for collapse(2)
@@ -260,6 +339,21 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 					{
 						w[i1+i2*ln1+i3*ln1*ln2] =
 								FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for collapse(2)
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*ln1+i3*ln1*ln2] =
+								FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, ln1, ln2, ln3) ;
 					}
 				}
 			}
@@ -351,6 +445,23 @@ Rtn_code Grid_NEC::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for
@@ -368,6 +479,23 @@ Rtn_code Grid_NEC::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for
@@ -381,6 +509,23 @@ Rtn_code Grid_NEC::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 					{
 						w[i1+i2*n1+i3*n1*n2] =
 								FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 					}
 				}
 			}
@@ -439,6 +584,22 @@ Rtn_code Grid_NEC::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for
@@ -455,6 +616,22 @@ Rtn_code Grid_NEC::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for
@@ -467,6 +644,22 @@ Rtn_code Grid_NEC::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 					{
 						w[i1+i2*n1+i3*n1*n2] =
 								FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for
+			for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 					}
 				}
 			}
@@ -559,6 +752,23 @@ Rtn_code Grid_NEC::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for
@@ -576,6 +786,23 @@ Rtn_code Grid_NEC::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for
@@ -589,6 +816,23 @@ Rtn_code Grid_NEC::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 					{
 						w[i1+i2*n1+i3*n1*n2] =
 								FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+#pragma _NEC packed_stencil
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 					}
 				}
 			}
@@ -648,6 +892,22 @@ Rtn_code Grid_NEC::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 6)
+		{
+#pragma omp parallel for
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 8)
 		{
 #pragma omp parallel for
@@ -664,6 +924,22 @@ Rtn_code Grid_NEC::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				}
 			}
 		}
+		else if (fdOrder == 10)
+		{
+#pragma omp parallel for
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
 		else if (fdOrder == 12)
 		{
 #pragma omp parallel for
@@ -676,6 +952,22 @@ Rtn_code Grid_NEC::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 					{
 						w[i1+i2*n1+i3*n1*n2] =
 								FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+					}
+				}
+			}
+		}
+		else if (fdOrder == 14)
+		{
+#pragma omp parallel for
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma _NEC outerloop_unroll(16)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+					{
+						w[i1+i2*n1+i3*n1*n2] =
+								FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 					}
 				}
 			}
@@ -778,6 +1070,23 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -795,6 +1104,23 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -808,6 +1134,23 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 							w[i1+i2*n1+i3*n1*n2] =
 									FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 						}
 					}
 				}
@@ -870,6 +1213,24 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -888,6 +1249,24 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -902,6 +1281,24 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 									FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 						}
 					}
 				}
@@ -972,6 +1369,22 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -988,6 +1401,22 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -1000,6 +1429,22 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 							w[i1+i2*n1+i3*n1*n2] =
 									FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 						}
 					}
 				}
@@ -1059,6 +1504,23 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -1076,6 +1538,23 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -1089,6 +1568,23 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 									FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 									+ FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							w[i1+i2*n1+i3*n1*n2] =
+									FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+									+ FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 						}
 					}
 				}
@@ -1133,24 +1629,24 @@ Myfloat Grid_NEC::getMin(Point_type pointType)
 	Myint64 n = nn1 * nn2 * nn3;
 
 #pragma omp parallel for
-        for (Myint64 i3 = i3Start; i3<= i3End; i3++)
-        {
-                Myint64 tmp_idx = (i3 - i3Start) * nn1 * nn2;
-                for (Myint64 i2 = i2Start; i2<= i2End; i2++)
-                {
-                        Myint64 idx = i1Start + i2 * n1 + i3 * n1 * n2;
-                        for (Myint64 i1 = i1Start; i1<= i1End; i1++)
-                        {
-                                tmp_grid_3d[tmp_idx++] = grid_3d[idx++];
-                        }
-                }
-        }
+	for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+	{
+		Myint64 tmp_idx = (i3 - i3Start) * nn1 * nn2;
+		for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+		{
+			Myint64 idx = i1Start + i2 * n1 + i3 * n1 * n2;
+			for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+			{
+				tmp_grid_3d[tmp_idx++] = grid_3d[idx++];
+			}
+		}
+	}
 
 #pragma omp parallel for reduction(min:val)
-        for (Myint64 i = 0; i < n; i++)
-        {
-                if (tmp_grid_3d[i] < val) val = tmp_grid_3d[i] ;
-        }
+	for (Myint64 i = 0; i < n; i++)
+	{
+		if (tmp_grid_3d[i] < val) val = tmp_grid_3d[i] ;
+	}
 
 	printDebug(LIGHT_DEBUG, "Min val", val);
 
@@ -1805,6 +2301,24 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -1823,6 +2337,24 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -1836,6 +2368,24 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 									coef[i1+i2*n1+i3*n1*n2] *
 									FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 						}
 
 					}
@@ -1903,6 +2453,25 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -1922,6 +2491,25 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -1936,6 +2524,25 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 									coef[i1+i2*n1+i3*n1*n2] *
 									(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 						}
 
 					}
@@ -2005,6 +2612,26 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -2025,6 +2652,26 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -2040,6 +2687,26 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 									(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma _NEC packed_stencil
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 						}
 
 					}
@@ -2111,6 +2778,24 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -2129,6 +2814,24 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -2142,6 +2845,24 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
 									coef[i1+i2*n1+i3*n1*n2] *
 									FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+						}
+
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 						}
 
 					}
@@ -2209,6 +2930,25 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -2228,6 +2968,25 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -2242,6 +3001,25 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 									coef[i1+i2*n1+i3*n1*n2] *
 									(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 						}
 
 					}
@@ -2311,6 +3089,26 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 6)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O6_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O6_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 8)
 			{
 #pragma omp parallel for collapse(2)
@@ -2331,6 +3129,26 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 					}
 				}
 			}
+			else if (fdOrder == 10)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O10_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O10_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
 			else if (fdOrder == 12)
 			{
 #pragma omp parallel for collapse(2)
@@ -2346,6 +3164,26 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 									(FD_D2_O12_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
 											+ FD_D2_O12_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
+						}
+
+					}
+				}
+			}
+			else if (fdOrder == 14)
+			{
+#pragma omp parallel for collapse(2)
+				for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+				{
+					for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+					{
+#pragma omp simd
+						for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+						{
+							prn[i1+i2*n1+i3*n1*n2] = TWO * prc[i1+i2*n1+i3*n1*n2] - prn[i1+i2*n1+i3*n1*n2] +
+									coef[i1+i2*n1+i3*n1*n2] *
+									(FD_D2_O14_N1(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N2(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)
+											+ FD_D2_O14_N3(prc, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3)) ;
 						}
 
 					}

@@ -251,13 +251,13 @@ hpcscan has been successfully tested on the hardware, operating systems and comp
 
 Operating system | Compiler | Host (H) | Device (D) | Baseline <br> CacheBlk | CUDA <br> CUDA_Opt <br> CUDA_Ref| DPC++ | HIP <br> HIP_Opt| NEC <br> NEC_SCA 
 |----------------|----------|----------|------------|----------|----------|------|-----|-----------------
-SUSE Linux Enterprise Server 15 | <li> Intel icpc (ICC) 19.0.5.281 20190815 </li> | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | **H** :ballot_box_with_check: | - | - | - | - 
-Red Hat 4.8.5-39 | <li> Intel icpc version 19.1.2.254 </li> | Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz **(Intel Cascade Lake)** | - | **H** :ballot_box_with_check: | - | - | - | - 
-Ubuntu 20.04.1 LTS |  <li> gcc version 9.3.0 </li> <li> NVIDIA nvcc release 11.3, V11.3.109 </li> | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | **H** :ballot_box_with_check: | **D** :ballot_box_with_check: | - | - | - 
-CentOS Linux release 7.7.1908 |  <li> Intel icpc (ICC) 19.1.0.166 20191121 </li> <li> NVIDIA nvcc release 11.0, V11.0.167 </li> | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | GV100GL [Tesla V100 SXM2 32GB] **(NVIDIA GPU)** | **H** :ballot_box_with_check: | **D** :ballot_box_with_check: | - | - | - 
-Ubuntu 20.04.1 LTS | <li> Intel(R) oneAPI DPC++ Compiler 2021.2.0 </li> | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | - | **H** :ballot_box_with_check: | - | **H** :ballot_box_with_check: | - | - 
-Ubuntu 20.04.1 LTS | <li> g++ 9.3.0 </li> <li> AMD hipcc 4.2.21155-37cb3a34 </li> | AMD EPYC 7742 64-Core Processor @ 2.25GHz **(AMD Rome)** | [AMD Instinct MI100] **(AMD GPU)** | **H** :ballot_box_with_check: | - | - | **D** :ballot_box_with_check: | - 
-CentOS Linux release 8.1.1911 | <li> NEC nc++ (NCC) 3.1.0 </li> | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | **D** :ballot_box_with_check: | - | - | - | **D** :ballot_box_with_check: 
+SUSE Linux Enterprise Server 15 | <li> Intel icpc (ICC) 19.0.5.281 20190815 </li> | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - | :ballot_box_with_check: on **H** | - | - | - | - 
+Red Hat 4.8.5-39 | <li> Intel icpc version 19.1.2.254 </li> | Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz **(Intel Cascade Lake)** | - | :ballot_box_with_check: on **H** | - | - | - | - 
+Ubuntu 20.04.1 LTS |  <li> gcc version 9.3.0 </li> <li> NVIDIA nvcc release 11.3, V11.3.109 </li> | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | :ballot_box_with_check: on **H** | :ballot_box_with_check: on **D** | - | - | - 
+CentOS Linux release 7.7.1908 |  <li> Intel icpc (ICC) 19.1.0.166 20191121 </li> <li> NVIDIA nvcc release 11.0, V11.0.167 </li> | Intel(R) Xeon(R) Gold 6142 CPU @ 2.60GHz **(Intel Skylake)** | GV100GL [Tesla V100 SXM2 32GB] **(NVIDIA GPU)** | :ballot_box_with_check: on **H** | :ballot_box_with_check: on **D** | - | - | - 
+Ubuntu 20.04.1 LTS | <li> Intel(R) oneAPI DPC++ Compiler 2021.2.0 </li> | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | - | :ballot_box_with_check: on **H** | - | :ballot_box_with_check: on **H** | - | - 
+Ubuntu 20.04.1 LTS | <li> g++ 9.3.0 </li> <li> AMD hipcc 4.2.21155-37cb3a34 </li> | AMD EPYC 7742 64-Core Processor @ 2.25GHz **(AMD Rome)** | [AMD Instinct MI100] **(AMD GPU)** | :ballot_box_with_check: on **H** | - | - | :ballot_box_with_check: on **D** | - 
+CentOS Linux release 8.1.1911 | <li> NEC nc++ (NCC) 3.1.0 </li> | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA **(NEC Vector Engine)** | :ballot_box_with_check: on **D** | - | - | - | :ballot_box_with_check: on **D** 
 
 # Execution
 
