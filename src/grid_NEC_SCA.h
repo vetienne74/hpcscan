@@ -11,10 +11,7 @@
 #include <string>
 
 #include "mpi.h"
-
-#ifdef __NEC__
 #include <sca.h>
-#endif
 
 #include "grid_NEC.h"
 #include "type_def.h"
@@ -54,13 +51,11 @@ public:
 
 protected:
 
-#ifdef __NEC__
 	// Handle for stencil code.
 	sca_code_t code_FD_D2_N1 ;
 	sca_code_t code_FD_D2_N2 ;
 	sca_code_t code_FD_D2_N3 ;
 	sca_code_t code_FD_LAPLACIAN ;
-#endif
 
 	// flag for SCA initialization
 	bool flag_code_FD_D2_N1 ;

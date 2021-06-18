@@ -15,9 +15,7 @@
 #include <stdio.h>
 
 #include "mpi.h"
-#ifdef __NEC__
 #include <sca.h>
-#endif
 
 #include "config.h"
 #include "constant.h"
