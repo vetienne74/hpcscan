@@ -428,7 +428,7 @@ Rtn_code Grid_NEC_SCA::initialize_code_FD_D2_N2(Point_type pType, const Grid& Wg
 			sca_stencil_set_location(sten,  5, 0,  0, 0, 0); sca_stencil_set_factor(sten,  5, FD_D2_O10_A0 * inv2_d2); // i1, i2  , i3
 			sca_stencil_set_location(sten,  6, 0,  1, 0, 0); sca_stencil_set_factor(sten,  6, FD_D2_O10_A1 * inv2_d2); // i1, i2+1, i3
 			sca_stencil_set_location(sten,  7, 0,  2, 0, 0); sca_stencil_set_factor(sten,  7, FD_D2_O10_A2 * inv2_d2); // i1, i2+2, i3
-			sca_stencil_set_location(sten,  7, 0,  3, 0, 0); sca_stencil_set_factor(sten,  8, FD_D2_O10_A3 * inv2_d2); // i1, i2+3, i3
+			sca_stencil_set_location(sten,  8, 0,  3, 0, 0); sca_stencil_set_factor(sten,  8, FD_D2_O10_A3 * inv2_d2); // i1, i2+3, i3
 			sca_stencil_set_location(sten,  9, 0,  4, 0, 0); sca_stencil_set_factor(sten,  9, FD_D2_O10_A4 * inv2_d2); // i1, i2+4, i3
 			sca_stencil_set_location(sten, 10, 0,  5, 0, 0); sca_stencil_set_factor(sten, 10, FD_D2_O10_A5 * inv2_d2); // i1, i2+5, i3
 		}
