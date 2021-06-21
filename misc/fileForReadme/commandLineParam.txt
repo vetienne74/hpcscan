@@ -15,7 +15,7 @@
      GPU              * Launch kernels on GPU
      FPGA             * Launch kernels on FPGA
  -dt <float>          = time step (s) for propagator
- -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]
+ -fdOrder <int>       = spatial FD order [2,4,6,8,10,12,14 or 16]
  -gpuBlkSize <int>    = GPU, no. of threads / 1D block 
  -gpuBlkSize1 <int>   = GPU, no. of threads / 3D block axis 1
  -gpuBlkSize2 <int>   = GPU, no. of threads / 3D block axis 2

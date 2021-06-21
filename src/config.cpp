@@ -186,7 +186,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, "     GPU              * Launch kernels on GPU") ;
 			printInfo(MASTER, "     FPGA             * Launch kernels on FPGA") ;
 			printInfo(MASTER, " -dt <float>          = time step (s) for propagator") ;
-			printInfo(MASTER, " -fdOrder <int>       = spatial FD order [2, 4, 8, 12, 16]") ;
+			printInfo(MASTER, " -fdOrder <int>       = spatial FD order [2,4,6,8,10,12,14 or 16]") ;
 			printInfo(MASTER, " -gpuBlkSize <int>    = GPU, no. of threads / 1D block ") ;
 			printInfo(MASTER, " -gpuBlkSize1 <int>   = GPU, no. of threads / 3D block axis 1") ;
 			printInfo(MASTER, " -gpuBlkSize2 <int>   = GPU, no. of threads / 3D block axis 2") ;
