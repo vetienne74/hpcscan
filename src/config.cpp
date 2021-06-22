@@ -54,6 +54,9 @@ static const Myint     DEFAULT_N3_ADD_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N1_MUL_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N2_MUL_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N3_MUL_PAD     = UNSPECIFIED ;
+static const Myint     DEFAULT_N1_OFFSET      = UNSPECIFIED ;
+static const Myint     DEFAULT_N2_OFFSET      = UNSPECIFIED ;
+static const Myint     DEFAULT_N3_OFFSET      = UNSPECIFIED ;
 static const Myint     DEFAULT_NLAYER         = 0 ;
 static const Myint     DEFAULT_NSUB1          = 1 ;
 static const Myint     DEFAULT_NSUB2          = 1 ;
@@ -128,6 +131,9 @@ Config::Config(void)
 	n1MulPad     = DEFAULT_N1_MUL_PAD ;
 	n2MulPad     = DEFAULT_N2_MUL_PAD ;
 	n3MulPad     = DEFAULT_N3_MUL_PAD ;
+	n1Offset     = DEFAULT_N1_OFFSET ;
+	n2Offset     = DEFAULT_N2_OFFSET ;
+	n3Offset     = DEFAULT_N3_OFFSET ;
 	nlayer       = DEFAULT_NLAYER ;
 	nt           = DEFAULT_NT ;
 	ntry         = DEFAULT_NTRY ;
@@ -197,12 +203,15 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -n1 <int>            = inner domain size axis 1 [grid pts]") ;
 			printInfo(MASTER, " -n2 <int>            = inner domain size axis 2 [grid pts]") ;
 			printInfo(MASTER, " -n3 <int>            = inner domain size axis 3 [grid pts]") ;
-			printInfo(MASTER, " -n1AddPad <int>      = add N points to grid along axis 1") ;
-			printInfo(MASTER, " -n2AddPad <int>      = add N points to grid along axis 2") ;
-			printInfo(MASTER, " -n3AddPad <int>      = add N points to grid along axis 3") ;
-			printInfo(MASTER, " -n1MulPad <int>      = grid size multiple of N axis 1") ;
-			printInfo(MASTER, " -n2MulPad <int>      = grid size multiple of N axis 2") ;
-			printInfo(MASTER, " -n3MulPad <int>      = grid size multiple of N axis 3") ;
+			printInfo(MASTER, " -n1AddPad <int>      = add N points to grid at the end of axis 1") ;
+			printInfo(MASTER, " -n2AddPad <int>      = add N points to grid at the end of axis 2") ;
+			printInfo(MASTER, " -n3AddPad <int>      = add N points to grid at the end of axis 3") ;
+			printInfo(MASTER, " -n1MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N") ;
+			printInfo(MASTER, " -n2MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N") ;
+			printInfo(MASTER, " -n3MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N") ;
+			printInfo(MASTER, " -n1Offset <int>      = add N points to grid at the beginning of axis 1") ;
+			printInfo(MASTER, " -n2Offset <int>      = add N points to grid at the beginning of axis 2") ;
+			printInfo(MASTER, " -n3Offset <int>      = add N points to grid at the beginning of axis 3") ;
 			printInfo(MASTER, " -nsub1 <int>         = no. of subdomains axis 1") ;
 			printInfo(MASTER, " -nsub2 <int>         = no. of subdomains axis 2") ;
 			printInfo(MASTER, " -nsub3 <int>         = no. of subdomains axis 3") ;
@@ -680,6 +689,57 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				if (n3MulPad <= 0)
 				{
 					printError(" n3MulPad should be > 0") ;
+					return(RTN_CODE_KO) ;
+				}
+			}
+
+			else if (string(argv[ii]) == "-n1Offset")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -n1Offset") ;
+					return(RTN_CODE_KO) ;
+				}
+				n1Offset = atoi(argv[ii]);
+				printInfo(MASTER, " n1Offset\t", n1Offset) ;
+				if (n1Offset <= 0)
+				{
+					printError(" n1Offset should be > 0") ;
+					return(RTN_CODE_KO) ;
+				}
+			}
+
+			else if (string(argv[ii]) == "-n2Offset")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -n2Offset") ;
+					return(RTN_CODE_KO) ;
+				}
+				n2Offset = atoi(argv[ii]);
+				printInfo(MASTER, " n2Offset\t", n2Offset) ;
+				if (n2Offset <= 0)
+				{
+					printError(" n2Offset should be > 0") ;
+					return(RTN_CODE_KO) ;
+				}
+			}
+
+			else if (string(argv[ii]) == "-n3Offset")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -n3Offset") ;
+					return(RTN_CODE_KO) ;
+				}
+				n3Offset = atoi(argv[ii]);
+				printInfo(MASTER, " n3Offset\t", n3Offset) ;
+				if (n3Offset <= 0)
+				{
+					printError(" n3Offset should be > 0") ;
 					return(RTN_CODE_KO) ;
 				}
 			}

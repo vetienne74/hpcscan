@@ -76,6 +76,9 @@ public:
 	// grid padding (final grid is multiple of given number)
 	Myint n1MulPad, n2MulPad, n3MulPad ;
 
+	// grid offset (beginning of grid is augmented by given number)
+	Myint n1Offset, n2Offset, n3Offset ;
+
 	// layer width
 	Myint nlayer ;
 

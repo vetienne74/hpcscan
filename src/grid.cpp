@@ -19,8 +19,8 @@
 // Unique definition for 1D, 2D and 3D grids
 // For all axis, grid index is as follows:
 //
-// <-----><------><-----><------><-----><--------> --> Axis N (N=1,2 or 3)
-//  Halo1  Layer1  Inner  Layer2  Halo2  Pad
+// <------><-----><------><------------------><------><-----><---->   --> Axis N (N=1,2 or 3)
+//  Offset  Halo1  Layer1     Inner Points     Layer2  Halo2  Pad
 //
 // Origin is when Inner starts
 // All area have start and end index
@@ -74,6 +74,75 @@ Grid::Grid(Grid_type gridTypeIn)
 	dim      = Config::Instance()->dim ;
 	grid_3d  = NULL;
 
+	i1OffsetStart = 0 ;
+	i1OffsetEnd   = 0 ;
+	i1Halo1Start  = 0 ;
+	i1Halo1End    = 0 ;
+	i1Layer1Start = 0 ;
+	i1Layer1End   = 0 ;
+	i1InnerStart  = 0 ;
+	i1InnerEnd    = 0 ;
+	i1Layer2Start = 0 ;
+	i1Layer2End   = 0 ;
+	i1Halo2Start  = 0 ;
+	i1Halo2End    = 0 ;
+	i1PadStart    = 0 ;
+	i1PadEnd      = 0 ;
+	i1ProcIdStart = MPI_PROC_NULL ;
+	i1ProcIdEnd   = MPI_PROC_NULL ;
+	d1            = 0 ;
+	i1OffsetGlob  = 0 ;
+	Orig1         = 0 ;
+	n1            = 0 ;
+	i1HaloDataType = MPI_DATATYPE_NULL ;
+
+	i2OffsetStart = 0 ;
+	i2OffsetEnd   = 0 ;
+	i2Halo1Start  = 0 ;
+	i2Halo1End    = 0 ;
+	i2Layer1Start = 0 ;
+	i2Layer1End   = 0 ;
+	i2InnerStart  = 0 ;
+	i2InnerEnd    = 0 ;
+	i2Layer2Start = 0 ;
+	i2Layer2End   = 0 ;
+	i2Halo2Start  = 0 ;
+	i2Halo2End    = 0 ;
+	i2PadStart    = 0 ;
+	i2PadEnd      = 0 ;
+	i2ProcIdStart = MPI_PROC_NULL ;
+	i2ProcIdEnd   = MPI_PROC_NULL ;
+	d2            = 0 ;
+	i2OffsetGlob  = 0 ;
+	Orig2         = 0 ;
+	n2            = 0 ;
+	i2HaloDataType = MPI_DATATYPE_NULL ;
+
+	i3OffsetStart = 0 ;
+	i3OffsetEnd   = 0 ;
+	i3Halo1Start  = 0 ;
+	i3Halo1End    = 0 ;
+	i3Layer1Start = 0 ;
+	i3Layer1End   = 0 ;
+	i3InnerStart  = 0 ;
+	i3InnerEnd    = 0 ;
+	i3Layer2Start = 0 ;
+	i3Layer2End   = 0 ;
+	i3Halo2Start  = 0 ;
+	i3Halo2End    = 0 ;
+	i3PadStart    = 0 ;
+	i3PadEnd      = 0 ;
+	i3ProcIdStart = MPI_PROC_NULL ;
+	i3ProcIdEnd   = MPI_PROC_NULL ;
+	d3            = 0 ;
+	i3OffsetGlob  = 0 ;
+	Orig3         = 0 ;
+	n3            = 0 ;
+	i3HaloDataType = MPI_DATATYPE_NULL ;
+
+	npoint        = 0 ;
+	haloWidth     = 0 ;
+
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
 }
 
@@ -91,6 +160,75 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 	gridType = gridTypeIn ;
 	dim      = dimTypeIn ;
 	grid_3d  = NULL;
+
+	i1OffsetStart = 0 ;
+	i1OffsetEnd   = 0 ;
+	i1Halo1Start  = 0 ;
+	i1Halo1End    = 0 ;
+	i1Layer1Start = 0 ;
+	i1Layer1End   = 0 ;
+	i1InnerStart  = 0 ;
+	i1InnerEnd    = 0 ;
+	i1Layer2Start = 0 ;
+	i1Layer2End   = 0 ;
+	i1Halo2Start  = 0 ;
+	i1Halo2End    = 0 ;
+	i1PadStart    = 0 ;
+	i1PadEnd      = 0 ;
+	i1ProcIdStart = MPI_PROC_NULL ;
+	i1ProcIdEnd   = MPI_PROC_NULL ;
+	d1            = 0 ;
+	i1OffsetGlob  = 0 ;
+	Orig1         = 0 ;
+	n1            = 0 ;
+	i1HaloDataType = MPI_DATATYPE_NULL ;
+
+	i2OffsetStart = 0 ;
+	i2OffsetEnd   = 0 ;
+	i2Halo1Start  = 0 ;
+	i2Halo1End    = 0 ;
+	i2Layer1Start = 0 ;
+	i2Layer1End   = 0 ;
+	i2InnerStart  = 0 ;
+	i2InnerEnd    = 0 ;
+	i2Layer2Start = 0 ;
+	i2Layer2End   = 0 ;
+	i2Halo2Start  = 0 ;
+	i2Halo2End    = 0 ;
+	i2PadStart    = 0 ;
+	i2PadEnd      = 0 ;
+	i2ProcIdStart = MPI_PROC_NULL ;
+	i2ProcIdEnd   = MPI_PROC_NULL ;
+	d2            = 0 ;
+	i2OffsetGlob  = 0 ;
+	Orig2         = 0 ;
+	n2            = 0 ;
+	i2HaloDataType = MPI_DATATYPE_NULL ;
+
+	i3OffsetStart = 0 ;
+	i3OffsetEnd   = 0 ;
+	i3Halo1Start  = 0 ;
+	i3Halo1End    = 0 ;
+	i3Layer1Start = 0 ;
+	i3Layer1End   = 0 ;
+	i3InnerStart  = 0 ;
+	i3InnerEnd    = 0 ;
+	i3Layer2Start = 0 ;
+	i3Layer2End   = 0 ;
+	i3Halo2Start  = 0 ;
+	i3Halo2End    = 0 ;
+	i3PadStart    = 0 ;
+	i3PadEnd      = 0 ;
+	i3ProcIdStart = MPI_PROC_NULL ;
+	i3ProcIdEnd   = MPI_PROC_NULL ;
+	d3            = 0 ;
+	i3OffsetGlob  = 0 ;
+	Orig3         = 0 ;
+	n3            = 0 ;
+	i3HaloDataType = MPI_DATATYPE_NULL ;
+
+	npoint        = 0 ;
+	haloWidth     = 0 ;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
 }
@@ -261,6 +399,10 @@ Rtn_code Grid::initializeGrid(void)
 	//================================================================================
 	// initialize grid index axis 1
 	//================================================================================
+
+	// Offset
+	offsetGridn1() ;
+
 	i1Halo1Start = 0 ;
 	i1Halo1End   = i1Halo1Start + haloWidth - 1 ;
 	if (nlayer == 0)
@@ -308,6 +450,9 @@ Rtn_code Grid::initializeGrid(void)
 	//================================================================================
 	if (dim >= DIM2)
 	{
+		// Offset
+		offsetGridn2() ;
+
 		i2Halo1Start = 0 ;
 		i2Halo1End   = i2Halo1Start + haloWidth - 1 ;
 		if (nlayer == 0)
@@ -352,23 +497,6 @@ Rtn_code Grid::initializeGrid(void)
 	}
 	else
 	{
-		i2Halo1Start  = 0 ;
-		i2Halo1End    = 0 ;
-		i2Layer1Start = 0 ;
-		i2Layer1End   = 0 ;
-		i2InnerStart  = 0 ;
-		i2InnerEnd    = 0 ;
-		i2Layer2Start = 0 ;
-		i2Layer2End   = 0 ;
-		i2Halo2Start  = 0 ;
-		i2Halo2End    = 0 ;
-		i2PadStart    = 0 ;
-		i2PadEnd      = 0 ;
-		i2ProcIdStart = MPI_PROC_NULL ;
-		i2ProcIdEnd   = MPI_PROC_NULL ;
-		d2            = 0 ;
-		i2OffsetGlob  = 0 ;
-		Orig2         = 0 ;
 		n2            = 1 ;
 		n2InnerLoc    = 1 ;
 	}
@@ -378,6 +506,9 @@ Rtn_code Grid::initializeGrid(void)
 	//================================================================================
 	if (dim >= DIM3)
 	{
+		// Offset
+		offsetGridn3() ;
+
 		i3Halo1Start = 0 ;
 		i3Halo1End   = i3Halo1Start + haloWidth - 1 ;
 		if (nlayer == 0)
@@ -422,24 +553,6 @@ Rtn_code Grid::initializeGrid(void)
 	}
 	else
 	{
-		i3Halo1Start  = 0 ;
-		i3Halo1End    = 0 ;
-		i3Layer1Start = 0 ;
-		i3Layer1End   = 0 ;
-		i3InnerStart  = 0 ;
-		i3InnerEnd    = 0 ;
-		i3Layer2Start = 0 ;
-		i3Layer2End   = 0 ;
-		i3Halo2Start  = 0 ;
-		i3Halo2End    = 0 ;
-		i3PadStart    = 0 ;
-		i3PadEnd      = 0 ;
-		i3ProcIdStart = MPI_PROC_NULL ;
-		i3ProcIdEnd   = MPI_PROC_NULL ;
-		d3            = 0 ;
-		i3OffsetGlob  = 0 ;
-		Orig3         = 0 ;
-
 		n3            = 1 ;
 		n3InnerLoc    = 1 ;
 	}
@@ -636,6 +749,36 @@ void Grid::padGridn3(void)
 	}
 
 	printDebug(MID_DEBUG, "OUT Grid::padGridn3");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::offsetGridn1(void)
+{
+	printDebug(MID_DEBUG, "IN Grid::offsetGridn1");
+	// TODO
+	printDebug(MID_DEBUG, "OUT Grid::offsetGridn1");
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::offsetGridn2(void)
+{
+	printDebug(MID_DEBUG, "IN Grid::offsetGridn2");
+	// TODO
+	printDebug(MID_DEBUG, "OUT Grid::offsetGridn2");
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::offsetGridn3(void)
+{
+	printDebug(MID_DEBUG, "IN Grid::offsetGridn3");
+	// TO DO
+	printDebug(MID_DEBUG, "OUT Grid::offsetGridn3");
+
 }
 
 //-------------------------------------------------------------------------------------------------------
