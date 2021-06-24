@@ -16,6 +16,10 @@
 
 #include "mpi.h"
 #include <sca.h>
+extern "C"
+{
+#include <libsysve.h>
+}
 
 #include "config.h"
 #include "constant.h"
@@ -30,6 +34,29 @@
 #endif
 
 using namespace std;
+
+typedef struct {
+  int type;
+  string name;
+} s_device;
+
+static s_device device_table[] = {
+{18, "10C-A"},
+{131, "10B-P"},
+{163, "10B-L"},
+{165, "10A-L"},
+{167, "10AE-L"},
+{135, "10BE-P"},
+{147, "10BE-A"},
+{16, "10CE-A"},
+{235, "20A-L"},
+{233, "20B-L"},
+{203, "20B-P"},
+{218, "20B-A"},
+{133, "20B-P(*)"}, // Internal
+{136, "10B-P(*)"} // Internal
+};
+static int device_table_size = sizeof(device_table) / sizeof(s_device);
 
 namespace hpcscan {
 
@@ -75,8 +102,37 @@ void Grid_NEC::info(void)
 	// parent class info
 	Grid::info() ;
 
-	// additional info
-	//printInfo(MASTER, " TO BE COMPLETED") ;
+	// additional info specific to NEC
+	if (flag_packed_stencil)
+	  {
+	    printInfo(MASTER," Packed data\t", "ON") ;
+	  }
+	else
+	  {
+	    printInfo(MASTER," Packed data\t", "OFF") ;
+	  }
+
+	// type of Vector Engine
+	std::string s = "type";
+	std::string dev;
+	char buffer[16];
+	int t, i, v;
+
+	ve_get_ve_info(const_cast<char*>(s.c_str()), buffer, 16);
+	t = atoi(buffer);
+	v = -1;
+	for (i = 0; i < device_table_size; i++) {
+		if (t == device_table[i].type) {v = i; break;}
+	}
+	if (v == -1) {
+		dev = "NEC SX-Aurora TSUBASA Unknown (" + std::to_string(t) + ")";
+	} else {
+		dev = "NEC SX-Aurora TSUBASA " + device_table[v].name;
+	}
+
+	printInfo(MASTER, "") ;
+        printInfo(MASTER, " * Vector Engine * ") ;
+        printInfo(MASTER, " Device type:", dev );
 
 	printDebug(FULL_DEBUG, "OUT Grid_NEC::info");
 }
@@ -1750,29 +1806,23 @@ void Grid_NEC::padGridn1(void)
 	printDebug(MID_DEBUG, "IN Grid_NEC::padGridn1");
 
 	if (Config::Instance()->autoPad == true)
-	{
-#ifndef __NEC__
-		printWarning("Grid_NEC::padGridn1, autoPad is not available on your platform") ;
+	  {
+	    sca_int_t tmp_n1, tmp_n2, tmp_n3, m1, m2, m3;
+	    tmp_n1 = i1Halo2End + 1 ;
+	    tmp_n2 = 10;
+	    tmp_n3 = 10;
+	    sca_utility_optimize_leading(tmp_n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
+	    if (tmp_n1 != m1)
+	      {
+		i1PadStart = i1Halo2End + 1 ;
+		i1PadEnd   = i1PadStart + (m1 - tmp_n1) - 1 ;
+	      }
+	    else
+	      {
 		i1PadStart = i1Halo2End ;
 		i1PadEnd   = i1Halo2End ;
-#else
-		sca_int_t tmp_n1, tmp_n2, tmp_n3, m1, m2, m3;
-		tmp_n1 = i1Halo2End + 1 ;
-		tmp_n2 = 10;
-		tmp_n3 = 10;
-		sca_utility_optimize_leading(tmp_n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
-		if (tmp_n1 != m1)
-		{
-			i1PadStart = i1Halo2End + 1 ;
-			i1PadEnd   = i1PadStart + (m1 - tmp_n1) - 1 ;
-		}
-		else
-		{
-			i1PadStart = i1Halo2End ;
-			i1PadEnd   = i1Halo2End ;
-		}
-#endif
-	}
+	      }
+	  }
 	else if (Config::Instance()->n1AddPad != UNSPECIFIED)
 	{
 		i1PadStart = i1Halo2End + 1 ;
@@ -1809,28 +1859,22 @@ void Grid_NEC::padGridn2(void)
 	printDebug(MID_DEBUG, "IN Grid_NEC::padGridn2");
 
 	if (Config::Instance()->autoPad == true)
-	{
-#ifndef __NEC__
-		printWarning("Grid_NEC::padGridn2, autoPad is not available on your platform") ;
+	  {
+	    sca_int_t tmp_n2, tmp_n3, m1, m2, m3;
+	    tmp_n2 = i2Halo2End + 1 ;
+	    tmp_n3 = 10;
+	    sca_utility_optimize_leading(n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
+	    if (tmp_n2 != m2)
+	      {
+		i2PadStart = i2Halo2End + 1 ;
+		i2PadEnd   = i2PadStart + (m2 - tmp_n2) - 1 ;
+	      }
+	    else
+	      {
 		i2PadStart = i2Halo2End ;
 		i2PadEnd   = i2Halo2End ;
-#else
-		sca_int_t tmp_n2, tmp_n3, m1, m2, m3;
-		tmp_n2 = i2Halo2End + 1 ;
-		tmp_n3 = 10;
-		sca_utility_optimize_leading(n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
-		if (tmp_n2 != m2)
-		{
-			i2PadStart = i2Halo2End + 1 ;
-			i2PadEnd   = i2PadStart + (m2 - tmp_n2) - 1 ;
-		}
-		else
-		{
-			i2PadStart = i2Halo2End ;
-			i2PadEnd   = i2Halo2End ;
-		}
-#endif
-	}
+	      }
+	  }
 	else if (Config::Instance()->n2AddPad != UNSPECIFIED)
 	{
 		i2PadStart = i2Halo2End + 1 ;
@@ -1867,27 +1911,21 @@ void Grid_NEC::padGridn3(void)
 	printDebug(MID_DEBUG, "IN Grid_NEC::padGridn3");
 
 	if (Config::Instance()->autoPad == true)
-	{
-#ifndef __NEC__
-		printWarning("Grid_NEC::padGridn3, autoPad is not available on your platform") ;
+	  {
+	    sca_int_t tmp_n3, m1, m2, m3;
+	    tmp_n3 = i3Halo2End + 1 ;
+	    sca_utility_optimize_leading(n1, n2, tmp_n3, 1, &m1, &m2, &m3);
+	    if (tmp_n3 != m3)
+	      {
+	    i3PadStart = i3Halo2End + 1 ;
+	    i3PadEnd   = i3PadStart + (m3 - tmp_n3) - 1 ;
+	  }
+	    else
+	      {
 		i3PadStart = i3Halo2End ;
 		i3PadEnd   = i3Halo2End ;
-#else
-		sca_int_t tmp_n3, m1, m2, m3;
-		tmp_n3 = i3Halo2End + 1 ;
-		sca_utility_optimize_leading(n1, n2, tmp_n3, 1, &m1, &m2, &m3);
-		if (tmp_n3 != m3)
-		{
-			i3PadStart = i3Halo2End + 1 ;
-			i3PadEnd   = i3PadStart + (m3 - tmp_n3) - 1 ;
-		}
-		else
-		{
-			i3PadStart = i3Halo2End ;
-			i3PadEnd   = i3Halo2End ;
-		}
-#endif
-	}
+	      }
+	  }
 	else if (Config::Instance()->n3AddPad != UNSPECIFIED)
 	{
 		i3PadStart = i3Halo2End + 1 ;
