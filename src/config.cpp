@@ -54,9 +54,9 @@ static const Myint     DEFAULT_N3_ADD_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N1_MUL_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N2_MUL_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N3_MUL_PAD     = UNSPECIFIED ;
-static const Myint     DEFAULT_N1_OFFSET      = UNSPECIFIED ;
-static const Myint     DEFAULT_N2_OFFSET      = UNSPECIFIED ;
-static const Myint     DEFAULT_N3_OFFSET      = UNSPECIFIED ;
+static const Myint     DEFAULT_N1_OFFSET      = 0 ;
+static const Myint     DEFAULT_N2_OFFSET      = 0 ;
+static const Myint     DEFAULT_N3_OFFSET      = 0 ;
 static const Myint     DEFAULT_NLAYER         = 0 ;
 static const Myint     DEFAULT_NSUB1          = 1 ;
 static const Myint     DEFAULT_NSUB2          = 1 ;
@@ -703,9 +703,9 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				}
 				n1Offset = atoi(argv[ii]);
 				printInfo(MASTER, " n1Offset\t", n1Offset) ;
-				if (n1Offset <= 0)
+				if (n1Offset < 0)
 				{
-					printError(" n1Offset should be > 0") ;
+					printError(" n1Offset should be >= 0") ;
 					return(RTN_CODE_KO) ;
 				}
 			}
@@ -720,9 +720,9 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				}
 				n2Offset = atoi(argv[ii]);
 				printInfo(MASTER, " n2Offset\t", n2Offset) ;
-				if (n2Offset <= 0)
+				if (n2Offset < 0)
 				{
-					printError(" n2Offset should be > 0") ;
+					printError(" n2Offset should be >= 0") ;
 					return(RTN_CODE_KO) ;
 				}
 			}
@@ -737,9 +737,9 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				}
 				n3Offset = atoi(argv[ii]);
 				printInfo(MASTER, " n3Offset\t", n3Offset) ;
-				if (n3Offset <= 0)
+				if (n3Offset < 0)
 				{
-					printError(" n3Offset should be > 0") ;
+					printError(" n3Offset should be >= 0") ;
 					return(RTN_CODE_KO) ;
 				}
 			}

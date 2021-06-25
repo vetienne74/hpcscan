@@ -403,7 +403,7 @@ Rtn_code Grid::initializeGrid(void)
 	// Offset
 	offsetGridn1() ;
 
-	i1Halo1Start = 0 ;
+	i1Halo1Start = i1OffsetEnd + 1 ;
 	i1Halo1End   = i1Halo1Start + haloWidth - 1 ;
 	if (nlayer == 0)
 	{
@@ -453,7 +453,7 @@ Rtn_code Grid::initializeGrid(void)
 		// Offset
 		offsetGridn2() ;
 
-		i2Halo1Start = 0 ;
+		i2Halo1Start = i2OffsetEnd + 1 ;
 		i2Halo1End   = i2Halo1Start + haloWidth - 1 ;
 		if (nlayer == 0)
 		{
@@ -509,7 +509,7 @@ Rtn_code Grid::initializeGrid(void)
 		// Offset
 		offsetGridn3() ;
 
-		i3Halo1Start = 0 ;
+		i3Halo1Start = i3OffsetEnd + 1 ;
 		i3Halo1End   = i3Halo1Start + haloWidth - 1 ;
 		if (nlayer == 0)
 		{
@@ -756,7 +756,10 @@ void Grid::padGridn3(void)
 void Grid::offsetGridn1(void)
 {
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn1");
-	// TODO
+
+	i1OffsetStart = 0 ;
+	i1OffsetEnd   = i1OffsetStart + Config::Instance()->n1Offset - 1 ;
+
 	printDebug(MID_DEBUG, "OUT Grid::offsetGridn1");
 
 }
@@ -766,7 +769,10 @@ void Grid::offsetGridn1(void)
 void Grid::offsetGridn2(void)
 {
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn2");
-	// TODO
+
+	i2OffsetStart = 0 ;
+	i2OffsetEnd   = i2OffsetStart + Config::Instance()->n2Offset - 1 ;
+
 	printDebug(MID_DEBUG, "OUT Grid::offsetGridn2");
 
 }
@@ -776,7 +782,10 @@ void Grid::offsetGridn2(void)
 void Grid::offsetGridn3(void)
 {
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn3");
-	// TO DO
+
+	i3OffsetStart = 0 ;
+	i3OffsetEnd   = i3OffsetStart + Config::Instance()->n3Offset - 1 ;
+
 	printDebug(MID_DEBUG, "OUT Grid::offsetGridn3");
 
 }
@@ -856,6 +865,13 @@ void Grid::info(void)
 		printDebug(LIGHT_DEBUG, " Max. Inner coord3", getMaxCoord(AXIS3)) ;
 	}
 
+	Myint nOffset = i1Halo1Start-i1OffsetStart ;
+	if (nOffset > 0) printInfo(MASTER, " n1 offset\t", nOffset) ;
+	nOffset = i2Halo1Start-i2OffsetStart ;
+	if (nOffset > 0) printInfo(MASTER, " n2 offset\t", nOffset) ;
+	nOffset = i3Halo1Start-i3OffsetStart ;
+	if (nOffset > 0) printInfo(MASTER, " n3 offset\t", nOffset) ;
+
 	Myint nPad = i1PadEnd-i1Halo2End ;
 	if (nPad > 0) printInfo(MASTER, " n1 padding\t", nPad) ;
 	nPad = i2PadEnd-i2Halo2End ;
@@ -881,6 +897,8 @@ void Grid::info(void)
 		printInfo(MASTER, " Grid size (GB)\t", Myfloat(gridSize/1e9)) ;
 	}
 
+	printDebug(LIGHT_DEBUG, "i1OffsetStart", i1OffsetStart);
+	printDebug(LIGHT_DEBUG, "i1OffsetEnd"  , i1OffsetEnd);
 	printDebug(LIGHT_DEBUG, "i1Halo1Start" , i1Halo1Start);
 	printDebug(LIGHT_DEBUG, "i1Halo1End  " , i1Halo1End);
 	printDebug(LIGHT_DEBUG, "i1Layer1Start", i1Layer1Start);
@@ -894,6 +912,8 @@ void Grid::info(void)
 	printDebug(LIGHT_DEBUG, "i1PadStart"   , i1PadStart);
 	printDebug(LIGHT_DEBUG, "i1padEnd  "   , i1PadEnd);
 
+	printDebug(LIGHT_DEBUG, "i2OffsetStart", i2OffsetStart);
+	printDebug(LIGHT_DEBUG, "i2OffsetEnd"  , i2OffsetEnd);
 	printDebug(LIGHT_DEBUG, "i2Halo1Start" , i2Halo1Start);
 	printDebug(LIGHT_DEBUG, "i2Halo1End  " , i2Halo1End);
 	printDebug(LIGHT_DEBUG, "i2Layer1Start", i2Layer1Start);
@@ -907,6 +927,8 @@ void Grid::info(void)
 	printDebug(LIGHT_DEBUG, "i2PadStart"   , i2PadStart);
 	printDebug(LIGHT_DEBUG, "i2padEnd  "   , i2PadEnd);
 
+	printDebug(LIGHT_DEBUG, "i3OffsetStart", i3OffsetStart);
+	printDebug(LIGHT_DEBUG, "i3OffsetEnd"  , i3OffsetEnd);
 	printDebug(LIGHT_DEBUG, "i3Halo1Start" , i3Halo1Start);
 	printDebug(LIGHT_DEBUG, "i3Halo1End  " , i3Halo1End);
 	printDebug(LIGHT_DEBUG, "i3Layer1Start", i3Layer1Start);
@@ -921,11 +943,11 @@ void Grid::info(void)
 	printDebug(LIGHT_DEBUG, "i3padEnd  "   , i3PadEnd);
 
 	printDebug(LIGHT_DEBUG, "i1ProcIdStart", i1ProcIdStart) ;
-	printDebug(LIGHT_DEBUG, "i1ProcIdEnd\t",   i1ProcIdEnd) ;
+	printDebug(LIGHT_DEBUG, "i1ProcIdEnd\t", i1ProcIdEnd) ;
 	printDebug(LIGHT_DEBUG, "i2ProcIdStart", i2ProcIdStart) ;
-	printDebug(LIGHT_DEBUG, "i2ProcIdEnd\t",   i2ProcIdEnd) ;
+	printDebug(LIGHT_DEBUG, "i2ProcIdEnd\t", i2ProcIdEnd) ;
 	printDebug(LIGHT_DEBUG, "i3ProcIdStart", i3ProcIdStart) ;
-	printDebug(LIGHT_DEBUG, "i3ProcIdEnd\t",   i3ProcIdEnd) ;
+	printDebug(LIGHT_DEBUG, "i3ProcIdEnd\t", i3ProcIdEnd) ;
 
 	printDebug(FULL_DEBUG, "OUT Grid::info");
 }

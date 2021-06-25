@@ -19,7 +19,7 @@ export HPCSCAN_CPP_LIB=
 # CUDA compiler
 export HPCSCAN_CUDA=nvcc
 export HPCSCAN_CUDA_FLAGCOMP='-I /usr/lib/x86_64-linux-gnu/openmpi/include/'
-export HPCSCAN_CUDA_LIB='-L/usr/local/cuda/lib64 -lcuda -lcudart'
+export HPCSCAN_CUDA_LIB='-L/usr/local/cuda/lib64 -lcuda -lcudart -lnvidia-ml'
 
 # HIP compiler
 export HPCSCAN_HIP=

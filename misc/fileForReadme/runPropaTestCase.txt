@@ -7,11 +7,11 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 099e913794ef476b12c5b4b88fdee932c6665198
-		Author: vincent <vetienne@rocketmail.com>
-		Date:   Sun Jun 20 11:59:05 2021 +0300
+ Git version	commit 5215008d113a1a186b196380bd5365927a1f5d79
+		Author: Vincent Etienne <vincent.etienne@aramco.com>
+		Date:   Thu Jun 24 07:02:29 2021 +0300
 
- Host name	mars
+ Host name	neptune
  User name	vincent
  Computation	SINGLE PRECISION
  Mode Baseline	ENABLED
@@ -33,7 +33,7 @@
  No. subdomains axis1	1
  No. subdomains axis2	1
  No. subdomains axis3	1
- OpenMP threads / MPI	4
+ OpenMP threads / MPI	2
  Number of tries	10
  FD space order		8
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -121,14 +121,14 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	13.3972
- Best Gpoint/s eff.	0.279109
- Best Gpoint/s in FD	0.279109
- Best Apparent BW GB/s	32.3767
+ Best GFlop/s in FD	11.7253
+ Best Gpoint/s eff.	0.244276
+ Best Gpoint/s in FD	0.244276
+ Best Apparent BW GB/s	28.3361
 
- Case run time (s)	0.194065
+ Case run time (s)	0.405567
 --------------------------------------------------------------------------------
- Total run time (s)	0.196033
+ Total run time (s)	0.406417
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY
