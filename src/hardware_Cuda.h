@@ -31,6 +31,9 @@ public:
 	// print info
 	virtual void info(void) ;
 
+	// supports electric power reading
+	virtual bool supportGetPowerUsage(void) ;
+
 protected:
 
 } ;

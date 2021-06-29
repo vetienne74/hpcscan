@@ -8,6 +8,8 @@
 
 #include "hardware_Cuda.h"
 
+#include <nvml.h>
+
 #include "config.h"
 #include "constant.h"
 #include "global.h"
@@ -20,13 +22,13 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Hardware_Cuda::Hardware_Cuda(string gridMode) : Hardware(gridMode)
-		{
+						{
 	printDebug(MID_DEBUG, "IN Hardware_Cuda::Hardware_Cuda");
 
 	// TODO
 
 	printDebug(MID_DEBUG, "OUT Hardware_Cuda::Hardware_Cuda");
-		}
+						}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -86,6 +88,7 @@ void Hardware_Cuda::info(void)
 		}
 	}
 
+	// CUDA aware library
 	if (Config::Instance()->gpuMpiAware)
 	{
 		printInfo(MASTER, " MPI GPU-Aware Library", "ENABLED") ;
@@ -95,9 +98,64 @@ void Hardware_Cuda::info(void)
 		printInfo(MASTER, " MPI GPU-Aware Library", "DISABLED") ;
 	}
 
+	// support for power usage
+	if (supportGetPowerUsage())
+	{
+		printInfo(MASTER, " Read power usage", "SUPPORTED") ;
+	}
+	else
+	{
+		printInfo(MASTER, " Read power usage", "NOT SUPPORTED") ;
+	}
+
 	print_line5() ;
 
 	printDebug(MID_DEBUG, "OUT Hardware_Cuda::info");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+bool Hardware_Cuda::supportGetPowerUsage(void)
+{
+	printDebug(MID_DEBUG, "IN Hardware_Cuda::supportGetPowerUsage");
+
+	bool retVal = false ;
+
+	// get power consumption
+	{
+		//nvmlDeviceGetPowerUsage (nvmlDevice_t device, unsigned int* power)
+		unsigned int power , i ;
+		nvmlReturn_t result;
+
+		// First initialize NVML library
+		result = nvmlInit();
+		if (NVML_SUCCESS != result)
+		{
+			printf("Failed to initialize NVML: %s\n", nvmlErrorString(result));
+		}
+
+		nvmlDevice_t device;
+		i = 0 ;
+		result = nvmlDeviceGetHandleByIndex(i, &device);
+		if (NVML_SUCCESS != result)
+		{
+			printf("Failed to get handle for device %u: %s\n", i, nvmlErrorString(result));
+		}
+
+		result = nvmlDeviceGetPowerUsage(device, &power) ;
+		if (result != NVML_SUCCESS)
+		{
+			printInfo(MASTER, " nvmlDeviceGetPowerUsage", nvmlErrorString(result)) ;
+		}
+		else
+		{
+			printInfo(MASTER, " nvmlDeviceGetPowerUsage (mWatt)", (Myint) power) ;
+			retVal = true ;
+		}
+	}
+
+	printDebug(MID_DEBUG, "OUT Hardware_Cuda::supportGetPowerUsage");
+	return(retVal) ;
 }
 
 } // namespace hpcscan

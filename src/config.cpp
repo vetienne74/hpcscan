@@ -1096,11 +1096,6 @@ Rtn_code Config::initialize(void)
 			printError("IN Config::initialize, can not initialize hardware") ;
 			return(RTN_CODE_KO);
 		}
-		else
-		{
-			// display hardware info
-			hw->info() ;
-		}
 	}
 
 	printDebug(MID_DEBUG, "OUT Config::initialize");

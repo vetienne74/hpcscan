@@ -16,7 +16,6 @@
 #include <stdio.h>
 
 #include "mpi.h"
-#include <nvml.h>
 
 #include "config.h"
 #include "constant.h"
@@ -2086,38 +2085,6 @@ void Grid_Cuda::info(void)
 	printInfo(MASTER, " Threads/block axis1", gpuBlkSize1) ;
 	printInfo(MASTER, " Threads/block axis2", gpuBlkSize2) ;
 	printInfo(MASTER, " Threads/block axis3", gpuBlkSize3) ;
-
-	// get power consumption
-	{
-		//nvmlDeviceGetPowerUsage (nvmlDevice_t device, unsigned int* power)
-		unsigned int power , i ;
-		nvmlReturn_t result;
-
-		// First initialize NVML library
-		result = nvmlInit();
-		if (NVML_SUCCESS != result)
-		{
-			printf("Failed to initialize NVML: %s\n", nvmlErrorString(result));
-		}
-
-		nvmlDevice_t device;
-		i = 0 ;
-		result = nvmlDeviceGetHandleByIndex(i, &device);
-		if (NVML_SUCCESS != result)
-		{
-			printf("Failed to get handle for device %u: %s\n", i, nvmlErrorString(result));
-		}
-
-		result = nvmlDeviceGetPowerUsage(device, &power) ;
-		if (result != NVML_SUCCESS)
-		{
-			printInfo(MASTER, " Error nvmlDeviceGetPowerUsage", nvmlErrorString(result)) ;
-		}
-		else
-		{
-			printInfo(MASTER, " Power (Watt)", (Myint) power) ;
-		}
-	}
 
 	printDebug(FULL_DEBUG, "OUT Grid_Cuda::info");
 }
