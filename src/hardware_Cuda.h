@@ -29,7 +29,7 @@ public:
 	~Hardware_Cuda(void) ;
 
 	// print info
-	//virtual void info(void) ;
+	virtual void info(void) ;
 
 protected:
 

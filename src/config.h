@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 
+#include "hardware_Factory.h"
 #include "type_def.h"
 
 namespace hpcscan {
@@ -123,6 +124,9 @@ public:
 
 	// user name
 	char userName[LOGIN_NAME_MAX];
+
+	// hardware
+	shared_ptr<Hardware> hw ;
 
 private:
 

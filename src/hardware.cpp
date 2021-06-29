@@ -38,5 +38,18 @@ Hardware::~Hardware(void)
 	printDebug(MID_DEBUG, "OUT Hardware::~Hardware");
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+void Hardware::info(void)
+{
+	printDebug(MID_DEBUG, "IN Hardware::info");
+
+	printInfo(MASTER, " Hardware information") ;
+	printInfo(MASTER, " Generic CPU") ;
+	printInfo(MASTER, " No information available") ;
+	print_line5() ;
+
+	printDebug(MID_DEBUG, "OUT Hardware::info");
+}
 
 } // namespace hpcscan

@@ -15,6 +15,7 @@
 #include "constant.h"
 #include "global.h"
 #include "grid_Factory.h"
+#include "hardware_Factory.h"
 #include "output_report.h"
 
 namespace hpcscan {

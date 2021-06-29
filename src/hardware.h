@@ -27,7 +27,7 @@ public:
 	~Hardware(void) ;
 
 	// print info
-	//virtual void info(void) ;
+	virtual void info(void) ;
 
 protected:
 
