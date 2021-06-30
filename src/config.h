@@ -68,6 +68,9 @@ public:
 	// GPU grid size (number of blocks per grid)
 	Myint gpuGridSize ;
 
+	// time step increment (time in sec.) between update of hardware counters
+	Myfloat64 hwCounterDt ;
+
 	// inner domain size
 	Myint n1, n2, n3 ;
 

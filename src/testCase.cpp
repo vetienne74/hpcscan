@@ -78,6 +78,9 @@ Rtn_code TestCase::initialize(void)
 		// start timer
 		testCaseStart = MPI_Wtime() ;
 
+		// update hardware counter (first measure)
+		Config::Instance()->hw->updateHwCounter() ;
+
 		printDebug(MID_DEBUG, "Out TestCase::initialize") ;
 		return(RTN_CODE_OK) ;
 	}
@@ -98,6 +101,9 @@ void TestCase::finalize(void)
 
 	// end timer
 	testCaseEnd = MPI_Wtime() ;
+
+	// update hardware counter (last measure)
+	Config::Instance()->hw->updateHwCounter() ;
 
 	// display hardware counters statistics
 	Config::Instance()->hw->displayCounterStat() ;

@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "mpi.h"
-
 #include "type_def.h"
 
 namespace hpcscan {
@@ -36,6 +34,9 @@ public:
 	// update hardware counters
 	// add one entry in hwCounterVec
 	void updateHwCounter(void) ;
+
+	// update hardware counters at regular time interval
+	void watchTimeAndUpdateHwCounter(void) ;
 
 	// measure current power usage
 	Myfloat measureCurrentPower(void) ;

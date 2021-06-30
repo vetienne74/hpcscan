@@ -45,6 +45,7 @@ static const Myint     DEFAULT_GPU_BLKSIZE3   = 16 ;
 static const Myint     DEFAULT_GPU_GRIDSIZE   = 512 ;
 static const bool      DEFAULT_GPU_MPI_AWARE  = false ;
 static const Myfloat64 DEFAULT_H              = PI / 30 ;
+static const Myfloat64 DEFAULT_HW_COUNTER_DT  = 0 ; // no update hardware counters
 static const Myint     DEFAULT_INNER_N1       = 61 ;
 static const Myint     DEFAULT_INNER_N2       = 61 ;
 static const Myint     DEFAULT_INNER_N3       = 61 ;
@@ -123,6 +124,7 @@ Config::Config(void)
 	gpuMpiAware  = DEFAULT_GPU_MPI_AWARE ;
 	h            = DEFAULT_H ;
 	hw           = nullptr ; // hardware is set in initialize()
+	hwCounterDt  = DEFAULT_HW_COUNTER_DT ;
 	n1           = DEFAULT_INNER_N1 ;
 	n2           = DEFAULT_INNER_N2 ;
 	n3           = DEFAULT_INNER_N3 ;
@@ -201,6 +203,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -gpuGridSize <int>   = GPU, no. of 1D blocks per grid") ;
 			printInfo(MASTER, " -gpuMpiAware         = use MPI GPU-aware library") ;
 			printInfo(MASTER, " -help or -h          = list of command line parameters") ;
+			printInfo(MASTER, " -hwCounterDt <float> = interval between hardware counter (DEFAULT 0=no update)") ;
 			printInfo(MASTER, " -n1 <int>            = inner domain size axis 1 [grid pts]") ;
 			printInfo(MASTER, " -n2 <int>            = inner domain size axis 2 [grid pts]") ;
 			printInfo(MASTER, " -n3 <int>            = inner domain size axis 3 [grid pts]") ;
@@ -539,6 +542,18 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			{
 				gpuMpiAware = true ;
 				printInfo(MASTER, " gpuMpiAware\t", "ON") ;
+			}
+
+			else if (string(argv[ii]) == "-hwCounterDt")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -hwCounterDt") ;
+					return(RTN_CODE_KO) ;
+				}
+				hwCounterDt = atof(argv[ii]);
+				printInfo(MASTER, " Dt hw counter (s)", hwCounterDt) ;
 			}
 
 			else if (string(argv[ii]) == "-n1")

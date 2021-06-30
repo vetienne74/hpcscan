@@ -34,7 +34,7 @@ typedef struct
 	double timeOfMeasure ;
 
 	// power mWatt
-	double powerWatt;
+	Myfloat powerWatt;
 
 } hwCounter_struct_type ;
 

@@ -7,6 +7,8 @@
 
 #include "hardware.h"
 
+#include "mpi.h"
+
 #include "config.h"
 #include "constant.h"
 #include "global.h"
@@ -80,7 +82,45 @@ void Hardware::updateHwCounter(void)
 {
 	printDebug(MID_DEBUG, "IN Hardware::updateHwCounter");
 
+	hwCounter_struct_type hwCounterTmp ;
+
+	// get time
+	hwCounterTmp.timeOfMeasure = MPI_Wtime() ;
+
+	// get power usage
+	hwCounterTmp.powerWatt = measureCurrentPower() ;
+
+	// add entry
+	hwCounterVec.push_back(hwCounterTmp);
+
 	printDebug(MID_DEBUG, "OUT Hardware::updateHwCounter");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Hardware::watchTimeAndUpdateHwCounter(void)
+{
+	printDebug(MID_DEBUG, "IN Hardware::watchTimeAndUpdateHwCounter");
+
+	if (Config::Instance()->hwCounterDt > 0.)
+	{
+		// no entry found in hwCounterVec
+		if (hwCounterVec.size() == 0)
+		{
+			printWarning("IN Hardware::watchTimeAndUpdateHwCounter, hwCounterVec.size() == 0") ;
+		}
+		else
+		{
+			// check it is time to update hardware counters
+			auto lastTimeUpdate =hwCounterVec.back().timeOfMeasure ;
+			if ((MPI_Wtime() - lastTimeUpdate) >= Config::Instance()->hwCounterDt)
+			{
+				updateHwCounter() ;
+			}
+		}
+	}
+
+	printDebug(MID_DEBUG, "OUT Hardware::watchTimeAndUpdateHwCounter");
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -104,7 +144,16 @@ void Hardware::displayCounterStat(void)
 	print_blank() ;
 	print_line5() ;
 	printInfo(MASTER, " Hardware counters statistics") ;
-	printInfo(MASTER, " Number of measures", (Myint) hwCounterVec.size()) ;
+	Myint nMeasure = hwCounterVec.size() ;
+	printInfo(MASTER, " Number of measures", nMeasure) ;
+
+	if (nMeasure >= 2)
+	{
+		double tFirst = hwCounterVec[0].timeOfMeasure ;
+		double tLast = hwCounterVec[nMeasure-1].timeOfMeasure ;
+		double totalTime = tLast - tFirst ;
+		printInfo(MASTER, " Stat. over period (s)", totalTime) ;
+	}
 	print_line5() ;
 
 	printDebug(MID_DEBUG, "OUT Hardware::displayCounterStat");
