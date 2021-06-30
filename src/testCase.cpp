@@ -99,6 +99,9 @@ void TestCase::finalize(void)
 	// end timer
 	testCaseEnd = MPI_Wtime() ;
 
+	// display hardware counters statistics
+	Config::Instance()->hw->displayCounterStat() ;
+
 	// close perf log file
 	if (myMpiRank == 0)
 	{

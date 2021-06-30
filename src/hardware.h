@@ -9,6 +9,7 @@
 #define HPCSCAN_HARDWARE_H_
 
 #include <string>
+#include <vector>
 
 #include "mpi.h"
 
@@ -32,7 +33,20 @@ public:
 	// supports electric power reading
 	virtual bool supportGetPowerUsage(void) ;
 
+	// update hardware counters
+	// add one entry in hwCounterVec
+	void updateHwCounter(void) ;
+
+	// measure current power usage
+	Myfloat measureCurrentPower(void) ;
+
+	// display hardware counters statistics
+	void displayCounterStat(void) ;
+
 protected:
+
+	// vector of hwCounter_struct_type
+	vector<hwCounter_struct_type> hwCounterVec ;
 
 } ;
 

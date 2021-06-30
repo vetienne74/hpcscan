@@ -74,5 +74,40 @@ bool Hardware::supportGetPowerUsage(void)
 	return(retVal) ;
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+void Hardware::updateHwCounter(void)
+{
+	printDebug(MID_DEBUG, "IN Hardware::updateHwCounter");
+
+	printDebug(MID_DEBUG, "OUT Hardware::updateHwCounter");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Myfloat Hardware::measureCurrentPower(void)
+{
+	printDebug(MID_DEBUG, "IN Hardware::measureCurrentPower");
+
+	Myfloat retVal = UNSPECIFIED ;
+
+	printDebug(MID_DEBUG, "OUT Hardware::measureCurrentPower");
+	return(retVal) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Hardware::displayCounterStat(void)
+{
+	printDebug(MID_DEBUG, "IN Hardware::displayCounterStat");
+
+	print_blank() ;
+	print_line5() ;
+	printInfo(MASTER, " Hardware counters statistics") ;
+	printInfo(MASTER, " Number of measures", (Myint) hwCounterVec.size()) ;
+	print_line5() ;
+
+	printDebug(MID_DEBUG, "OUT Hardware::displayCounterStat");
+}
 
 } // namespace hpcscan
