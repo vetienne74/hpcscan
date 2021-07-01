@@ -48,7 +48,7 @@ void Hardware_DPCPP::info(void)
 	printDebug(LIGHT_DEBUG, "IN Hardware_DPCPP::info");
 
 	printInfo(MASTER, " Hardware information") ;
-	printInfo(MASTER, " Intel devices via DPC++") ;
+	printInfo(MASTER, " Access devices via DPC++") ;
 
 	// display all available devices
 	// TODO display all available devices

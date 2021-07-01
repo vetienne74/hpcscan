@@ -46,7 +46,6 @@ void Hardware_NEC::info(void)
 	printDebug(LIGHT_DEBUG, "IN Hardware_NEC::info");
 
 	printInfo(MASTER, " Hardware information") ;
-	printInfo(MASTER, " NEC devices") ;
 
 	// display all available devices
 	// TODO display all available devices
