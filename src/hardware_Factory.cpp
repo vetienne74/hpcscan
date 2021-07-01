@@ -89,8 +89,8 @@ shared_ptr<Hardware> Hardware_Factory::create(string gridMode)
 	}
 	else if (gridMode.compare(GRID_MODE_NEC_SCA) == 0)
 	{
-		retHardware = new Hardware_NEC(gridMode) ;
-		//retHardware = new Hardware(gridMode) ;
+	        //retHardware = new Hardware_NEC(gridMode) ;
+		retHardware = new Hardware(gridMode) ;
 	}
 #endif
 
