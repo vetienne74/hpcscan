@@ -23,6 +23,7 @@
  -gpuGridSize <int>   = GPU, no. of 1D blocks per grid
  -gpuMpiAware         = use MPI GPU-aware library
  -help or -h          = list of command line parameters
+ -hwCounterDt <float> = interval between hardware counter (DEFAULT 0=no update)
  -n1 <int>            = inner domain size axis 1 [grid pts]
  -n2 <int>            = inner domain size axis 2 [grid pts]
  -n3 <int>            = inner domain size axis 3 [grid pts]

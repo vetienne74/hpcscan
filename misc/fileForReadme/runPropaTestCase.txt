@@ -7,11 +7,11 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 5215008d113a1a186b196380bd5365927a1f5d79
-		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		Date:   Thu Jun 24 07:02:29 2021 +0300
+ Git version	commit c7264327b9b166bd7be80b46c020298440b94b5d
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Thu Jul 1 07:47:08 2021 +0300
 
- Host name	neptune
+ Host name	mars
  User name	vincent
  Computation	SINGLE PRECISION
  Mode Baseline	ENABLED
@@ -33,9 +33,14 @@
  No. subdomains axis1	1
  No. subdomains axis2	1
  No. subdomains axis3	1
- OpenMP threads / MPI	2
+ OpenMP threads / MPI	4
  Number of tries	10
  FD space order		8
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Hardware information
+ Generic CPU
+ No information available
+ Read power usage	NOT SUPPORTED
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 --------------------------------------------------------------------------------
@@ -121,14 +126,19 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	11.7253
- Best Gpoint/s eff.	0.244276
- Best Gpoint/s in FD	0.244276
- Best Apparent BW GB/s	28.3361
+ Best GFlop/s in FD	11.986
+ Best Gpoint/s eff.	0.249708
+ Best Gpoint/s in FD	0.249708
+ Best Apparent BW GB/s	28.9661
 
- Case run time (s)	0.405567
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ Hardware counters statistics
+ No statistic available
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+ Case run time (s)	0.227318
 --------------------------------------------------------------------------------
- Total run time (s)	0.406417
+ Total run time (s)	0.227738
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

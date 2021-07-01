@@ -1,11 +1,11 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 5215008d113a1a186b196380bd5365927a1f5d79
-		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		Date:   Thu Jun 24 07:02:29 2021 +0300
+ Git version	commit c7264327b9b166bd7be80b46c020298440b94b5d
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Thu Jul 1 07:47:08 2021 +0300
 
- Host name	neptune
+ Host name	mars
  User name	vincent
  Computation	SINGLE PRECISION
  Mode Baseline	ENABLED

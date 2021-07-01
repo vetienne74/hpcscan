@@ -1,25 +1,28 @@
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/config.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/config.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/grid.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/grid_CacheBlk.cpp
 Files version and ../src/version_hpcscan.h differ
 version has changed, regenerating version info
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid_CacheBlk.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/grid_Factory.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/main.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/output_report.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/propagator_Factory.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/propagator_Ac2.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/propagator_Ac2SplitComp.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/table_Results.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Comm.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_FD_D2.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Grid.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Propa.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Memory.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Template.cpp
-mpic++ -c -g -O3 -mavx2 -fopenmp -D__CUDA__ ../src/testCase_Util.cpp
-nvcc -c -gencode arch=compute_50,code=sm_50 -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda.cu
-nvcc -c -gencode arch=compute_50,code=sm_50 -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda_Optim.cu
-nvcc -c -gencode arch=compute_50,code=sm_50 -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda_Ref.cu
-mpic++ -g -O3 -mavx2 -fopenmp -D__CUDA__ -o ../bin/hpcscan config.o grid.o grid_CacheBlk.o grid_Factory.o main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o table_Results.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o grid_Cuda.o grid_Cuda_Optim.o grid_Cuda_Ref.o  -L/usr/local/cuda/lib64 -lcuda -lcudart -lnvidia-ml 
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/grid_Factory.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/hardware_Factory.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/hardware.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/main.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/output_report.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/propagator_Factory.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/propagator_Ac2.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/propagator_Ac2SplitComp.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/table_Results.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/testCase.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/testCase_Comm.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/testCase_FD_D2.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/testCase_Grid.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/testCase_Propa.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/testCase_Memory.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/testCase_Template.cpp
+mpic++ -c -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ ../src/testCase_Util.cpp
+nvcc -c -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda.cu
+nvcc -c -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda_Optim.cu
+nvcc -c -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/grid_Cuda_Ref.cu
+nvcc -c -I /usr/lib/x86_64-linux-gnu/openmpi/include/ ../src/hardware_Cuda.cu
+mpic++ -g -O3 -mavx2 -fopenmp -I /usr/local/cuda-11.3/include/ -D__CUDA__ -o ../bin/hpcscan config.o grid.o grid_CacheBlk.o grid_Factory.o hardware_Factory.o hardware.o main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o table_Results.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o grid_Cuda.o grid_Cuda_Optim.o grid_Cuda_Ref.o hardware_Cuda.o  -L/usr/local/cuda/lib64 -lcuda -lcudart -lnvidia-ml 
 *** BUILD OK (SINGLE PRECISION) *** 

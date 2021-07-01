@@ -1,4 +1,4 @@
-HPCscan set for neptune with:
+HPCscan set for mars with:
 - C++ Compiler
 g++ (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
 Copyright (C) 2019 Free Software Foundation, Inc.
@@ -8,9 +8,9 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 - CUDA Compiler
 nvcc: NVIDIA (R) Cuda compiler driver
 Copyright (c) 2005-2021 NVIDIA Corporation
-Built on Mon_May__3_19:15:13_PDT_2021
-Cuda compilation tools, release 11.3, V11.3.109
-Build cuda_11.3.r11.3/compiler.29920130_0
+Built on Sun_Mar_21_19:15:46_PDT_2021
+Cuda compilation tools, release 11.3, V11.3.58
+Build cuda_11.3.r11.3/compiler.29745058_0
 - No HIP compiler set
 - MPI library
 mpirun (Open MPI) 4.0.3
