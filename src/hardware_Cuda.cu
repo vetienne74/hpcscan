@@ -45,8 +45,8 @@ void Hardware_Cuda::info(void)
 {
 	printDebug(LIGHT_DEBUG, "IN Hardware_Cuda::info");
 
+	print_blank() ;
 	printInfo(MASTER, " Hardware information") ;
-	printInfo(MASTER, " NVIDIA GPU") ;
 
 	// display all available devices (GPUs)
 	int startDevice = 0;
@@ -105,8 +105,7 @@ void Hardware_Cuda::info(void)
 	{
 		printInfo(MASTER, " Read power usage", "NOT SUPPORTED") ;
 	}
-
-	print_line5() ;
+	print_line2() ;
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware_Cuda::info");
 }

@@ -36,6 +36,18 @@ Rtn_code TestCase::initialize(void)
 		printInfo(MASTER, " TestCase version", testCaseVersion) ;
 		printInfo(MASTER, " TestCase mode\t", Config::Instance()->testMode) ;
 
+		// initialize Hardware object
+		hw = Hardware_Factory::create(Config::Instance()->testMode) ;
+		if (hw == nullptr)
+		{
+			printError("In TestCase::initialize, can not initialize hardware") ;
+			return(RTN_CODE_KO);
+		}
+		else
+		{
+			hw->info() ;
+		}
+
 		// try to create and initialize a grid to see if everything is all right
 		auto gridTest = Grid_Factory::create(Config::Instance()->testMode, GRID_LOCAL) ;
 		if (gridTest == nullptr)
@@ -79,7 +91,7 @@ Rtn_code TestCase::initialize(void)
 		testCaseStart = MPI_Wtime() ;
 
 		// update hardware counter (first measure)
-		Config::Instance()->hw->updateHwCounter() ;
+		hw->updateHwCounter() ;
 
 		printDebug(MID_DEBUG, "Out TestCase::initialize") ;
 		return(RTN_CODE_OK) ;
@@ -103,10 +115,10 @@ void TestCase::finalize(void)
 	testCaseEnd = MPI_Wtime() ;
 
 	// update hardware counter (last measure)
-	Config::Instance()->hw->updateHwCounter() ;
+	hw->updateHwCounter() ;
 
 	// display hardware counters statistics
-	Config::Instance()->hw->displayCounterStat() ;
+	hw->displayCounterStat() ;
 
 	// close perf log file
 	if (myMpiRank == 0)

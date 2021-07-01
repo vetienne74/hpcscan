@@ -47,6 +47,7 @@ void Hardware_DPCPP::info(void)
 {
 	printDebug(LIGHT_DEBUG, "IN Hardware_DPCPP::info");
 
+	print_blank() ;
 	printInfo(MASTER, " Hardware information") ;
 	printInfo(MASTER, " Access devices via DPC++") ;
 
@@ -91,8 +92,7 @@ void Hardware_DPCPP::info(void)
 	{
 		printInfo(MASTER, " Read power usage", "NOT SUPPORTED") ;
 	}
-
-	print_line5() ;
+	print_line2() ;
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware_DPCPP::info");
 }

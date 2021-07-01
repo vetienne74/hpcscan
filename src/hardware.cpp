@@ -48,6 +48,7 @@ void Hardware::info(void)
 {
 	printDebug(LIGHT_DEBUG, "IN Hardware::info");
 
+	print_blank();
 	printInfo(MASTER, " Hardware information") ;
 	printInfo(MASTER, " Generic CPU") ;
 	printInfo(MASTER, " No information available") ;
@@ -60,8 +61,7 @@ void Hardware::info(void)
 	{
 		printInfo(MASTER, " Read power usage", "NOT SUPPORTED") ;
 	}
-
-	print_line5() ;
+	print_line2() ;
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware::info");
 }
@@ -147,7 +147,7 @@ void Hardware::displayCounterStat(void)
 	print_line5() ;
 	printInfo(MASTER, " Hardware counters statistics") ;
 
-	if (Config::Instance()->hw->supportGetPowerUsage)
+	if (supportGetPowerUsage)
 	{
 
 		Myint nMeasure = hwCounterVec.size() ;

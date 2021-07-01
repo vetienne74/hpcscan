@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit a60e22e237ac3928cc1e57720138c198325d3813
-		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		Date:   Thu Jul 1 09:52:24 2021 +0300
+ Git version	commit 5ea31dfb54cc2e0d50766cfabcf67213bcb34909
+		Author: vincent <vetienne@rocketmail.com>
+		Date:   Thu Jul 1 20:23:01 2021 +0300
 
  Host name	neptune
  User name	vincent
@@ -37,16 +37,17 @@
  Number of tries	10
  FD space order		8
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
- Hardware information
- Generic CPU
- No information available
- Read power usage	NOT SUPPORTED
--*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 --------------------------------------------------------------------------------
  TestCase name		Propa
  TestCase version	Standard implementation
  TestCase mode		CacheBlk
+
+ Hardware information
+ Generic CPU
+ No information available
+ Read power usage	NOT SUPPORTED
+--------------------------------------------------------------------------------
 
  * Propagator parameters *
  Wave equation		Acoustic Wave Eq. 2nd order
@@ -126,19 +127,19 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	12.3304
- Best Gpoint/s eff.	0.256884
- Best Gpoint/s in FD	0.256884
- Best Apparent BW GB/s	29.7986
+ Best GFlop/s in FD	12.3006
+ Best Gpoint/s eff.	0.256263
+ Best Gpoint/s in FD	0.256263
+ Best Apparent BW GB/s	29.7265
 
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  Hardware counters statistics
  No statistic available
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
- Case run time (s)	0.218431
+ Case run time (s)	0.215563
 --------------------------------------------------------------------------------
- Total run time (s)	0.22519
+ Total run time (s)	0.217092
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

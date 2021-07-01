@@ -148,7 +148,7 @@ Rtn_code TestCase_Propa::run(void)
 			prcGrid = tempGrid ;
 
 			// update hardware counter (at regular time interval)
-			Config::Instance()->hw->watchTimeAndUpdateHwCounter() ;
+			hw->watchTimeAndUpdateHwCounter() ;
 
 		} // for (Myint it = 0; it < nt; it++)
 

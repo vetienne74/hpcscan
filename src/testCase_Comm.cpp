@@ -22,10 +22,10 @@
 namespace hpcscan {
 
 TestCase_Comm::TestCase_Comm(void)
-														{
+{
 	testCaseName    = "Comm" ;
 	testCaseVersion = "Standard implementation" ;
-														}
+}
 
 //-------------------------------------------------------------------------------------------------------
 

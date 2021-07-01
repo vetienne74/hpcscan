@@ -45,6 +45,7 @@ void Hardware_NEC::info(void)
 {
 	printDebug(LIGHT_DEBUG, "IN Hardware_NEC::info");
 
+	print_blank() ;
 	printInfo(MASTER, " Hardware information") ;
 
 	// display all available devices
@@ -59,8 +60,7 @@ void Hardware_NEC::info(void)
 	{
 		printInfo(MASTER, " Read power usage", "NOT SUPPORTED") ;
 	}
-
-	print_line5() ;
+	print_line2() ;
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware_NEC::info");
 }

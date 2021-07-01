@@ -123,7 +123,6 @@ Config::Config(void)
 	gpuGridSize  = DEFAULT_GPU_GRIDSIZE ;
 	gpuMpiAware  = DEFAULT_GPU_MPI_AWARE ;
 	h            = DEFAULT_H ;
-	hw           = nullptr ; // hardware is set in initialize()
 	hwCounterDt  = DEFAULT_HW_COUNTER_DT ;
 	n1           = DEFAULT_INNER_N1 ;
 	n2           = DEFAULT_INNER_N2 ;
@@ -1101,16 +1100,6 @@ Rtn_code Config::initialize(void)
 	{
 		string file_name = "hpcscan.debug.proc" + to_string(myMpiRank) + ".log";
 		debugLogFile.open(file_name);
-	}
-
-	// initialize Hardware object
-	{
-		hw = Hardware_Factory::create(Config::Instance()->testMode) ;
-		if (hw == nullptr)
-		{
-			printError("IN Config::initialize, can not initialize hardware") ;
-			return(RTN_CODE_KO);
-		}
 	}
 
 	printDebug(MID_DEBUG, "OUT Config::initialize");

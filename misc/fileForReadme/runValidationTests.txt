@@ -74,8 +74,8 @@ SKIP testMode HIP_Opt
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Thu 01 Jul 2021 07:19:23 PM +03
-# Ended    :  Thu 01 Jul 2021 07:24:22 PM +03
+# Started  :  Thu 01 Jul 2021 09:32:39 PM +03
+# Ended    :  Thu 01 Jul 2021 09:37:35 PM +03
 On machine :  neptune
 Done by    :  vincent
 * SUMMARY
