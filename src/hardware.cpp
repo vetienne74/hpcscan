@@ -37,7 +37,7 @@ Hardware::~Hardware(void)
 {
 	printDebug(LIGHT_DEBUG, "IN Hardware::~Hardware");
 
-	// TODO
+	// TODO ~Hardware
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware::~Hardware");
 }

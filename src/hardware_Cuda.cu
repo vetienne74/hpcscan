@@ -34,7 +34,7 @@ Hardware_Cuda::~Hardware_Cuda(void)
 {
 	printDebug(LIGHT_DEBUG, "IN Hardware_Cuda::~Hardware_Cuda");
 
-	// TODO
+	// TODO ~Hardware_Cuda
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware_Cuda::~Hardware_Cuda");
 }
@@ -48,7 +48,7 @@ void Hardware_Cuda::info(void)
 	printInfo(MASTER, " Hardware information") ;
 	printInfo(MASTER, " NVIDIA GPU") ;
 
-	// display all available GPUs
+	// display all available devices (GPUs)
 	int startDevice = 0;
 	int endDevice = 0;
 	int deviceCount;

@@ -87,7 +87,7 @@ CPP_OPENACC_OBJ = grid_OpenAcc.o
 CUDA_OBJ = grid_Cuda.o grid_Cuda_Optim.o grid_Cuda_Ref.o hardware_Cuda.o
 
 # DPC++ objects
-DPCPP_OBJ = grid_DPCPP.o
+DPCPP_OBJ = grid_DPCPP.o hardware_DPCPP.o
 
 # Hip objects
 HIP_OBJ = grid_Hip.o grid_Hip_Optim.o

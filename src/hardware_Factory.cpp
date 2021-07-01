@@ -11,7 +11,7 @@
 #include "hardware_Cuda.h"
 #endif
 #ifdef __DPCPP__
-//#include "hardware_DPCPP.h"
+#include "hardware_DPCPP.h"
 #endif
 #ifdef __HIP__
 //#include "hardware_Hip.h"
@@ -63,8 +63,7 @@ shared_ptr<Hardware> Hardware_Factory::create(string gridMode)
 #ifdef __DPCPP__
 	else if (gridMode.compare(GRID_MODE_DPCPP) == 0)
 	{
-		//retHardware = new Hardware_DPCPP(gridMode) ;
-		retHardware = new Hardware(gridMode) ;
+		retHardware = new Hardware_DPCPP(gridMode) ;
 	}
 #endif
 
