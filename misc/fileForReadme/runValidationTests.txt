@@ -74,16 +74,16 @@ SKIP testMode HIP_Opt
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Thu 01 Jul 2021 07:47:35 AM +03
-# Ended    :  Thu 01 Jul 2021 07:53:33 AM +03
-On machine :  mars
+# Started  :  Thu 01 Jul 2021 07:19:23 PM +03
+# Ended    :  Thu 01 Jul 2021 07:24:22 PM +03
+On machine :  neptune
 Done by    :  vincent
 * SUMMARY
 # PASSED  : 2815
 # FAILED  : 0
 # ERROR   : 0
 # WARNING : 0
-==> Results of tests are saved in runValidationTests.mars.vincent.out
+==> Results of tests are saved in runValidationTests.neptune.vincent.out
 
 ========================================================================
                          END VALIDATION TESTS

@@ -203,7 +203,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -gpuGridSize <int>   = GPU, no. of 1D blocks per grid") ;
 			printInfo(MASTER, " -gpuMpiAware         = use MPI GPU-aware library") ;
 			printInfo(MASTER, " -help or -h          = list of command line parameters") ;
-			printInfo(MASTER, " -hwCounterDt <float> = interval between hardware counter (DEFAULT 0=no update)") ;
+			printInfo(MASTER, " -hwCounterDt <float> = time (s) between hardware counter update (DEFAULT 0=no update)") ;
 			printInfo(MASTER, " -n1 <int>            = inner domain size axis 1 [grid pts]") ;
 			printInfo(MASTER, " -n2 <int>            = inner domain size axis 2 [grid pts]") ;
 			printInfo(MASTER, " -n3 <int>            = inner domain size axis 3 [grid pts]") ;
