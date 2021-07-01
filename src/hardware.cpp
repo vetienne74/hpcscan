@@ -7,6 +7,8 @@
 
 #include "hardware.h"
 
+#include <cfloat>  // for FLT_MAX ;
+
 #include "mpi.h"
 
 #include "config.h"
@@ -21,36 +23,36 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Hardware::Hardware(string gridMode)
-{
-	printDebug(MID_DEBUG, "IN Hardware::Hardware");
+								{
+	printDebug(LIGHT_DEBUG, "IN Hardware::Hardware");
 
-	// TODO
+	supportGetPowerUsage = checkSupportGetPowerUsage() ;
 
-	printDebug(MID_DEBUG, "OUT Hardware::Hardware");
-}
+	printDebug(LIGHT_DEBUG, "OUT Hardware::Hardware");
+								}
 
 //-------------------------------------------------------------------------------------------------------
 
 Hardware::~Hardware(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware::~Hardware");
+	printDebug(LIGHT_DEBUG, "IN Hardware::~Hardware");
 
 	// TODO
 
-	printDebug(MID_DEBUG, "OUT Hardware::~Hardware");
+	printDebug(LIGHT_DEBUG, "OUT Hardware::~Hardware");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void Hardware::info(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware::info");
+	printDebug(LIGHT_DEBUG, "IN Hardware::info");
 
 	printInfo(MASTER, " Hardware information") ;
 	printInfo(MASTER, " Generic CPU") ;
 	printInfo(MASTER, " No information available") ;
 
-	if (supportGetPowerUsage())
+	if (supportGetPowerUsage)
 	{
 		printInfo(MASTER, " Read power usage", "SUPPORTED") ;
 	}
@@ -61,18 +63,18 @@ void Hardware::info(void)
 
 	print_line5() ;
 
-	printDebug(MID_DEBUG, "OUT Hardware::info");
+	printDebug(LIGHT_DEBUG, "OUT Hardware::info");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-bool Hardware::supportGetPowerUsage(void)
+bool Hardware::checkSupportGetPowerUsage(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware::supportGetPowerUsage");
+	printDebug(LIGHT_DEBUG, "IN Hardware::checkSupportGetPowerUsage");
 
 	bool retVal = false ;
 
-	printDebug(MID_DEBUG, "OUT Hardware::supportGetPowerUsage");
+	printDebug(LIGHT_DEBUG, "OUT Hardware::checkSupportGetPowerUsage");
 	return(retVal) ;
 }
 
@@ -80,7 +82,7 @@ bool Hardware::supportGetPowerUsage(void)
 
 void Hardware::updateHwCounter(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware::updateHwCounter");
+	printDebug(LIGHT_DEBUG, "IN Hardware::updateHwCounter");
 
 	hwCounter_struct_type hwCounterTmp ;
 
@@ -93,14 +95,14 @@ void Hardware::updateHwCounter(void)
 	// add entry
 	hwCounterVec.push_back(hwCounterTmp);
 
-	printDebug(MID_DEBUG, "OUT Hardware::updateHwCounter");
+	printDebug(LIGHT_DEBUG, "OUT Hardware::updateHwCounter");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void Hardware::watchTimeAndUpdateHwCounter(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware::watchTimeAndUpdateHwCounter");
+	printDebug(LIGHT_DEBUG, "IN Hardware::watchTimeAndUpdateHwCounter");
 
 	if (Config::Instance()->hwCounterDt > 0.)
 	{
@@ -120,18 +122,18 @@ void Hardware::watchTimeAndUpdateHwCounter(void)
 		}
 	}
 
-	printDebug(MID_DEBUG, "OUT Hardware::watchTimeAndUpdateHwCounter");
+	printDebug(LIGHT_DEBUG, "OUT Hardware::watchTimeAndUpdateHwCounter");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 Myfloat Hardware::measureCurrentPower(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware::measureCurrentPower");
+	printDebug(LIGHT_DEBUG, "IN Hardware::measureCurrentPower");
 
 	Myfloat retVal = UNSPECIFIED ;
 
-	printDebug(MID_DEBUG, "OUT Hardware::measureCurrentPower");
+	printDebug(LIGHT_DEBUG, "OUT Hardware::measureCurrentPower");
 	return(retVal) ;
 }
 
@@ -139,24 +141,66 @@ Myfloat Hardware::measureCurrentPower(void)
 
 void Hardware::displayCounterStat(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware::displayCounterStat");
+	printDebug(LIGHT_DEBUG, "IN Hardware::displayCounterStat");
 
 	print_blank() ;
 	print_line5() ;
 	printInfo(MASTER, " Hardware counters statistics") ;
-	Myint nMeasure = hwCounterVec.size() ;
-	printInfo(MASTER, " Number of measures", nMeasure) ;
 
-	if (nMeasure >= 2)
+	if (Config::Instance()->hw->supportGetPowerUsage)
 	{
-		double tFirst = hwCounterVec[0].timeOfMeasure ;
-		double tLast = hwCounterVec[nMeasure-1].timeOfMeasure ;
-		double totalTime = tLast - tFirst ;
-		printInfo(MASTER, " Stat. over period (s)", totalTime) ;
+
+		Myint nMeasure = hwCounterVec.size() ;
+		printInfo(MASTER, " Number of measures", nMeasure) ;
+
+		if (nMeasure >= 1)
+		{
+
+			double tFirst = hwCounterVec[0].timeOfMeasure ;
+			double tLast = hwCounterVec[nMeasure-1].timeOfMeasure ;
+			double totalTime = tLast - tFirst ;
+			printInfo(MASTER, " Stat. over period (s)", totalTime) ;
+
+			// min. power
+			{
+				Myfloat val = +FLT_MAX ;
+				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
+				{
+					if (hwCounterVec[ii].powerWatt < val) val = hwCounterVec[ii].powerWatt ;
+				}
+				printInfo(MASTER, " Min. power (Watt)", val) ;
+			}
+
+			// max. power
+			{
+				Myfloat val = -FLT_MAX ;
+				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
+				{
+					if (hwCounterVec[ii].powerWatt > val) val = hwCounterVec[ii].powerWatt ;
+				}
+				printInfo(MASTER, " Max. power (Watt)", val) ;
+			}
+
+			// aver. power
+			{
+				Myfloat val = 0 ;
+				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
+				{
+					val += hwCounterVec[ii].powerWatt ;
+				}
+				val /= hwCounterVec.size() ;
+				printInfo(MASTER, " Aver. power (Watt)", val) ;
+			}
+		}
 	}
+	else
+	{
+		printInfo(MASTER, " No statistic available") ;
+	}
+
 	print_line5() ;
 
-	printDebug(MID_DEBUG, "OUT Hardware::displayCounterStat");
+	printDebug(LIGHT_DEBUG, "OUT Hardware::displayCounterStat");
 }
 
 } // namespace hpcscan

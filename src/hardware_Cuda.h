@@ -12,6 +12,7 @@
 #include <string>
 
 #include "mpi.h"
+#include <nvml.h>
 
 #include "hardware.h"
 #include "type_def.h"
@@ -31,10 +32,17 @@ public:
 	// print info
 	virtual void info(void) ;
 
-	// supports electric power reading
-	virtual bool supportGetPowerUsage(void) ;
+	// measure current power usage
+	Myfloat measureCurrentPower(void) ;
 
 protected:
+
+	// check if hw supports electric power reading
+	virtual bool checkSupportGetPowerUsage(void) ;
+
+
+	// TODO adapt to MPI multi-process
+	nvmlDevice_t myDevice;
 
 } ;
 

@@ -28,9 +28,6 @@ public:
 	// print info
 	virtual void info(void) ;
 
-	// supports electric power reading
-	virtual bool supportGetPowerUsage(void) ;
-
 	// update hardware counters
 	// add one entry in hwCounterVec
 	void updateHwCounter(void) ;
@@ -44,7 +41,14 @@ public:
 	// display hardware counters statistics
 	void displayCounterStat(void) ;
 
+	// supports electric power reading
+	bool supportGetPowerUsage ;
+
 protected:
+
+	// check if hw supports electric power reading
+	virtual bool checkSupportGetPowerUsage(void) ;
+
 
 	// vector of hwCounter_struct_type
 	vector<hwCounter_struct_type> hwCounterVec ;

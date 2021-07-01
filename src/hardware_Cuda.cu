@@ -8,8 +8,6 @@
 
 #include "hardware_Cuda.h"
 
-#include <nvml.h>
-
 #include "config.h"
 #include "constant.h"
 #include "global.h"
@@ -22,30 +20,30 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Hardware_Cuda::Hardware_Cuda(string gridMode) : Hardware(gridMode)
-						{
-	printDebug(MID_DEBUG, "IN Hardware_Cuda::Hardware_Cuda");
+{
+	printDebug(LIGHT_DEBUG, "IN Hardware_Cuda::Hardware_Cuda");
 
-	// TODO
+	supportGetPowerUsage = checkSupportGetPowerUsage() ;
 
-	printDebug(MID_DEBUG, "OUT Hardware_Cuda::Hardware_Cuda");
-						}
+	printDebug(LIGHT_DEBUG, "OUT Hardware_Cuda::Hardware_Cuda");
+}
 
 //-------------------------------------------------------------------------------------------------------
 
 Hardware_Cuda::~Hardware_Cuda(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware_Cuda::~Hardware_Cuda");
+	printDebug(LIGHT_DEBUG, "IN Hardware_Cuda::~Hardware_Cuda");
 
 	// TODO
 
-	printDebug(MID_DEBUG, "OUT Hardware_Cuda::~Hardware_Cuda");
+	printDebug(LIGHT_DEBUG, "OUT Hardware_Cuda::~Hardware_Cuda");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void Hardware_Cuda::info(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware_Cuda::info");
+	printDebug(LIGHT_DEBUG, "IN Hardware_Cuda::info");
 
 	printInfo(MASTER, " Hardware information") ;
 	printInfo(MASTER, " NVIDIA GPU") ;
@@ -99,7 +97,7 @@ void Hardware_Cuda::info(void)
 	}
 
 	// support for power usage
-	if (supportGetPowerUsage())
+	if (supportGetPowerUsage)
 	{
 		printInfo(MASTER, " Read power usage", "SUPPORTED") ;
 	}
@@ -110,14 +108,14 @@ void Hardware_Cuda::info(void)
 
 	print_line5() ;
 
-	printDebug(MID_DEBUG, "OUT Hardware_Cuda::info");
+	printDebug(LIGHT_DEBUG, "OUT Hardware_Cuda::info");
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-bool Hardware_Cuda::supportGetPowerUsage(void)
+bool Hardware_Cuda::checkSupportGetPowerUsage(void)
 {
-	printDebug(MID_DEBUG, "IN Hardware_Cuda::supportGetPowerUsage");
+	printDebug(LIGHT_DEBUG, "IN Hardware_Cuda::checkSupportGetPowerUsage");
 
 	bool retVal = false ;
 
@@ -134,28 +132,47 @@ bool Hardware_Cuda::supportGetPowerUsage(void)
 			printf("Failed to initialize NVML: %s\n", nvmlErrorString(result));
 		}
 
-		nvmlDevice_t device;
-		i = 0 ;
-		result = nvmlDeviceGetHandleByIndex(i, &device);
+		// TODO adapt to MPI multi-process
+		i = 0 ; // get device for rank 0
+		result = nvmlDeviceGetHandleByIndex(i, &myDevice);
 		if (NVML_SUCCESS != result)
 		{
 			printf("Failed to get handle for device %u: %s\n", i, nvmlErrorString(result));
 		}
 
-		result = nvmlDeviceGetPowerUsage(device, &power) ;
+		result = nvmlDeviceGetPowerUsage(myDevice, &power) ;
 		if (result != NVML_SUCCESS)
 		{
-			printInfo(MASTER, " nvmlDeviceGetPowerUsage", nvmlErrorString(result)) ;
+			printDebug(LIGHT_DEBUG, " nvmlDeviceGetPowerUsage", (const char*) nvmlErrorString(result)) ;
 		}
 		else
 		{
-			printInfo(MASTER, " nvmlDeviceGetPowerUsage (mWatt)", (Myint) power) ;
+			printInfo(MASTER, " Current power (mWatt)", (Myfloat) power / 1000.) ;
 			retVal = true ;
 		}
 	}
 
-	printDebug(MID_DEBUG, "OUT Hardware_Cuda::supportGetPowerUsage");
+	printDebug(LIGHT_DEBUG, "OUT Hardware_Cuda::checkSupportGetPowerUsage");
 	return(retVal) ;
 }
+
+//-------------------------------------------------------------------------------------------------------
+
+Myfloat Hardware_Cuda::measureCurrentPower(void)
+{
+	printDebug(LIGHT_DEBUG, "IN Hardware_Cuda::measureCurrentPower");
+
+	Myfloat retVal = UNSPECIFIED ;
+	if (supportGetPowerUsage)
+	{
+		unsigned int power ;
+		nvmlDeviceGetPowerUsage(myDevice, &power) ;
+		retVal = (Myfloat) power / 1000. ;
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Hardware_Cuda::measureCurrentPower");
+	return(retVal) ;
+}
+
 
 } // namespace hpcscan
