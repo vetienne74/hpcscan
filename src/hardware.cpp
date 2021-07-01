@@ -181,7 +181,7 @@ void Hardware::displayCounterStat(void)
 				printInfo(MASTER, " Max. power (Watt)", val) ;
 			}
 
-			// aver. power
+			// aver. power and consumption
 			{
 				Myfloat val = 0 ;
 				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
@@ -190,7 +190,10 @@ void Hardware::displayCounterStat(void)
 				}
 				val /= hwCounterVec.size() ;
 				printInfo(MASTER, " Aver. power (Watt)", val) ;
+
+				printInfo(MASTER, " Aver. consump. (W.h)", val *  totalTime / 3600.) ;
 			}
+			
 		}
 	}
 	else

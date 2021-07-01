@@ -36,7 +36,7 @@ public:
 	void watchTimeAndUpdateHwCounter(void) ;
 
 	// measure current power usage
-	Myfloat measureCurrentPower(void) ;
+	virtual Myfloat measureCurrentPower(void) ;
 
 	// display hardware counters statistics
 	void displayCounterStat(void) ;

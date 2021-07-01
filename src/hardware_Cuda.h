@@ -33,7 +33,7 @@ public:
 	virtual void info(void) ;
 
 	// measure current power usage
-	Myfloat measureCurrentPower(void) ;
+	virtual Myfloat measureCurrentPower(void) ;
 
 protected:
 
