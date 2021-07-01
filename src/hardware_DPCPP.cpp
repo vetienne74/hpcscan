@@ -3,10 +3,12 @@
 // This class handles all queries related to the hardware
 // Specialized class that targets INTEL CPUs, GPUs and FPGAs
 // Derived class from Hardware
-// Associated to the test modes DPCPP
+// Associated to the test mode DPCPP
 //-------------------------------------------------------------------------------------------------------
 
 #include "hardware_DPCPP.h"
+
+#include <CL/sycl.hpp>
 
 #include "config.h"
 #include "constant.h"
@@ -20,13 +22,13 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Hardware_DPCPP::Hardware_DPCPP(string gridMode) : Hardware(gridMode)
-{
+		{
 	printDebug(LIGHT_DEBUG, "IN Hardware_DPCPP::Hardware_DPCPP");
 
 	supportGetPowerUsage = checkSupportGetPowerUsage() ;
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware_DPCPP::Hardware_DPCPP");
-}
+		}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -50,6 +52,35 @@ void Hardware_DPCPP::info(void)
 
 	// display all available devices
 	// TODO display all available devices
+	{
+		// initialize device queue
+		sycl::queue *myQ ;
+		try {
+			if (Config::Instance()->dpcppSelect.compare("Host") == 0)
+			{
+				myQ = new sycl::queue( sycl:: host_selector{} ) ;
+			}
+			else if (Config::Instance()->dpcppSelect.compare("CPU") == 0)
+			{
+				myQ = new sycl::queue( sycl:: cpu_selector{} ) ;
+			}
+			else if (Config::Instance()->dpcppSelect.compare("GPU") == 0)
+			{
+				myQ = new sycl::queue( sycl:: gpu_selector{} ) ;
+			}
+			else
+			{
+				printError("In Hardware_DPCPP::info, invalid dpcpp selector") ;
+				return ;
+			}
+		} catch (exception const& ex) {
+			printError("In Hardware_DPCPP::info, requested device is not available") ;
+			return ;
+		}
+		printInfo(MASTER, " Selected device", myQ->get_device().get_info<sycl::info::device::name>() ) ;
+		printInfo(MASTER, " Device vendor\t", myQ->get_device().get_info<sycl::info::device::vendor>() ) ;
+		delete(myQ) ;
+	}
 
 	// support for power usage
 	if (supportGetPowerUsage)

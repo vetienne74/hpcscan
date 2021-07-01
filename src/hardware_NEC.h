@@ -1,13 +1,13 @@
 
 //-------------------------------------------------------------------------------------------------------
 // This class handles all queries related to the hardware
-// Specialized class that targets INTEL CPUs, GPUs and FPGAs
+// Specialized class that targets NEC SX-Aurora
 // Derived class from Hardware
-// Associated to the test mode DPCPP
+// Associated to the test modes NEC & NEC_SCA
 //-------------------------------------------------------------------------------------------------------
 
-#ifndef HPCSCAN_HARDWARE_DPCPP_H_
-#define HPCSCAN_HARDWARE_DPCPP_H_
+#ifndef HPCSCAN_HARDWARE_NEC_H_
+#define HPCSCAN_HARDWARE_NEC_H_
 
 #include <string>
 
@@ -18,15 +18,15 @@
 
 namespace hpcscan {
 
-class Hardware_DPCPP : public Hardware
+class Hardware_NEC : public Hardware
 {
 public:
 
 	// constructor
-	Hardware_DPCPP(string gridMode) ;
+	Hardware_NEC(string gridMode) ;
 
 	// destructor
-	~Hardware_DPCPP(void) ;
+	~Hardware_NEC(void) ;
 
 	// print info
 	virtual void info(void) ;
