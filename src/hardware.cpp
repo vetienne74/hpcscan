@@ -9,6 +9,7 @@
 
 #include <cfloat>  // for FLT_MAX ;
 #include <cpuid.h>
+#include <cstring> // needed for DPC++ (memset, memcpy)
 
 #include "mpi.h"
 
