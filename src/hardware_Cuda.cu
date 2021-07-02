@@ -45,44 +45,51 @@ void Hardware_Cuda::info(void)
 {
 	printDebug(LIGHT_DEBUG, "IN Hardware_Cuda::info");
 
-	print_blank() ;
+	print_blank();
 	printInfo(MASTER, " Hardware information") ;
 
+	// display host info
+	Hardware::hostInfo() ;
+
 	// display all available devices (GPUs)
-	int startDevice = 0;
-	int endDevice = 0;
-	int deviceCount;
-	cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
-	if (error_id != cudaSuccess) {
-		printError(" In Grid_Cuda::info, cudaGetDeviceCount", (int) error_id) ;
-	}
-
-	if (deviceCount == 0) {
-		printError(" No GPU found") ;
-	}
-	else
+	print_blank() ;
+	printInfo(MASTER, " Target hardware:") ;
 	{
-		printInfo(MASTER, " Number of GPUs found", deviceCount) ;
-	}
+		int startDevice = 0;
+		int endDevice = 0;
+		int deviceCount;
+		cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
+		if (error_id != cudaSuccess) {
+			printError(" In Grid_Cuda::info, cudaGetDeviceCount", (int) error_id) ;
+		}
 
-	startDevice = 0;
-	endDevice = deviceCount - 1;
+		if (deviceCount == 0) {
+			printError(" No GPU found") ;
+		}
+		else
+		{
+			printInfo(MASTER, " Number of GPUs found", deviceCount) ;
+		}
 
-	for (int currentDevice = startDevice; currentDevice <= endDevice;
-			currentDevice++) {
-		cudaDeviceProp deviceProp;
-		cudaError_t error_id = cudaGetDeviceProperties(&deviceProp, currentDevice);
+		startDevice = 0;
+		endDevice = deviceCount - 1;
 
-		if (error_id == cudaSuccess) {
-			string deviceStr = " Device #" + to_string(currentDevice) + "\t";
-			printInfo(MASTER, deviceStr, deviceProp.name) ;
+		for (int currentDevice = startDevice; currentDevice <= endDevice;
+				currentDevice++) {
+			cudaDeviceProp deviceProp;
+			cudaError_t error_id = cudaGetDeviceProperties(&deviceProp, currentDevice);
 
-			if (deviceProp.computeMode == cudaComputeModeProhibited) {
-				printError(" Error: device is running in <Compute Mode Prohibited>") ;
+			if (error_id == cudaSuccess) {
+				string deviceStr = " Device #" + to_string(currentDevice) + "\t";
+				printInfo(MASTER, deviceStr, deviceProp.name) ;
+
+				if (deviceProp.computeMode == cudaComputeModeProhibited) {
+					printError(" Error: device is running in <Compute Mode Prohibited>") ;
+				}
+			} else {
+				printf("cudaGetDeviceProperties returned %d\n-> %s\n", (int)error_id,
+						cudaGetErrorString(error_id));
 			}
-		} else {
-			printf("cudaGetDeviceProperties returned %d\n-> %s\n", (int)error_id,
-					cudaGetErrorString(error_id));
 		}
 	}
 

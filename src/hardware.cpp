@@ -8,6 +8,7 @@
 #include "hardware.h"
 
 #include <cfloat>  // for FLT_MAX ;
+#include <cpuid.h>
 
 #include "mpi.h"
 
@@ -23,13 +24,13 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Hardware::Hardware(string gridMode)
-								{
+{
 	printDebug(LIGHT_DEBUG, "IN Hardware::Hardware");
 
 	supportGetPowerUsage = checkSupportGetPowerUsage() ;
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware::Hardware");
-								}
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -50,8 +51,8 @@ void Hardware::info(void)
 
 	print_blank();
 	printInfo(MASTER, " Hardware information") ;
-	printInfo(MASTER, " Generic CPU") ;
-	printInfo(MASTER, " No information available") ;
+	printInfo(MASTER, " Target hardware:") ;
+	hostInfo() ;
 
 	if (supportGetPowerUsage)
 	{
@@ -64,6 +65,40 @@ void Hardware::info(void)
 	print_line2() ;
 
 	printDebug(LIGHT_DEBUG, "OUT Hardware::info");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Hardware::hostInfo(void)
+{
+	printDebug(LIGHT_DEBUG, "IN Hardware::hostInfo");
+
+	{
+		// from https://stackoverflow.com/questions/850774/how-to-determine-the-hardware-cpu-and-ram-on-a-machine
+		char CPUBrandString[0x40];
+		unsigned int CPUInfo[4] = {0,0,0,0};
+
+		__cpuid(0x80000000, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+		unsigned int nExIds = CPUInfo[0];
+
+		memset(CPUBrandString, 0, sizeof(CPUBrandString));
+
+		for (unsigned int i = 0x80000000; i <= nExIds; ++i)
+		{
+			__cpuid(i, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+
+			if (i == 0x80000002)
+				memcpy(CPUBrandString, CPUInfo, sizeof(CPUInfo));
+			else if (i == 0x80000003)
+				memcpy(CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
+			else if (i == 0x80000004)
+				memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
+		}
+
+		printInfo(MASTER, " CPU (Host) type", CPUBrandString) ;
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Hardware::hostInfo");
 }
 
 //-------------------------------------------------------------------------------------------------------

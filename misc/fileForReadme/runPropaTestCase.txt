@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 5ea31dfb54cc2e0d50766cfabcf67213bcb34909
+ Git version	commit c2e33e6d2a014549bee9514a48d19df304078f5a
 		Author: vincent <vetienne@rocketmail.com>
-		Date:   Thu Jul 1 20:23:01 2021 +0300
+		Date:   Thu Jul 1 21:43:38 2021 +0300
 
  Host name	neptune
  User name	vincent
@@ -44,8 +44,8 @@
  TestCase mode		CacheBlk
 
  Hardware information
- Generic CPU
- No information available
+ Target hardware:
+ CPU (Host) type	Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz
  Read power usage	NOT SUPPORTED
 --------------------------------------------------------------------------------
 
@@ -127,19 +127,19 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	12.3006
- Best Gpoint/s eff.	0.256263
- Best Gpoint/s in FD	0.256263
- Best Apparent BW GB/s	29.7265
+ Best GFlop/s in FD	12.419
+ Best Gpoint/s eff.	0.258728
+ Best Gpoint/s in FD	0.258728
+ Best Apparent BW GB/s	30.0125
 
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  Hardware counters statistics
  No statistic available
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
- Case run time (s)	0.215563
+ Case run time (s)	0.21271
 --------------------------------------------------------------------------------
- Total run time (s)	0.217092
+ Total run time (s)	0.214228
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

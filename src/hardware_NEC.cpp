@@ -48,8 +48,8 @@ void Hardware_NEC::info(void)
 	print_blank() ;
 	printInfo(MASTER, " Hardware information") ;
 
-	// display all available devices
-	// TODO display all available devices
+	printInfo(MASTER, " Target hardware:") ;
+	// TODO display target info
 
 	// support for power usage
 	if (supportGetPowerUsage)

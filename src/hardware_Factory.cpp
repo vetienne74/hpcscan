@@ -1,7 +1,7 @@
 
 //-------------------------------------------------------------------------------------------------------
 // Hardware factory used to create specialized Hardware objects
-// All hardware implementations are referenced
+// Unique location where all hardware implementations are referenced
 //-------------------------------------------------------------------------------------------------------
 
 #include "hardware_Factory.h"
@@ -17,7 +17,7 @@
 //#include "hardware_Hip.h"
 #endif
 #ifdef __NEC__
-//#include "hardware_NEC.h"
+#include "hardware_NEC.h"
 #endif
 //#ifdef __OPENACC__
 //#include "hardware_OpenAcc.h"
@@ -38,11 +38,19 @@ shared_ptr<Hardware> Hardware_Factory::create(string gridMode)
 
 	if (gridMode.compare(GRID_MODE_BASELINE) == 0)
 	{
+#ifdef __NEC__
+		retHardware = new Hardware_NEC(gridMode) ;
+#else
 		retHardware = new Hardware(gridMode) ;
+#endif
 	}
 	else if (gridMode.compare(GRID_MODE_CACHEBLK) == 0)
 	{
+#ifdef __NEC__
+		retHardware = new Hardware_NEC(gridMode) ;
+#else
 		retHardware = new Hardware(gridMode) ;
+#endif
 	}
 
 #ifdef __CUDA__
@@ -83,13 +91,11 @@ shared_ptr<Hardware> Hardware_Factory::create(string gridMode)
 #ifdef __NEC__
 	else if (gridMode.compare(GRID_MODE_NEC) == 0)
 	{
-		//retHardware = new Hardware_NEC(gridMode) ;
-		retHardware = new Hardware(gridMode) ;
+		retHardware = new Hardware_NEC(gridMode) ;
 	}
 	else if (gridMode.compare(GRID_MODE_NEC_SCA) == 0)
 	{
-	        //retHardware = new Hardware_NEC(gridMode) ;
-		retHardware = new Hardware(gridMode) ;
+		retHardware = new Hardware_NEC(gridMode) ;
 	}
 #endif
 

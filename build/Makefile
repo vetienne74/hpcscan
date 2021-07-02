@@ -93,7 +93,7 @@ DPCPP_OBJ = grid_DPCPP.o hardware_DPCPP.o
 HIP_OBJ = grid_Hip.o grid_Hip_Optim.o
 
 # NEC objects
-CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o
+CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o hardware_NEC.o
 
 # OpenACC objects
 CPP_OPENACC_OBJ = grid_OpenAcc.o

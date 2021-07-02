@@ -28,6 +28,9 @@ public:
 	// print info
 	virtual void info(void) ;
 
+	// print CPU (host) info
+	void hostInfo(void) ;
+
 	// update hardware counters
 	// add one entry in hwCounterVec
 	void updateHwCounter(void) ;
