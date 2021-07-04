@@ -40,8 +40,8 @@ protected:
 	// check if hw supports electric power reading
 	virtual bool checkSupportGetPowerUsage(void) ;
 
-
-	// TODO adapt to MPI multi-process
+	// device token
+	// TODO adapt to multiple devices
 	nvmlDevice_t myDevice;
 
 } ;

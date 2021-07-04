@@ -8,7 +8,9 @@
 #include "hardware.h"
 
 #include <cfloat>  // for FLT_MAX ;
+#ifndef __NEC__
 #include <cpuid.h>
+#endif
 #include <cstring> // needed for DPC++ (memset, memcpy)
 
 #include "mpi.h"
@@ -73,7 +75,7 @@ void Hardware::info(void)
 void Hardware::hostInfo(void)
 {
 	printDebug(LIGHT_DEBUG, "IN Hardware::hostInfo");
-
+#ifndef __NEC__
 	{
 		// from https://stackoverflow.com/questions/850774/how-to-determine-the-hardware-cpu-and-ram-on-a-machine
 		char CPUBrandString[0x40];
@@ -98,7 +100,7 @@ void Hardware::hostInfo(void)
 
 		printInfo(MASTER, " CPU (Host) type", CPUBrandString) ;
 	}
-
+#endif
 	printDebug(LIGHT_DEBUG, "OUT Hardware::hostInfo");
 }
 

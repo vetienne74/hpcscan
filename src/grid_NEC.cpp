@@ -16,10 +16,6 @@
 
 #include "mpi.h"
 #include <sca.h>
-extern "C"
-{
-#include <libsysve.h>
-}
 
 #include "config.h"
 #include "constant.h"
@@ -35,29 +31,6 @@ extern "C"
 
 using namespace std;
 
-typedef struct {
-  int type;
-  string name;
-} s_device;
-
-static s_device device_table[] = {
-{18, "10C-A"},
-{131, "10B-P"},
-{163, "10B-L"},
-{165, "10A-L"},
-{167, "10AE-L"},
-{135, "10BE-P"},
-{147, "10BE-A"},
-{16, "10CE-A"},
-{235, "20A-L"},
-{233, "20B-L"},
-{203, "20B-P"},
-{218, "20B-A"},
-{133, "20B-P(*)"}, // Internal
-{136, "10B-P(*)"} // Internal
-};
-static int device_table_size = sizeof(device_table) / sizeof(s_device);
-
 namespace hpcscan {
 
 //-------------------------------------------------------------------------------------------------------
@@ -67,6 +40,8 @@ Grid_NEC::Grid_NEC(Grid_type gridTypeIn) : Grid(gridTypeIn)
 	printDebug(MID_DEBUG, "IN Grid_NEC::Grid_NEC");
 
 	gridMode = GRID_MODE_NEC ;
+	flag_packed_stencil = false ;
+	tmp_grid_3d = nullptr ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC::Grid_NEC");
 }
@@ -80,6 +55,8 @@ Grid_NEC::Grid_NEC(Grid_type gridTypeIn, Dim_type dimIn,
 	printDebug(MID_DEBUG, "IN Grid_NEC::Grid_NEC");
 
 	gridMode = GRID_MODE_NEC ;
+	flag_packed_stencil = false ;
+	tmp_grid_3d = nullptr ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC::Grid_NEC");
 }
@@ -111,28 +88,6 @@ void Grid_NEC::info(void)
 	  {
 	    printInfo(MASTER," Packed data\t", "OFF") ;
 	  }
-
-	// type of Vector Engine
-	std::string s = "type";
-	std::string dev;
-	char buffer[16];
-	int t, i, v;
-
-	ve_get_ve_info(const_cast<char*>(s.c_str()), buffer, 16);
-	t = atoi(buffer);
-	v = -1;
-	for (i = 0; i < device_table_size; i++) {
-		if (t == device_table[i].type) {v = i; break;}
-	}
-	if (v == -1) {
-		dev = "NEC SX-Aurora TSUBASA Unknown (" + std::to_string(t) + ")";
-	} else {
-		dev = "NEC SX-Aurora TSUBASA " + device_table[v].name;
-	}
-
-	printInfo(MASTER, "") ;
-        printInfo(MASTER, " * Vector Engine * ") ;
-        printInfo(MASTER, " Device type:", dev );
 
 	printDebug(FULL_DEBUG, "OUT Grid_NEC::info");
 }

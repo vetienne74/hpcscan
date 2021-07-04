@@ -3,7 +3,7 @@
 // This class handles all queries related to the hardware
 // Specialized class that targets NEC SX-Aurora
 // Derived class from Hardware
-// Associated to the test modes NEC & NEC_SCA
+// Associated to all test modes when hpcscan is compiled with NEC compiler
 //-------------------------------------------------------------------------------------------------------
 
 #ifndef HPCSCAN_HARDWARE_NEC_H_
@@ -38,6 +38,10 @@ protected:
 
 	// check if hw supports electric power reading
 	virtual bool checkSupportGetPowerUsage(void) ;
+
+	// device id
+	// TODO adapt to multiple devices
+	int deviceId;
 
 } ;
 
