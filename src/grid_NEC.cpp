@@ -81,13 +81,13 @@ void Grid_NEC::info(void)
 
 	// additional info specific to NEC
 	if (flag_packed_stencil)
-	  {
-	    printInfo(MASTER," Packed data\t", "ON") ;
-	  }
+	{
+		printInfo(MASTER," Packed data\t", "ON") ;
+	}
 	else
-	  {
-	    printInfo(MASTER," Packed data\t", "OFF") ;
-	  }
+	{
+		printInfo(MASTER," Packed data\t", "OFF") ;
+	}
 
 	printDebug(FULL_DEBUG, "OUT Grid_NEC::info");
 }
@@ -1761,23 +1761,23 @@ void Grid_NEC::padGridn1(void)
 	printDebug(MID_DEBUG, "IN Grid_NEC::padGridn1");
 
 	if (Config::Instance()->autoPad == true)
-	  {
-	    sca_int_t tmp_n1, tmp_n2, tmp_n3, m1, m2, m3;
-	    tmp_n1 = i1Halo2End + 1 ;
-	    tmp_n2 = 10;
-	    tmp_n3 = 10;
-	    sca_utility_optimize_leading(tmp_n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
-	    if (tmp_n1 != m1)
-	      {
-		i1PadStart = i1Halo2End + 1 ;
-		i1PadEnd   = i1PadStart + (m1 - tmp_n1) - 1 ;
-	      }
-	    else
-	      {
-		i1PadStart = i1Halo2End ;
-		i1PadEnd   = i1Halo2End ;
-	      }
-	  }
+	{
+		sca_int_t tmp_n1, tmp_n2, tmp_n3, m1, m2, m3;
+		tmp_n1 = i1Halo2End + 1 ;
+		tmp_n2 = 10;
+		tmp_n3 = 10;
+		sca_utility_optimize_leading(tmp_n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
+		if (tmp_n1 != m1)
+		{
+			i1PadStart = i1Halo2End + 1 ;
+			i1PadEnd   = i1PadStart + (m1 - tmp_n1) - 1 ;
+		}
+		else
+		{
+			i1PadStart = i1Halo2End ;
+			i1PadEnd   = i1Halo2End ;
+		}
+	}
 	else if (Config::Instance()->n1AddPad != UNSPECIFIED)
 	{
 		i1PadStart = i1Halo2End + 1 ;
@@ -1814,22 +1814,22 @@ void Grid_NEC::padGridn2(void)
 	printDebug(MID_DEBUG, "IN Grid_NEC::padGridn2");
 
 	if (Config::Instance()->autoPad == true)
-	  {
-	    sca_int_t tmp_n2, tmp_n3, m1, m2, m3;
-	    tmp_n2 = i2Halo2End + 1 ;
-	    tmp_n3 = 10;
-	    sca_utility_optimize_leading(n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
-	    if (tmp_n2 != m2)
-	      {
-		i2PadStart = i2Halo2End + 1 ;
-		i2PadEnd   = i2PadStart + (m2 - tmp_n2) - 1 ;
-	      }
-	    else
-	      {
-		i2PadStart = i2Halo2End ;
-		i2PadEnd   = i2Halo2End ;
-	      }
-	  }
+	{
+		sca_int_t tmp_n2, tmp_n3, m1, m2, m3;
+		tmp_n2 = i2Halo2End + 1 ;
+		tmp_n3 = 10;
+		sca_utility_optimize_leading(n1, tmp_n2, tmp_n3, 1, &m1, &m2, &m3);
+		if (tmp_n2 != m2)
+		{
+			i2PadStart = i2Halo2End + 1 ;
+			i2PadEnd   = i2PadStart + (m2 - tmp_n2) - 1 ;
+		}
+		else
+		{
+			i2PadStart = i2Halo2End ;
+			i2PadEnd   = i2Halo2End ;
+		}
+	}
 	else if (Config::Instance()->n2AddPad != UNSPECIFIED)
 	{
 		i2PadStart = i2Halo2End + 1 ;
@@ -1866,21 +1866,21 @@ void Grid_NEC::padGridn3(void)
 	printDebug(MID_DEBUG, "IN Grid_NEC::padGridn3");
 
 	if (Config::Instance()->autoPad == true)
-	  {
-	    sca_int_t tmp_n3, m1, m2, m3;
-	    tmp_n3 = i3Halo2End + 1 ;
-	    sca_utility_optimize_leading(n1, n2, tmp_n3, 1, &m1, &m2, &m3);
-	    if (tmp_n3 != m3)
-	      {
-	    i3PadStart = i3Halo2End + 1 ;
-	    i3PadEnd   = i3PadStart + (m3 - tmp_n3) - 1 ;
-	  }
-	    else
-	      {
-		i3PadStart = i3Halo2End ;
-		i3PadEnd   = i3Halo2End ;
-	      }
-	  }
+	{
+		sca_int_t tmp_n3, m1, m2, m3;
+		tmp_n3 = i3Halo2End + 1 ;
+		sca_utility_optimize_leading(n1, n2, tmp_n3, 1, &m1, &m2, &m3);
+		if (tmp_n3 != m3)
+		{
+			i3PadStart = i3Halo2End + 1 ;
+			i3PadEnd   = i3PadStart + (m3 - tmp_n3) - 1 ;
+		}
+		else
+		{
+			i3PadStart = i3Halo2End ;
+			i3PadEnd   = i3Halo2End ;
+		}
+	}
 	else if (Config::Instance()->n3AddPad != UNSPECIFIED)
 	{
 		i3PadStart = i3Halo2End + 1 ;
@@ -3220,287 +3220,285 @@ Rtn_code Grid_NEC::exchangeHalos(MPI_comm_mode_type commMode)
 	Myint nreq = 0;
 	Myint64 ofs = 0;
 
-        printDebug(FULL_DEBUG, "IN Grid_NEC::exchangeHalos");
+	printDebug(FULL_DEBUG, "IN Grid_NEC::exchangeHalos");
 
-        if (commMode == MPI_COMM_MODE_SENDRECV)
-        {
-                printDebug(MID_DEBUG, "MPI_COMM_MODE_SENDRECV") ;
+	if (commMode == MPI_COMM_MODE_SENDRECV)
+	{
+		printDebug(MID_DEBUG, "MPI_COMM_MODE_SENDRECV") ;
 
-                // exchange the 6 halos
+		// exchange the 6 halos
 #if 0
-                if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I1HALO1) != RTN_CODE_OK) return (RTN_CODE_KO) ;
-                if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I1HALO2) != RTN_CODE_OK) return (RTN_CODE_KO) ;
-                if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I2HALO1) != RTN_CODE_OK) return (RTN_CODE_KO) ;
-                if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I2HALO2) != RTN_CODE_OK) return (RTN_CODE_KO) ;
-                if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I3HALO1) != RTN_CODE_OK) return (RTN_CODE_KO) ;
-                if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I3HALO2) != RTN_CODE_OK) return (RTN_CODE_KO) ;
+		if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I1HALO1) != RTN_CODE_OK) return (RTN_CODE_KO) ;
+		if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I1HALO2) != RTN_CODE_OK) return (RTN_CODE_KO) ;
+		if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I2HALO1) != RTN_CODE_OK) return (RTN_CODE_KO) ;
+		if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I2HALO2) != RTN_CODE_OK) return (RTN_CODE_KO) ;
+		if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I3HALO1) != RTN_CODE_OK) return (RTN_CODE_KO) ;
+		if (exchangeHalo(MPI_COMM_MODE_SENDRECV, I3HALO2) != RTN_CODE_OK) return (RTN_CODE_KO) ;
 #else
-// I1HALO1 - send/recv to i1ProcIdStart
-if (i1ProcIdStart != MPI_PROC_NULL) {
-li1s = i1InnerStart;
-li1e = i1InnerStart + haloWidth - 1;
-li2s = i2InnerStart;
-li2e = i2InnerEnd;
-li3s = i3InnerStart;
-li3e = i3InnerEnd;
-li1n = li1e - li1s + 1;
-li2n = li2e - li2s + 1;
-li3n = li3e - li3s + 1;
-n = li1n * li2n * li3n;
-bufSend = &(tmp_grid_3d[ofs]); ofs += n;
-bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
-for (Myint64 i3 = li3s; i3<= li3e; i3++) {
+	// I1HALO1 - send/recv to i1ProcIdStart
+	if (i1ProcIdStart != MPI_PROC_NULL) {
+		li1s = i1InnerStart;
+		li1e = i1InnerStart + haloWidth - 1;
+		li2s = i2InnerStart;
+		li2e = i2InnerEnd;
+		li3s = i3InnerStart;
+		li3e = i3InnerEnd;
+		li1n = li1e - li1s + 1;
+		li2n = li2e - li2s + 1;
+		li3n = li3e - li3s + 1;
+		n = li1n * li2n * li3n;
+		bufSend = &(tmp_grid_3d[ofs]); ofs += n;
+		bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
+		for (Myint64 i3 = li3s; i3<= li3e; i3++) {
 #pragma _NEC interchange
-for (Myint64 i2 = li2s; i2<= li2e; i2++) {
-for (Myint64 i1 = li1s; i1<= li1e; i1++) {
-bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
-}
-}
-}
-MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i1ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq]);
-MPI_Isend(bufSend, n, MPI_MYFLOAT, i1ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq+1]);
-req_li1s[nreq] = i1Halo1Start;
-req_li1e[nreq] = i1Halo1End;
-req_li2s[nreq] = li2s;
-req_li2e[nreq] = li2e;
-req_li3s[nreq] = li3s;
-req_li3e[nreq] = li3e;
-req_li1n[nreq] = li1n;
-req_li2n[nreq] = li2n;
-req_bufRecv[nreq] = bufRecv;
-req_bufRecv[nreq+1] = NULL;
-nreq += 2;
-}
+			for (Myint64 i2 = li2s; i2<= li2e; i2++) {
+				for (Myint64 i1 = li1s; i1<= li1e; i1++) {
+					bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
+				}
+			}
+		}
+		MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i1ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq]);
+		MPI_Isend(bufSend, n, MPI_MYFLOAT, i1ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq+1]);
+		req_li1s[nreq] = i1Halo1Start;
+		req_li1e[nreq] = i1Halo1End;
+		req_li2s[nreq] = li2s;
+		req_li2e[nreq] = li2e;
+		req_li3s[nreq] = li3s;
+		req_li3e[nreq] = li3e;
+		req_li1n[nreq] = li1n;
+		req_li2n[nreq] = li2n;
+		req_bufRecv[nreq] = bufRecv;
+		req_bufRecv[nreq+1] = NULL;
+		nreq += 2;
+	}
 
-// I1HALO2 - send/recv to i1ProcIdEnd
-if (i1ProcIdEnd != MPI_PROC_NULL) {
-li1s = i1InnerEnd - haloWidth + 1;
-li1e = i1InnerEnd;
-li2s = i2InnerStart;
-li2e = i2InnerEnd;
-li3s = i3InnerStart;
-li3e = i3InnerEnd;
-li1n = li1e - li1s + 1;
-li2n = li2e - li2s + 1;
-li3n = li3e - li3s + 1;
-n = li1n * li2n * li3n;
-bufSend = &(tmp_grid_3d[ofs]); ofs += n;
-bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
-for (Myint64 i3 = li3s; i3<= li3e; i3++) {
+	// I1HALO2 - send/recv to i1ProcIdEnd
+	if (i1ProcIdEnd != MPI_PROC_NULL) {
+		li1s = i1InnerEnd - haloWidth + 1;
+		li1e = i1InnerEnd;
+		li2s = i2InnerStart;
+		li2e = i2InnerEnd;
+		li3s = i3InnerStart;
+		li3e = i3InnerEnd;
+		li1n = li1e - li1s + 1;
+		li2n = li2e - li2s + 1;
+		li3n = li3e - li3s + 1;
+		n = li1n * li2n * li3n;
+		bufSend = &(tmp_grid_3d[ofs]); ofs += n;
+		bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
+		for (Myint64 i3 = li3s; i3<= li3e; i3++) {
 #pragma _NEC interchange
-for (Myint64 i2 = li2s; i2<= li2e; i2++) {
-for (Myint64 i1 = li1s; i1<= li1e; i1++) {
-bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
-}
-}
-}
-MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i1ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq]);
-MPI_Isend(bufSend, n, MPI_MYFLOAT, i1ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq+1]);
-req_li1s[nreq] = i1Halo2Start;
-req_li1e[nreq] = i1Halo2End;
-req_li2s[nreq] = li2s;
-req_li2e[nreq] = li2e;
-req_li3s[nreq] = li3s;
-req_li3e[nreq] = li3e;
-req_li1n[nreq] = li1n;
-req_li2n[nreq] = li2n;
-req_bufRecv[nreq] = bufRecv;
-req_bufRecv[nreq+1] = NULL;
-nreq += 2;
-}
+			for (Myint64 i2 = li2s; i2<= li2e; i2++) {
+				for (Myint64 i1 = li1s; i1<= li1e; i1++) {
+					bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
+				}
+			}
+		}
+		MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i1ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq]);
+		MPI_Isend(bufSend, n, MPI_MYFLOAT, i1ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq+1]);
+		req_li1s[nreq] = i1Halo2Start;
+		req_li1e[nreq] = i1Halo2End;
+		req_li2s[nreq] = li2s;
+		req_li2e[nreq] = li2e;
+		req_li3s[nreq] = li3s;
+		req_li3e[nreq] = li3e;
+		req_li1n[nreq] = li1n;
+		req_li2n[nreq] = li2n;
+		req_bufRecv[nreq] = bufRecv;
+		req_bufRecv[nreq+1] = NULL;
+		nreq += 2;
+	}
 
-// I2HALO1 - send/recv to i2ProcIdStart
-if (i2ProcIdStart != MPI_PROC_NULL) {
-li1s = i1InnerStart;
-li1e = i1InnerEnd;
-li2s = i2InnerStart;
-li2e = i2InnerStart + haloWidth - 1;
-li3s = i3InnerStart;
-li3e = i3InnerEnd;
-li1n = li1e - li1s + 1;
-li2n = li2e - li2s + 1;
-li3n = li3e - li3s + 1;
-n = li1n * li2n * li3n;
-bufSend = &(tmp_grid_3d[ofs]); ofs += n;
-bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
-for (Myint64 i3 = li3s; i3<= li3e; i3++) {
-for (Myint64 i2 = li2s; i2<= li2e; i2++) {
-for (Myint64 i1 = li1s; i1<= li1e; i1++) {
-bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
-}
-}
-}
-MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i2ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq]);
-MPI_Isend(bufSend, n, MPI_MYFLOAT, i2ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq+1]);
-req_li1s[nreq] = li1s;
-req_li1e[nreq] = li1e;
-req_li2s[nreq] = i2Halo1Start;
-req_li2e[nreq] = i2Halo1End;
-req_li3s[nreq] = li3s;
-req_li3e[nreq] = li3e;
-req_li1n[nreq] = li1n;
-req_li2n[nreq] = li2n;
-req_bufRecv[nreq] = bufRecv;
-req_bufRecv[nreq+1] = NULL;
-nreq += 2;
-}
+	// I2HALO1 - send/recv to i2ProcIdStart
+	if (i2ProcIdStart != MPI_PROC_NULL) {
+		li1s = i1InnerStart;
+		li1e = i1InnerEnd;
+		li2s = i2InnerStart;
+		li2e = i2InnerStart + haloWidth - 1;
+		li3s = i3InnerStart;
+		li3e = i3InnerEnd;
+		li1n = li1e - li1s + 1;
+		li2n = li2e - li2s + 1;
+		li3n = li3e - li3s + 1;
+		n = li1n * li2n * li3n;
+		bufSend = &(tmp_grid_3d[ofs]); ofs += n;
+		bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
+		for (Myint64 i3 = li3s; i3<= li3e; i3++) {
+			for (Myint64 i2 = li2s; i2<= li2e; i2++) {
+				for (Myint64 i1 = li1s; i1<= li1e; i1++) {
+					bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
+				}
+			}
+		}
+		MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i2ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq]);
+		MPI_Isend(bufSend, n, MPI_MYFLOAT, i2ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq+1]);
+		req_li1s[nreq] = li1s;
+		req_li1e[nreq] = li1e;
+		req_li2s[nreq] = i2Halo1Start;
+		req_li2e[nreq] = i2Halo1End;
+		req_li3s[nreq] = li3s;
+		req_li3e[nreq] = li3e;
+		req_li1n[nreq] = li1n;
+		req_li2n[nreq] = li2n;
+		req_bufRecv[nreq] = bufRecv;
+		req_bufRecv[nreq+1] = NULL;
+		nreq += 2;
+	}
 
-// I2HALO2 - send/recv to i2ProcIdEnd
-if (i2ProcIdEnd != MPI_PROC_NULL) {
-li1s = i1InnerStart;
-li1e = i1InnerEnd;
-li2s = i2InnerEnd - haloWidth + 1;
-li2e = i2InnerEnd;
-li3s = i3InnerStart;
-li3e = i3InnerEnd;
-li1n = li1e - li1s + 1;
-li2n = li2e - li2s + 1;
-li3n = li3e - li3s + 1;
-n = li1n * li2n * li3n;
-bufSend = &(tmp_grid_3d[ofs]); ofs += n;
-bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
-for (Myint64 i3 = li3s; i3<= li3e; i3++) {
-for (Myint64 i2 = li2s; i2<= li2e; i2++) {
-for (Myint64 i1 = li1s; i1<= li1e; i1++) {
-bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
-}
-}
-}
-MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i2ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq]);
-MPI_Isend(bufSend, n, MPI_MYFLOAT, i2ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq+1]);
-req_li1s[nreq] = li1s;
-req_li1e[nreq] = li1e;
-req_li2s[nreq] = i2Halo2Start;
-req_li2e[nreq] = i2Halo2End;
-req_li3s[nreq] = li3s;
-req_li3e[nreq] = li3e;
-req_li1n[nreq] = li1n;
-req_li2n[nreq] = li2n;
-req_bufRecv[nreq] = bufRecv;
-req_bufRecv[nreq+1] = NULL;
-nreq += 2;
-}
+	// I2HALO2 - send/recv to i2ProcIdEnd
+	if (i2ProcIdEnd != MPI_PROC_NULL) {
+		li1s = i1InnerStart;
+		li1e = i1InnerEnd;
+		li2s = i2InnerEnd - haloWidth + 1;
+		li2e = i2InnerEnd;
+		li3s = i3InnerStart;
+		li3e = i3InnerEnd;
+		li1n = li1e - li1s + 1;
+		li2n = li2e - li2s + 1;
+		li3n = li3e - li3s + 1;
+		n = li1n * li2n * li3n;
+		bufSend = &(tmp_grid_3d[ofs]); ofs += n;
+		bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
+		for (Myint64 i3 = li3s; i3<= li3e; i3++) {
+			for (Myint64 i2 = li2s; i2<= li2e; i2++) {
+				for (Myint64 i1 = li1s; i1<= li1e; i1++) {
+					bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
+				}
+			}
+		}
+		MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i2ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq]);
+		MPI_Isend(bufSend, n, MPI_MYFLOAT, i2ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq+1]);
+		req_li1s[nreq] = li1s;
+		req_li1e[nreq] = li1e;
+		req_li2s[nreq] = i2Halo2Start;
+		req_li2e[nreq] = i2Halo2End;
+		req_li3s[nreq] = li3s;
+		req_li3e[nreq] = li3e;
+		req_li1n[nreq] = li1n;
+		req_li2n[nreq] = li2n;
+		req_bufRecv[nreq] = bufRecv;
+		req_bufRecv[nreq+1] = NULL;
+		nreq += 2;
+	}
 
-// I3HALO1 - send/recv to i3ProcIdStart
-if (i3ProcIdStart != MPI_PROC_NULL) {
-li1s = i1InnerStart;
-li1e = i1InnerEnd;
-li2s = i2InnerStart;
-li2e = i2InnerEnd;
-li3s = i3InnerStart;
-li3e = i3InnerStart + haloWidth - 1;
-li1n = li1e - li1s + 1;
-li1n = li1e - li1s + 1;
-li2n = li2e - li2s + 1;
-li3n = li3e - li3s + 1;
-n = li1n * li2n * li3n;
-bufSend = &(tmp_grid_3d[ofs]); ofs += n;
-bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
-for (Myint64 i3 = li3s; i3<= li3e; i3++) {
-for (Myint64 i2 = li2s; i2<= li2e; i2++) {
-for (Myint64 i1 = li1s; i1<= li1e; i1++) {
-bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
-}
-}
-}
-MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i3ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq]);
-MPI_Isend(bufSend, n, MPI_MYFLOAT, i3ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq+1]);
-req_li1s[nreq] = li1s;
-req_li1e[nreq] = li1e;
-req_li2s[nreq] = li2s;
-req_li2e[nreq] = li2e;
-req_li3s[nreq] = i3Halo1Start;
-req_li3e[nreq] = i3Halo1End;
-req_li1n[nreq] = li1n;
-req_li2n[nreq] = li2n;
-req_bufRecv[nreq] = bufRecv;
-req_bufRecv[nreq+1] = NULL;
-nreq += 2;
-}
+	// I3HALO1 - send/recv to i3ProcIdStart
+	if (i3ProcIdStart != MPI_PROC_NULL) {
+		li1s = i1InnerStart;
+		li1e = i1InnerEnd;
+		li2s = i2InnerStart;
+		li2e = i2InnerEnd;
+		li3s = i3InnerStart;
+		li3e = i3InnerStart + haloWidth - 1;
+		li1n = li1e - li1s + 1;
+		li1n = li1e - li1s + 1;
+		li2n = li2e - li2s + 1;
+		li3n = li3e - li3s + 1;
+		n = li1n * li2n * li3n;
+		bufSend = &(tmp_grid_3d[ofs]); ofs += n;
+		bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
+		for (Myint64 i3 = li3s; i3<= li3e; i3++) {
+			for (Myint64 i2 = li2s; i2<= li2e; i2++) {
+				for (Myint64 i1 = li1s; i1<= li1e; i1++) {
+					bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
+				}
+			}
+		}
+		MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i3ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq]);
+		MPI_Isend(bufSend, n, MPI_MYFLOAT, i3ProcIdStart, 0, MPI_COMM_WORLD, &requests[nreq+1]);
+		req_li1s[nreq] = li1s;
+		req_li1e[nreq] = li1e;
+		req_li2s[nreq] = li2s;
+		req_li2e[nreq] = li2e;
+		req_li3s[nreq] = i3Halo1Start;
+		req_li3e[nreq] = i3Halo1End;
+		req_li1n[nreq] = li1n;
+		req_li2n[nreq] = li2n;
+		req_bufRecv[nreq] = bufRecv;
+		req_bufRecv[nreq+1] = NULL;
+		nreq += 2;
+	}
 
-// I3HALO2 - send/recv to i3ProcIdEnd
-if (i3ProcIdEnd != MPI_PROC_NULL) {
-li1s = i1InnerStart;
-li1e = i1InnerEnd;
-li2s = i2InnerStart;
-li2e = i2InnerEnd;
-li3s = i3InnerEnd - haloWidth + 1;
-li3e = i3InnerEnd;
-li1n = li1e - li1s + 1;
-li2n = li2e - li2s + 1;
-li3n = li3e - li3s + 1;
-n = li1n * li2n * li3n;
-bufSend = &(tmp_grid_3d[ofs]); ofs += n;
-bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
-for (Myint64 i3 = li3s; i3<= li3e; i3++) {
-for (Myint64 i2 = li2s; i2<= li2e; i2++) {
-for (Myint64 i1 = li1s; i1<= li1e; i1++) {
-bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
-}
-}
-}
-MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i3ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq]);
-MPI_Isend(bufSend, n, MPI_MYFLOAT, i3ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq+1]);
-req_li1s[nreq] = li1s;
-req_li1e[nreq] = li1e;
-req_li2s[nreq] = li2s;
-req_li2e[nreq] = li2e;
-req_li3s[nreq] = i3Halo2Start;
-req_li3e[nreq] = i3Halo2End;
-req_li1n[nreq] = li1n;
-req_li2n[nreq] = li2n;
-req_bufRecv[nreq] = bufRecv;
-req_bufRecv[nreq+1] = NULL;
-nreq += 2;
-}
+	// I3HALO2 - send/recv to i3ProcIdEnd
+	if (i3ProcIdEnd != MPI_PROC_NULL) {
+		li1s = i1InnerStart;
+		li1e = i1InnerEnd;
+		li2s = i2InnerStart;
+		li2e = i2InnerEnd;
+		li3s = i3InnerEnd - haloWidth + 1;
+		li3e = i3InnerEnd;
+		li1n = li1e - li1s + 1;
+		li2n = li2e - li2s + 1;
+		li3n = li3e - li3s + 1;
+		n = li1n * li2n * li3n;
+		bufSend = &(tmp_grid_3d[ofs]); ofs += n;
+		bufRecv = &(tmp_grid_3d[ofs]); ofs += n;
+		for (Myint64 i3 = li3s; i3<= li3e; i3++) {
+			for (Myint64 i2 = li2s; i2<= li2e; i2++) {
+				for (Myint64 i1 = li1s; i1<= li1e; i1++) {
+					bufSend[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n] = grid_3d[i1 + i2*n1 + i3*n1*n2];
+				}
+			}
+		}
+		MPI_Irecv(bufRecv, n, MPI_MYFLOAT, i3ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq]);
+		MPI_Isend(bufSend, n, MPI_MYFLOAT, i3ProcIdEnd, 0, MPI_COMM_WORLD, &requests[nreq+1]);
+		req_li1s[nreq] = li1s;
+		req_li1e[nreq] = li1e;
+		req_li2s[nreq] = li2s;
+		req_li2e[nreq] = li2e;
+		req_li3s[nreq] = i3Halo2Start;
+		req_li3e[nreq] = i3Halo2End;
+		req_li1n[nreq] = li1n;
+		req_li2n[nreq] = li2n;
+		req_bufRecv[nreq] = bufRecv;
+		req_bufRecv[nreq+1] = NULL;
+		nreq += 2;
+	}
 
-
-
-n = nreq;
-while (n > 0) {
-int indx;
-MPI_Waitany(nreq, requests, &indx, statuses);
-if (req_bufRecv[indx]) {
-li1s = req_li1s[indx];
-li1e = req_li1e[indx];
-li2s = req_li2s[indx];
-li2e = req_li2e[indx];
-li3s = req_li3s[indx];
-li3e = req_li3e[indx];
-li1n = req_li1n[indx];
-li2n = req_li2n[indx];
-bufRecv = req_bufRecv[indx];
-if (li1n > 32) {
-for (Myint64 i3 = li3s; i3<= li3e; i3++) {
-for (Myint64 i2 = li2s; i2<= li2e; i2++) {
-for (Myint64 i1 = li1s; i1<= li1e; i1++) {
-grid_3d[i1 + i2*n1 + i3*n1*n2] = bufRecv[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n];
-}
-}
-}
-} else {
-for (Myint64 i3 = li3s; i3<= li3e; i3++) {
+	n = nreq;
+	while (n > 0) {
+		int indx;
+		MPI_Waitany(nreq, requests, &indx, statuses);
+		if (req_bufRecv[indx]) {
+			li1s = req_li1s[indx];
+			li1e = req_li1e[indx];
+			li2s = req_li2s[indx];
+			li2e = req_li2e[indx];
+			li3s = req_li3s[indx];
+			li3e = req_li3e[indx];
+			li1n = req_li1n[indx];
+			li2n = req_li2n[indx];
+			bufRecv = req_bufRecv[indx];
+			if (li1n > 32) {
+				for (Myint64 i3 = li3s; i3<= li3e; i3++) {
+					for (Myint64 i2 = li2s; i2<= li2e; i2++) {
+						for (Myint64 i1 = li1s; i1<= li1e; i1++) {
+							grid_3d[i1 + i2*n1 + i3*n1*n2] = bufRecv[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n];
+						}
+					}
+				}
+			} else {
+				for (Myint64 i3 = li3s; i3<= li3e; i3++) {
 #pragma _NEC interchange
-for (Myint64 i2 = li2s; i2<= li2e; i2++) {
-for (Myint64 i1 = li1s; i1<= li1e; i1++) {
-grid_3d[i1 + i2*n1 + i3*n1*n2] = bufRecv[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n];
-}
-}
-}
-}
-}
-n--;
-}
+					for (Myint64 i2 = li2s; i2<= li2e; i2++) {
+						for (Myint64 i1 = li1s; i1<= li1e; i1++) {
+							grid_3d[i1 + i2*n1 + i3*n1*n2] = bufRecv[(i1-li1s) + (i2-li2s) * li1n + (i3-li3s) * li1n * li2n];
+						}
+					}
+				}
+			}
+		}
+		n--;
+	}
 #endif
-        }
-        else
-        {
-                printError("IN Grid_NEC::exchangeHalos, invalid commMode", commMode) ;
-                return(RTN_CODE_KO) ;
-        }
+	}
+	else
+	{
+		printError("IN Grid_NEC::exchangeHalos, invalid commMode", commMode) ;
+		return(RTN_CODE_KO) ;
+	}
 
-        printDebug(FULL_DEBUG, "OUT Grid_NEC::exchangeHalos");
-        return(RTN_CODE_OK) ;
+	printDebug(FULL_DEBUG, "OUT Grid_NEC::exchangeHalos");
+	return(RTN_CODE_OK) ;
 }
 
 } // namespace hpcscan
