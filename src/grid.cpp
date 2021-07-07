@@ -63,7 +63,7 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Grid::Grid(Grid_type gridTypeIn)
-{
+		{
 	printDebug(MID_DEBUG, "IN Grid::Grid");
 
 	gridMode = GRID_MODE_BASELINE ;
@@ -144,7 +144,7 @@ Grid::Grid(Grid_type gridTypeIn)
 	haloWidth     = 0 ;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
-}
+		}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -635,9 +635,19 @@ void Grid::padGridn1(void)
 
 	if (Config::Instance()->autoPad == true)
 	{
-		printWarning("Grid::padGridn1, autoPad is not available") ;
+		// autoPad is done only on n1
 		i1PadStart = i1Halo2End ;
 		i1PadEnd   = i1Halo2End ;
+
+		// pad n1 to get an even number if necessary
+		// for 64 bit memory alignment of inner points
+		Myint nTot = i1Halo2End + 1 ;
+		if (nTot%2)
+		{
+			i1PadStart = i1Halo2End + 1 ;
+			i1PadEnd   = i1Halo2End + 1 ;
+		}
+
 	}
 	else if (Config::Instance()->n1AddPad != UNSPECIFIED)
 	{
@@ -677,7 +687,7 @@ void Grid::padGridn2(void)
 
 	if (Config::Instance()->autoPad == true)
 	{
-		printWarning("Grid::padGridn2, autoPad is not available") ;
+		// autoPad is done only on n1
 		i2PadStart = i2Halo2End ;
 		i2PadEnd   = i2Halo2End ;
 	}
@@ -718,7 +728,7 @@ void Grid::padGridn3(void)
 
 	if (Config::Instance()->autoPad == true)
 	{
-		printWarning("Grid::padGridn3, autoPad is not available") ;
+		// autoPad is done only on n1
 		i3PadStart = i3Halo2End ;
 		i3PadEnd   = i3Halo2End ;
 	}
@@ -758,7 +768,7 @@ void Grid::offsetGridn1(void)
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn1");
 
 	i1OffsetStart = 0 ;
-	Myint offset = Config::Instance()->n1Offset = UNSPECIFIED ;
+	Myint offset = Config::Instance()->n1Offset ;
 	if (offset == UNSPECIFIED)
 	{
 		// add one point if halo width is an odd number
@@ -785,7 +795,7 @@ void Grid::offsetGridn2(void)
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn2");
 
 	i2OffsetStart = 0 ;
-	Myint offset = Config::Instance()->n2Offset = UNSPECIFIED ;
+	Myint offset = Config::Instance()->n2Offset ;
 	if (offset == UNSPECIFIED)
 	{
 		// add one point if halo width is an odd number
@@ -812,20 +822,20 @@ void Grid::offsetGridn3(void)
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn3");
 
 	i3OffsetStart = 0 ;
-	Myint offset = Config::Instance()->n3Offset = UNSPECIFIED ;
+	Myint offset = Config::Instance()->n3Offset ;
 	if (offset == UNSPECIFIED)
+	{
+		// add one point if halo width is an odd number
+		// to get inner point aligned to 64 bit memory address
+		//if (haloWidth%2 == 1)
+		//{
+		//	offset = 1 ;
+		//}
+		//else
 		{
-			// add one point if halo width is an odd number
-			// to get inner point aligned to 64 bit memory address
-			//if (haloWidth%2 == 1)
-			//{
-			//	offset = 1 ;
-			//}
-			//else
-			{
-				offset = 0 ;
-			}
+			offset = 0 ;
 		}
+	}
 	i3OffsetEnd   = i3OffsetStart + offset - 1 ;
 
 	printDebug(MID_DEBUG, "OUT Grid::offsetGridn3");
@@ -937,6 +947,22 @@ void Grid::info(void)
 	else
 	{
 		printInfo(MASTER, " Grid size (GB)\t", Myfloat(gridSize/1e9)) ;
+	}
+
+	// memory alignment
+	{
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+		Myfloat * const u = this->grid_3d ;
+		getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+		bool innerIsAligned = (((reinterpret_cast<std::uintptr_t>(&(u[i1Start+i2Start*n1+i3Start*n1*n2]))) & 0x7) == 0) ;
+		if (innerIsAligned)
+		{
+			printInfo(MASTER, " 64 bits align (inner)", "YES") ;
+		}
+		else
+		{
+			printInfo(MASTER, " 64 bits align (inner)", "NO") ;
+		}
 	}
 
 	printDebug(LIGHT_DEBUG, "i1OffsetStart", i1OffsetStart);
