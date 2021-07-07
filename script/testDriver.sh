@@ -140,6 +140,12 @@ echo Running -testCase Comm ...
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Comm -dim 3 -nsub1 2 -n1 200 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 3 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Comm -dim 3 -nsub1 3 -n1 300 >> ${report_file}
 
+$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Comm -dim 3 -nsub2 2 -n2 200 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 3 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Comm -dim 3 -nsub2 3 -n2 300 >> ${report_file}
+
+$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Comm -dim 3 -nsub3 2 -n3 200 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 3 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Comm -dim 3 -nsub3 3 -n3 300 >> ${report_file}
+
 #==========================================================================================================
 # test case Propa
 #==========================================================================================================

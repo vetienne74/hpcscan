@@ -43,6 +43,9 @@ public:
 	// Max error between this grid and another (point wise)
 	virtual Myfloat maxErr(Point_type, const Grid&) const ;
 
+	// exchange halos with MPI
+	virtual Rtn_code exchangeHalos(MPI_comm_mode_type) ;
+
 	// apply boundary condition
 	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;
 

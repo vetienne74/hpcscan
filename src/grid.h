@@ -129,7 +129,7 @@ public:
 	void defineUnitGrid() ;
 
 	// exchange halos with MPI
-	Rtn_code exchangeHalos(MPI_comm_mode_type) ;
+	virtual Rtn_code exchangeHalos(MPI_comm_mode_type) ;
 
 	// exchange one halo with MPI
 	virtual Rtn_code exchangeHalo(MPI_comm_mode_type, Point_type pointType) ;
