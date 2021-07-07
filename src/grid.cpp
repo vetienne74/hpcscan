@@ -758,7 +758,21 @@ void Grid::offsetGridn1(void)
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn1");
 
 	i1OffsetStart = 0 ;
-	i1OffsetEnd   = i1OffsetStart + Config::Instance()->n1Offset - 1 ;
+	Myint offset = Config::Instance()->n1Offset = UNSPECIFIED ;
+	if (offset == UNSPECIFIED)
+	{
+		// add one point if halo width is an odd number
+		// to get inner point aligned to 64 bit memory address
+		if (haloWidth%2 == 1)
+		{
+			offset = 1 ;
+		}
+		else
+		{
+			offset = 0 ;
+		}
+	}
+	i1OffsetEnd = i1OffsetStart + offset - 1 ;
 
 	printDebug(MID_DEBUG, "OUT Grid::offsetGridn1");
 
@@ -771,7 +785,21 @@ void Grid::offsetGridn2(void)
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn2");
 
 	i2OffsetStart = 0 ;
-	i2OffsetEnd   = i2OffsetStart + Config::Instance()->n2Offset - 1 ;
+	Myint offset = Config::Instance()->n2Offset = UNSPECIFIED ;
+	if (offset == UNSPECIFIED)
+	{
+		// add one point if halo width is an odd number
+		// to get inner point aligned to 64 bit memory address
+		//if (haloWidth%2 == 1)
+		//{
+		//	offset = 1 ;
+		//}
+		//else
+		{
+			offset = 0 ;
+		}
+	}
+	i2OffsetEnd = i2OffsetStart + offset - 1 ;
 
 	printDebug(MID_DEBUG, "OUT Grid::offsetGridn2");
 
@@ -784,7 +812,21 @@ void Grid::offsetGridn3(void)
 	printDebug(MID_DEBUG, "IN Grid::offsetGridn3");
 
 	i3OffsetStart = 0 ;
-	i3OffsetEnd   = i3OffsetStart + Config::Instance()->n3Offset - 1 ;
+	Myint offset = Config::Instance()->n3Offset = UNSPECIFIED ;
+	if (offset == UNSPECIFIED)
+		{
+			// add one point if halo width is an odd number
+			// to get inner point aligned to 64 bit memory address
+			//if (haloWidth%2 == 1)
+			//{
+			//	offset = 1 ;
+			//}
+			//else
+			{
+				offset = 0 ;
+			}
+		}
+	i3OffsetEnd   = i3OffsetStart + offset - 1 ;
 
 	printDebug(MID_DEBUG, "OUT Grid::offsetGridn3");
 
