@@ -70,13 +70,11 @@ public:
 
 protected:
 
-        // Temporary 3D grid array
-        Myfloat * tmp_grid_3d ;
+	// Temporary 3D grid array
+	Myfloat * tmp_grid_3d ;
 
-#ifndef _DOUBLE_PRECISION_
 	// flag to know packed stencil can be used
 	bool flag_packed_stencil ;
-#endif
 
 	// grid padding
 	virtual void padGridn1(void) ;
