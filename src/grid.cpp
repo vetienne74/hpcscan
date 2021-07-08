@@ -641,11 +641,17 @@ void Grid::padGridn1(void)
 
 		// pad n1 to get an even number if necessary
 		// for 64 bit memory alignment of inner points
+		// needed only in single precision
 		Myint nTot = i1Halo2End + 1 ;
 		if (nTot%2)
 		{
+#ifndef _DOUBLE_PRECISION_
 			i1PadStart = i1Halo2End + 1 ;
 			i1PadEnd   = i1Halo2End + 1 ;
+#else
+			i1PadStart = i1Halo2End ;
+			i1PadEnd   = i1Halo2End ;
+#endif
 		}
 
 	}
@@ -687,7 +693,7 @@ void Grid::padGridn2(void)
 
 	if (Config::Instance()->autoPad == true)
 	{
-		// autoPad is done only on n1
+		// autoPad has effect on n1
 		i2PadStart = i2Halo2End ;
 		i2PadEnd   = i2Halo2End ;
 	}
@@ -728,7 +734,7 @@ void Grid::padGridn3(void)
 
 	if (Config::Instance()->autoPad == true)
 	{
-		// autoPad is done only on n1
+		// autoPad has effect only on n1
 		i3PadStart = i3Halo2End ;
 		i3PadEnd   = i3Halo2End ;
 	}
@@ -773,9 +779,14 @@ void Grid::offsetGridn1(void)
 	{
 		// add one point if halo width is an odd number
 		// to get inner point aligned to 64 bit memory address
+		// needed only in single precision
 		if (haloWidth%2 == 1)
 		{
+#ifndef _DOUBLE_PRECISION_
 			offset = 1 ;
+#else
+			offset = 0 ;
+#endif
 		}
 		else
 		{
@@ -800,6 +811,7 @@ void Grid::offsetGridn2(void)
 	{
 		// add one point if halo width is an odd number
 		// to get inner point aligned to 64 bit memory address
+		// not neeed in n2
 		//if (haloWidth%2 == 1)
 		//{
 		//	offset = 1 ;
@@ -827,6 +839,7 @@ void Grid::offsetGridn3(void)
 	{
 		// add one point if halo width is an odd number
 		// to get inner point aligned to 64 bit memory address
+		// not needed in n3
 		//if (haloWidth%2 == 1)
 		//{
 		//	offset = 1 ;
