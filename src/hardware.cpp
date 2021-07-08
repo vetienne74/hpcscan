@@ -236,8 +236,9 @@ void Hardware::displayCounterStat(void)
 			}
 
 			// write measurements in log file
+			if (myMpiRank == 0)
 			{
-				string file_name = "hpcscan.perf." + Config::Instance()->testCaseName + ".log";
+				string file_name = "hpcscan.hwCounter." + Config::Instance()->testCaseName + ".log";
 				ofstream hwCounterLogFile ;
 				hwCounterLogFile.open(file_name, ios::app) ;
 
@@ -263,6 +264,7 @@ void Hardware::displayCounterStat(void)
 				hwCounterLogFile << maxPower << " " ; // 12
 				hwCounterLogFile << averPower << " " ; // 13
 				hwCounterLogFile << wattHour << " " ; // 14
+				hwCounterLogFile << "\n" ;
 
 				hwCounterLogFile.close() ;
 			}
