@@ -260,10 +260,11 @@ void Hardware::displayCounterStat(void)
 				hwCounterLogFile << Config::Instance()->fdOrder << " " ; // 9
 
 				hwCounterLogFile << statTime << " " ; // 10
-				hwCounterLogFile << minPower << " " ; // 11
-				hwCounterLogFile << maxPower << " " ; // 12
-				hwCounterLogFile << averPower << " " ; // 13
-				hwCounterLogFile << wattHour << " " ; // 14
+				hwCounterLogFile << hwCounterVec.size() << " " ; // 11
+				hwCounterLogFile << minPower << " " ; // 12
+				hwCounterLogFile << maxPower << " " ; // 13
+				hwCounterLogFile << averPower << " " ; // 14
+				hwCounterLogFile << wattHour << " " ; // 15
 				hwCounterLogFile << "\n" ;
 
 				hwCounterLogFile.close() ;
