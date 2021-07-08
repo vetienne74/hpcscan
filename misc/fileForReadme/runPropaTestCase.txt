@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 1bfbe97d37d987c6dad842da3742164d4767fba2
+ Git version	commit 7e2140b78132fc21f00f9d4b9835deb0d95f5fc5
 		Author: vincent <vetienne@rocketmail.com>
-		Date:   Wed Jul 7 15:14:32 2021 +0300
+		Date:   Thu Jul 8 11:45:20 2021 +0300
 
  Host name	mars
  User name	vincent
@@ -33,7 +33,7 @@
  No. subdomains axis1	1
  No. subdomains axis2	1
  No. subdomains axis3	1
- OpenMP threads / MPI	2
+ OpenMP threads / MPI	4
  Number of tries	10
  FD space order		8
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -128,19 +128,19 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	16.0717
- Best Gpoint/s eff.	0.334828
- Best Gpoint/s in FD	0.334828
- Best Apparent BW GB/s	38.84
+ Best GFlop/s in FD	13.4142
+ Best Gpoint/s eff.	0.279464
+ Best Gpoint/s in FD	0.279464
+ Best Apparent BW GB/s	32.4178
 
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  Hardware counters statistics
  No statistic available
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
- Case run time (s)	0.165963
+ Case run time (s)	0.198001
 --------------------------------------------------------------------------------
- Total run time (s)	0.166328
+ Total run time (s)	0.198657
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

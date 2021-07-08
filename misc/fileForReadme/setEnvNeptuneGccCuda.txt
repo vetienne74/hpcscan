@@ -13,5 +13,8 @@ Cuda compilation tools, release 11.3, V11.3.58
 Build cuda_11.3.r11.3/compiler.29745058_0
 - No HIP compiler set
 - MPI library
+mpirun (Open MPI) 4.0.3
+
+Report bugs to http://www.open-mpi.org/community/help/
 - Number of OpenMP threads 2
 Ready to go!

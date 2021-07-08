@@ -49,7 +49,8 @@ protected:
 	// relative error between 2 float
 	Myfloat relErr(Myfloat float1, Myfloat float2) ;
 
-	// perf log file
+	// performance log file
+	// elapse time, GFlops, GB/s, etc
 	ofstream perfLogFile ;
 
 	// timer

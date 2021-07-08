@@ -43,10 +43,9 @@ Rtn_code TestCase::initialize(void)
 			printError("In TestCase::initialize, can not initialize hardware") ;
 			return(RTN_CODE_KO);
 		}
-		else
-		{
-			hw->info() ;
-		}
+
+		// print hardware info
+		hw->info() ;
 
 		// try to create and initialize a grid to see if everything is all right
 		auto gridTest = Grid_Factory::create(Config::Instance()->testMode, GRID_LOCAL) ;
@@ -55,6 +54,7 @@ Rtn_code TestCase::initialize(void)
 			printError("In TestCase::initialize, Not supported or invalid testMode") ;
 			return(RTN_CODE_KO) ;
 		}
+
 		if (gridTest->initializeGrid() != RTN_CODE_OK)
 		{
 			printError("In TestCase::initialize, Can not initialize grid with testMode") ;
@@ -69,7 +69,6 @@ Rtn_code TestCase::initialize(void)
 
 			// all strings first
 			perfLogFile << Config::Instance()->hostName << " " ;
-			//perfLogFile << Config::Instance()->userName << " " ;
 			perfLogFile << Config::Instance()->testCaseName << " " ;
 			perfLogFile << Config::Instance()->testMode << " " ;
 			perfLogFile << Config::Instance()->propagator << " " ;
