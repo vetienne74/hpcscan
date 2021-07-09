@@ -200,7 +200,7 @@ __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	// dynamic shared memory
-	extern __shared__ float sdata[];
+	extern __shared__ Myfloat sdata[];
 
 	// set to zero
 	sdata[threadIdx.x] = 0.0 ;
@@ -2648,6 +2648,13 @@ Rtn_code Grid_Cuda::initializeGrid(void)
 
 	Grid::initializeGrid() ;
 
+	// Grid should be initialized only once
+	if (d_grid_3d != NULL)
+	{
+		printError(" In Grid_Cuda::initializeGrid, d_grid_3d != nullptr") ;
+		return(RTN_CODE_OK) ;
+	}
+
 	// for kernels using 3D blocks
 	gpuGridSize1 = n1 / gpuBlkSize1 + 1 ;
 	gpuGridSize2 = n2 / gpuBlkSize2 + 1 ;
@@ -2670,21 +2677,21 @@ Rtn_code Grid_Cuda::initializeGrid(void)
 	}
 	printDebug(FULL_DEBUG, "Device Id" ,myDevice) ;
 
-	if (d_grid_3d == NULL)
+	//if (d_grid_3d == NULL)
 	{
 		// allocate the grid on the device
 		cudaMalloc( (void**)&d_grid_3d, npoint * sizeof(Myfloat) );
 		cudaCheckError();
 	}		
 
-	if (d_help_3d == NULL)
+	//if (d_help_3d == NULL)
 	{
 		// allocate 1d array of the device used to perform reduction operation
 		cudaMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
 	}
 
-	if (d_help_3d_2 == NULL)
+	//if (d_help_3d_2 == NULL)
 	{
 		// allocate 1d array of the device used to perform reduction operation
 		cudaMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );

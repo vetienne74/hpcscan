@@ -63,7 +63,7 @@ namespace hpcscan {
 //-------------------------------------------------------------------------------------------------------
 
 Grid::Grid(Grid_type gridTypeIn)
-		{
+{
 	printDebug(MID_DEBUG, "IN Grid::Grid");
 
 	gridMode = GRID_MODE_BASELINE ;
@@ -144,7 +144,7 @@ Grid::Grid(Grid_type gridTypeIn)
 	haloWidth     = 0 ;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
-		}
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -238,6 +238,13 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 Rtn_code Grid::initializeGrid(void)
 {
 	printDebug(MID_DEBUG, "IN Grid::initializeGrid");
+
+	// Grid should be initialized only once
+	if (grid_3d != NULL)
+	{
+		printError(" In Grid::initializeGrid, grid_3d != NULL") ;
+		return(RTN_CODE_OK) ;
+	}
 
 	Myint nlayer = Config::Instance()->nlayer ;
 
