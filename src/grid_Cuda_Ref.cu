@@ -1433,7 +1433,7 @@ void Grid_Cuda_Ref::write(string file_name)
 		// copy grid from device to host
 		copyGridDeviceToHost(ALL_POINTS) ;
 
-		Grid_Cuda_Ref::write(file_name) ;
+		Grid::write(file_name) ;
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda_Ref::write");
