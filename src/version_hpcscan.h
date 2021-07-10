@@ -1,4 +1,4 @@
-const char HPCSCAN_GIT_COMMIT[] = "commit af116eaad198deb78cb625d50d95d7d203d1478d" ;
+const char HPCSCAN_GIT_COMMIT[] = "commit fb10dcbf28894ef8c288bd2245e4492605896ba2" ;
 const char HPCSCAN_GIT_AUTHOR[] = "Author: vincent <vetienne@rocketmail.com>" ;
-const char HPCSCAN_GIT_DATE[] = "Date:   Fri Jul 9 10:44:59 2021 +0300" ;
-const time_t HPCSCAN_COMPILE_DATE = 1625888863 ;
+const char HPCSCAN_GIT_DATE[] = "Date:   Sat Jul 10 09:45:29 2021 +0300" ;
+const time_t HPCSCAN_COMPILE_DATE = 1625900766 ;

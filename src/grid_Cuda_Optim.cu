@@ -25,19 +25,19 @@
 
 using namespace std;
 
-// start code from NVIDIA
+// start code from code samples
 #include <cooperative_groups.h>
 
 namespace cg = cooperative_groups;
 
-// Note: If you change the RADIUS, you should also change the unrolling below
+// TODO get rid of these hardcoded values
 #define RADIUS 4
 
 #define k_blockDimX    32
 #define k_blockDimMaxY 16
 #define k_blockSizeMin 128
 #define k_blockSizeMax (k_blockDimX * k_blockDimMaxY)
-// end code from NVIDIA
+// end code from code samples
 
 namespace hpcscan {
 
@@ -707,6 +707,9 @@ Rtn_code Grid_Cuda_Optim::FD_D2_N1(Point_type pointType, const Grid& Wgrid, Myin
 
 	if (fdOrder == 8)
 	{
+		// TODO overrides gpuBlkSize
+		gpuBlkSize1 = 32 ;
+		gpuBlkSize2 = 16 ;
 		gpuBlkSize3 = 1 ;
 		int GridSize1 = n1 / gpuBlkSize1 + 1 ;
 		int GridSize2 = n2 / gpuBlkSize2 + 1 ;
@@ -777,6 +780,9 @@ Rtn_code Grid_Cuda_Optim::FD_D2_N2(Point_type pointType, const Grid& Wgrid, Myin
 
 	if (fdOrder == 8)
 	{
+		// TODO overrides gpuBlkSize
+		gpuBlkSize1 = 32 ;
+		gpuBlkSize2 = 16 ;
 		gpuBlkSize3 = 1 ;
 		int GridSize1 = n1 / gpuBlkSize1 + 1 ;
 		int GridSize2 = n2 / gpuBlkSize2 + 1 ;
@@ -847,6 +853,9 @@ Rtn_code Grid_Cuda_Optim::FD_D2_N3(Point_type pointType, const Grid& Wgrid, Myin
 
 	if (fdOrder == 8)
 	{
+		// TODO overrides gpuBlkSize
+		gpuBlkSize1 = 32 ;
+		gpuBlkSize2 = 16 ;
 		gpuBlkSize3 = 1 ;
 		int GridSize1 = n1 / gpuBlkSize1 + 1 ;
 		int GridSize2 = n2 / gpuBlkSize2 + 1 ;
@@ -917,6 +926,9 @@ Rtn_code Grid_Cuda_Optim::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, 
 
 	if ((dim == DIM3) && (fdOrder == 8))
 	{
+		// TODO overrides gpuBlkSize
+		gpuBlkSize1 = 32 ;
+		gpuBlkSize2 = 16 ;
 		gpuBlkSize3 = 1 ;
 		int GridSize1 = n1 / gpuBlkSize1 + 1 ;
 		int GridSize2 = n2 / gpuBlkSize2 + 1 ;
