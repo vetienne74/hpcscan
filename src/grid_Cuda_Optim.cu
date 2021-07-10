@@ -165,18 +165,18 @@ __global__ void kernelOpt_FD_N1_O8(const Myint fdOrder, Myfloat *output, Myfloat
 
 		// Update the data slice in the local tile
 		// Halo above & below
-		//if (ltidy < RADIUS)
-		//{
-		//	tile[ltidy][tx]                  = input[outputIndex - RADIUS * stride_y];
-		//	tile[ltidy + worky + RADIUS][tx] = input[outputIndex + worky * stride_y];
-		//}
+		if (ltidy < RADIUS)
+		{
+			tile[ltidy][tx]                  = input[outputIndex - RADIUS * stride_y];
+			tile[ltidy + worky + RADIUS][tx] = input[outputIndex + worky * stride_y];
+		}
 
 		// Halo left & right
-		//if (ltidx < RADIUS)
-		//{
-		//	tile[ty][ltidx]                  = input[outputIndex - RADIUS];
-		//	tile[ty][ltidx + workx + RADIUS] = input[outputIndex + workx];
-		//}
+		if (ltidx < RADIUS)
+		{
+			tile[ty][ltidx]                  = input[outputIndex - RADIUS];
+			tile[ty][ltidx + workx + RADIUS] = input[outputIndex + workx];
+		}
 
 		tile[ty][tx] = current;
 		cg::sync(cta);
@@ -303,18 +303,18 @@ __global__ void kernelOpt_FD_N2_O8(const Myint fdOrder, Myfloat *output, Myfloat
 
 		// Update the data slice in the local tile
 		// Halo above & below
-		//if (ltidy < RADIUS)
-		//{
-		//	tile[ltidy][tx]                  = input[outputIndex - RADIUS * stride_y];
-		//	tile[ltidy + worky + RADIUS][tx] = input[outputIndex + worky * stride_y];
-		//}
+		if (ltidy < RADIUS)
+		{
+			tile[ltidy][tx]                  = input[outputIndex - RADIUS * stride_y];
+			tile[ltidy + worky + RADIUS][tx] = input[outputIndex + worky * stride_y];
+		}
 
 		// Halo left & right
-		//if (ltidx < RADIUS)
-		//{
-		//	tile[ty][ltidx]                  = input[outputIndex - RADIUS];
-		//	tile[ty][ltidx + workx + RADIUS] = input[outputIndex + workx];
-		//}
+		if (ltidx < RADIUS)
+		{
+			tile[ty][ltidx]                  = input[outputIndex - RADIUS];
+			tile[ty][ltidx + workx + RADIUS] = input[outputIndex + workx];
+		}
 
 		tile[ty][tx] = current;
 		cg::sync(cta);
@@ -580,30 +580,29 @@ __global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *output, 
 
 		// Update the data slice in the local tile
 		// Halo above & below
-		//if (ltidy < RADIUS)
-		//{
-		//	tile[ltidy][tx]                  = input[outputIndex - RADIUS * stride_y];
-		//	tile[ltidy + worky + RADIUS][tx] = input[outputIndex + worky * stride_y];
-		//}
+		if (ltidy < RADIUS)
+		{
+			tile[ltidy][tx]                  = input[outputIndex - RADIUS * stride_y];
+			tile[ltidy + worky + RADIUS][tx] = input[outputIndex + worky * stride_y];
+		}
 
 		// Halo left & right
-		//if (ltidx < RADIUS)
-		//{
-		//	tile[ty][ltidx]                  = input[outputIndex - RADIUS];
-		//	tile[ty][ltidx + workx + RADIUS] = input[outputIndex + workx];
-		//}
+		if (ltidx < RADIUS)
+		{
+			tile[ty][ltidx]                  = input[outputIndex - RADIUS];
+			tile[ty][ltidx + workx + RADIUS] = input[outputIndex + workx];
+		}
 
 		tile[ty][tx] = current;
 		cg::sync(cta);
 
 		// Compute the output value
-		float value = stencil[0] * current ;
+		float value = stencil[0] * current * 3 ;
 #pragma unroll 4
 
 		for (int i = 1 ; i <= RADIUS ; i++)
 		{
-			//value += stencil[i] * (infront[i-1] + behind[i-1] + tile[ty - i][tx] + tile[ty + i][tx] + tile[ty][tx - i] + tile[ty][tx + i]);
-			value += stencil[i] * (infront[i-1] + behind[i-1]) ; // d1
+			value += stencil[i] * (infront[i-1] + behind[i-1] + tile[ty - i][tx] + tile[ty + i][tx] + tile[ty][tx - i] + tile[ty][tx + i]);
 		}
 
 		// Store the output value
@@ -935,11 +934,11 @@ Rtn_code Grid_Cuda_Optim::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, 
 		float* coeff = (float *)malloc((RADIUS + 1) * sizeof(float));
 
 		// Create coefficients
-		coeff[0] = FD_D2_O8_A0 * inv_d1 ;
-		coeff[1] = FD_D2_O8_A1 * inv_d1 ;
-		coeff[2] = FD_D2_O8_A2 * inv_d1 ;
-		coeff[3] = FD_D2_O8_A3 * inv_d1 ;
-		coeff[4] = FD_D2_O8_A4 * inv_d1 ;
+		coeff[0] = FD_D2_O8_A0 * inv2_d1 ;
+		coeff[1] = FD_D2_O8_A1 * inv2_d1 ;
+		coeff[2] = FD_D2_O8_A2 * inv2_d1 ;
+		coeff[3] = FD_D2_O8_A3 * inv2_d1 ;
+		coeff[4] = FD_D2_O8_A4 * inv2_d1 ;
 
 		//checkCudaErrors(cudaMemcpyToSymbol(stencil, (void *)coeff, (RADIUS + 1) * sizeof(float)));
 		cudaMemcpyToSymbol(stencil, (void *)coeff, (RADIUS + 1) * sizeof(float)) ;
