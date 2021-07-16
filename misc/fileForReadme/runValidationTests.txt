@@ -42,19 +42,7 @@ Running -testCase Comm ...
 Running -testCase Propa ...
 End testDriver.sh
 ------------------------------------------------------------------------
-------------------------------------------------------------------------
-Start testDriver.sh
->>> Test Mode CUDA_Opt <<<
-Launch MPI with mpirun --oversubscribe
-Running -testCase Util ...
-Running -testCase Template ...
-Running -testCase Memory ...
-Running -testCase FD_D2 ...
-Running -testCase Grid ...
-Running -testCase Comm ...
-Running -testCase Propa ...
-End testDriver.sh
-------------------------------------------------------------------------
+SKIP testMode CUDA_Opt (Not yet functionnal)
 ------------------------------------------------------------------------
 Start testDriver.sh
 >>> Test Mode CUDA_Ref <<<
@@ -74,16 +62,16 @@ SKIP testMode HIP_Opt
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Thu 08 Jul 2021 12:05:40 PM +03
-# Ended    :  Thu 08 Jul 2021 12:12:18 PM +03
-On machine :  mars
+# Started  :  Fri 16 Jul 2021 10:37:57 AM +03
+# Ended    :  Fri 16 Jul 2021 10:42:19 AM +03
+On machine :  neptune
 Done by    :  vincent
 * SUMMARY
-# PASSED  : 3155
+# PASSED  : 2524
 # FAILED  : 0
 # ERROR   : 0
 # WARNING : 0
-==> Results of tests are saved in runValidationTests.mars.vincent.out
+==> Results of tests are saved in runValidationTests.neptune.vincent.out
 
 ========================================================================
                          END VALIDATION TESTS

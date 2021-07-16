@@ -32,7 +32,7 @@ if [ "$HPCSCAN_CUDA" = "nvcc" ]
 then
     sh testDriver.sh CUDA
     #sh testDriver.sh CUDA_Opt
-    echo 'SKIP testMode CUDA_Opt'
+    echo 'SKIP testMode CUDA_Opt (Not yet functionnal)'
     sh testDriver.sh CUDA_Ref
 else
     echo 'SKIP testMode CUDA'
