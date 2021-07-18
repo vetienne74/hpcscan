@@ -3430,7 +3430,8 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 	{
 
 		// number of threads per block is set to blkSize x blkSize
-		const Myint blkSize = 32 ;
+		//const Myint blkSize = 32 ;
+		const Myint blkSize = 4 ;
 
 		// anti-mirroring value in halos
 		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
