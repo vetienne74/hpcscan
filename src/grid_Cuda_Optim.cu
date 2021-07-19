@@ -49,8 +49,9 @@ namespace hpcscan {
 // BEGINING OF CUDA KERNELS
 //*******************************************************************************************************
 
-// With max fd order = 16, there are at most 9 fd coef in the stencil
-__constant__ float stencil[9];
+// With max FD order = 16, there are at most 9 FD coefficients in the stencil
+#define MAX_FD_COEF 9
+__constant__ Myfloat stencil[MAX_FD_COEF];
 
 //-------------------------------------------------------------------------------------------------------
 // compute Laplacian
@@ -396,18 +397,12 @@ Rtn_code Grid_Cuda_Optim::initializeGrid(void)
 
 	Grid_Cuda::initializeGrid() ;
 
-	// Copy the coefficients to the device coefficient buffer
-	float* coeff = (float *)malloc((RADIUS + 1) * sizeof(float));
-
-	// Create coefficients
-	coeff[0] = FD_D2_O8_A0 ;
-	coeff[1] = FD_D2_O8_A1 ;
-	coeff[2] = FD_D2_O8_A2 ;
-	coeff[3] = FD_D2_O8_A3 ;
-	coeff[4] = FD_D2_O8_A4 ;
-
-	//checkCudaErrors(cudaMemcpyToSymbol(stencil, (void *)coeff, (RADIUS + 1) * sizeof(float)));
-	cudaMemcpyToSymbol(stencil, (void *)coeff, (RADIUS + 1) * sizeof(float)) ;
+	// Copy the FD coefficients to the device coefficient buffer (constant memory)
+	{
+		auto FD_coef = getFD_D2coefVector(Config::Instance()->fdOrder) ;
+		cudaMemcpyToSymbol(stencil, (void *) FD_coef.data(), FD_coef.size() * sizeof(Myfloat)) ;
+		cudaCheckError();
+	}
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda_Optim::initializeGrid") ;
 	return(RTN_CODE_OK) ;
