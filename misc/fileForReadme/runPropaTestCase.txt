@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 743cca74a012ebb9c7be20f8c4c8b464b20311ee
-		Author: vincent <vetienne@rocketmail.com>
-		Date:   Fri Jul 16 10:21:02 2021 +0300
+ Git version	commit 78966fd91a78e8a7c1d5d6a5540b69d862334871
+		Author: Vincent Etienne <vincent.etienne@aramco.com>
+		Date:   Sun Jul 18 15:10:56 2021 +0300
 
  Host name	neptune
  User name	vincent
@@ -128,19 +128,19 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	12.3421
- Best Gpoint/s eff.	0.257126
- Best Gpoint/s in FD	0.257126
- Best Apparent BW GB/s	29.8267
+ Best GFlop/s in FD	11.7784
+ Best Gpoint/s eff.	0.245384
+ Best Gpoint/s in FD	0.245384
+ Best Apparent BW GB/s	28.4645
 
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  Hardware counters statistics
  No statistic available
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
- Case run time (s)	0.217458
+ Case run time (s)	0.283085
 --------------------------------------------------------------------------------
- Total run time (s)	0.218983
+ Total run time (s)	0.284189
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

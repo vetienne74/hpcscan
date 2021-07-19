@@ -15,6 +15,7 @@
 #include <fstream>
 #include <stdio.h>
 
+#include <cooperative_groups.h>
 #include "mpi.h"
 
 #include "config.h"
@@ -25,17 +26,12 @@
 
 using namespace std;
 
-// start code from code samples
-#include <cooperative_groups.h>
-
 namespace cg = cooperative_groups;
 
-// TODO get rid of these hardcoded values
-#define MaxBlockDimX 64
-#define MaxBlockDimY 16
-// end code from code samples
-
 namespace hpcscan {
+
+#define MAX_BLOCK_DIM_X 64
+#define MAX_BLOCK_DIM_Y 16
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -61,7 +57,7 @@ __constant__ float stencil[9];
 //   u
 // output w
 
-__launch_bounds__(MaxBlockDimY*MaxBlockDimX)
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 
 __global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *output, Myfloat *input,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
@@ -83,20 +79,13 @@ __global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *output, 
 
 	// Handle to thread block group
 	cg::thread_block cta = cg::this_thread_block();
-	__shared__ float tile[MaxBlockDimY + 2 * RADIUS][MaxBlockDimX + 2 * RADIUS];
-	
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS][MAX_BLOCK_DIM_X + 2 * RADIUS];
+
 	const int stride_y = n1 ;
 	const int stride_z = stride_y * n2 ;
-	
-	//const int offsetZ = (int) i3Start - RADIUS ;
-	//const int offsetZ = 0 ;
-	
-	//printf("offsetZ=%d\n", offsetZ) ;
 
-	//int inputIndex  = 0;
-	//int outputIndex = 0;
-	int inputIndex  = (gtidz) * stride_z ;
-    int outputIndex = (gtidz) * stride_z ;
+	int inputIndex  = gtidz * stride_z ;
+	int outputIndex = gtidz * stride_z ;
 
 	// Advance inputIndex to start of inner volume
 	inputIndex += i2Start * stride_y + i1Start ;
@@ -143,11 +132,10 @@ __global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *output, 
 	}
 
 	// set max element to process along z (n3)
-	//const int maxZ = min(gtidz + dimz, (int) i3End-RADIUS+1) ;
 	int maxZ = gtidz + dimz ;
 	if (maxZ > (i3End-RADIUS+1)) 
 	{
-	maxZ = i3End-RADIUS+1 ;	
+		maxZ = i3End-RADIUS+1 ;
 	}
 
 	// Step through the xy-planes
@@ -204,8 +192,8 @@ __global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *output, 
 		for (int i = 1 ; i <= RADIUS ; i++)
 		{
 			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) + 
-								inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) + 
-								inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
+					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
+					inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
 		}
 
 		// Store the output value
@@ -239,20 +227,16 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 
 	// Handle to thread block group
 	cg::thread_block cta = cg::this_thread_block();
-	__shared__ float tile[MaxBlockDimY + 2 * RADIUS][MaxBlockDimX + 2 * RADIUS];
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS][MAX_BLOCK_DIM_X + 2 * RADIUS];
 
-	const int stride_y = dimx + 2 * RADIUS;
-	const int stride_z = stride_y * (dimy + 2 * RADIUS);
-	
-	const int offsetZ = (int) i3Start - RADIUS ;
+	const int stride_y = n1 ;
+	const int stride_z = stride_y * n2 ;
 
-	//int inputIndex  = 0;
-	//int outputIndex = 0;
 	int inputIndex  = gtidz * stride_z ;
-    int outputIndex = gtidz * stride_z ;
+	int outputIndex = gtidz * stride_z ;
 
 	// Advance inputIndex to start of inner volume
-	inputIndex += RADIUS * stride_y + RADIUS;
+	inputIndex += i2Start * stride_y + i1Start ;
 
 	// Advance inputIndex to target element
 	inputIndex += gtidy * stride_y + gtidx;
@@ -266,7 +250,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 	const int ty = ltidy + RADIUS;
 
 	// Check in bounds
-	if ((gtidx >= dimx + RADIUS) || (gtidy >= dimy + RADIUS))
+	if ((gtidx > i1End) || (gtidy > i2End))
 		validr = false;
 
 	if ((gtidx >= dimx) || (gtidy >= dimy))
@@ -294,7 +278,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 
 		inputIndex += stride_z;
 	}
-	
+
 	// set max element to process along z (n3)
 	int maxZ = gtidz + dimz ;
 	if (maxZ > (i3End-RADIUS+1)) 
@@ -355,16 +339,16 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 
 		for (int i = 1 ; i <= RADIUS ; i++)
 		{
-		value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) + 
-								inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) + 
-								inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));			
+			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
+					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
+					inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
 		}
-       
+
 
 		// Store the output value
 		if (validw)
 			prn[outputIndex] = TWO * current - prn[outputIndex] +
-				coef[outputIndex] * value ;
+			coef[outputIndex] * value ;
 	}
 
 }
@@ -411,19 +395,19 @@ Rtn_code Grid_Cuda_Optim::initializeGrid(void)
 	printDebug(FULL_DEBUG, "In Grid_Cuda_Optim::initializeGrid") ;
 
 	Grid_Cuda::initializeGrid() ;
-	
+
 	// Copy the coefficients to the device coefficient buffer
-		float* coeff = (float *)malloc((RADIUS + 1) * sizeof(float));
+	float* coeff = (float *)malloc((RADIUS + 1) * sizeof(float));
 
-		// Create coefficients
-		coeff[0] = FD_D2_O8_A0 ;
-		coeff[1] = FD_D2_O8_A1 ;
-		coeff[2] = FD_D2_O8_A2 ;
-		coeff[3] = FD_D2_O8_A3 ;
-		coeff[4] = FD_D2_O8_A4 ;
+	// Create coefficients
+	coeff[0] = FD_D2_O8_A0 ;
+	coeff[1] = FD_D2_O8_A1 ;
+	coeff[2] = FD_D2_O8_A2 ;
+	coeff[3] = FD_D2_O8_A3 ;
+	coeff[4] = FD_D2_O8_A4 ;
 
-		//checkCudaErrors(cudaMemcpyToSymbol(stencil, (void *)coeff, (RADIUS + 1) * sizeof(float)));
-		cudaMemcpyToSymbol(stencil, (void *)coeff, (RADIUS + 1) * sizeof(float)) ;
+	//checkCudaErrors(cudaMemcpyToSymbol(stencil, (void *)coeff, (RADIUS + 1) * sizeof(float)));
+	cudaMemcpyToSymbol(stencil, (void *)coeff, (RADIUS + 1) * sizeof(float)) ;
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda_Optim::initializeGrid") ;
 	return(RTN_CODE_OK) ;
@@ -443,58 +427,54 @@ void Grid_Cuda_Optim::info(void)
 	printInfo(MASTER, " FD block size 1", Config::Instance()->cb1) ;
 	printInfo(MASTER, " FD block size 2", Config::Instance()->cb2) ;
 	printInfo(MASTER, " FD block size 3", Config::Instance()->cb3) ;	
-	
-			// TODO overrides gpuBlkSize
-		int gpuBlkSize1 = Config::Instance()->cb1 ;
-		int gpuBlkSize2 = Config::Instance()->cb2 ;				
-		int gpuBlkSize3 = 1 ;
-		
-		int dimx = n1Inner ;
-		int dimy = n2Inner ;
-		int dimz = -1 ;	
-		
-		int GridSize1 = n1Inner / gpuBlkSize1 ;
-		if (n1Inner % gpuBlkSize1) GridSize1++ ;
-		int GridSize2 = n2Inner / gpuBlkSize2 ;
-		if (n2Inner % gpuBlkSize2) GridSize2++ ;
-		int GridSize3 = -1 ;
-		if (Config::Instance()->cb3 >= n3Inner)
-		{
+
+	// TODO overrides gpuBlkSize
+	int gpuBlkSize1 = Config::Instance()->cb1 ;
+	if (gpuBlkSize1 > MAX_BLOCK_DIM_X) gpuBlkSize1 = MAX_BLOCK_DIM_X ;
+	int gpuBlkSize2 = Config::Instance()->cb2 ;
+	if (gpuBlkSize2 > MAX_BLOCK_DIM_Y) gpuBlkSize2 = MAX_BLOCK_DIM_Y ;
+	int gpuBlkSize3 = 1 ;
+
+	int GridSize1 = n1Inner / gpuBlkSize1 ;
+	if (n1Inner % gpuBlkSize1) GridSize1++ ;
+	int GridSize2 = n2Inner / gpuBlkSize2 ;
+	if (n2Inner % gpuBlkSize2) GridSize2++ ;
+	int GridSize3 = -1 ;
+	if (Config::Instance()->cb3 >= n3Inner)
+	{
 		GridSize3 = 1 ;
-		dimz      = n3Inner ;
-		}
-		else
-		{		
+	}
+	else
+	{
 		GridSize3 = n3Inner / Config::Instance()->cb3 ;
 		if (n3Inner % Config::Instance()->cb3) GridSize3++ ;
-		dimz      = Config::Instance()->cb3 ;
-		}
+	}
 
-		printInfo(ALL, "GridSize1", GridSize1) ;
-		printInfo(ALL, "GridSize2", GridSize2) ;
-		printInfo(ALL, "GridSize3", GridSize3) ;
-		
-		printInfo(ALL, "gpuBlkSize1", gpuBlkSize1) ;
-		printInfo(ALL, "gpuBlkSize2", gpuBlkSize2) ;
-		printInfo(ALL, "gpuBlkSize3", gpuBlkSize3) ;
-	
-	
+	printInfo(ALL, "GridSize1", GridSize1) ;
+	printInfo(ALL, "GridSize2", GridSize2) ;
+	printInfo(ALL, "GridSize3", GridSize3) ;
+
+	printInfo(ALL, "gpuBlkSize1", gpuBlkSize1) ;
+	printInfo(ALL, "gpuBlkSize2", gpuBlkSize2) ;
+	printInfo(ALL, "gpuBlkSize3", gpuBlkSize3) ;
+
+
 	// max number of threads
 	struct cudaFuncAttributes funcAttrib ;		
 	cudaFuncGetAttributes(&funcAttrib, kernelOpt_FD_LAPLACIAN_O8) ;
 	printInfo(MASTER, " Max threads/blk Lapla", funcAttrib.maxThreadsPerBlock) ;
-	if ((Config::Instance()->cb1 * Config::Instance()->cb2) > funcAttrib.maxThreadsPerBlock)
+	if ((gpuBlkSize1 * gpuBlkSize2) > funcAttrib.maxThreadsPerBlock)
 	{
-	   printError("Grid_Cuda_Optim::info, FD block are too large") ;
-	   return ;
+		printError("Grid_Cuda_Optim::info, FD block are too large") ;
+		return ;
 	}
-	
+
 	cudaFuncGetAttributes(&funcAttrib, kernelOpt_computePressureWithFD_3D_O8) ;
 	printInfo(MASTER, " Max threads/blk Propa", funcAttrib.maxThreadsPerBlock) ;
-	if ((Config::Instance()->cb1 * Config::Instance()->cb2) > funcAttrib.maxThreadsPerBlock)
+	if ((gpuBlkSize1 * gpuBlkSize2) > funcAttrib.maxThreadsPerBlock)
 	{
-	   printError("Grid_Cuda_Optim::info, FD block are too large") ;
-	   return ;
+		printError("Grid_Cuda_Optim::info, FD block are too large") ;
+		return ;
 	}	
 
 	printDebug(FULL_DEBUG, "OUT Grid_Cuda_Optim::info");
@@ -531,13 +511,15 @@ Rtn_code Grid_Cuda_Optim::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, 
 	{		  	    
 		// TODO overrides gpuBlkSize
 		int gpuBlkSize1 = Config::Instance()->cb1 ;
-		int gpuBlkSize2 = Config::Instance()->cb2 ;				
+		if (gpuBlkSize1 > MAX_BLOCK_DIM_X) gpuBlkSize1 = MAX_BLOCK_DIM_X ;
+		int gpuBlkSize2 = Config::Instance()->cb2 ;
+		if (gpuBlkSize2 > MAX_BLOCK_DIM_Y) gpuBlkSize2 = MAX_BLOCK_DIM_Y ;
 		int gpuBlkSize3 = 1 ;
-		
+
 		int dimx = n1Inner ;
 		int dimy = n2Inner ;
 		int dimz = -1 ;	
-		
+
 		int GridSize1 = n1Inner / gpuBlkSize1 ;
 		if (n1Inner % gpuBlkSize1) GridSize1++ ;
 		int GridSize2 = n2Inner / gpuBlkSize2 ;
@@ -545,16 +527,16 @@ Rtn_code Grid_Cuda_Optim::FD_LAPLACIAN(Point_type pointType, const Grid& Wgrid, 
 		int GridSize3 = -1 ;
 		if (Config::Instance()->cb3 >= n3Inner)
 		{
-		GridSize3 = 1 ;
-		dimz      = n3Inner ;
+			GridSize3 = 1 ;
+			dimz      = n3Inner ;
 		}
 		else
 		{		
-		GridSize3 = n3Inner / Config::Instance()->cb3 ;
-		if (n3Inner % Config::Instance()->cb3) GridSize3++ ;
-		dimz      = Config::Instance()->cb3 ;
+			GridSize3 = n3Inner / Config::Instance()->cb3 ;
+			if (n3Inner % Config::Instance()->cb3) GridSize3++ ;
+			dimz      = Config::Instance()->cb3 ;
 		}
-		
+
 		dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;		
 		dim3 GridSize(GridSize1, GridSize2, GridSize3) ;						
 
@@ -600,39 +582,45 @@ Rtn_code Grid_Cuda_Optim::computePressureWithFD(Grid& prcGridIn, Grid& coefGridI
 	Myfloat *prc_d_grid_3d = ((Grid_Cuda_Optim&) prcGridIn).d_grid_3d ;
 	Myfloat *coef_d_grid_3d = ((Grid_Cuda_Optim&) coefGridIn).d_grid_3d ;
 
-			// TODO overrides gpuBlkSize
-		int gpuBlkSize1 = Config::Instance()->cb1 ;
-		int gpuBlkSize2 = Config::Instance()->cb2 ;				
-		int gpuBlkSize3 = 1 ;
-		
-		int dimx = n1Inner ;
-		int dimy = n2Inner ;
-		int dimz = -1 ;	
-		
-		int GridSize1 = n1Inner / gpuBlkSize1 ;
-		if (n1Inner % gpuBlkSize1) GridSize1++ ;
-		int GridSize2 = n2Inner / gpuBlkSize2 ;
-		if (n2Inner % gpuBlkSize2) GridSize2++ ;
-		int GridSize3 = -1 ;
-		if (Config::Instance()->cb3 >= n3Inner)
-		{
+	// TODO overrides gpuBlkSize
+	int gpuBlkSize1 = Config::Instance()->cb1 ;
+	if (gpuBlkSize1 > MAX_BLOCK_DIM_X) gpuBlkSize1 = MAX_BLOCK_DIM_X ;
+	int gpuBlkSize2 = Config::Instance()->cb2 ;
+	if (gpuBlkSize2 > MAX_BLOCK_DIM_Y) gpuBlkSize2 = MAX_BLOCK_DIM_Y ;
+	int gpuBlkSize3 = 1 ;
+
+	int dimx = n1Inner ;
+	int dimy = n2Inner ;
+	int dimz = -1 ;
+
+	int GridSize1 = n1Inner / gpuBlkSize1 ;
+	if (n1Inner % gpuBlkSize1) GridSize1++ ;
+	int GridSize2 = n2Inner / gpuBlkSize2 ;
+	if (n2Inner % gpuBlkSize2) GridSize2++ ;
+	int GridSize3 = -1 ;
+	if (Config::Instance()->cb3 >= n3Inner)
+	{
 		GridSize3 = 1 ;
 		dimz      = n3Inner ;
-		}
-		else
-		{		
+	}
+	else
+	{
 		GridSize3 = n3Inner / Config::Instance()->cb3 ;
 		if (n3Inner % Config::Instance()->cb3) GridSize3++ ;
 		dimz      = Config::Instance()->cb3 ;
-		}		
-		
-		dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;		
-		dim3 GridSize(GridSize1, GridSize2, GridSize3) ;						
-	
+	}
+
+	dim3 BlkSize(gpuBlkSize1, gpuBlkSize2, gpuBlkSize3) ;
+	dim3 GridSize(GridSize1, GridSize2, GridSize3) ;
+
 	if ((dim == DIM3) && (fdOrder == 8))
 	{			   
-			kernelOpt_computePressureWithFD_3D_O8<<<GridSize, BlkSize>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
-					n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
+		kernelOpt_computePressureWithFD_3D_O8<<<GridSize, BlkSize>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
+	}
+	else
+	{
+		Grid_Cuda::computePressureWithFD(prcGridIn, coefGridIn, fdOrder) ;
 	}
 
 	cudaCheckError();
