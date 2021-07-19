@@ -328,25 +328,25 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 {
 	vector<Myfloat> FD_coef ;
 
-	if (Config::Instance()->fdOrder == 2)
+	if (fdOrder == 2)
 	{
 		FD_coef.push_back(FD_D2_O2_A0) ;
 		FD_coef.push_back(FD_D2_O2_A1) ;
 	}
-	else if (Config::Instance()->fdOrder == 4)
+	else if (fdOrder == 4)
 	{
 		FD_coef.push_back(FD_D2_O4_A0) ;
 		FD_coef.push_back(FD_D2_O4_A1) ;
 		FD_coef.push_back(FD_D2_O4_A2) ;
 	}
-	else if (Config::Instance()->fdOrder == 6)
+	else if (fdOrder == 6)
 	{
 		FD_coef.push_back(FD_D2_O6_A0) ;
 		FD_coef.push_back(FD_D2_O6_A1) ;
 		FD_coef.push_back(FD_D2_O6_A2) ;
 		FD_coef.push_back(FD_D2_O6_A3) ;
 	}
-	else if (Config::Instance()->fdOrder == 8)
+	else if (fdOrder == 8)
 	{
 		FD_coef.push_back(FD_D2_O8_A0) ;
 		FD_coef.push_back(FD_D2_O8_A1) ;
@@ -354,7 +354,7 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 		FD_coef.push_back(FD_D2_O8_A3) ;
 		FD_coef.push_back(FD_D2_O8_A4) ;
 	}
-	else if (Config::Instance()->fdOrder == 10)
+	else if (fdOrder == 10)
 	{
 		FD_coef.push_back(FD_D2_O10_A0) ;
 		FD_coef.push_back(FD_D2_O10_A1) ;
@@ -363,7 +363,7 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 		FD_coef.push_back(FD_D2_O10_A4) ;
 		FD_coef.push_back(FD_D2_O10_A5) ;
 	}
-	else if (Config::Instance()->fdOrder == 12)
+	else if (fdOrder == 12)
 	{
 		FD_coef.push_back(FD_D2_O12_A0) ;
 		FD_coef.push_back(FD_D2_O12_A1) ;
@@ -373,7 +373,7 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 		FD_coef.push_back(FD_D2_O12_A5) ;
 		FD_coef.push_back(FD_D2_O12_A6) ;
 	}
-	else if (Config::Instance()->fdOrder == 14)
+	else if (fdOrder == 14)
 	{
 		FD_coef.push_back(FD_D2_O14_A0) ;
 		FD_coef.push_back(FD_D2_O14_A1) ;
@@ -384,7 +384,7 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 		FD_coef.push_back(FD_D2_O14_A6) ;
 		FD_coef.push_back(FD_D2_O14_A7) ;
 	}
-	else if (Config::Instance()->fdOrder == 16)
+	else if (fdOrder == 16)
 	{
 		FD_coef.push_back(FD_D2_O16_A0) ;
 		FD_coef.push_back(FD_D2_O16_A1) ;
@@ -413,7 +413,7 @@ static Myfloat64 getSumAbsFD_D2Coef(Myint fdOrder)
 	for (Myint ii = 0; ii < FD_coef.size(); ii++)
 	{
 		if (ii == 0) sumCoef = fabs(FD_coef[ii]) ;
-		else sumCoef += 2 * fabs(FD_coef[ii]) ;
+		else sumCoef += TWO * fabs(FD_coef[ii]) ;
 	}
 
 	return(sumCoef) ;
