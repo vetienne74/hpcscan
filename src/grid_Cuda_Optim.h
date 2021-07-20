@@ -39,6 +39,17 @@ public:
 
 protected:
 
+	// GPU block size - 3D block - (number of threads per block is gpuFDBlkSize1 x gpuFDBlkSize2 x 1)
+	Myint gpuFDBlkSize1 ;
+	Myint gpuFDBlkSize2 ;
+	Myint gpuFDBlkSize3 ;
+	Myint maxFDBlkSize3 ;
+
+	// GPU grid size - 3D grid - (number of blocks per grid)
+	Myint gpuFDGridSize1 ;
+	Myint gpuFDGridSize2 ;
+	Myint gpuFDGridSize3 ;
+
 } ;
 
 } // namespace hpcscan
