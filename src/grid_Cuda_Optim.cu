@@ -32,6 +32,14 @@ namespace hpcscan {
 
 #define MAX_BLOCK_DIM_X 64
 #define MAX_BLOCK_DIM_Y 16
+#define MAX_FD_COEF 9
+#define RADIUS_O4 2
+#define RADIUS_O6 3
+#define RADIUS_O8 4
+#define RADIUS_O10 5
+#define RADIUS_O12 6
+#define RADIUS_O14 7
+#define RADIUS_O16 8
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -50,7 +58,6 @@ namespace hpcscan {
 //*******************************************************************************************************
 
 // With max FD order = 16, there are at most 9 FD coefficients in the stencil
-#define MAX_FD_COEF 9
 __constant__ Myfloat stencil[MAX_FD_COEF];
 
 // Set maximum number of threads per block for all kernels
@@ -67,7 +74,6 @@ __global__ void kernelOpt_FD_LAPLACIAN_O4(const Myint fdOrder, Myfloat *output, 
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
 		const int dimx, const int dimy, const int dimz)
 {
-#define RADIUS_O4 2
 	bool validr = true;
 	bool validw = true;
 
@@ -210,7 +216,6 @@ __global__ void kernelOpt_FD_LAPLACIAN_O6(const Myint fdOrder, Myfloat *output, 
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
 		const int dimx, const int dimy, const int dimz)
 {
-#define RADIUS_O6 3
 	bool validr = true;
 	bool validw = true;
 
@@ -353,7 +358,6 @@ __global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *output, 
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
 		const int dimx, const int dimy, const int dimz)
 {
-#define RADIUS_O8 4
 	bool validr = true;
 	bool validw = true;
 
@@ -496,7 +500,6 @@ __global__ void kernelOpt_FD_LAPLACIAN_O10(const Myint fdOrder, Myfloat *output,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
 		const int dimx, const int dimy, const int dimz)
 {
-#define RADIUS_O10 5
 	bool validr = true;
 	bool validw = true;
 
@@ -639,7 +642,6 @@ __global__ void kernelOpt_FD_LAPLACIAN_O12(const Myint fdOrder, Myfloat *output,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
 		const int dimx, const int dimy, const int dimz)
 {
-#define RADIUS_O12 6
 	bool validr = true;
 	bool validw = true;
 
@@ -782,7 +784,6 @@ __global__ void kernelOpt_FD_LAPLACIAN_O14(const Myint fdOrder, Myfloat *output,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
 		const int dimx, const int dimy, const int dimz)
 {
-#define RADIUS_O14 7
 	bool validr = true;
 	bool validw = true;
 
@@ -925,7 +926,6 @@ __global__ void kernelOpt_FD_LAPLACIAN_O16(const Myint fdOrder, Myfloat *output,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
 		const int dimx, const int dimy, const int dimz)
 {
-#define RADIUS_O16 8
 	bool validr = true;
 	bool validw = true;
 
@@ -1074,7 +1074,6 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
 		const int dimx, const int dimy, const int dimz)
 {
-#define RADIUS 4
 	bool validr = true;
 	bool validw = true;
 
@@ -1088,7 +1087,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 
 	// Handle to thread block group
 	cg::thread_block cta = cg::this_thread_block();
-	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS][MAX_BLOCK_DIM_X + 2 * RADIUS];
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS_O8][MAX_BLOCK_DIM_X + 2 * RADIUS_O8];
 
 	const int stride_y = n1 ;
 	const int stride_z = stride_y * n2 ;
@@ -1102,13 +1101,13 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 	// Advance inputIndex to target element
 	inputIndex += gtidy * stride_y + gtidx;
 
-	float infront[RADIUS];
-	float behind[RADIUS];
+	float infront[RADIUS_O8];
+	float behind[RADIUS_O8];
 	float current;
 	const Myfloat fdCoef0 = stencil[0] * (inv2_d1 + inv2_d2 + inv2_d3) ;
 
-	const int tx = ltidx + RADIUS;
-	const int ty = ltidy + RADIUS;
+	const int tx = ltidx + RADIUS_O8;
+	const int ty = ltidy + RADIUS_O8;
 
 	// Check in bounds
 	if ((gtidx > i1End) || (gtidy > i2End))
@@ -1118,7 +1117,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 		validw = false;
 
 	// Preload the "infront" and "behind" data
-	for (int i = RADIUS - 2 ; i >= 0 ; i--)
+	for (int i = RADIUS_O8 - 2 ; i >= 0 ; i--)
 	{
 		if (validr)
 			behind[i] = prc[inputIndex];
@@ -1132,7 +1131,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 	outputIndex = inputIndex;
 	inputIndex += stride_z;
 
-	for (int i = 0 ; i < RADIUS ; i++)
+	for (int i = 0 ; i < RADIUS_O8 ; i++)
 	{
 		if (validr)
 			infront[i] = prc[inputIndex];
@@ -1142,9 +1141,9 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 
 	// set max element to process along z (n3)
 	int maxZ = gtidz + dimz ;
-	if (maxZ > (i3End-RADIUS+1)) 
+	if (maxZ > (i3End-RADIUS_O8+1))
 	{
-		maxZ = i3End-RADIUS+1 ;	
+		maxZ = i3End-RADIUS_O8+1 ;
 	}
 
 	// Step through the xy-planes
@@ -1152,18 +1151,18 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 	for (int iz = gtidz ; iz < maxZ ; iz++)	
 	{
 		// Advance the slice (move the thread-front)
-		for (int i = RADIUS - 1 ; i > 0 ; i--)
+		for (int i = RADIUS_O8 - 1 ; i > 0 ; i--)
 			behind[i] = behind[i - 1];
 
 		behind[0] = current;
 		current = infront[0];
 #pragma unroll 4
 
-		for (int i = 0 ; i < RADIUS - 1 ; i++)
+		for (int i = 0 ; i < RADIUS_O8 - 1 ; i++)
 			infront[i] = infront[i + 1];
 
 		if (validr)
-			infront[RADIUS - 1] = prc[inputIndex];
+			infront[RADIUS_O8 - 1] = prc[inputIndex];
 
 		inputIndex  += stride_z;
 		outputIndex += stride_z;
@@ -1178,27 +1177,27 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 
 		// Update the data slice in the local tile
 		// Halo above & below
-		if (ltidy < RADIUS)
+		if (ltidy < RADIUS_O8)
 		{
-			tile[ltidy][tx]                  = prc[outputIndex - RADIUS * stride_y];
-			tile[ltidy + worky + RADIUS][tx] = prc[outputIndex + worky * stride_y];
+			tile[ltidy][tx]                  = prc[outputIndex - RADIUS_O8 * stride_y];
+			tile[ltidy + worky + RADIUS_O8][tx] = prc[outputIndex + worky * stride_y];
 		}
 
 		// Halo left & right
-		if (ltidx < RADIUS)
+		if (ltidx < RADIUS_O8)
 		{
-			tile[ty][ltidx]                  = prc[outputIndex - RADIUS];
-			tile[ty][ltidx + workx + RADIUS] = prc[outputIndex + workx];
+			tile[ty][ltidx]                  = prc[outputIndex - RADIUS_O8];
+			tile[ty][ltidx + workx + RADIUS_O8] = prc[outputIndex + workx];
 		}
 
 		tile[ty][tx] = current;
 		cg::sync(cta);
 
 		// Compute the output value
-		float value = fdCoef0 * current ;
+		Myfloat value = fdCoef0 * current ;
 #pragma unroll 4
 
-		for (int i = 1 ; i <= RADIUS ; i++)
+		for (int i = 1 ; i <= RADIUS_O8 ; i++)
 		{
 			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
 					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
@@ -1228,6 +1227,7 @@ Grid_Cuda_Optim::Grid_Cuda_Optim(Grid_type gridTypeIn) : Grid_Cuda(gridTypeIn)
 	gpuFDGridSize1 = UNSPECIFIED ;
 	gpuFDGridSize2 = UNSPECIFIED ;
 	gpuFDGridSize3 = UNSPECIFIED ;
+	maxFDBlkSize3  = UNSPECIFIED ;
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda_Optim::Grid_Cuda_Optim");
 }
@@ -1248,6 +1248,7 @@ Grid_Cuda_Optim::Grid_Cuda_Optim(Grid_type gridTypeIn, Dim_type dimIn,
 	gpuFDGridSize1 = UNSPECIFIED ;
 	gpuFDGridSize2 = UNSPECIFIED ;
 	gpuFDGridSize3 = UNSPECIFIED ;
+	maxFDBlkSize3  = UNSPECIFIED ;
 
 	printDebug(MID_DEBUG, "OUT Grid_Cuda_Optim::Grid_Cuda_Optim");
 }
@@ -1278,6 +1279,38 @@ Rtn_code Grid_Cuda_Optim::initializeGrid(void)
 		cudaCheckError();
 	}
 
+	// determine block size
+	{
+		gpuFDBlkSize1 = Config::Instance()->cb1 ;
+		if (gpuFDBlkSize1 < haloWidth) gpuFDBlkSize1 = haloWidth ;
+		if (gpuFDBlkSize1 > MAX_BLOCK_DIM_X) gpuFDBlkSize1 = MAX_BLOCK_DIM_X ;
+
+		gpuFDBlkSize2 = Config::Instance()->cb2 ;
+		if (gpuFDBlkSize2 < haloWidth) gpuFDBlkSize2 = haloWidth ;
+		if (gpuFDBlkSize2 > MAX_BLOCK_DIM_Y) gpuFDBlkSize2 = MAX_BLOCK_DIM_Y ;
+
+		gpuFDBlkSize3 = 1 ;
+	}
+
+	// determine grid size
+	{
+		gpuFDGridSize1 = n1Inner / gpuFDBlkSize1 ;
+		if (n1Inner % gpuFDBlkSize1) gpuFDGridSize1++ ;
+
+		gpuFDGridSize2 = n2Inner / gpuFDBlkSize2 ;
+		if (n2Inner % gpuFDBlkSize2) gpuFDGridSize2++ ;
+
+		maxFDBlkSize3 = min(Config::Instance()->cb3, (int) n3Inner) ;
+		if (maxFDBlkSize3 <= 0)
+		{
+			printError("Grid_Cuda_Optim::initializeGrid, maxFDBlkSize3 <= 0") ;
+			return(RTN_CODE_KO) ;
+		}
+
+		gpuFDGridSize3 = n3Inner / maxFDBlkSize3 ;
+		if (n3Inner % Config::Instance()->cb3) gpuFDGridSize3++ ;
+	}
+
 	printDebug(FULL_DEBUG, "Out Grid_Cuda_Optim::initializeGrid") ;
 	return(RTN_CODE_OK) ;
 }
@@ -1291,28 +1324,6 @@ void Grid_Cuda_Optim::info(void)
 
 	// parent class info
 	Grid_Cuda::info() ;
-
-	// determine block size
-	gpuFDBlkSize1 = Config::Instance()->cb1 ;
-	if (gpuFDBlkSize1 < haloWidth) gpuFDBlkSize1 = haloWidth ;
-	if (gpuFDBlkSize1 > MAX_BLOCK_DIM_X) gpuFDBlkSize1 = MAX_BLOCK_DIM_X ;
-
-	gpuFDBlkSize2 = Config::Instance()->cb2 ;
-	if (gpuFDBlkSize2 < haloWidth) gpuFDBlkSize2 = haloWidth ;
-	if (gpuFDBlkSize2 > MAX_BLOCK_DIM_Y) gpuFDBlkSize2 = MAX_BLOCK_DIM_Y ;
-
-	gpuFDBlkSize3 = 1 ;
-
-	// determine grid size
-	gpuFDGridSize1 = n1Inner / gpuFDBlkSize1 ;
-	if (n1Inner % gpuFDBlkSize1) gpuFDGridSize1++ ;
-
-	gpuFDGridSize2 = n2Inner / gpuFDBlkSize2 ;
-	if (n2Inner % gpuFDBlkSize2) gpuFDGridSize2++ ;
-
-	maxFDBlkSize3 = min(Config::Instance()->cb3, (int) n3Inner) ;
-	gpuFDGridSize3 = n3Inner / maxFDBlkSize3 ;
-	if (n3Inner % Config::Instance()->cb3) gpuFDGridSize3++ ;
 
 	printInfo(ALL, " - FD computations with 3D blocks") ;
 

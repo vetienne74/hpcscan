@@ -155,8 +155,22 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 
 	gridMode = GRID_MODE_BASELINE ;
 	n1Inner  = n1InnerIn ;
-	n2Inner  = n2InnerIn ;
-	n3Inner  = n3InnerIn ;
+	if (dimTypeIn >= DIM2)
+	{
+		n2Inner  = n2InnerIn ;
+	}
+	else
+	{
+		n2Inner  = 1 ;
+	}
+	if (dimTypeIn >= DIM3)
+	{
+		n3Inner  = n3InnerIn ;
+	}
+	else
+	{
+		n3Inner  = 1 ;
+	}
 	gridType = gridTypeIn ;
 	dim      = dimTypeIn ;
 	grid_3d  = NULL;
