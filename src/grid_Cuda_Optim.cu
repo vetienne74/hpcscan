@@ -2217,22 +2217,22 @@ void Grid_Cuda_Optim::info(void)
 
 
 	// max number of threads
-	struct cudaFuncAttributes funcAttrib ;		
-	cudaFuncGetAttributes(&funcAttrib, kernelOpt_FD_LAPLACIAN_O8) ;
-	printInfo(MASTER, " Max threads/blk Lapla", funcAttrib.maxThreadsPerBlock) ;
-	if ((gpuFDBlkSize1 * gpuFDBlkSize2) > funcAttrib.maxThreadsPerBlock)
-	{
-		printError("Grid_Cuda_Optim::info, FD block are too large") ;
-		return ;
-	}
+	//struct cudaFuncAttributes funcAttrib ;
+	//cudaFuncGetAttributes(&funcAttrib, kernelOpt_FD_LAPLACIAN_O8) ;
+	//printInfo(MASTER, " Max threads/blk Lapla", funcAttrib.maxThreadsPerBlock) ;
+	//if ((gpuFDBlkSize1 * gpuFDBlkSize2) > funcAttrib.maxThreadsPerBlock)
+	//{
+	//	printError("Grid_Cuda_Optim::info, FD block are too large") ;
+	//	return ;
+	//}
 
-	cudaFuncGetAttributes(&funcAttrib, kernelOpt_computePressureWithFD_3D_O8) ;
-	printInfo(MASTER, " Max threads/blk Propa", funcAttrib.maxThreadsPerBlock) ;
-	if ((gpuFDBlkSize1 * gpuFDBlkSize2) > funcAttrib.maxThreadsPerBlock)
-	{
-		printError("Grid_Cuda_Optim::info, FD block are too large") ;
-		return ;
-	}	
+	//cudaFuncGetAttributes(&funcAttrib, kernelOpt_computePressureWithFD_3D_O8) ;
+	//printInfo(MASTER, " Max threads/blk Propa", funcAttrib.maxThreadsPerBlock) ;
+	//if ((gpuFDBlkSize1 * gpuFDBlkSize2) > funcAttrib.maxThreadsPerBlock)
+	//{
+	//	printError("Grid_Cuda_Optim::info, FD block are too large") ;
+	//	return ;
+	//}
 
 	printDebug(FULL_DEBUG, "OUT Grid_Cuda_Optim::info");
 }
