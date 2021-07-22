@@ -3,6 +3,14 @@
 // This grid is activated with command line option -testMode CUDA_Optim
 // Derived class from Grid_Cuda
 // CUDA implementation (target GPU)
+//
+// Optimizations of FD_LAPLACIAN and computePressureWithFD methods
+// Use of shared memory to prefectch data in 2D plan (n1 * n2)
+// and main loop along n3
+// Algorithm adapted from NVIDA code sample found in cuda-11.3/samples/6_Advanced/FDTD3d/
+//
+// Implemented only for 3D grids and fdOrder 4,6,8,10,12,14 and 16
+// Control with command line parameters -cb1, -cb2 and -cb3 that control the GPU block sizes
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_Cuda_Optim.h"
@@ -1068,7 +1076,297 @@ __global__ void kernelOpt_FD_LAPLACIAN_O16(const Myint fdOrder, Myfloat *output,
 // input/output prn
 // input prc
 
-__global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+__global__ void kernelOpt_computePressureWithFD_3D_O4(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
+		const int dimx, const int dimy, const int dimz)
+{
+	bool validr = true;
+	bool validw = true;
+
+	const int gtidx = blockIdx.x * blockDim.x + threadIdx.x;
+	const int gtidy = blockIdx.y * blockDim.y + threadIdx.y;
+	const int gtidz = blockIdx.z * dimz ;
+	const int ltidx = threadIdx.x;
+	const int ltidy = threadIdx.y;
+	const int workx = blockDim.x;
+	const int worky = blockDim.y;
+
+	// Handle to thread block group
+	cg::thread_block cta = cg::this_thread_block();
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS_O4][MAX_BLOCK_DIM_X + 2 * RADIUS_O4];
+
+	const int stride_y = n1 ;
+	const int stride_z = stride_y * n2 ;
+
+	int inputIndex  = gtidz * stride_z ;
+	int outputIndex = gtidz * stride_z ;
+
+	// Advance inputIndex to start of inner volume
+	inputIndex += i2Start * stride_y + i1Start ;
+
+	// Advance inputIndex to target element
+	inputIndex += gtidy * stride_y + gtidx;
+
+	float infront[RADIUS_O4];
+	float behind[RADIUS_O4];
+	float current;
+	const Myfloat fdCoef0 = stencil[0] * (inv2_d1 + inv2_d2 + inv2_d3) ;
+
+	const int tx = ltidx + RADIUS_O4;
+	const int ty = ltidy + RADIUS_O4;
+
+	// Check in bounds
+	if ((gtidx > i1End) || (gtidy > i2End))
+		validr = false;
+
+	if ((gtidx >= dimx) || (gtidy >= dimy))
+		validw = false;
+
+	// Preload the "infront" and "behind" data
+	for (int i = RADIUS_O4 - 2 ; i >= 0 ; i--)
+	{
+		if (validr)
+			behind[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	if (validr)
+		current = prc[inputIndex];
+
+	outputIndex = inputIndex;
+	inputIndex += stride_z;
+
+	for (int i = 0 ; i < RADIUS_O4 ; i++)
+	{
+		if (validr)
+			infront[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	// set max element to process along z (n3)
+	int maxZ = gtidz + dimz ;
+	if (maxZ > (i3End-RADIUS_O4+1))
+	{
+		maxZ = i3End-RADIUS_O4+1 ;
+	}
+
+	// Step through the xy-planes
+#pragma unroll 5
+	for (int iz = gtidz ; iz < maxZ ; iz++)
+	{
+		// Advance the slice (move the thread-front)
+		for (int i = RADIUS_O4 - 1 ; i > 0 ; i--)
+			behind[i] = behind[i - 1];
+
+		behind[0] = current;
+		current = infront[0];
+#pragma unroll 2
+
+		for (int i = 0 ; i < RADIUS_O4 - 1 ; i++)
+			infront[i] = infront[i + 1];
+
+		if (validr)
+			infront[RADIUS_O4 - 1] = prc[inputIndex];
+
+		inputIndex  += stride_z;
+		outputIndex += stride_z;
+		cg::sync(cta);
+
+		// Note that for the work items on the boundary of the problem, the
+		// supplied index when reading the halo (below) may wrap to the
+		// previous/next row or even the previous/next xy-plane. This is
+		// acceptable since a) we disable the output write for these work
+		// items and b) there is at least one xy-plane before/after the
+		// current plane, so the access will be within bounds.
+
+		// Update the data slice in the local tile
+		// Halo above & below
+		if (ltidy < RADIUS_O4)
+		{
+			tile[ltidy][tx]                  = prc[outputIndex - RADIUS_O4 * stride_y];
+			tile[ltidy + worky + RADIUS_O4][tx] = prc[outputIndex + worky * stride_y];
+		}
+
+		// Halo left & right
+		if (ltidx < RADIUS_O4)
+		{
+			tile[ty][ltidx]                  = prc[outputIndex - RADIUS_O4];
+			tile[ty][ltidx + workx + RADIUS_O4] = prc[outputIndex + workx];
+		}
+
+		tile[ty][tx] = current;
+		cg::sync(cta);
+
+		// Compute the output value
+		Myfloat value = fdCoef0 * current ;
+#pragma unroll 2
+
+		for (int i = 1 ; i <= RADIUS_O4 ; i++)
+		{
+			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
+					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
+					inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
+		}
+
+
+		// Store the output value
+		if (validw)
+			prn[outputIndex] = TWO * current - prn[outputIndex] +
+			coef[outputIndex] * value ;
+	}
+
+}
+
+__global__ void kernelOpt_computePressureWithFD_3D_O6(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
+		const int dimx, const int dimy, const int dimz)
+{
+	bool validr = true;
+	bool validw = true;
+
+	const int gtidx = blockIdx.x * blockDim.x + threadIdx.x;
+	const int gtidy = blockIdx.y * blockDim.y + threadIdx.y;
+	const int gtidz = blockIdx.z * dimz ;
+	const int ltidx = threadIdx.x;
+	const int ltidy = threadIdx.y;
+	const int workx = blockDim.x;
+	const int worky = blockDim.y;
+
+	// Handle to thread block group
+	cg::thread_block cta = cg::this_thread_block();
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS_O6][MAX_BLOCK_DIM_X + 2 * RADIUS_O6];
+
+	const int stride_y = n1 ;
+	const int stride_z = stride_y * n2 ;
+
+	int inputIndex  = gtidz * stride_z ;
+	int outputIndex = gtidz * stride_z ;
+
+	// Advance inputIndex to start of inner volume
+	inputIndex += i2Start * stride_y + i1Start ;
+
+	// Advance inputIndex to target element
+	inputIndex += gtidy * stride_y + gtidx;
+
+	float infront[RADIUS_O6];
+	float behind[RADIUS_O6];
+	float current;
+	const Myfloat fdCoef0 = stencil[0] * (inv2_d1 + inv2_d2 + inv2_d3) ;
+
+	const int tx = ltidx + RADIUS_O6;
+	const int ty = ltidy + RADIUS_O6;
+
+	// Check in bounds
+	if ((gtidx > i1End) || (gtidy > i2End))
+		validr = false;
+
+	if ((gtidx >= dimx) || (gtidy >= dimy))
+		validw = false;
+
+	// Preload the "infront" and "behind" data
+	for (int i = RADIUS_O6 - 2 ; i >= 0 ; i--)
+	{
+		if (validr)
+			behind[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	if (validr)
+		current = prc[inputIndex];
+
+	outputIndex = inputIndex;
+	inputIndex += stride_z;
+
+	for (int i = 0 ; i < RADIUS_O6 ; i++)
+	{
+		if (validr)
+			infront[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	// set max element to process along z (n3)
+	int maxZ = gtidz + dimz ;
+	if (maxZ > (i3End-RADIUS_O6+1))
+	{
+		maxZ = i3End-RADIUS_O6+1 ;
+	}
+
+	// Step through the xy-planes
+#pragma unroll 7
+	for (int iz = gtidz ; iz < maxZ ; iz++)
+	{
+		// Advance the slice (move the thread-front)
+		for (int i = RADIUS_O6 - 1 ; i > 0 ; i--)
+			behind[i] = behind[i - 1];
+
+		behind[0] = current;
+		current = infront[0];
+#pragma unroll 3
+
+		for (int i = 0 ; i < RADIUS_O6 - 1 ; i++)
+			infront[i] = infront[i + 1];
+
+		if (validr)
+			infront[RADIUS_O6 - 1] = prc[inputIndex];
+
+		inputIndex  += stride_z;
+		outputIndex += stride_z;
+		cg::sync(cta);
+
+		// Note that for the work items on the boundary of the problem, the
+		// supplied index when reading the halo (below) may wrap to the
+		// previous/next row or even the previous/next xy-plane. This is
+		// acceptable since a) we disable the output write for these work
+		// items and b) there is at least one xy-plane before/after the
+		// current plane, so the access will be within bounds.
+
+		// Update the data slice in the local tile
+		// Halo above & below
+		if (ltidy < RADIUS_O6)
+		{
+			tile[ltidy][tx]                  = prc[outputIndex - RADIUS_O6 * stride_y];
+			tile[ltidy + worky + RADIUS_O6][tx] = prc[outputIndex + worky * stride_y];
+		}
+
+		// Halo left & right
+		if (ltidx < RADIUS_O6)
+		{
+			tile[ty][ltidx]                  = prc[outputIndex - RADIUS_O6];
+			tile[ty][ltidx + workx + RADIUS_O6] = prc[outputIndex + workx];
+		}
+
+		tile[ty][tx] = current;
+		cg::sync(cta);
+
+		// Compute the output value
+		Myfloat value = fdCoef0 * current ;
+#pragma unroll 3
+
+		for (int i = 1 ; i <= RADIUS_O6 ; i++)
+		{
+			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
+					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
+					inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
+		}
+
+
+		// Store the output value
+		if (validw)
+			prn[outputIndex] = TWO * current - prn[outputIndex] +
+			coef[outputIndex] * value ;
+	}
+
+}
+
+__global__ void kernelOpt_computePressureWithFD_3D_O8(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
 		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
@@ -1198,6 +1496,586 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Dim_type dim, const 
 #pragma unroll 4
 
 		for (int i = 1 ; i <= RADIUS_O8 ; i++)
+		{
+			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
+					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
+					inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
+		}
+
+
+		// Store the output value
+		if (validw)
+			prn[outputIndex] = TWO * current - prn[outputIndex] +
+			coef[outputIndex] * value ;
+	}
+
+}
+
+__global__ void kernelOpt_computePressureWithFD_3D_O10(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
+		const int dimx, const int dimy, const int dimz)
+{
+	bool validr = true;
+	bool validw = true;
+
+	const int gtidx = blockIdx.x * blockDim.x + threadIdx.x;
+	const int gtidy = blockIdx.y * blockDim.y + threadIdx.y;
+	const int gtidz = blockIdx.z * dimz ;
+	const int ltidx = threadIdx.x;
+	const int ltidy = threadIdx.y;
+	const int workx = blockDim.x;
+	const int worky = blockDim.y;
+
+	// Handle to thread block group
+	cg::thread_block cta = cg::this_thread_block();
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS_O10][MAX_BLOCK_DIM_X + 2 * RADIUS_O10];
+
+	const int stride_y = n1 ;
+	const int stride_z = stride_y * n2 ;
+
+	int inputIndex  = gtidz * stride_z ;
+	int outputIndex = gtidz * stride_z ;
+
+	// Advance inputIndex to start of inner volume
+	inputIndex += i2Start * stride_y + i1Start ;
+
+	// Advance inputIndex to target element
+	inputIndex += gtidy * stride_y + gtidx;
+
+	float infront[RADIUS_O10];
+	float behind[RADIUS_O10];
+	float current;
+	const Myfloat fdCoef0 = stencil[0] * (inv2_d1 + inv2_d2 + inv2_d3) ;
+
+	const int tx = ltidx + RADIUS_O10;
+	const int ty = ltidy + RADIUS_O10;
+
+	// Check in bounds
+	if ((gtidx > i1End) || (gtidy > i2End))
+		validr = false;
+
+	if ((gtidx >= dimx) || (gtidy >= dimy))
+		validw = false;
+
+	// Preload the "infront" and "behind" data
+	for (int i = RADIUS_O10 - 2 ; i >= 0 ; i--)
+	{
+		if (validr)
+			behind[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	if (validr)
+		current = prc[inputIndex];
+
+	outputIndex = inputIndex;
+	inputIndex += stride_z;
+
+	for (int i = 0 ; i < RADIUS_O10 ; i++)
+	{
+		if (validr)
+			infront[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	// set max element to process along z (n3)
+	int maxZ = gtidz + dimz ;
+	if (maxZ > (i3End-RADIUS_O10+1))
+	{
+		maxZ = i3End-RADIUS_O10+1 ;
+	}
+
+	// Step through the xy-planes
+#pragma unroll 11
+	for (int iz = gtidz ; iz < maxZ ; iz++)
+	{
+		// Advance the slice (move the thread-front)
+		for (int i = RADIUS_O10 - 1 ; i > 0 ; i--)
+			behind[i] = behind[i - 1];
+
+		behind[0] = current;
+		current = infront[0];
+#pragma unroll 5
+
+		for (int i = 0 ; i < RADIUS_O10 - 1 ; i++)
+			infront[i] = infront[i + 1];
+
+		if (validr)
+			infront[RADIUS_O10 - 1] = prc[inputIndex];
+
+		inputIndex  += stride_z;
+		outputIndex += stride_z;
+		cg::sync(cta);
+
+		// Note that for the work items on the boundary of the problem, the
+		// supplied index when reading the halo (below) may wrap to the
+		// previous/next row or even the previous/next xy-plane. This is
+		// acceptable since a) we disable the output write for these work
+		// items and b) there is at least one xy-plane before/after the
+		// current plane, so the access will be within bounds.
+
+		// Update the data slice in the local tile
+		// Halo above & below
+		if (ltidy < RADIUS_O10)
+		{
+			tile[ltidy][tx]                  = prc[outputIndex - RADIUS_O10 * stride_y];
+			tile[ltidy + worky + RADIUS_O10][tx] = prc[outputIndex + worky * stride_y];
+		}
+
+		// Halo left & right
+		if (ltidx < RADIUS_O10)
+		{
+			tile[ty][ltidx]                  = prc[outputIndex - RADIUS_O10];
+			tile[ty][ltidx + workx + RADIUS_O10] = prc[outputIndex + workx];
+		}
+
+		tile[ty][tx] = current;
+		cg::sync(cta);
+
+		// Compute the output value
+		Myfloat value = fdCoef0 * current ;
+#pragma unroll 5
+
+		for (int i = 1 ; i <= RADIUS_O10 ; i++)
+		{
+			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
+					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
+					inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
+		}
+
+
+		// Store the output value
+		if (validw)
+			prn[outputIndex] = TWO * current - prn[outputIndex] +
+			coef[outputIndex] * value ;
+	}
+
+}
+
+__global__ void kernelOpt_computePressureWithFD_3D_O12(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
+		const int dimx, const int dimy, const int dimz)
+{
+	bool validr = true;
+	bool validw = true;
+
+	const int gtidx = blockIdx.x * blockDim.x + threadIdx.x;
+	const int gtidy = blockIdx.y * blockDim.y + threadIdx.y;
+	const int gtidz = blockIdx.z * dimz ;
+	const int ltidx = threadIdx.x;
+	const int ltidy = threadIdx.y;
+	const int workx = blockDim.x;
+	const int worky = blockDim.y;
+
+	// Handle to thread block group
+	cg::thread_block cta = cg::this_thread_block();
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS_O12][MAX_BLOCK_DIM_X + 2 * RADIUS_O12];
+
+	const int stride_y = n1 ;
+	const int stride_z = stride_y * n2 ;
+
+	int inputIndex  = gtidz * stride_z ;
+	int outputIndex = gtidz * stride_z ;
+
+	// Advance inputIndex to start of inner volume
+	inputIndex += i2Start * stride_y + i1Start ;
+
+	// Advance inputIndex to target element
+	inputIndex += gtidy * stride_y + gtidx;
+
+	float infront[RADIUS_O12];
+	float behind[RADIUS_O12];
+	float current;
+	const Myfloat fdCoef0 = stencil[0] * (inv2_d1 + inv2_d2 + inv2_d3) ;
+
+	const int tx = ltidx + RADIUS_O12;
+	const int ty = ltidy + RADIUS_O12;
+
+	// Check in bounds
+	if ((gtidx > i1End) || (gtidy > i2End))
+		validr = false;
+
+	if ((gtidx >= dimx) || (gtidy >= dimy))
+		validw = false;
+
+	// Preload the "infront" and "behind" data
+	for (int i = RADIUS_O12 - 2 ; i >= 0 ; i--)
+	{
+		if (validr)
+			behind[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	if (validr)
+		current = prc[inputIndex];
+
+	outputIndex = inputIndex;
+	inputIndex += stride_z;
+
+	for (int i = 0 ; i < RADIUS_O12 ; i++)
+	{
+		if (validr)
+			infront[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	// set max element to process along z (n3)
+	int maxZ = gtidz + dimz ;
+	if (maxZ > (i3End-RADIUS_O12+1))
+	{
+		maxZ = i3End-RADIUS_O12+1 ;
+	}
+
+	// Step through the xy-planes
+#pragma unroll 13
+	for (int iz = gtidz ; iz < maxZ ; iz++)
+	{
+		// Advance the slice (move the thread-front)
+		for (int i = RADIUS_O12 - 1 ; i > 0 ; i--)
+			behind[i] = behind[i - 1];
+
+		behind[0] = current;
+		current = infront[0];
+#pragma unroll 6
+
+		for (int i = 0 ; i < RADIUS_O12 - 1 ; i++)
+			infront[i] = infront[i + 1];
+
+		if (validr)
+			infront[RADIUS_O12 - 1] = prc[inputIndex];
+
+		inputIndex  += stride_z;
+		outputIndex += stride_z;
+		cg::sync(cta);
+
+		// Note that for the work items on the boundary of the problem, the
+		// supplied index when reading the halo (below) may wrap to the
+		// previous/next row or even the previous/next xy-plane. This is
+		// acceptable since a) we disable the output write for these work
+		// items and b) there is at least one xy-plane before/after the
+		// current plane, so the access will be within bounds.
+
+		// Update the data slice in the local tile
+		// Halo above & below
+		if (ltidy < RADIUS_O12)
+		{
+			tile[ltidy][tx]                  = prc[outputIndex - RADIUS_O12 * stride_y];
+			tile[ltidy + worky + RADIUS_O12][tx] = prc[outputIndex + worky * stride_y];
+		}
+
+		// Halo left & right
+		if (ltidx < RADIUS_O12)
+		{
+			tile[ty][ltidx]                  = prc[outputIndex - RADIUS_O12];
+			tile[ty][ltidx + workx + RADIUS_O12] = prc[outputIndex + workx];
+		}
+
+		tile[ty][tx] = current;
+		cg::sync(cta);
+
+		// Compute the output value
+		Myfloat value = fdCoef0 * current ;
+#pragma unroll 6
+
+		for (int i = 1 ; i <= RADIUS_O12 ; i++)
+		{
+			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
+					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
+					inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
+		}
+
+
+		// Store the output value
+		if (validw)
+			prn[outputIndex] = TWO * current - prn[outputIndex] +
+			coef[outputIndex] * value ;
+	}
+
+}
+
+__global__ void kernelOpt_computePressureWithFD_3D_O14(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
+		const int dimx, const int dimy, const int dimz)
+{
+	bool validr = true;
+	bool validw = true;
+
+	const int gtidx = blockIdx.x * blockDim.x + threadIdx.x;
+	const int gtidy = blockIdx.y * blockDim.y + threadIdx.y;
+	const int gtidz = blockIdx.z * dimz ;
+	const int ltidx = threadIdx.x;
+	const int ltidy = threadIdx.y;
+	const int workx = blockDim.x;
+	const int worky = blockDim.y;
+
+	// Handle to thread block group
+	cg::thread_block cta = cg::this_thread_block();
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS_O14][MAX_BLOCK_DIM_X + 2 * RADIUS_O14];
+
+	const int stride_y = n1 ;
+	const int stride_z = stride_y * n2 ;
+
+	int inputIndex  = gtidz * stride_z ;
+	int outputIndex = gtidz * stride_z ;
+
+	// Advance inputIndex to start of inner volume
+	inputIndex += i2Start * stride_y + i1Start ;
+
+	// Advance inputIndex to target element
+	inputIndex += gtidy * stride_y + gtidx;
+
+	float infront[RADIUS_O14];
+	float behind[RADIUS_O14];
+	float current;
+	const Myfloat fdCoef0 = stencil[0] * (inv2_d1 + inv2_d2 + inv2_d3) ;
+
+	const int tx = ltidx + RADIUS_O14;
+	const int ty = ltidy + RADIUS_O14;
+
+	// Check in bounds
+	if ((gtidx > i1End) || (gtidy > i2End))
+		validr = false;
+
+	if ((gtidx >= dimx) || (gtidy >= dimy))
+		validw = false;
+
+	// Preload the "infront" and "behind" data
+	for (int i = RADIUS_O14 - 2 ; i >= 0 ; i--)
+	{
+		if (validr)
+			behind[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	if (validr)
+		current = prc[inputIndex];
+
+	outputIndex = inputIndex;
+	inputIndex += stride_z;
+
+	for (int i = 0 ; i < RADIUS_O14 ; i++)
+	{
+		if (validr)
+			infront[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	// set max element to process along z (n3)
+	int maxZ = gtidz + dimz ;
+	if (maxZ > (i3End-RADIUS_O14+1))
+	{
+		maxZ = i3End-RADIUS_O14+1 ;
+	}
+
+	// Step through the xy-planes
+#pragma unroll 15
+	for (int iz = gtidz ; iz < maxZ ; iz++)
+	{
+		// Advance the slice (move the thread-front)
+		for (int i = RADIUS_O14 - 1 ; i > 0 ; i--)
+			behind[i] = behind[i - 1];
+
+		behind[0] = current;
+		current = infront[0];
+#pragma unroll 7
+
+		for (int i = 0 ; i < RADIUS_O14 - 1 ; i++)
+			infront[i] = infront[i + 1];
+
+		if (validr)
+			infront[RADIUS_O14 - 1] = prc[inputIndex];
+
+		inputIndex  += stride_z;
+		outputIndex += stride_z;
+		cg::sync(cta);
+
+		// Note that for the work items on the boundary of the problem, the
+		// supplied index when reading the halo (below) may wrap to the
+		// previous/next row or even the previous/next xy-plane. This is
+		// acceptable since a) we disable the output write for these work
+		// items and b) there is at least one xy-plane before/after the
+		// current plane, so the access will be within bounds.
+
+		// Update the data slice in the local tile
+		// Halo above & below
+		if (ltidy < RADIUS_O14)
+		{
+			tile[ltidy][tx]                  = prc[outputIndex - RADIUS_O14 * stride_y];
+			tile[ltidy + worky + RADIUS_O14][tx] = prc[outputIndex + worky * stride_y];
+		}
+
+		// Halo left & right
+		if (ltidx < RADIUS_O14)
+		{
+			tile[ty][ltidx]                  = prc[outputIndex - RADIUS_O14];
+			tile[ty][ltidx + workx + RADIUS_O14] = prc[outputIndex + workx];
+		}
+
+		tile[ty][tx] = current;
+		cg::sync(cta);
+
+		// Compute the output value
+		Myfloat value = fdCoef0 * current ;
+#pragma unroll 7
+
+		for (int i = 1 ; i <= RADIUS_O14 ; i++)
+		{
+			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
+					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
+					inv2_d1 * (tile[ty][tx - i] + tile[ty][tx + i]));
+		}
+
+
+		// Store the output value
+		if (validw)
+			prn[outputIndex] = TWO * current - prn[outputIndex] +
+			coef[outputIndex] * value ;
+	}
+
+}
+
+__global__ void kernelOpt_computePressureWithFD_3D_O16(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
+		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End, const Myint64 i2Start, const Myint64 i2End, const Myint64 i3Start, const Myint64 i3End,
+		const int dimx, const int dimy, const int dimz)
+{
+	bool validr = true;
+	bool validw = true;
+
+	const int gtidx = blockIdx.x * blockDim.x + threadIdx.x;
+	const int gtidy = blockIdx.y * blockDim.y + threadIdx.y;
+	const int gtidz = blockIdx.z * dimz ;
+	const int ltidx = threadIdx.x;
+	const int ltidy = threadIdx.y;
+	const int workx = blockDim.x;
+	const int worky = blockDim.y;
+
+	// Handle to thread block group
+	cg::thread_block cta = cg::this_thread_block();
+	__shared__ float tile[MAX_BLOCK_DIM_Y + 2 * RADIUS_O16][MAX_BLOCK_DIM_X + 2 * RADIUS_O16];
+
+	const int stride_y = n1 ;
+	const int stride_z = stride_y * n2 ;
+
+	int inputIndex  = gtidz * stride_z ;
+	int outputIndex = gtidz * stride_z ;
+
+	// Advance inputIndex to start of inner volume
+	inputIndex += i2Start * stride_y + i1Start ;
+
+	// Advance inputIndex to target element
+	inputIndex += gtidy * stride_y + gtidx;
+
+	float infront[RADIUS_O16];
+	float behind[RADIUS_O16];
+	float current;
+	const Myfloat fdCoef0 = stencil[0] * (inv2_d1 + inv2_d2 + inv2_d3) ;
+
+	const int tx = ltidx + RADIUS_O16;
+	const int ty = ltidy + RADIUS_O16;
+
+	// Check in bounds
+	if ((gtidx > i1End) || (gtidy > i2End))
+		validr = false;
+
+	if ((gtidx >= dimx) || (gtidy >= dimy))
+		validw = false;
+
+	// Preload the "infront" and "behind" data
+	for (int i = RADIUS_O16 - 2 ; i >= 0 ; i--)
+	{
+		if (validr)
+			behind[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	if (validr)
+		current = prc[inputIndex];
+
+	outputIndex = inputIndex;
+	inputIndex += stride_z;
+
+	for (int i = 0 ; i < RADIUS_O16 ; i++)
+	{
+		if (validr)
+			infront[i] = prc[inputIndex];
+
+		inputIndex += stride_z;
+	}
+
+	// set max element to process along z (n3)
+	int maxZ = gtidz + dimz ;
+	if (maxZ > (i3End-RADIUS_O16+1))
+	{
+		maxZ = i3End-RADIUS_O16+1 ;
+	}
+
+	// Step through the xy-planes
+#pragma unroll 17
+	for (int iz = gtidz ; iz < maxZ ; iz++)
+	{
+		// Advance the slice (move the thread-front)
+		for (int i = RADIUS_O16 - 1 ; i > 0 ; i--)
+			behind[i] = behind[i - 1];
+
+		behind[0] = current;
+		current = infront[0];
+#pragma unroll 8
+
+		for (int i = 0 ; i < RADIUS_O16 - 1 ; i++)
+			infront[i] = infront[i + 1];
+
+		if (validr)
+			infront[RADIUS_O16 - 1] = prc[inputIndex];
+
+		inputIndex  += stride_z;
+		outputIndex += stride_z;
+		cg::sync(cta);
+
+		// Note that for the work items on the boundary of the problem, the
+		// supplied index when reading the halo (below) may wrap to the
+		// previous/next row or even the previous/next xy-plane. This is
+		// acceptable since a) we disable the output write for these work
+		// items and b) there is at least one xy-plane before/after the
+		// current plane, so the access will be within bounds.
+
+		// Update the data slice in the local tile
+		// Halo above & below
+		if (ltidy < RADIUS_O16)
+		{
+			tile[ltidy][tx]                  = prc[outputIndex - RADIUS_O16 * stride_y];
+			tile[ltidy + worky + RADIUS_O16][tx] = prc[outputIndex + worky * stride_y];
+		}
+
+		// Halo left & right
+		if (ltidx < RADIUS_O16)
+		{
+			tile[ty][ltidx]                  = prc[outputIndex - RADIUS_O16];
+			tile[ty][ltidx + workx + RADIUS_O16] = prc[outputIndex + workx];
+		}
+
+		tile[ty][tx] = current;
+		cg::sync(cta);
+
+		// Compute the output value
+		Myfloat value = fdCoef0 * current ;
+#pragma unroll 8
+
+		for (int i = 1 ; i <= RADIUS_O16 ; i++)
 		{
 			value += stencil[i] * (inv2_d3 * (infront[i-1] + behind[i-1]) +
 					inv2_d2 * (tile[ty - i][tx] + tile[ty + i][tx]) +
@@ -1479,9 +2357,39 @@ Rtn_code Grid_Cuda_Optim::computePressureWithFD(Grid& prcGridIn, Grid& coefGridI
 	dim3 BlkSize(gpuFDBlkSize1, gpuFDBlkSize2, gpuFDBlkSize3) ;
 	dim3 GridSize(gpuFDGridSize1, gpuFDGridSize2, gpuFDGridSize3) ;
 
-	if ((dim == DIM3) && (fdOrder == 8))
+	if ((dim == DIM3) && (fdOrder == 4))
+	{
+		kernelOpt_computePressureWithFD_3D_O4<<<GridSize, BlkSize>>>(fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
+	}
+	else if ((dim == DIM3) && (fdOrder == 6))
+	{
+		kernelOpt_computePressureWithFD_3D_O6<<<GridSize, BlkSize>>>(fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
+	}
+	else if ((dim == DIM3) && (fdOrder == 8))
 	{			   
-		kernelOpt_computePressureWithFD_3D_O8<<<GridSize, BlkSize>>>(dim, fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+		kernelOpt_computePressureWithFD_3D_O8<<<GridSize, BlkSize>>>(fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
+	}
+	else if ((dim == DIM3) && (fdOrder == 10))
+	{
+		kernelOpt_computePressureWithFD_3D_O10<<<GridSize, BlkSize>>>(fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
+	}
+	else if ((dim == DIM3) && (fdOrder == 12))
+	{
+		kernelOpt_computePressureWithFD_3D_O12<<<GridSize, BlkSize>>>(fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
+	}
+	else if ((dim == DIM3) && (fdOrder == 14))
+	{
+		kernelOpt_computePressureWithFD_3D_O14<<<GridSize, BlkSize>>>(fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
+				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
+	}
+	else if ((dim == DIM3) && (fdOrder == 16))
+	{
+		kernelOpt_computePressureWithFD_3D_O16<<<GridSize, BlkSize>>>(fdOrder, d_grid_3d, prc_d_grid_3d, coef_d_grid_3d,inv2_d1,inv2_d2,inv2_d3,
 				n1,n2,n3,i1Start,i1End,i2Start,i2End,i3Start,i3End, dimx, dimy, dimz);
 	}
 	else

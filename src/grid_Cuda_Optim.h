@@ -3,6 +3,8 @@
 // This grid is activated with command line option -testMode CUDA_Optim
 // Derived class from Grid_Cuda
 // CUDA implementation (target GPU)
+//
+// See implementation details in grid_Cuda_Optim.cpp
 //-------------------------------------------------------------------------------------------------------
 
 #ifndef HPCSCAN_GRID_CUDA_OPTIM_H_
