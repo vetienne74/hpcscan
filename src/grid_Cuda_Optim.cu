@@ -11,6 +11,8 @@
 //
 // Implemented only for 3D grids and fdOrder 4,6,8,10,12,14 and 16
 // Control with command line parameters -cb1, -cb2 and -cb3 that control the GPU block sizes
+//
+// Limitations: does not support offset in n3 (offsets in n1 and n2 are supported)
 //-------------------------------------------------------------------------------------------------------
 
 #include "grid_Cuda_Optim.h"

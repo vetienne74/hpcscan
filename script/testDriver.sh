@@ -121,10 +121,12 @@ $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
 
 # Offset
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1Offset 1 -n2Offset 2 -n3Offset 3 >> ${report_file}
+# do not apply -n3Offset (some kernels do not support it)
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1Offset 1 -n2Offset 2 >> ${report_file}
 
 # Offset + Padding
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1Offset 1 -n2Offset 2 -n3Offset 3 \
+# do not apply -n3Offset (some kernels do not support it)
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1Offset 1 -n2Offset 2 \
 		     -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
 
 #==========================================================================================================
