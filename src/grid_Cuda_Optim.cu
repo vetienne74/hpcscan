@@ -70,14 +70,12 @@ namespace hpcscan {
 // With max FD order = 16, there are at most 9 FD coefficients in the stencil
 __constant__ Myfloat stencil[MAX_FD_COEF];
 
-// Set maximum number of threads per block for all kernels
-//__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
-
 //-------------------------------------------------------------------------------------------------------
 // compute Laplacian
 //   u
 // output w
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_FD_LAPLACIAN_O4(const Myint fdOrder, Myfloat *output, Myfloat *input,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -220,6 +218,7 @@ __global__ void kernelOpt_FD_LAPLACIAN_O4(const Myint fdOrder, Myfloat *output, 
 	}
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_FD_LAPLACIAN_O6(const Myint fdOrder, Myfloat *output, Myfloat *input,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -361,7 +360,7 @@ __global__ void kernelOpt_FD_LAPLACIAN_O6(const Myint fdOrder, Myfloat *output, 
 			output[outputIndex] = value;
 	}
 }
-
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *output, Myfloat *input,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -504,6 +503,7 @@ __global__ void kernelOpt_FD_LAPLACIAN_O8(const Myint fdOrder, Myfloat *output, 
 	}
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_FD_LAPLACIAN_O10(const Myint fdOrder, Myfloat *output, Myfloat *input,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -646,6 +646,7 @@ __global__ void kernelOpt_FD_LAPLACIAN_O10(const Myint fdOrder, Myfloat *output,
 	}
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_FD_LAPLACIAN_O12(const Myint fdOrder, Myfloat *output, Myfloat *input,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -788,6 +789,7 @@ __global__ void kernelOpt_FD_LAPLACIAN_O12(const Myint fdOrder, Myfloat *output,
 	}
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_FD_LAPLACIAN_O14(const Myint fdOrder, Myfloat *output, Myfloat *input,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -930,6 +932,7 @@ __global__ void kernelOpt_FD_LAPLACIAN_O14(const Myint fdOrder, Myfloat *output,
 	}
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_FD_LAPLACIAN_O16(const Myint fdOrder, Myfloat *output, Myfloat *input,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1078,6 +1081,7 @@ __global__ void kernelOpt_FD_LAPLACIAN_O16(const Myint fdOrder, Myfloat *output,
 // input/output prn
 // input prc
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_computePressureWithFD_3D_O4(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1223,6 +1227,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O4(const Myint fdOrder, Myflo
 
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_computePressureWithFD_3D_O6(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1252,6 +1257,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O6(const Myint fdOrder, Myflo
 
 	// Advance inputIndex to start of inner volume
 	inputIndex += i2Start * stride_y + i1Start ;
+	//inputIndex += RADIUS_O6 * stride_y + RADIUS_O6 ;
 
 	// Advance inputIndex to target element
 	inputIndex += gtidy * stride_y + gtidx;
@@ -1368,6 +1374,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O6(const Myint fdOrder, Myflo
 
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_computePressureWithFD_3D_O8(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1391,11 +1398,14 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Myint fdOrder, Myflo
 
 	const int stride_y = n1 ;
 	const int stride_z = stride_y * n2 ;
+	//const int stride_y = dimx + 2 * RADIUS_O8 ;
+	//const int stride_z = stride_y * (dimy + 2 * RADIUS_O8) ;
 
 	int inputIndex  = gtidz * stride_z ;
 	int outputIndex = gtidz * stride_z ;
 
 	// Advance inputIndex to start of inner volume
+	//inputIndex += RADIUS_O8 * stride_y + RADIUS_O8 ;
 	inputIndex += i2Start * stride_y + i1Start ;
 
 	// Advance inputIndex to target element
@@ -1513,6 +1523,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O8(const Myint fdOrder, Myflo
 
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_computePressureWithFD_3D_O10(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1658,6 +1669,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O10(const Myint fdOrder, Myfl
 
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_computePressureWithFD_3D_O12(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1803,6 +1815,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O12(const Myint fdOrder, Myfl
 
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_computePressureWithFD_3D_O14(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
@@ -1948,6 +1961,7 @@ __global__ void kernelOpt_computePressureWithFD_3D_O14(const Myint fdOrder, Myfl
 
 }
 
+__launch_bounds__(MAX_BLOCK_DIM_Y*MAX_BLOCK_DIM_X)
 __global__ void kernelOpt_computePressureWithFD_3D_O16(const Myint fdOrder, Myfloat *prn, Myfloat *prc, Myfloat *coef,
 		const Myfloat inv2_d1, const Myfloat inv2_d2, const Myfloat inv2_d3,
 		const Myint n1, const Myint n2, const Myint n3,
