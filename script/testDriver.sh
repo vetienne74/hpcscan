@@ -1,8 +1,8 @@
 
 #------------------------------------------------------------------------------------
-# this script is used to assess good behavior of Xbenchmark in several configurations
-# it is not intended to be used for performance measurements
-# the test cases are very light and all can be run on a laptop within few minutes
+# This script is used to assess good behavior of hpcscan in several configurations
+# It is not intended to be used for performance measurements
+# The test cases are very light and all can run on a laptop within few minutes
 # OMP_NUM_THREADS is set to 2 to allow efficient execution on every platforms
 #------------------------------------------------------------------------------------
 
@@ -102,6 +102,16 @@ $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 14 -dim 3 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 3 >> ${report_file}
 
+# 3D all orders with -autoPad
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 2  -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 4  -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 6  -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 8  -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 10 -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 12 -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 14 -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 3 -autoPad >> ${report_file}
+
 # custom grid size
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -fdOrder 16 -dim 3 -n1 27 -n2 36 -n3 41 >> ${report_file}
 
@@ -111,10 +121,12 @@ $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
 
 # Offset
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1Offset 1 -n2Offset 2 -n3Offset 3 >> ${report_file}
+# do not apply -n3Offset (some kernels do not support it)
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1Offset 1 -n2Offset 2 >> ${report_file}
 
 # Offset + Padding
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1Offset 1 -n2Offset 2 -n3Offset 3 \
+# do not apply -n3Offset (some kernels do not support it)
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase FD_D2 -n1Offset 1 -n2Offset 2 \
 		     -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
 
 #==========================================================================================================

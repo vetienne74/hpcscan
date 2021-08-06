@@ -200,7 +200,7 @@ __global__ void kernel_multiBlk_sumAbs(Myfloat *dataIn, Myfloat *dataOut,
 	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
 
 	// dynamic shared memory
-	extern __shared__ float sdata[];
+	extern __shared__ Myfloat sdata[];
 
 	// set to zero
 	sdata[threadIdx.x] = 0.0 ;
@@ -541,121 +541,146 @@ __global__ void kernel_updatePressure(Myfloat *prn, Myfloat *prc, Myfloat *coef,
 }
 
 //-------------------------------------------------------------------------------------------------------
-// perform boundaray condition
+// perform boundary condition
 // copy grid inner points in to halos and revert sign of values
 
-__global__ void kernel_applyBoundaryCondition(Dim_type dim, Myfloat *data,
+__global__ void kernel_applyBoundaryCondition_I1HALO1(Dim_type dim, Myfloat *data,
 		const Myint n1, const Myint n2, const Myint n3,
-		const Myint I1HALO1_neigh, const Myint64 i1halo1_i1Start, const Myint64 i1halo1_i1End, const Myint64 i1halo1_i2Start, const Myint64 i1halo1_i2End, const Myint64 i1halo1_i3Start, const Myint64 i1halo1_i3End,
-		const Myint I1HALO2_neigh, const Myint64 i1halo2_i1Start, const Myint64 i1halo2_i1End, const Myint64 i1halo2_i2Start, const Myint64 i1halo2_i2End, const Myint64 i1halo2_i3Start, const Myint64 i1halo2_i3End,
-		const Myint I2HALO1_neigh, const Myint64 i2halo1_i1Start, const Myint64 i2halo1_i1End, const Myint64 i2halo1_i2Start, const Myint64 i2halo1_i2End, const Myint64 i2halo1_i3Start, const Myint64 i2halo1_i3End,
-		const Myint I2HALO2_neigh, const Myint64 i2halo2_i1Start, const Myint64 i2halo2_i1End, const Myint64 i2halo2_i2Start, const Myint64 i2halo2_i2End, const Myint64 i2halo2_i3Start, const Myint64 i2halo2_i3End,
-		const Myint I3HALO1_neigh, const Myint64 i3halo1_i1Start, const Myint64 i3halo1_i1End, const Myint64 i3halo1_i2Start, const Myint64 i3halo1_i2End, const Myint64 i3halo1_i3Start, const Myint64 i3halo1_i3End,
-		const Myint I3HALO2_neigh, const Myint64 i3halo2_i1Start, const Myint64 i3halo2_i1End, const Myint64 i3halo2_i2Start, const Myint64 i3halo2_i2End, const Myint64 i3halo2_i3Start, const Myint64 i3halo2_i3End)
+		const Myint64 i1Start, const Myint64 i1End,
+		const Myint64 i2Start, const Myint64 i2End,
+		const Myint64 i3Start, const Myint64 i3End)
 
 {
-	Myint64 size = n1*n2*n3;
-	Myint64 tid = threadIdx.x + blockIdx.x*blockDim.x;
+	const unsigned int i1 = i1End + 1 ;
+	const unsigned int i2 = i2Start + threadIdx.y + blockIdx.y * blockDim.y ;
+	const unsigned int i3 = i3Start + threadIdx.z + blockIdx.z * blockDim.z ;
 
-	while (tid < size)
+	// check bound
+	if ((i2 <= i2End) && (i3 <= i3End))
 	{
-		unsigned int i3 = tid / (n1*n2);
-		unsigned int idx = tid-i3*n1*n2;
-		unsigned int i2 = idx/n1;
-		unsigned int i1 = idx - i2*n1 ;
-
-		// I1HALO1
-		if (I1HALO1_neigh == MPI_PROC_NULL)
+		// loop over n1
+		data[i1+i2*n1+i3*n1*n2] = 0. ;
+		for (unsigned int ii = 1; ii<=(i1End-i1Start+1); ii++)
 		{
-			Myint64 iInner = i1halo1_i1End+1;
-			if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-			if (i1 >= i1halo1_i1Start && i1 <= i1halo1_i1End &&
-					i2 >= i1halo1_i2Start && i2 <= i1halo1_i2End &&
-					i3 >= i1halo1_i3Start && i3 <= i1halo1_i3End   )
-			{
-				data[tid] = -data[(iInner+iInner-i1)+i2*n1+i3*n1*n2];
-			}
+			data[i1-ii+i2*n1+i3*n1*n2] = -data[i1+ii+i2*n1+i3*n1*n2];
 		}
-
-		// I1HALO2
-		if (I1HALO2_neigh == MPI_PROC_NULL)
-		{
-			Myint64 iInner = i1halo2_i1Start-1;
-			if (tid == iInner+i2*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-			if (i1 >= i1halo2_i1Start && i1 <= i1halo2_i1End &&
-					i2 >= i1halo2_i2Start && i2 <= i1halo2_i2End &&
-					i3 >= i1halo2_i3Start && i3 <= i1halo2_i3End   )
-			{
-				data[tid] = -data[(iInner-(i1-iInner))+i2*n1+i3*n1*n2];
-			}
-		}
-
-		if (dim >= DIM2)
-		{
-			// I2HALO1
-			if (I2HALO1_neigh == MPI_PROC_NULL)
-			{
-				Myint64 iInner = i2halo1_i2End+1;
-				if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-				if (i1 >= i2halo1_i1Start && i1 <= i2halo1_i1End &&
-						i2 >= i2halo1_i2Start && i2 <= i2halo1_i2End &&
-						i3 >= i2halo1_i3Start && i3 <= i2halo1_i3End   )
-				{
-					data[tid] = -data[i1+(iInner+iInner-i2)*n1+i3*n1*n2];
-				}
-			}
-
-			// I2HALO2
-			if (I2HALO2_neigh == MPI_PROC_NULL)
-			{
-				Myint64 iInner = i2halo2_i2Start-1;
-				if (tid == i1+iInner*n1+i3*n1*n2) data[tid] = 0.0 ;
-
-				if (i1 >= i2halo2_i1Start && i1 <= i2halo2_i1End &&
-						i2 >= i2halo2_i2Start && i2 <= i2halo2_i2End &&
-						i3 >= i2halo2_i3Start && i3 <= i2halo2_i3End   )
-				{
-					data[tid] = -data[i1+(iInner-(i2-iInner))*n1+i3*n1*n2];
-				}
-			}
-		}
-
-		if (dim >= DIM3)
-		{
-			// I3HALO1
-			if (I3HALO1_neigh == MPI_PROC_NULL)
-			{
-				Myint64 iInner = i3halo1_i3End+1;
-				if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
-
-				if (i1 >= i3halo1_i1Start && i1 <= i3halo1_i1End &&
-						i2 >= i3halo1_i2Start && i2 <= i3halo1_i2End &&
-						i3 >= i3halo1_i3Start && i3 <= i3halo1_i3End   )
-				{
-					data[tid] = -data[i1+i2*n1+(iInner+iInner-i3)*n1*n2];
-				}
-			}
-
-			// I3HALO2
-			if (I3HALO2_neigh == MPI_PROC_NULL)
-			{
-				Myint64 iInner = i3halo2_i3Start-1;
-				if (tid == i1+i2*n1+iInner*n1*n2) data[tid] = 0.0 ;
-
-				if (i1 >= i3halo2_i1Start && i1 <= i3halo2_i1End &&
-						i2 >= i3halo2_i2Start && i2 <= i3halo2_i2End &&
-						i3 >= i3halo2_i3Start && i3 <= i3halo2_i3End   )
-				{
-					data[tid] = -data[i1+i2*n1+(iInner-(i3-iInner))*n1*n2];
-				}
-			}
-		}
-
-		tid += blockDim.x * gridDim.x;
 	}
+}
+
+__global__ void kernel_applyBoundaryCondition_I1HALO2(Dim_type dim, Myfloat *data,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End,
+		const Myint64 i2Start, const Myint64 i2End,
+		const Myint64 i3Start, const Myint64 i3End)
+
+{
+	const unsigned int i1 = i1Start - 1 ;
+	const unsigned int i2 = i2Start + threadIdx.y + blockIdx.y * blockDim.y ;
+	const unsigned int i3 = i3Start + threadIdx.z + blockIdx.z * blockDim.z ;
+
+	// check bound
+	if ((i2 <= i2End) && (i3 <= i3End))
+	{
+		// loop over n1
+		data[i1+i2*n1+i3*n1*n2] = 0. ;
+		for (unsigned int ii = 1; ii<=(i1End-i1Start+1); ii++)
+		{
+			data[i1+ii+i2*n1+i3*n1*n2] = -data[i1-ii+i2*n1+i3*n1*n2];
+		}
+	}
+}
+
+__global__ void kernel_applyBoundaryCondition_I2HALO1(Dim_type dim, Myfloat *data,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End,
+		const Myint64 i2Start, const Myint64 i2End,
+		const Myint64 i3Start, const Myint64 i3End)
+
+{
+	const unsigned int i1 = i1Start + threadIdx.x + blockIdx.x * blockDim.x ;
+	const unsigned int i2 = i2End + 1 ;
+	const unsigned int i3 = i3Start + threadIdx.z + blockIdx.z * blockDim.z ;
+
+	// check bound
+	if ((i1 <= i1End) && (i3 <= i3End))
+	{
+		// loop over n2
+		data[i1+i2*n1+i3*n1*n2] = 0. ;
+		for (unsigned int ii = 1; ii<=(i2End-i2Start+1); ii++)
+		{
+			data[i1+(i2-ii)*n1+i3*n1*n2] = -data[i1+(i2+ii)*n1+i3*n1*n2];
+		}
+	}
+}
+
+__global__ void kernel_applyBoundaryCondition_I2HALO2(Dim_type dim, Myfloat *data,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End,
+		const Myint64 i2Start, const Myint64 i2End,
+		const Myint64 i3Start, const Myint64 i3End)
+
+{
+	const unsigned int i1 = i1Start + threadIdx.x + blockIdx.x * blockDim.x ;
+	const unsigned int i2 = i2Start - 1 ;
+	const unsigned int i3 = i3Start + threadIdx.z + blockIdx.z * blockDim.z ;
+
+	// check bound
+	if ((i1 <= i1End) && (i3 <= i3End))
+	{
+		// loop over n2
+		data[i1+i2*n1+i3*n1*n2] = 0. ;
+		for (unsigned int ii = 1; ii<=(i2End-i2Start+1); ii++)
+		{
+			data[i1+(i2+ii)*n1+i3*n1*n2] = -data[i1+(i2-ii)*n1+i3*n1*n2];
+		}
+	}
+}
+
+__global__ void kernel_applyBoundaryCondition_I3HALO1(Dim_type dim, Myfloat *data,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End,
+		const Myint64 i2Start, const Myint64 i2End,
+		const Myint64 i3Start, const Myint64 i3End)
+
+{
+	const unsigned int i1 = i1Start + threadIdx.x + blockIdx.x * blockDim.x ;
+	const unsigned int i2 = i2Start + threadIdx.y + blockIdx.y * blockDim.y ;
+	const unsigned int i3 = i3End + 1 ;
+
+	// check bound
+	if ((i1 <= i1End) && (i2 <= i2End))
+	{
+		// loop over n3
+		data[i1+i2*n1+i3*n1*n2] = 0. ;
+		for (unsigned int ii = 1; ii<=(i3End-i3Start+1); ii++)
+		{
+			data[i1+i2*n1+(i3-ii)*n1*n2] = -data[i1+i2*n1+(i3+ii)*n1*n2];
+		}
+	}
+}
+
+__global__ void kernel_applyBoundaryCondition_I3HALO2(Dim_type dim, Myfloat *data,
+		const Myint n1, const Myint n2, const Myint n3,
+		const Myint64 i1Start, const Myint64 i1End,
+		const Myint64 i2Start, const Myint64 i2End,
+		const Myint64 i3Start, const Myint64 i3End)
+
+{
+	const unsigned int i1 = i1Start + threadIdx.x + blockIdx.x * blockDim.x ;
+	const unsigned int i2 = i2Start + threadIdx.y + blockIdx.y * blockDim.y ;
+	const unsigned int i3 = i3Start - 1 ;
+
+	// check bound
+	if ((i1 <= i1End) && (i2 <= i2End))
+	{
+		// loop over n3
+		data[i1+i2*n1+i3*n1*n2] = 0. ;
+		for (unsigned int ii = 1; ii<=(i3End-i3Start+1); ii++)
+		{
+			data[i1+i2*n1+(i3+ii)*n1*n2] = -data[i1+i2*n1+(i3-ii)*n1*n2];
+		}
+	}
+
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -2102,7 +2127,7 @@ void Grid_Cuda::write(string file_name)
 		// copy grid from device to host
 		copyGridDeviceToHost(ALL_POINTS) ;
 
-		Grid_Cuda::write(file_name) ;
+		Grid::write(file_name) ;
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::write");
@@ -2648,6 +2673,13 @@ Rtn_code Grid_Cuda::initializeGrid(void)
 
 	Grid::initializeGrid() ;
 
+	// Grid should be initialized only once
+	if (d_grid_3d != NULL)
+	{
+		printError(" In Grid_Cuda::initializeGrid, d_grid_3d != nullptr") ;
+		return(RTN_CODE_OK) ;
+	}
+
 	// for kernels using 3D blocks
 	gpuGridSize1 = n1 / gpuBlkSize1 + 1 ;
 	gpuGridSize2 = n2 / gpuBlkSize2 + 1 ;
@@ -2670,21 +2702,21 @@ Rtn_code Grid_Cuda::initializeGrid(void)
 	}
 	printDebug(FULL_DEBUG, "Device Id" ,myDevice) ;
 
-	if (d_grid_3d == NULL)
+	//if (d_grid_3d == NULL)
 	{
 		// allocate the grid on the device
 		cudaMalloc( (void**)&d_grid_3d, npoint * sizeof(Myfloat) );
 		cudaCheckError();
 	}		
 
-	if (d_help_3d == NULL)
+	//if (d_help_3d == NULL)
 	{
 		// allocate 1d array of the device used to perform reduction operation
 		cudaMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
 		cudaCheckError();
 	}
 
-	if (d_help_3d_2 == NULL)
+	//if (d_help_3d_2 == NULL)
 	{
 		// allocate 1d array of the device used to perform reduction operation
 		cudaMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
@@ -3396,30 +3428,110 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 
 	else if (boundCondType == BOUND_COND_ANTI_MIRROR)
 	{
-		Myint64 	i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
-		i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
-		i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
-		i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
-		i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
-		i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End;
 
-		getGridIndex(I1HALO1, &i1halo1_i1Start, &i1halo1_i1End, &i1halo1_i2Start, &i1halo1_i2End, &i1halo1_i3Start, &i1halo1_i3End);
-		getGridIndex(I1HALO2, &i1halo2_i1Start, &i1halo2_i1End, &i1halo2_i2Start, &i1halo2_i2End, &i1halo2_i3Start, &i1halo2_i3End);
-		getGridIndex(I2HALO1, &i2halo1_i1Start, &i2halo1_i1End, &i2halo1_i2Start, &i2halo1_i2End, &i2halo1_i3Start, &i2halo1_i3End);
-		getGridIndex(I2HALO2, &i2halo2_i1Start, &i2halo2_i1End, &i2halo2_i2Start, &i2halo2_i2End, &i2halo2_i3Start, &i2halo2_i3End);
-		getGridIndex(I3HALO1, &i3halo1_i1Start, &i3halo1_i1End, &i3halo1_i2Start, &i3halo1_i2End, &i3halo1_i3Start, &i3halo1_i3End);
-		getGridIndex(I3HALO2, &i3halo2_i1Start, &i3halo2_i1End, &i3halo2_i2Start, &i3halo2_i2End, &i3halo2_i3Start, &i3halo2_i3End);
+		// number of threads per block is set to blkSize x blkSize
+		//const Myint blkSize = 32 ;
+		const Myint blkSize = 4 ;
 
+		// anti-mirroring value in halos
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 
-		kernel_applyBoundaryCondition<<<gpuGridSize, gpuBlkSize>>>(dim, d_grid_3d, n1, n2, n3,
-				getNeighbourProc(I1HALO1), i1halo1_i1Start, i1halo1_i1End, i1halo1_i2Start, i1halo1_i2End, i1halo1_i3Start, i1halo1_i3End,
-				getNeighbourProc(I1HALO2), i1halo2_i1Start, i1halo2_i1End, i1halo2_i2Start, i1halo2_i2End, i1halo2_i3Start, i1halo2_i3End,
-				getNeighbourProc(I2HALO1), i2halo1_i1Start, i2halo1_i1End, i2halo1_i2Start, i2halo1_i2End, i2halo1_i3Start, i2halo1_i3End,
-				getNeighbourProc(I2HALO2), i2halo2_i1Start, i2halo2_i1End, i2halo2_i2Start, i2halo2_i2End, i2halo2_i3Start, i2halo2_i3End,
-				getNeighbourProc(I3HALO1), i3halo1_i1Start, i3halo1_i1End, i3halo1_i2Start, i3halo1_i2End, i3halo1_i3Start, i3halo1_i3End,
-				getNeighbourProc(I3HALO2), i3halo2_i1Start, i3halo2_i1End, i3halo2_i2Start, i3halo2_i2End, i3halo2_i3Start, i3halo2_i3End);
+		if (dim >= DIM1)
+		{
+			// set block size 1 x blkSize x blkSize
+			int blkSize1 = 1 ;
+			int blkSize2 = blkSize ;
+			int blkSize3 = blkSize ;
+			dim3 blkSize(blkSize1, blkSize2, blkSize3) ;
 
-		cudaDeviceSynchronize();
+			// set grid size
+			int gridSize1 = 1 ;
+			int gridSize2 = n2Inner / blkSize2 ;
+			if (n2Inner%blkSize2) gridSize2 ++ ;
+			int gridSize3 = n3Inner / blkSize3 ;
+			if (n3Inner%blkSize3) gridSize3 ++ ;
+			dim3 gridSize(gridSize1, gridSize2, gridSize3) ;
+
+			// I1HALO1
+			if (getNeighbourProc(I1HALO1) == MPI_PROC_NULL)
+			{
+				getGridIndex(I1HALO1, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+				kernel_applyBoundaryCondition_I1HALO1<<<gridSize, blkSize>>>(dim, d_grid_3d, n1, n2, n3,
+						i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+			}
+
+			// I1HALO2
+			if (getNeighbourProc(I1HALO2) == MPI_PROC_NULL)
+			{
+				getGridIndex(I1HALO2, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+				kernel_applyBoundaryCondition_I1HALO2<<<gridSize, blkSize>>>(dim, d_grid_3d, n1, n2, n3,
+						i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+			}
+		}
+		if (dim >= DIM2)
+		{
+			// set block size blkSize x 1 x blkSize
+			int blkSize1 = blkSize ;
+			int blkSize2 = 1 ;
+			int blkSize3 = blkSize ;
+			dim3 blkSize(blkSize1, blkSize2, blkSize3) ;
+
+			// set grid size
+			int gridSize1 = n1Inner / blkSize1 ;
+			if (n1Inner%blkSize1) gridSize1 ++ ;
+			int gridSize2 = 1 ;
+			int gridSize3 = n3Inner / blkSize3 ;
+			if (n3Inner%blkSize3) gridSize3 ++ ;
+			dim3 gridSize(gridSize1, gridSize2, gridSize3) ;
+
+			// I2HALO1
+			if (getNeighbourProc(I2HALO1) == MPI_PROC_NULL)
+			{
+				getGridIndex(I2HALO1, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+				kernel_applyBoundaryCondition_I2HALO1<<<gridSize, blkSize>>>(dim, d_grid_3d, n1, n2, n3,
+						i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+			}
+
+			// I2HALO2
+			if (getNeighbourProc(I2HALO2) == MPI_PROC_NULL)
+			{
+				getGridIndex(I2HALO2, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+				kernel_applyBoundaryCondition_I2HALO2<<<gridSize, blkSize>>>(dim, d_grid_3d, n1, n2, n3,
+						i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+			}
+		}
+		if (dim >= DIM3)
+		{
+			// set block size blkSize x blkSize x 1
+			int blkSize1 = blkSize ;
+			int blkSize2 = blkSize ;
+			int blkSize3 = 1 ;
+			dim3 blkSize(blkSize1, blkSize2, blkSize3) ;
+
+			// set grid size
+			int gridSize1 = n1Inner / blkSize1 ;
+			if (n1Inner%blkSize1) gridSize1 ++ ;
+			int gridSize2 = n2Inner / blkSize2 ;
+			if (n2Inner%blkSize2) gridSize2 ++ ;
+			int gridSize3 = 1 ;
+			dim3 gridSize(gridSize1, gridSize2, gridSize3) ;
+
+			// I3HALO1
+			if (getNeighbourProc(I3HALO1) == MPI_PROC_NULL)
+			{
+				getGridIndex(I3HALO1, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+				kernel_applyBoundaryCondition_I3HALO1<<<gridSize, blkSize>>>(dim, d_grid_3d, n1, n2, n3,
+						i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+			}
+
+			// I3HALO2
+			if (getNeighbourProc(I3HALO2) == MPI_PROC_NULL)
+			{
+				getGridIndex(I3HALO2, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+				kernel_applyBoundaryCondition_I3HALO2<<<gridSize, blkSize>>>(dim, d_grid_3d, n1, n2, n3,
+						i1Start, i1End, i2Start, i2End, i3Start, i3End) ;
+			}
+		}
 	}
 	else
 	{
@@ -3427,6 +3539,8 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 		return(RTN_CODE_KO) ;
 	}
 
+	cudaDeviceSynchronize();
+	cudaCheckError();
 
 	printDebug(FULL_DEBUG, "Out Grid_Cuda::applyBoundaryCondition") ;
 	return(RTN_CODE_OK) ;

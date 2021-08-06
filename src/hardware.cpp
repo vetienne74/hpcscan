@@ -14,6 +14,7 @@
 #include <cstring> // needed for DPC++ (memset, memcpy)
 
 #include "mpi.h"
+#include <omp.h>
 
 #include "config.h"
 #include "constant.h"
@@ -196,42 +197,79 @@ void Hardware::displayCounterStat(void)
 
 			double tFirst = hwCounterVec[0].timeOfMeasure ;
 			double tLast = hwCounterVec[nMeasure-1].timeOfMeasure ;
-			double totalTime = tLast - tFirst ;
-			printInfo(MASTER, " Stat. over period (s)", totalTime) ;
+			double statTime = tLast - tFirst ;
+			printInfo(MASTER, " Stat. over period (s)", statTime) ;
 
 			// min. power
+			Myfloat minPower = +FLT_MAX ;
 			{
-				Myfloat val = +FLT_MAX ;
+
 				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
 				{
-					if (hwCounterVec[ii].powerWatt < val) val = hwCounterVec[ii].powerWatt ;
+					if (hwCounterVec[ii].powerWatt < minPower) minPower = hwCounterVec[ii].powerWatt ;
 				}
-				printInfo(MASTER, " Min. power (Watt)", val) ;
+				printInfo(MASTER, " Min. power (Watt)", minPower) ;
 			}
 
 			// max. power
+			Myfloat maxPower = -FLT_MAX ;
 			{
-				Myfloat val = -FLT_MAX ;
 				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
 				{
-					if (hwCounterVec[ii].powerWatt > val) val = hwCounterVec[ii].powerWatt ;
+					if (hwCounterVec[ii].powerWatt > maxPower) maxPower = hwCounterVec[ii].powerWatt ;
 				}
-				printInfo(MASTER, " Max. power (Watt)", val) ;
+				printInfo(MASTER, " Max. power (Watt)", maxPower) ;
 			}
 
 			// aver. power and consumption
+			Myfloat averPower = 0. ;
+			Myfloat wattHour  = 0. ;
 			{
-				Myfloat val = 0 ;
 				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
 				{
-					val += hwCounterVec[ii].powerWatt ;
+					averPower += hwCounterVec[ii].powerWatt ;
 				}
-				val /= hwCounterVec.size() ;
-				printInfo(MASTER, " Aver. power (Watt)", val) ;
-
-				printInfo(MASTER, " Aver. consump. (W.h)", val *  totalTime / 3600.) ;
+				averPower /= hwCounterVec.size() ;
+				printInfo(MASTER, " Aver. power (Watt)", averPower) ;
+				wattHour = averPower *  statTime / 3600. ;
+				printInfo(MASTER, " Aver. consump. (W.h)", wattHour) ;
 			}
-			
+
+			// write measurements in log file
+			if (myMpiRank == 0)
+			{
+				string file_name = "hpcscan.hwCounter." + Config::Instance()->testCaseName + ".log";
+				ofstream hwCounterLogFile ;
+				hwCounterLogFile.open(file_name, ios::app) ;
+
+				// all strings first
+				hwCounterLogFile << Config::Instance()->hostName << " " ;
+				hwCounterLogFile << Config::Instance()->testCaseName << " " ;
+				hwCounterLogFile << Config::Instance()->testMode << " " ;
+				hwCounterLogFile << Config::Instance()->propagator << " " ;
+
+				// numeric values follow
+				hwCounterLogFile << nMpiProc << " " ; // 1
+				hwCounterLogFile << Config::Instance()->nsub1 << " " ; // 2
+				hwCounterLogFile << Config::Instance()->nsub2 << " " ; // 3
+				hwCounterLogFile << Config::Instance()->nsub3 << " " ; // 4
+				hwCounterLogFile << omp_get_max_threads() << " " ; // 5
+				hwCounterLogFile << Config::Instance()->n1 << " " ; // 6
+				hwCounterLogFile << Config::Instance()->n2 << " " ; // 7
+				hwCounterLogFile << Config::Instance()->n3 << " " ; // 8
+				hwCounterLogFile << Config::Instance()->fdOrder << " " ; // 9
+
+				hwCounterLogFile << statTime << " " ; // 10
+				hwCounterLogFile << hwCounterVec.size() << " " ; // 11
+				hwCounterLogFile << minPower << " " ; // 12
+				hwCounterLogFile << maxPower << " " ; // 13
+				hwCounterLogFile << averPower << " " ; // 14
+				hwCounterLogFile << wattHour << " " ; // 15
+				hwCounterLogFile << "\n" ;
+
+				hwCounterLogFile.close() ;
+			}
+
 		}
 	}
 	else

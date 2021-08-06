@@ -7,9 +7,9 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit c2e33e6d2a014549bee9514a48d19df304078f5a
-		Author: vincent <vetienne@rocketmail.com>
-		Date:   Thu Jul 1 21:43:38 2021 +0300
+ Git version	commit 78966fd91a78e8a7c1d5d6a5540b69d862334871
+		Author: Vincent Etienne <vincent.etienne@aramco.com>
+		Date:   Sun Jul 18 15:10:56 2021 +0300
 
  Host name	neptune
  User name	vincent
@@ -88,6 +88,7 @@
  Inner n2		61
  Inner n3		61
  Grid size (MB)		1.31404
+ 64 bits align (inner)	YES
  Cache block size axis1	9999
  Cache block size axis2	4
  Cache block size axis3	16
@@ -127,19 +128,19 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	12.419
- Best Gpoint/s eff.	0.258728
- Best Gpoint/s in FD	0.258728
- Best Apparent BW GB/s	30.0125
+ Best GFlop/s in FD	11.7784
+ Best Gpoint/s eff.	0.245384
+ Best Gpoint/s in FD	0.245384
+ Best Apparent BW GB/s	28.4645
 
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  Hardware counters statistics
  No statistic available
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
- Case run time (s)	0.21271
+ Case run time (s)	0.283085
 --------------------------------------------------------------------------------
- Total run time (s)	0.214228
+ Total run time (s)	0.284189
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

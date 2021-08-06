@@ -12,6 +12,9 @@
 #define HPCSCAN_FDM_H_
 
 #include <cmath>
+#include <vector>
+
+#include "constant.h"
 
 namespace hpcscan {
 
@@ -20,7 +23,6 @@ namespace hpcscan {
 // NOTE: 1st differentials are not yet used in this version, for future use cases
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O8 %%%%%%%%%%%%%%-------------------------------------
-const Myint   FD_D1_O8_HSTL = 4 ; //half stencil
 const Myfloat FD_D1_O8_A1   =  1225./1024. ;
 const Myfloat FD_D1_O8_A2   = -245./3072. ;
 const Myfloat FD_D1_O8_A3   =  49./5120. ;
@@ -51,7 +53,6 @@ const Myint   FD_D1_O8_NOP  = 12 ;
 //-=============================================== 2nd differential ==========================================================
 
 //-------------------------------------%%%%%%%%%%% D2 FD space O2 %%%%%%%%%%%%%%------------------------------------
-const Myint   FD_D2_O2_HSTL = 1 ; //half stencil
 const Myfloat FD_D2_O2_A0   = -2.0 ;
 const Myfloat FD_D2_O2_A1   =  1.0 ;
 const Myint   FD_D2_O2_NOP  = 4 ;
@@ -69,7 +70,6 @@ const Myint   FD_D2_O2_NOP  = 4 ;
 				+ U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1]) * inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space O4 %%%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O4_HSTL = 2 ; //half stencil
 const Myfloat FD_D2_O4_A0   = -5./2. ;
 const Myfloat FD_D2_O4_A1   =  4./3. ;
 const Myfloat FD_D2_O4_A2   = -1./12. ;
@@ -94,7 +94,6 @@ const Myint   FD_D2_O4_NOP  = 8 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space O6 %%%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O6_HSTL = 3 ; //half stencil
 const Myfloat FD_D2_O6_A0   = -49./18. ;
 const Myfloat FD_D2_O6_A1   =  3./2. ;
 const Myfloat FD_D2_O6_A2   = -3./20. ;
@@ -123,7 +122,6 @@ const Myint   FD_D2_O6_NOP  = 11 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space O8 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O8_HSTL = 4 ; //half stencil
 const Myfloat FD_D2_O8_A0   = -205./72. ;
 const Myfloat FD_D2_O8_A1   =  8./5. ;
 const Myfloat FD_D2_O8_A2   = -1/5. ;
@@ -156,7 +154,6 @@ const Myint   FD_D2_O8_NOP  = 14 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 10 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O10_HSTL = 5 ; //half stencil
 const Myfloat FD_D2_O10_A0   = -5269./1800. ;
 const Myfloat FD_D2_O10_A1   =  5./3. ;
 const Myfloat FD_D2_O10_A2   = -5./21. ;
@@ -193,7 +190,6 @@ const Myint   FD_D2_O10_NOP  = 17 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 12 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O12_HSTL = 6 ; //half stencil
 const Myfloat FD_D2_O12_A0   = -2598./871. ;
 const Myfloat FD_D2_O12_A1   =  12./7.;
 const Myfloat FD_D2_O12_A2   = -15./56. ;
@@ -234,7 +230,6 @@ const Myint   FD_D2_O12_NOP  = 20 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 14 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O14_HSTL = 7 ; //half stencil
 const Myfloat FD_D2_O14_A0   = -266681./88200. ;
 const Myfloat FD_D2_O14_A1   =  7./4.;
 const Myfloat FD_D2_O14_A2   = -7./24. ;
@@ -279,7 +274,6 @@ const Myint   FD_D2_O14_NOP  = 23 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 16 %%%%%%%%%%%%-------------------------------------
-const Myint   FD_D2_O16_HSTL = 8 ; //half stencil
 const Myfloat FD_D2_O16_A0   = -1671./547. ;
 const Myfloat FD_D2_O16_A1   =  16./9. ;
 const Myfloat FD_D2_O16_A2   = -14./45. ;
@@ -328,55 +322,98 @@ const Myint   FD_D2_O16_NOP  = 26 ;
 				* inv2_d3)
 
 //-------------------------------------------------------------------------------------------------------
+// return vector of FD coefficients
+//
+static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
+{
+	vector<Myfloat> FD_coef ;
+
+	if (fdOrder == 2)
+	{
+		FD_coef.push_back(FD_D2_O2_A0) ;
+		FD_coef.push_back(FD_D2_O2_A1) ;
+	}
+	else if (fdOrder == 4)
+	{
+		FD_coef.push_back(FD_D2_O4_A0) ;
+		FD_coef.push_back(FD_D2_O4_A1) ;
+		FD_coef.push_back(FD_D2_O4_A2) ;
+	}
+	else if (fdOrder == 6)
+	{
+		FD_coef.push_back(FD_D2_O6_A0) ;
+		FD_coef.push_back(FD_D2_O6_A1) ;
+		FD_coef.push_back(FD_D2_O6_A2) ;
+		FD_coef.push_back(FD_D2_O6_A3) ;
+	}
+	else if (fdOrder == 8)
+	{
+		FD_coef.push_back(FD_D2_O8_A0) ;
+		FD_coef.push_back(FD_D2_O8_A1) ;
+		FD_coef.push_back(FD_D2_O8_A2) ;
+		FD_coef.push_back(FD_D2_O8_A3) ;
+		FD_coef.push_back(FD_D2_O8_A4) ;
+	}
+	else if (fdOrder == 10)
+	{
+		FD_coef.push_back(FD_D2_O10_A0) ;
+		FD_coef.push_back(FD_D2_O10_A1) ;
+		FD_coef.push_back(FD_D2_O10_A2) ;
+		FD_coef.push_back(FD_D2_O10_A3) ;
+		FD_coef.push_back(FD_D2_O10_A4) ;
+		FD_coef.push_back(FD_D2_O10_A5) ;
+	}
+	else if (fdOrder == 12)
+	{
+		FD_coef.push_back(FD_D2_O12_A0) ;
+		FD_coef.push_back(FD_D2_O12_A1) ;
+		FD_coef.push_back(FD_D2_O12_A2) ;
+		FD_coef.push_back(FD_D2_O12_A3) ;
+		FD_coef.push_back(FD_D2_O12_A4) ;
+		FD_coef.push_back(FD_D2_O12_A5) ;
+		FD_coef.push_back(FD_D2_O12_A6) ;
+	}
+	else if (fdOrder == 14)
+	{
+		FD_coef.push_back(FD_D2_O14_A0) ;
+		FD_coef.push_back(FD_D2_O14_A1) ;
+		FD_coef.push_back(FD_D2_O14_A2) ;
+		FD_coef.push_back(FD_D2_O14_A3) ;
+		FD_coef.push_back(FD_D2_O14_A4) ;
+		FD_coef.push_back(FD_D2_O14_A5) ;
+		FD_coef.push_back(FD_D2_O14_A6) ;
+		FD_coef.push_back(FD_D2_O14_A7) ;
+	}
+	else if (fdOrder == 16)
+	{
+		FD_coef.push_back(FD_D2_O16_A0) ;
+		FD_coef.push_back(FD_D2_O16_A1) ;
+		FD_coef.push_back(FD_D2_O16_A2) ;
+		FD_coef.push_back(FD_D2_O16_A3) ;
+		FD_coef.push_back(FD_D2_O16_A4) ;
+		FD_coef.push_back(FD_D2_O16_A5) ;
+		FD_coef.push_back(FD_D2_O16_A6) ;
+		FD_coef.push_back(FD_D2_O16_A7) ;
+		FD_coef.push_back(FD_D2_O16_A8) ;
+	}
+
+	return FD_coef ;
+}
+
+//-------------------------------------------------------------------------------------------------------
 // compute sum of abs(FD coefficients)
 // this is used to compute the CFL for the propagator
 //
 static Myfloat64 getSumAbsFD_D2Coef(Myint fdOrder)
 {
 	Myfloat64 sumCoef = UNSPECIFIED ;
-	if (fdOrder == 2)
+
+	auto FD_coef = getFD_D2coefVector(fdOrder) ;
+
+	for (Myint ii = 0; ii < FD_coef.size(); ii++)
 	{
-		sumCoef = fabs(FD_D2_O2_A0) + 2*fabs(FD_D2_O2_A1) ;
-	}
-	else if (fdOrder == 4)
-	{
-		sumCoef = fabs(FD_D2_O4_A0) + 2*fabs(FD_D2_O4_A1) + 2*fabs(FD_D2_O4_A2) ;
-	}
-	else if (fdOrder == 6)
-	{
-		sumCoef = fabs(FD_D2_O6_A0) + 2*fabs(FD_D2_O6_A1) + 2*fabs(FD_D2_O6_A2)
-		+ 2*fabs(FD_D2_O6_A3) ;
-	}
-	else if (fdOrder == 8)
-	{
-		sumCoef = fabs(FD_D2_O8_A0) + 2*fabs(FD_D2_O8_A1) + 2*fabs(FD_D2_O8_A2)
-		+ 2*fabs(FD_D2_O8_A3) + 2*fabs(FD_D2_O8_A4);
-	}
-	else if (fdOrder == 10)
-	{
-		sumCoef = fabs(FD_D2_O10_A0) + 2*fabs(FD_D2_O10_A1) + 2*fabs(FD_D2_O10_A2)
-		+ 2*fabs(FD_D2_O10_A3) + 2*fabs(FD_D2_O10_A4)
-		+ 2*fabs(FD_D2_O10_A5) ;
-	}
-	else if (fdOrder == 12)
-	{
-		sumCoef = fabs(FD_D2_O12_A0) + 2*fabs(FD_D2_O12_A1) + 2*fabs(FD_D2_O12_A2)
-		+ 2*fabs(FD_D2_O12_A3) + 2*fabs(FD_D2_O12_A4)
-		+ 2*fabs(FD_D2_O12_A5) + 2*fabs(FD_D2_O12_A6) ;
-	}
-	else if (fdOrder == 14)
-	{
-		sumCoef = fabs(FD_D2_O14_A0) + 2*fabs(FD_D2_O14_A1) + 2*fabs(FD_D2_O14_A2)
-		+ 2*fabs(FD_D2_O14_A3) + 2*fabs(FD_D2_O14_A4)
-		+ 2*fabs(FD_D2_O14_A5) + 2*fabs(FD_D2_O14_A6)
-		+ 2*fabs(FD_D2_O14_A7) ;
-	}
-	else if (fdOrder == 16)
-	{
-		sumCoef = fabs(FD_D2_O16_A0) + 2*fabs(FD_D2_O16_A1) + 2*fabs(FD_D2_O16_A2)
-		+ 2*fabs(FD_D2_O16_A3) + 2*fabs(FD_D2_O16_A4)
-		+ 2*fabs(FD_D2_O16_A5) + 2*fabs(FD_D2_O16_A6)
-		+ 2*fabs(FD_D2_O16_A7) + 2*fabs(FD_D2_O16_A8) ;
+		if (ii == 0) sumCoef = fabs(FD_coef[ii]) ;
+		else sumCoef += TWO * fabs(FD_coef[ii]) ;
 	}
 
 	return(sumCoef) ;
@@ -390,49 +427,13 @@ static Myfloat64 getSumAbsFD_D2Coef(Myint fdOrder)
 static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
 {
 	Myfloat64 sumCoef = UNSPECIFIED ;
-	if (fdOrder == 2)
+
+	auto FD_coef = getFD_D2coefVector(fdOrder) ;
+
+	for (Myint ii = 0; ii < FD_coef.size(); ii++)
 	{
-		sumCoef = FD_D2_O2_A0 + 2*FD_D2_O2_A1 ;
-	}
-	else if (fdOrder == 4)
-	{
-		sumCoef = FD_D2_O4_A0 + 2*FD_D2_O4_A1 + 2*FD_D2_O4_A2 ;
-	}
-	else if (fdOrder == 6)
-	{
-		sumCoef = FD_D2_O6_A0 + 2*FD_D2_O6_A1 + 2*FD_D2_O6_A2
-				+ 2*FD_D2_O6_A3 ;
-	}
-	else if (fdOrder == 8)
-	{
-		sumCoef = FD_D2_O8_A0 + 2*FD_D2_O8_A1 + 2*FD_D2_O8_A2
-		+ 2*FD_D2_O8_A3 + 2*FD_D2_O8_A4 ;
-	}
-	else if (fdOrder == 10)
-	{
-		sumCoef = FD_D2_O10_A0 + 2*FD_D2_O10_A1 + 2*FD_D2_O10_A2
-				+ 2*FD_D2_O10_A3 + 2*FD_D2_O10_A4
-				+ 2*FD_D2_O10_A5 ;
-	}
-	else if (fdOrder == 12)
-	{
-		sumCoef = FD_D2_O12_A0 + 2*FD_D2_O12_A1 + 2*FD_D2_O12_A2
-		+ 2*FD_D2_O12_A3 + 2*FD_D2_O12_A4
-		+ 2*FD_D2_O12_A5 + 2*FD_D2_O12_A6 ;
-	}
-	else if (fdOrder == 14)
-	{
-		sumCoef = FD_D2_O14_A0 + 2*FD_D2_O14_A1 + 2*FD_D2_O14_A2
-				+ 2*FD_D2_O14_A3 + 2*FD_D2_O14_A4
-				+ 2*FD_D2_O14_A5 + 2*FD_D2_O14_A6
-				+ 2*FD_D2_O14_A7 ;
-	}
-	else if (fdOrder == 16)
-	{
-		sumCoef = FD_D2_O16_A0 + 2*FD_D2_O16_A1 + 2*FD_D2_O16_A2
-		+ 2*FD_D2_O16_A3 + 2*FD_D2_O16_A4
-		+ 2*FD_D2_O16_A5 + 2*FD_D2_O16_A6
-		+ 2*FD_D2_O16_A7 + 2*FD_D2_O16_A8 ;
+		if (ii == 0) sumCoef = FD_coef[ii] ;
+		else sumCoef += TWO * FD_coef[ii] ;
 	}
 
 	return(sumCoef) ;
@@ -443,42 +444,9 @@ static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
 //
 static Myint getFD_D2haloWidth(Myint fdOrder)
 {
-	Myint haloWidth = UNSPECIFIED ;
-
-	if (fdOrder == 2)
-	{
-		haloWidth = FD_D2_O2_HSTL ;
-	}
-	else if (fdOrder == 4)
-	{
-		haloWidth = FD_D2_O4_HSTL ;
-	}
-	else if (fdOrder == 6)
-	{
-		haloWidth = FD_D2_O6_HSTL ;
-	}
-	else if (fdOrder == 8)
-	{
-		haloWidth = FD_D2_O8_HSTL ;
-	}
-	else if (fdOrder == 10)
-	{
-		haloWidth = FD_D2_O10_HSTL ;
-	}
-	else if (fdOrder == 12)
-	{
-		haloWidth = FD_D2_O12_HSTL ;
-	}
-	else if (fdOrder == 14)
-	{
-		haloWidth = FD_D2_O14_HSTL ;
-	}
-	else if (fdOrder == 16)
-	{
-		haloWidth = FD_D2_O16_HSTL ;
-	}
-
-	return(haloWidth) ;
+	auto FD_coef = getFD_D2coefVector(fdOrder) ;
+	Myint haloWidth = FD_coef.size() - 1 ;
+	return haloWidth  ;
 }
 
 //-------------------------------------------------------------------------------------------------------

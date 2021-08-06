@@ -56,29 +56,29 @@ using namespace std;
 namespace hpcscan {
 
 const float FD_O2_1D[17][17] = {
-{},
-{},
-{FD_D2_O2_A1, FD_D2_O2_A0, FD_D2_O2_A1}, // fdOrder 2
-{},
-{FD_D2_O4_A2, FD_D2_O4_A1, FD_D2_O4_A0, FD_D2_O4_A1, FD_D2_O4_A2}, // fdOrder 4
-{},
-{FD_D2_O6_A3, FD_D2_O6_A2, FD_D2_O6_A1, FD_D2_O6_A0, FD_D2_O6_A1, FD_D2_O6_A2, FD_D2_O6_A3}, // fdOrder 6
-{},
-{FD_D2_O8_A4, FD_D2_O8_A3, FD_D2_O8_A2, FD_D2_O8_A1, FD_D2_O8_A0, FD_D2_O8_A1, FD_D2_O8_A2, FD_D2_O8_A3, FD_D2_O8_A4}, // fdOrder 8
-{},
-{FD_D2_O10_A5, FD_D2_O10_A4, FD_D2_O10_A3, FD_D2_O10_A2, FD_D2_O10_A1, FD_D2_O10_A0, FD_D2_O10_A1, FD_D2_O10_A2, FD_D2_O10_A3, FD_D2_O10_A4, FD_D2_O10_A5}, // fdOrder 10
-{},
-{FD_D2_O12_A6, FD_D2_O12_A5, FD_D2_O12_A4, FD_D2_O12_A3, FD_D2_O12_A2, FD_D2_O12_A1, FD_D2_O12_A0, FD_D2_O12_A1, FD_D2_O12_A2, FD_D2_O12_A3, FD_D2_O12_A4, FD_D2_O12_A5, FD_D2_O12_A6}, // fdOrder 12
-{},
-{FD_D2_O14_A7, FD_D2_O14_A6, FD_D2_O14_A5, FD_D2_O14_A4, FD_D2_O14_A3, FD_D2_O14_A2, FD_D2_O14_A1, FD_D2_O14_A0, FD_D2_O14_A1, FD_D2_O14_A2, FD_D2_O14_A3, FD_D2_O14_A4, FD_D2_O14_A5, FD_D2_O14_A6, FD_D2_O14_A7}, // fdOrder 14
-{},
-{FD_D2_O16_A8, FD_D2_O16_A7, FD_D2_O16_A6, FD_D2_O16_A5, FD_D2_O16_A4, FD_D2_O16_A3, FD_D2_O16_A2, FD_D2_O16_A1, FD_D2_O16_A0, FD_D2_O16_A1, FD_D2_O16_A2, FD_D2_O16_A3, FD_D2_O16_A4, FD_D2_O16_A5, FD_D2_O16_A6, FD_D2_O16_A7, FD_D2_O16_A8}, // fdOrder 16
+		{},
+		{},
+		{FD_D2_O2_A1, FD_D2_O2_A0, FD_D2_O2_A1}, // fdOrder 2
+		{},
+		{FD_D2_O4_A2, FD_D2_O4_A1, FD_D2_O4_A0, FD_D2_O4_A1, FD_D2_O4_A2}, // fdOrder 4
+		{},
+		{FD_D2_O6_A3, FD_D2_O6_A2, FD_D2_O6_A1, FD_D2_O6_A0, FD_D2_O6_A1, FD_D2_O6_A2, FD_D2_O6_A3}, // fdOrder 6
+		{},
+		{FD_D2_O8_A4, FD_D2_O8_A3, FD_D2_O8_A2, FD_D2_O8_A1, FD_D2_O8_A0, FD_D2_O8_A1, FD_D2_O8_A2, FD_D2_O8_A3, FD_D2_O8_A4}, // fdOrder 8
+		{},
+		{FD_D2_O10_A5, FD_D2_O10_A4, FD_D2_O10_A3, FD_D2_O10_A2, FD_D2_O10_A1, FD_D2_O10_A0, FD_D2_O10_A1, FD_D2_O10_A2, FD_D2_O10_A3, FD_D2_O10_A4, FD_D2_O10_A5}, // fdOrder 10
+		{},
+		{FD_D2_O12_A6, FD_D2_O12_A5, FD_D2_O12_A4, FD_D2_O12_A3, FD_D2_O12_A2, FD_D2_O12_A1, FD_D2_O12_A0, FD_D2_O12_A1, FD_D2_O12_A2, FD_D2_O12_A3, FD_D2_O12_A4, FD_D2_O12_A5, FD_D2_O12_A6}, // fdOrder 12
+		{},
+		{FD_D2_O14_A7, FD_D2_O14_A6, FD_D2_O14_A5, FD_D2_O14_A4, FD_D2_O14_A3, FD_D2_O14_A2, FD_D2_O14_A1, FD_D2_O14_A0, FD_D2_O14_A1, FD_D2_O14_A2, FD_D2_O14_A3, FD_D2_O14_A4, FD_D2_O14_A5, FD_D2_O14_A6, FD_D2_O14_A7}, // fdOrder 14
+		{},
+		{FD_D2_O16_A8, FD_D2_O16_A7, FD_D2_O16_A6, FD_D2_O16_A5, FD_D2_O16_A4, FD_D2_O16_A3, FD_D2_O16_A2, FD_D2_O16_A1, FD_D2_O16_A0, FD_D2_O16_A1, FD_D2_O16_A2, FD_D2_O16_A3, FD_D2_O16_A4, FD_D2_O16_A5, FD_D2_O16_A6, FD_D2_O16_A7, FD_D2_O16_A8}, // fdOrder 16
 };
 
 //-------------------------------------------------------------------------------------------------------
 
 Grid_NEC_SCA::Grid_NEC_SCA(Grid_type gridTypeIn) : Grid_NEC(gridTypeIn)
-						{
+{
 	printDebug(MID_DEBUG, "IN Grid_NEC_SCA::Grid_NEC_SCA");
 
 	gridMode = GRID_MODE_NEC_SCA ;
@@ -89,7 +89,7 @@ Grid_NEC_SCA::Grid_NEC_SCA(Grid_type gridTypeIn) : Grid_NEC(gridTypeIn)
 	flag_code_FD_LAPLACIAN = false ;
 
 	printDebug(MID_DEBUG, "OUT Grid_NEC_SCA::Grid_NEC_SCA");
-						}
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -264,7 +264,7 @@ Rtn_code Grid_NEC_SCA::initialize_code_FD_D2_N1(Point_type pType, const Grid& Wg
 		const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 		const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
 
-        	// check if fdOrder is supported
+		// check if fdOrder is supported
 		Myint64 nFdOrder = sizeof(FD_O2_1D) / sizeof(FD_O2_1D[0]) ;
 		if (fdOrder >= nFdOrder) {
 			printError("Grid_NEC_SCA::initialize_code_FD_D2_N1, fdOrder not supported") ;
@@ -314,7 +314,7 @@ Rtn_code Grid_NEC_SCA::initialize_code_FD_D2_N2(Point_type pType, const Grid& Wg
 		const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 		const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
 
-        	// check if fdOrder is supported
+		// check if fdOrder is supported
 		Myint64 nFdOrder = sizeof(FD_O2_1D) / sizeof(FD_O2_1D[0]) ;
 		if (fdOrder >= nFdOrder) {
 			printError("Grid_NEC_SCA::initialize_code_FD_D2_N2, fdOrder not supported") ;
@@ -364,7 +364,7 @@ Rtn_code Grid_NEC_SCA::initialize_code_FD_D2_N3(Point_type pType, const Grid& Wg
 		const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 		const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
 
-        	// check if fdOrder is supported
+		// check if fdOrder is supported
 		Myint64 nFdOrder = sizeof(FD_O2_1D) / sizeof(FD_O2_1D[0]) ;
 		if (fdOrder >= nFdOrder) {
 			printError("Grid_NEC_SCA::initialize_code_FD_D2_N3, fdOrder not supported") ;
@@ -456,11 +456,11 @@ Rtn_code Grid_NEC_SCA::initialize_code_FD_LAPLACIAN(Point_type pType, const Grid
 
 			// sca_code_create
 			sca_stencil_t sten ;
-                        sca_stencil_create(&sten);
-                        sca_stencil_append_elements_xya_ordered(sten, fdOrderHalf, fdOrderHalf, fdOrderHalf, fdOrderHalf, 1, n1, n2, 0, &u[i1Start + i2Start*n1 + i3Start*n2*n1], coefs);
-                        sca_stencil_set_output_array(sten, 1, n1, n2, 0, &w[i1Start + i2Start*n1 + i3Start*n2*n1]);
-                        sca_code_create(&code_FD_LAPLACIAN, sten, i1End-i1Start+1, i2End-i2Start+1, i3End-i3Start+1, 1);
-                        sca_stencil_destroy(sten);
+			sca_stencil_create(&sten);
+			sca_stencil_append_elements_xya_ordered(sten, fdOrderHalf, fdOrderHalf, fdOrderHalf, fdOrderHalf, 1, n1, n2, 0, &u[i1Start + i2Start*n1 + i3Start*n2*n1], coefs);
+			sca_stencil_set_output_array(sten, 1, n1, n2, 0, &w[i1Start + i2Start*n1 + i3Start*n2*n1]);
+			sca_code_create(&code_FD_LAPLACIAN, sten, i1End-i1Start+1, i2End-i2Start+1, i3End-i3Start+1, 1);
+			sca_stencil_destroy(sten);
 		}
 
 		else if (dim == DIM3)
@@ -478,12 +478,12 @@ Rtn_code Grid_NEC_SCA::initialize_code_FD_LAPLACIAN(Point_type pType, const Grid
 
 			// sca_code_create
 			sca_stencil_t sten ;
-                        sca_stencil_create(&sten);
-                        sca_stencil_append_elements_xyza_ordered(sten, fdOrderHalf, fdOrderHalf, fdOrderHalf, fdOrderHalf,
-				fdOrderHalf, fdOrderHalf, 1, n1, n2, 0, &u[i1Start + i2Start*n1 + i3Start*n2*n1], coefs);
-                        sca_stencil_set_output_array(sten, 1, n1, n2, 0, &w[i1Start + i2Start*n1 + i3Start*n2*n1]);
-                        sca_code_create(&code_FD_LAPLACIAN, sten, i1End-i1Start+1, i2End-i2Start+1, i3End-i3Start+1, 1);
-                        sca_stencil_destroy(sten);
+			sca_stencil_create(&sten);
+			sca_stencil_append_elements_xyza_ordered(sten, fdOrderHalf, fdOrderHalf, fdOrderHalf, fdOrderHalf,
+					fdOrderHalf, fdOrderHalf, 1, n1, n2, 0, &u[i1Start + i2Start*n1 + i3Start*n2*n1], coefs);
+			sca_stencil_set_output_array(sten, 1, n1, n2, 0, &w[i1Start + i2Start*n1 + i3Start*n2*n1]);
+			sca_code_create(&code_FD_LAPLACIAN, sten, i1End-i1Start+1, i2End-i2Start+1, i3End-i3Start+1, 1);
+			sca_stencil_destroy(sten);
 		}
 	}
 
