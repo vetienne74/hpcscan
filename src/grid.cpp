@@ -19,8 +19,8 @@
 // Unique definition for 1D, 2D and 3D grids
 // For all axis, grid index is as follows:
 //
-// <-----><------><-----><------><-----><--------> --> Axis N (N=1,2 or 3)
-//  Halo1  Layer1  Inner  Layer2  Halo2  Pad
+// <------><-----><------><------------------><------><-----><---->   --> Axis N (N=1,2 or 3)
+//  Offset  Halo1  Layer1     Inner Points     Layer2  Halo2  Pad
 //
 // Origin is when Inner starts
 // All area have start and end index
@@ -74,6 +74,75 @@ Grid::Grid(Grid_type gridTypeIn)
 	dim      = Config::Instance()->dim ;
 	grid_3d  = NULL;
 
+	i1OffsetStart = 0 ;
+	i1OffsetEnd   = 0 ;
+	i1Halo1Start  = 0 ;
+	i1Halo1End    = 0 ;
+	i1Layer1Start = 0 ;
+	i1Layer1End   = 0 ;
+	i1InnerStart  = 0 ;
+	i1InnerEnd    = 0 ;
+	i1Layer2Start = 0 ;
+	i1Layer2End   = 0 ;
+	i1Halo2Start  = 0 ;
+	i1Halo2End    = 0 ;
+	i1PadStart    = 0 ;
+	i1PadEnd      = 0 ;
+	i1ProcIdStart = MPI_PROC_NULL ;
+	i1ProcIdEnd   = MPI_PROC_NULL ;
+	d1            = 0 ;
+	i1OffsetGlob  = 0 ;
+	Orig1         = 0 ;
+	n1            = 0 ;
+	i1HaloDataType = MPI_DATATYPE_NULL ;
+
+	i2OffsetStart = 0 ;
+	i2OffsetEnd   = 0 ;
+	i2Halo1Start  = 0 ;
+	i2Halo1End    = 0 ;
+	i2Layer1Start = 0 ;
+	i2Layer1End   = 0 ;
+	i2InnerStart  = 0 ;
+	i2InnerEnd    = 0 ;
+	i2Layer2Start = 0 ;
+	i2Layer2End   = 0 ;
+	i2Halo2Start  = 0 ;
+	i2Halo2End    = 0 ;
+	i2PadStart    = 0 ;
+	i2PadEnd      = 0 ;
+	i2ProcIdStart = MPI_PROC_NULL ;
+	i2ProcIdEnd   = MPI_PROC_NULL ;
+	d2            = 0 ;
+	i2OffsetGlob  = 0 ;
+	Orig2         = 0 ;
+	n2            = 0 ;
+	i2HaloDataType = MPI_DATATYPE_NULL ;
+
+	i3OffsetStart = 0 ;
+	i3OffsetEnd   = 0 ;
+	i3Halo1Start  = 0 ;
+	i3Halo1End    = 0 ;
+	i3Layer1Start = 0 ;
+	i3Layer1End   = 0 ;
+	i3InnerStart  = 0 ;
+	i3InnerEnd    = 0 ;
+	i3Layer2Start = 0 ;
+	i3Layer2End   = 0 ;
+	i3Halo2Start  = 0 ;
+	i3Halo2End    = 0 ;
+	i3PadStart    = 0 ;
+	i3PadEnd      = 0 ;
+	i3ProcIdStart = MPI_PROC_NULL ;
+	i3ProcIdEnd   = MPI_PROC_NULL ;
+	d3            = 0 ;
+	i3OffsetGlob  = 0 ;
+	Orig3         = 0 ;
+	n3            = 0 ;
+	i3HaloDataType = MPI_DATATYPE_NULL ;
+
+	npoint        = 0 ;
+	haloWidth     = 0 ;
+
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
 }
 
@@ -86,11 +155,94 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 
 	gridMode = GRID_MODE_BASELINE ;
 	n1Inner  = n1InnerIn ;
-	n2Inner  = n2InnerIn ;
-	n3Inner  = n3InnerIn ;
+	if (dimTypeIn >= DIM2)
+	{
+		n2Inner  = n2InnerIn ;
+	}
+	else
+	{
+		n2Inner  = 1 ;
+	}
+	if (dimTypeIn >= DIM3)
+	{
+		n3Inner  = n3InnerIn ;
+	}
+	else
+	{
+		n3Inner  = 1 ;
+	}
 	gridType = gridTypeIn ;
 	dim      = dimTypeIn ;
 	grid_3d  = NULL;
+
+	i1OffsetStart = 0 ;
+	i1OffsetEnd   = 0 ;
+	i1Halo1Start  = 0 ;
+	i1Halo1End    = 0 ;
+	i1Layer1Start = 0 ;
+	i1Layer1End   = 0 ;
+	i1InnerStart  = 0 ;
+	i1InnerEnd    = 0 ;
+	i1Layer2Start = 0 ;
+	i1Layer2End   = 0 ;
+	i1Halo2Start  = 0 ;
+	i1Halo2End    = 0 ;
+	i1PadStart    = 0 ;
+	i1PadEnd      = 0 ;
+	i1ProcIdStart = MPI_PROC_NULL ;
+	i1ProcIdEnd   = MPI_PROC_NULL ;
+	d1            = 0 ;
+	i1OffsetGlob  = 0 ;
+	Orig1         = 0 ;
+	n1            = 0 ;
+	i1HaloDataType = MPI_DATATYPE_NULL ;
+
+	i2OffsetStart = 0 ;
+	i2OffsetEnd   = 0 ;
+	i2Halo1Start  = 0 ;
+	i2Halo1End    = 0 ;
+	i2Layer1Start = 0 ;
+	i2Layer1End   = 0 ;
+	i2InnerStart  = 0 ;
+	i2InnerEnd    = 0 ;
+	i2Layer2Start = 0 ;
+	i2Layer2End   = 0 ;
+	i2Halo2Start  = 0 ;
+	i2Halo2End    = 0 ;
+	i2PadStart    = 0 ;
+	i2PadEnd      = 0 ;
+	i2ProcIdStart = MPI_PROC_NULL ;
+	i2ProcIdEnd   = MPI_PROC_NULL ;
+	d2            = 0 ;
+	i2OffsetGlob  = 0 ;
+	Orig2         = 0 ;
+	n2            = 0 ;
+	i2HaloDataType = MPI_DATATYPE_NULL ;
+
+	i3OffsetStart = 0 ;
+	i3OffsetEnd   = 0 ;
+	i3Halo1Start  = 0 ;
+	i3Halo1End    = 0 ;
+	i3Layer1Start = 0 ;
+	i3Layer1End   = 0 ;
+	i3InnerStart  = 0 ;
+	i3InnerEnd    = 0 ;
+	i3Layer2Start = 0 ;
+	i3Layer2End   = 0 ;
+	i3Halo2Start  = 0 ;
+	i3Halo2End    = 0 ;
+	i3PadStart    = 0 ;
+	i3PadEnd      = 0 ;
+	i3ProcIdStart = MPI_PROC_NULL ;
+	i3ProcIdEnd   = MPI_PROC_NULL ;
+	d3            = 0 ;
+	i3OffsetGlob  = 0 ;
+	Orig3         = 0 ;
+	n3            = 0 ;
+	i3HaloDataType = MPI_DATATYPE_NULL ;
+
+	npoint        = 0 ;
+	haloWidth     = 0 ;
 
 	printDebug(MID_DEBUG, "OUT Grid::Grid");
 }
@@ -100,6 +252,13 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 Rtn_code Grid::initializeGrid(void)
 {
 	printDebug(MID_DEBUG, "IN Grid::initializeGrid");
+
+	// Grid should be initialized only once
+	if (grid_3d != NULL)
+	{
+		printError(" In Grid::initializeGrid, grid_3d != NULL") ;
+		return(RTN_CODE_OK) ;
+	}
 
 	Myint nlayer = Config::Instance()->nlayer ;
 
@@ -261,7 +420,11 @@ Rtn_code Grid::initializeGrid(void)
 	//================================================================================
 	// initialize grid index axis 1
 	//================================================================================
-	i1Halo1Start = 0 ;
+
+	// Offset
+	offsetGridn1() ;
+
+	i1Halo1Start = i1OffsetEnd + 1 ;
 	i1Halo1End   = i1Halo1Start + haloWidth - 1 ;
 	if (nlayer == 0)
 	{
@@ -308,7 +471,10 @@ Rtn_code Grid::initializeGrid(void)
 	//================================================================================
 	if (dim >= DIM2)
 	{
-		i2Halo1Start = 0 ;
+		// Offset
+		offsetGridn2() ;
+
+		i2Halo1Start = i2OffsetEnd + 1 ;
 		i2Halo1End   = i2Halo1Start + haloWidth - 1 ;
 		if (nlayer == 0)
 		{
@@ -352,23 +518,6 @@ Rtn_code Grid::initializeGrid(void)
 	}
 	else
 	{
-		i2Halo1Start  = 0 ;
-		i2Halo1End    = 0 ;
-		i2Layer1Start = 0 ;
-		i2Layer1End   = 0 ;
-		i2InnerStart  = 0 ;
-		i2InnerEnd    = 0 ;
-		i2Layer2Start = 0 ;
-		i2Layer2End   = 0 ;
-		i2Halo2Start  = 0 ;
-		i2Halo2End    = 0 ;
-		i2PadStart    = 0 ;
-		i2PadEnd      = 0 ;
-		i2ProcIdStart = MPI_PROC_NULL ;
-		i2ProcIdEnd   = MPI_PROC_NULL ;
-		d2            = 0 ;
-		i2OffsetGlob  = 0 ;
-		Orig2         = 0 ;
 		n2            = 1 ;
 		n2InnerLoc    = 1 ;
 	}
@@ -378,7 +527,10 @@ Rtn_code Grid::initializeGrid(void)
 	//================================================================================
 	if (dim >= DIM3)
 	{
-		i3Halo1Start = 0 ;
+		// Offset
+		offsetGridn3() ;
+
+		i3Halo1Start = i3OffsetEnd + 1 ;
 		i3Halo1End   = i3Halo1Start + haloWidth - 1 ;
 		if (nlayer == 0)
 		{
@@ -422,24 +574,6 @@ Rtn_code Grid::initializeGrid(void)
 	}
 	else
 	{
-		i3Halo1Start  = 0 ;
-		i3Halo1End    = 0 ;
-		i3Layer1Start = 0 ;
-		i3Layer1End   = 0 ;
-		i3InnerStart  = 0 ;
-		i3InnerEnd    = 0 ;
-		i3Layer2Start = 0 ;
-		i3Layer2End   = 0 ;
-		i3Halo2Start  = 0 ;
-		i3Halo2End    = 0 ;
-		i3PadStart    = 0 ;
-		i3PadEnd      = 0 ;
-		i3ProcIdStart = MPI_PROC_NULL ;
-		i3ProcIdEnd   = MPI_PROC_NULL ;
-		d3            = 0 ;
-		i3OffsetGlob  = 0 ;
-		Orig3         = 0 ;
-
 		n3            = 1 ;
 		n3InnerLoc    = 1 ;
 	}
@@ -522,9 +656,25 @@ void Grid::padGridn1(void)
 
 	if (Config::Instance()->autoPad == true)
 	{
-		printWarning("Grid::padGridn1, autoPad is not available") ;
+		// autoPad is done only on n1
 		i1PadStart = i1Halo2End ;
 		i1PadEnd   = i1Halo2End ;
+
+		// pad n1 to get an even number if necessary
+		// for 64 bit memory alignment of inner points
+		// needed only in single precision
+		Myint nTot = i1Halo2End + 1 ;
+		if (nTot%2)
+		{
+#ifndef _DOUBLE_PRECISION_
+			i1PadStart = i1Halo2End + 1 ;
+			i1PadEnd   = i1Halo2End + 1 ;
+#else
+			i1PadStart = i1Halo2End ;
+			i1PadEnd   = i1Halo2End ;
+#endif
+		}
+
 	}
 	else if (Config::Instance()->n1AddPad != UNSPECIFIED)
 	{
@@ -564,7 +714,7 @@ void Grid::padGridn2(void)
 
 	if (Config::Instance()->autoPad == true)
 	{
-		printWarning("Grid::padGridn2, autoPad is not available") ;
+		// autoPad has effect on n1
 		i2PadStart = i2Halo2End ;
 		i2PadEnd   = i2Halo2End ;
 	}
@@ -605,7 +755,7 @@ void Grid::padGridn3(void)
 
 	if (Config::Instance()->autoPad == true)
 	{
-		printWarning("Grid::padGridn3, autoPad is not available") ;
+		// autoPad has effect only on n1
 		i3PadStart = i3Halo2End ;
 		i3PadEnd   = i3Halo2End ;
 	}
@@ -636,6 +786,94 @@ void Grid::padGridn3(void)
 	}
 
 	printDebug(MID_DEBUG, "OUT Grid::padGridn3");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::offsetGridn1(void)
+{
+	printDebug(MID_DEBUG, "IN Grid::offsetGridn1");
+
+	i1OffsetStart = 0 ;
+	Myint offset = Config::Instance()->n1Offset ;
+	if (offset == UNSPECIFIED)
+	{
+		// add one point if halo width is an odd number
+		// to get inner point aligned to 64 bit memory address
+		// needed only in single precision
+		if (haloWidth%2 == 1)
+		{
+#ifndef _DOUBLE_PRECISION_
+			offset = 1 ;
+#else
+			offset = 0 ;
+#endif
+		}
+		else
+		{
+			offset = 0 ;
+		}
+	}
+	i1OffsetEnd = i1OffsetStart + offset - 1 ;
+
+	printDebug(MID_DEBUG, "OUT Grid::offsetGridn1");
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::offsetGridn2(void)
+{
+	printDebug(MID_DEBUG, "IN Grid::offsetGridn2");
+
+	i2OffsetStart = 0 ;
+	Myint offset = Config::Instance()->n2Offset ;
+	if (offset == UNSPECIFIED)
+	{
+		// add one point if halo width is an odd number
+		// to get inner point aligned to 64 bit memory address
+		// not neeed in n2
+		//if (haloWidth%2 == 1)
+		//{
+		//	offset = 1 ;
+		//}
+		//else
+		{
+			offset = 0 ;
+		}
+	}
+	i2OffsetEnd = i2OffsetStart + offset - 1 ;
+
+	printDebug(MID_DEBUG, "OUT Grid::offsetGridn2");
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void Grid::offsetGridn3(void)
+{
+	printDebug(MID_DEBUG, "IN Grid::offsetGridn3");
+
+	i3OffsetStart = 0 ;
+	Myint offset = Config::Instance()->n3Offset ;
+	if (offset == UNSPECIFIED)
+	{
+		// add one point if halo width is an odd number
+		// to get inner point aligned to 64 bit memory address
+		// not needed in n3
+		//if (haloWidth%2 == 1)
+		//{
+		//	offset = 1 ;
+		//}
+		//else
+		{
+			offset = 0 ;
+		}
+	}
+	i3OffsetEnd   = i3OffsetStart + offset - 1 ;
+
+	printDebug(MID_DEBUG, "OUT Grid::offsetGridn3");
+
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -713,6 +951,13 @@ void Grid::info(void)
 		printDebug(LIGHT_DEBUG, " Max. Inner coord3", getMaxCoord(AXIS3)) ;
 	}
 
+	Myint nOffset = i1Halo1Start-i1OffsetStart ;
+	if (nOffset > 0) printInfo(MASTER, " n1 offset\t", nOffset) ;
+	nOffset = i2Halo1Start-i2OffsetStart ;
+	if (nOffset > 0) printInfo(MASTER, " n2 offset\t", nOffset) ;
+	nOffset = i3Halo1Start-i3OffsetStart ;
+	if (nOffset > 0) printInfo(MASTER, " n3 offset\t", nOffset) ;
+
 	Myint nPad = i1PadEnd-i1Halo2End ;
 	if (nPad > 0) printInfo(MASTER, " n1 padding\t", nPad) ;
 	nPad = i2PadEnd-i2Halo2End ;
@@ -738,6 +983,24 @@ void Grid::info(void)
 		printInfo(MASTER, " Grid size (GB)\t", Myfloat(gridSize/1e9)) ;
 	}
 
+	// memory alignment
+	{
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+		Myfloat * const u = this->grid_3d ;
+		getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+		bool innerIsAligned = (((reinterpret_cast<std::uintptr_t>(&(u[i1Start+i2Start*n1+i3Start*n1*n2]))) & 0x7) == 0) ;
+		if (innerIsAligned)
+		{
+			printInfo(MASTER, " 64 bits align (inner)", "YES") ;
+		}
+		else
+		{
+			printInfo(MASTER, " 64 bits align (inner)", "NO") ;
+		}
+	}
+
+	printDebug(LIGHT_DEBUG, "i1OffsetStart", i1OffsetStart);
+	printDebug(LIGHT_DEBUG, "i1OffsetEnd"  , i1OffsetEnd);
 	printDebug(LIGHT_DEBUG, "i1Halo1Start" , i1Halo1Start);
 	printDebug(LIGHT_DEBUG, "i1Halo1End  " , i1Halo1End);
 	printDebug(LIGHT_DEBUG, "i1Layer1Start", i1Layer1Start);
@@ -751,6 +1014,8 @@ void Grid::info(void)
 	printDebug(LIGHT_DEBUG, "i1PadStart"   , i1PadStart);
 	printDebug(LIGHT_DEBUG, "i1padEnd  "   , i1PadEnd);
 
+	printDebug(LIGHT_DEBUG, "i2OffsetStart", i2OffsetStart);
+	printDebug(LIGHT_DEBUG, "i2OffsetEnd"  , i2OffsetEnd);
 	printDebug(LIGHT_DEBUG, "i2Halo1Start" , i2Halo1Start);
 	printDebug(LIGHT_DEBUG, "i2Halo1End  " , i2Halo1End);
 	printDebug(LIGHT_DEBUG, "i2Layer1Start", i2Layer1Start);
@@ -764,6 +1029,8 @@ void Grid::info(void)
 	printDebug(LIGHT_DEBUG, "i2PadStart"   , i2PadStart);
 	printDebug(LIGHT_DEBUG, "i2padEnd  "   , i2PadEnd);
 
+	printDebug(LIGHT_DEBUG, "i3OffsetStart", i3OffsetStart);
+	printDebug(LIGHT_DEBUG, "i3OffsetEnd"  , i3OffsetEnd);
 	printDebug(LIGHT_DEBUG, "i3Halo1Start" , i3Halo1Start);
 	printDebug(LIGHT_DEBUG, "i3Halo1End  " , i3Halo1End);
 	printDebug(LIGHT_DEBUG, "i3Layer1Start", i3Layer1Start);
@@ -778,11 +1045,11 @@ void Grid::info(void)
 	printDebug(LIGHT_DEBUG, "i3padEnd  "   , i3PadEnd);
 
 	printDebug(LIGHT_DEBUG, "i1ProcIdStart", i1ProcIdStart) ;
-	printDebug(LIGHT_DEBUG, "i1ProcIdEnd\t",   i1ProcIdEnd) ;
+	printDebug(LIGHT_DEBUG, "i1ProcIdEnd\t", i1ProcIdEnd) ;
 	printDebug(LIGHT_DEBUG, "i2ProcIdStart", i2ProcIdStart) ;
-	printDebug(LIGHT_DEBUG, "i2ProcIdEnd\t",   i2ProcIdEnd) ;
+	printDebug(LIGHT_DEBUG, "i2ProcIdEnd\t", i2ProcIdEnd) ;
 	printDebug(LIGHT_DEBUG, "i3ProcIdStart", i3ProcIdStart) ;
-	printDebug(LIGHT_DEBUG, "i3ProcIdEnd\t",   i3ProcIdEnd) ;
+	printDebug(LIGHT_DEBUG, "i3ProcIdEnd\t", i3ProcIdEnd) ;
 
 	printDebug(FULL_DEBUG, "OUT Grid::info");
 }

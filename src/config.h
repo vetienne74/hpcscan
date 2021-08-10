@@ -67,6 +67,9 @@ public:
 	// GPU grid size (number of blocks per grid)
 	Myint gpuGridSize ;
 
+	// time step increment (time in sec.) between update of hardware counters
+	Myfloat64 hwCounterDt ;
+
 	// inner domain size
 	Myint n1, n2, n3 ;
 
@@ -75,6 +78,9 @@ public:
 
 	// grid padding (final grid is multiple of given number)
 	Myint n1MulPad, n2MulPad, n3MulPad ;
+
+	// grid offset (beginning of grid is augmented by given number)
+	Myint n1Offset, n2Offset, n3Offset ;
 
 	// layer width
 	Myint nlayer ;

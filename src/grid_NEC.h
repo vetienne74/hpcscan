@@ -43,6 +43,9 @@ public:
 	// Max error between this grid and another (point wise)
 	virtual Myfloat maxErr(Point_type, const Grid&) const ;
 
+	// exchange halos with MPI
+	virtual Rtn_code exchangeHalos(MPI_comm_mode_type) ;
+
 	// apply boundary condition
 	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;
 
@@ -67,13 +70,11 @@ public:
 
 protected:
 
-        // Temporary 3D grid array
-        Myfloat * tmp_grid_3d ;
+	// Temporary 3D grid array
+	Myfloat * tmp_grid_3d ;
 
-#ifndef _DOUBLE_PRECISION_
 	// flag to know packed stencil can be used
 	bool flag_packed_stencil ;
-#endif
 
 	// grid padding
 	virtual void padGridn1(void) ;

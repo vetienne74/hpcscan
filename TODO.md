@@ -1,11 +1,19 @@
 
 # To be done for current version
 
+## test modes CUDA_Ref and HIP_Ref
+
+remove these test modes (initial and inefficient implementations)
+
+## Power usage
+
+Add Watt measures for Baseline test mode
+
 ## Test mode DPC++
 
 Finalize implementation
 
-## Test modes CUDA_Opt and HIP_Opt
+## Test modes HIP and HIP_Opt
 
 Finalize implementation
 

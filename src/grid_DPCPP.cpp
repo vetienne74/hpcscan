@@ -67,10 +67,7 @@ Grid_DPCPP::~Grid_DPCPP(void)
 {
 	printDebug(MID_DEBUG, "IN Grid_DPCPP::~Grid_DPCPP");
 
-	//delete[] grid_3d ;
 	sycl::free(d_grid_3d, *myQ);
-	//free(d_help_3d);
-	//free(d_help_3d_2);
 	delete(myQ) ;
 
 	printDebug(MID_DEBUG, "OUT Grid_DPCPP::~Grid_DPCPP");
@@ -86,11 +83,6 @@ Rtn_code Grid_DPCPP::initializeGrid(void)
 	Grid::initializeGrid() ;
 
 	// initialize device queue
-	//myQ = new sycl::queue( sycl::default_selector{} ) ;
-	//myQ = new sycl::queue( sycl:: host_selector{} ) ;
-	//myQ = new sycl::queue( sycl:: cpu_selector{} ) ;
-	//myQ = new sycl::queue( sycl:: gpu_selector{} ) ;
-
 	try {
 		if (Config::Instance()->dpcppSelect.compare("Host") == 0)
 		{
@@ -117,15 +109,8 @@ Rtn_code Grid_DPCPP::initializeGrid(void)
 	if (d_grid_3d == NULL)
 	{
 		// allocate the grid on the device
-		d_grid_3d = sycl::malloc_shared<Myfloat>(npoint, *myQ) ;
+		d_grid_3d = sycl::malloc_device<Myfloat>(npoint, *myQ) ;
 
-		// allocate 1d array of the device used to perform reduction operation
-		//cudaMalloc( (void**)&d_help_3d, (gpuGridSize) * sizeof(Myfloat) );
-		//cudaCheckError();
-
-		// allocate 1d array of the device used to perform reduction operation
-		//cudaMalloc( (void**)&d_help_3d_2, (gpuGridSize) * sizeof(Myfloat) );
-		//cudaCheckError();
 	}
 	printDebug(FULL_DEBUG, "Out Grid_DPCPP::initializeGrid") ;
 	return(RTN_CODE_OK) ;
@@ -141,11 +126,7 @@ void Grid_DPCPP::info(void)
 	Grid::info() ;
 
 	// additional info
-	printInfo(MASTER, "") ;
-	printInfo(MASTER, " * Device parameters * ") ;
-
-	printInfo(MASTER, " Selected device", myQ->get_device().get_info<sycl::info::device::name>() ) ;
-	printInfo(MASTER, " Device vendor\t", myQ->get_device().get_info<sycl::info::device::vendor>() ) ;
+	// TODO additional info
 
 	printDebug(FULL_DEBUG, "OUT Grid_DPCPP::info");
 }

@@ -431,21 +431,22 @@ Rtn_code TestCase_Grid::run(void)
 		// boundary condition of type BOUND_COND_ANTI_MIRROR
 		Wgrid.fill(ALL_POINTS, FUNC_SINE, FUNC_SINE, FUNC_SINE, PI, PI, PI, 1.0) ;
 
-		// set all edge halos to zeros
+		// fill halos with specific values
+		const Myfloat fillVal = -1 ;
 		if (Wgrid.dim >= DIM1)
 		{
-			if (Wgrid.getNeighbourProc(I1HALO1) == MPI_PROC_NULL) Wgrid.fill(I1HALO1, -1) ;
-			if (Wgrid.getNeighbourProc(I1HALO2) == MPI_PROC_NULL) Wgrid.fill(I1HALO2, -1) ;
+			if (Wgrid.getNeighbourProc(I1HALO1) == MPI_PROC_NULL) Wgrid.fill(I1HALO1, fillVal) ;
+			if (Wgrid.getNeighbourProc(I1HALO2) == MPI_PROC_NULL) Wgrid.fill(I1HALO2, fillVal) ;
 		}
 		if (Wgrid.dim >= DIM2)
 		{
-			if (Wgrid.getNeighbourProc(I2HALO1) == MPI_PROC_NULL) Wgrid.fill(I2HALO1, -1) ;
-			if (Wgrid.getNeighbourProc(I2HALO2) == MPI_PROC_NULL) Wgrid.fill(I2HALO2, -1) ;
+			if (Wgrid.getNeighbourProc(I2HALO1) == MPI_PROC_NULL) Wgrid.fill(I2HALO1, fillVal) ;
+			if (Wgrid.getNeighbourProc(I2HALO2) == MPI_PROC_NULL) Wgrid.fill(I2HALO2, fillVal) ;
 		}
 		if (Wgrid.dim >= DIM3)
 		{
-			if (Wgrid.getNeighbourProc(I3HALO1) == MPI_PROC_NULL) Wgrid.fill(I3HALO1, -1) ;
-			if (Wgrid.getNeighbourProc(I3HALO2) == MPI_PROC_NULL) Wgrid.fill(I3HALO2, -1) ;
+			if (Wgrid.getNeighbourProc(I3HALO1) == MPI_PROC_NULL) Wgrid.fill(I3HALO1, fillVal) ;
+			if (Wgrid.getNeighbourProc(I3HALO2) == MPI_PROC_NULL) Wgrid.fill(I3HALO2, fillVal) ;
 		}
 
 		// update all halos
@@ -481,7 +482,7 @@ Rtn_code TestCase_Grid::run(void)
 			// check testCase results
 			if (itry == 0)
 			{
-				checkAllProcGridL1Err(INNER_POINTS, Wgrid, Rgrid, MAX_ERR_FLOAT) ;
+				checkAllProcGridL1Err(ALL_POINTS, Wgrid, Rgrid, MAX_ERR_FLOAT) ;
 				Wgrid.write(caseName+"W") ;
 			}
 

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "grid.h"
+#include "hardware_Factory.h"
 #include "type_def.h"
 
 using namespace std;
@@ -17,10 +18,11 @@ public:
 	virtual Rtn_code run(void) = 0 ;
 
 protected:
-	string testCaseName ;
-	string testCaseVersion ;
 
+	// initialize test case
 	virtual Rtn_code initialize(void) ;
+
+	// finalize test case
 	virtual void finalize(void) ;
 
 	// check L1 error between 2 grids
@@ -47,11 +49,21 @@ protected:
 	// relative error between 2 float
 	Myfloat relErr(Myfloat float1, Myfloat float2) ;
 
-	// perf log file
+	// performance log file
+	// elapse time, GFlops, GB/s, etc
 	ofstream perfLogFile ;
 
 	// timer
 	double testCaseStart, testCaseEnd ;
+
+	// test case name
+	string testCaseName ;
+
+	// test case version
+	string testCaseVersion ;
+
+	// hardware
+	shared_ptr<Hardware> hw ;
 } ;
 
 } // namespace hpcscan

@@ -39,65 +39,65 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 {
 	printDebug(MID_DEBUG, "IN Grid_Factory::create");
 
-	Grid *Rgrid = nullptr ;
+	Grid *retGrid = nullptr ;
 
 	if (gridMode.compare(GRID_MODE_BASELINE) == 0)
 	{
-		Rgrid = new Grid(gridType) ;
+		retGrid = new Grid(gridType) ;
 	}
 	else if (gridMode.compare(GRID_MODE_CACHEBLK) == 0)
 	{
-		Rgrid = new Grid_CacheBlk(gridType) ;
+		retGrid = new Grid_CacheBlk(gridType) ;
 	}
 
 #ifdef __CUDA__
 	else if (gridMode.compare(GRID_MODE_CUDA) == 0)
 	{
-		Rgrid = new Grid_Cuda(gridType) ;
+		retGrid = new Grid_Cuda(gridType) ;
 	}
 	else if (gridMode.compare(GRID_MODE_CUDA_OPTIM) == 0)
 	{
-		Rgrid = new Grid_Cuda_Optim(gridType) ;
+		retGrid = new Grid_Cuda_Optim(gridType) ;
 	}
 	else if (gridMode.compare(GRID_MODE_CUDA_REF) == 0)
 	{
-		Rgrid = new Grid_Cuda_Ref(gridType) ;
+		retGrid = new Grid_Cuda_Ref(gridType) ;
 	}
 #endif
 
 #ifdef __DPCPP__
 	else if (gridMode.compare(GRID_MODE_DPCPP) == 0)
 	{
-		Rgrid = new Grid_DPCPP(gridType) ;
+		retGrid = new Grid_DPCPP(gridType) ;
 	}
 #endif
 
 #ifdef __HIP__
 	else if (gridMode.compare(GRID_MODE_HIP) == 0)
 	{
-		Rgrid = new Grid_Hip(gridType) ;
+		retGrid = new Grid_Hip(gridType) ;
 	}
 	else if (gridMode.compare(GRID_MODE_HIP_OPTIM) == 0)
 	{
-		Rgrid = new Grid_Hip_Optim(gridType) ;
+		retGrid = new Grid_Hip_Optim(gridType) ;
 	}
 #endif
 
 #ifdef __NEC__
 	else if (gridMode.compare(GRID_MODE_NEC) == 0)
 	{
-		Rgrid = new Grid_NEC(gridType) ;
+		retGrid = new Grid_NEC(gridType) ;
 	}
 	else if (gridMode.compare(GRID_MODE_NEC_SCA) == 0)
 	{
-		Rgrid = new Grid_NEC_SCA(gridType) ;
+		retGrid = new Grid_NEC_SCA(gridType) ;
 	}
 #endif
 
 #ifdef __OPENACC__
 	else if (gridMode.compare(GRID_MODE_OPENACC) == 0)
 	{
-		Rgrid = new Grid_OpenAcc(gridType) ;
+		retGrid = new Grid_OpenAcc(gridType) ;
 	}
 #endif
 
@@ -107,9 +107,9 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	}
 
 	printDebug(MID_DEBUG, "OUT Grid_Factory::create");
-	if (Rgrid != nullptr)
+	if (retGrid != nullptr)
 	{
-		return shared_ptr<Grid>(Rgrid) ;
+		return shared_ptr<Grid>(retGrid) ;
 	}
 	else
 	{
@@ -125,65 +125,65 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 {
 	printDebug(MID_DEBUG, "IN Grid_Factory::create");
 
-	Grid *Rgrid = nullptr ;
+	Grid *retGrid = nullptr ;
 
 	if (gridMode.compare(GRID_MODE_BASELINE) == 0)
 	{
-		Rgrid = new Grid(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid(gridType, dim, n1, n2, n3) ;
 	}
 	else if (gridMode.compare(GRID_MODE_CACHEBLK) == 0)
 	{
-		Rgrid = new Grid_CacheBlk(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_CacheBlk(gridType, dim, n1, n2, n3) ;
 	}
 
 #ifdef __CUDA__
 	else if (gridMode.compare(GRID_MODE_CUDA) == 0)
 	{
-		Rgrid = new Grid_Cuda(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_Cuda(gridType, dim, n1, n2, n3) ;
 	}
 	else if (gridMode.compare(GRID_MODE_CUDA_OPTIM) == 0)
 	{
-		Rgrid = new Grid_Cuda_Optim(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_Cuda_Optim(gridType, dim, n1, n2, n3) ;
 	}
 	else if (gridMode.compare(GRID_MODE_CUDA_REF) == 0)
 	{
-		Rgrid = new Grid_Cuda_Ref(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_Cuda_Ref(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
 #ifdef __DPCPP__
 	else if (gridMode.compare(GRID_MODE_DPCPP) == 0)
 	{
-		Rgrid = new Grid_DPCPP(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_DPCPP(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
 #ifdef __HIP__
 	else if (gridMode.compare(GRID_MODE_HIP) == 0)
 	{
-		Rgrid = new Grid_Hip(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_Hip(gridType, dim, n1, n2, n3) ;
 	}
 	else if (gridMode.compare(GRID_MODE_HIP_OPTIM) == 0)
 	{
-		Rgrid = new Grid_Hip_Optim(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_Hip_Optim(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
 #ifdef __NEC__
 	else if (gridMode.compare(GRID_MODE_NEC) == 0)
 	{
-		Rgrid = new Grid_NEC(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_NEC(gridType, dim, n1, n2, n3) ;
 	}
 	else if (gridMode.compare(GRID_MODE_NEC_SCA) == 0)
 	{
-		Rgrid = new Grid_NEC_SCA(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_NEC_SCA(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
 #ifdef __OPENACC__
 	else if (gridMode.compare(GRID_MODE_OPENACC) == 0)
 	{
-		Rgrid = new Grid_OpenAcc(gridType, dim, n1, n2, n3) ;
+		retGrid = new Grid_OpenAcc(gridType, dim, n1, n2, n3) ;
 	}
 #endif
 
@@ -193,9 +193,9 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	}
 
 	printDebug(MID_DEBUG, "OUT Grid_Factory::create");
-	if (Rgrid != nullptr)
+	if (retGrid != nullptr)
 	{
-		return shared_ptr<Grid>(Rgrid) ;
+		return shared_ptr<Grid>(retGrid) ;
 	}
 	else
 	{

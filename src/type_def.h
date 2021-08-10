@@ -27,6 +27,17 @@ typedef long int   Myint64 ;
 typedef float      Myfloat32 ;
 typedef double     Myfloat64 ;
 
+// used to store hardware counters
+typedef struct
+{
+	// time of measure
+	double timeOfMeasure ;
+
+	// power mWatt
+	Myfloat powerWatt;
+
+} hwCounter_struct_type ;
+
 // Return codes used by all methods
 enum Rtn_code {RTN_CODE_OK=0, RTN_CODE_KO=-1, RTN_CODE_EXIT=-2} ;
 

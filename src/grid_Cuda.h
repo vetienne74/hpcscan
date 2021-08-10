@@ -30,9 +30,6 @@ public:
 	// destructor
 	~Grid_Cuda(void) ;
 
-	// compute pressure with FD
-	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;
-
 	// initialise grid index and MPI data structure
 	virtual Rtn_code initializeGrid(void) ;
 
@@ -53,6 +50,9 @@ public:
 
 	// compute FD_LAPLACIAN
 	virtual Rtn_code FD_LAPLACIAN(Point_type pType, const Grid&, Myint fdOrder) ;
+
+	// compute pressure with FD
+	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;
 
 	// fill grid with constant value
 	virtual void fill(Point_type pointType, Myfloat val) ;

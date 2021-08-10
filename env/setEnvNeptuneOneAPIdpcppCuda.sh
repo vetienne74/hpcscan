@@ -6,7 +6,7 @@
 export HPCSCAN_MPI_INVOKER='mpirun'
 
 # OpenMP config
-export HPCSCAN_NTHREADS=4
+export HPCSCAN_NTHREADS=2
 export KMP_AFFINITY=granularity=fine,compact
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
@@ -18,7 +18,7 @@ export HPCSCAN_CPP_LIB=
 
 # CUDA compiler
 export HPCSCAN_CUDA=nvcc
-export HPCSCAN_CUDA_FLAGCOMP='-I /opt/intel/oneapi/mpi/2021.2.0/include/'
+export HPCSCAN_CUDA_FLAGCOMP='-gencode arch=compute_50,code=sm_50 -I /opt/intel/oneapi/mpi/2021.2.0/include/'
 export HPCSCAN_CUDA_LIB='-L/usr/local/cuda/lib64 -lcuda -lcudart -lnvidia-ml'
 
 # HIP compiler

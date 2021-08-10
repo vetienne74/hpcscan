@@ -15,6 +15,7 @@
 #include "constant.h"
 #include "global.h"
 #include "grid_Factory.h"
+#include "hardware_Factory.h"
 #include "output_report.h"
 
 namespace hpcscan {
@@ -35,6 +36,17 @@ Rtn_code TestCase::initialize(void)
 		printInfo(MASTER, " TestCase version", testCaseVersion) ;
 		printInfo(MASTER, " TestCase mode\t", Config::Instance()->testMode) ;
 
+		// initialize Hardware object
+		hw = Hardware_Factory::create(Config::Instance()->testMode) ;
+		if (hw == nullptr)
+		{
+			printError("In TestCase::initialize, can not initialize hardware") ;
+			return(RTN_CODE_KO);
+		}
+
+		// print hardware info
+		hw->info() ;
+
 		// try to create and initialize a grid to see if everything is all right
 		auto gridTest = Grid_Factory::create(Config::Instance()->testMode, GRID_LOCAL) ;
 		if (gridTest == nullptr)
@@ -42,6 +54,7 @@ Rtn_code TestCase::initialize(void)
 			printError("In TestCase::initialize, Not supported or invalid testMode") ;
 			return(RTN_CODE_KO) ;
 		}
+
 		if (gridTest->initializeGrid() != RTN_CODE_OK)
 		{
 			printError("In TestCase::initialize, Can not initialize grid with testMode") ;
@@ -56,7 +69,6 @@ Rtn_code TestCase::initialize(void)
 
 			// all strings first
 			perfLogFile << Config::Instance()->hostName << " " ;
-			//perfLogFile << Config::Instance()->userName << " " ;
 			perfLogFile << Config::Instance()->testCaseName << " " ;
 			perfLogFile << Config::Instance()->testMode << " " ;
 			perfLogFile << Config::Instance()->propagator << " " ;
@@ -76,6 +88,9 @@ Rtn_code TestCase::initialize(void)
 
 		// start timer
 		testCaseStart = MPI_Wtime() ;
+
+		// update hardware counter (first measure)
+		hw->updateHwCounter() ;
 
 		printDebug(MID_DEBUG, "Out TestCase::initialize") ;
 		return(RTN_CODE_OK) ;
@@ -97,6 +112,12 @@ void TestCase::finalize(void)
 
 	// end timer
 	testCaseEnd = MPI_Wtime() ;
+
+	// update hardware counter (last measure)
+	hw->updateHwCounter() ;
+
+	// display hardware counters statistics
+	hw->displayCounterStat() ;
 
 	// close perf log file
 	if (myMpiRank == 0)

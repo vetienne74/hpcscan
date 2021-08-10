@@ -22,10 +22,10 @@
 namespace hpcscan {
 
 TestCase_Comm::TestCase_Comm(void)
-														{
+{
 	testCaseName    = "Comm" ;
 	testCaseVersion = "Standard implementation" ;
-														}
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -131,6 +131,7 @@ Rtn_code TestCase_Comm::run(void)
 						gridDest.fill(ALL_POINTS, -1) ;
 
 						// start MPI_Send & MPI_Recv
+						MPI_Barrier(MPI_COMM_WORLD) ;
 						double t0 = MPI_Wtime() ;
 
 						// send grid with MPI_Send
@@ -139,6 +140,7 @@ Rtn_code TestCase_Comm::run(void)
 						// receive grid with MPI_Recv
 						if (myMpiRank == procDestId) gridDest.recvWithMPI(nGridPoint, procSrcId) ;
 
+						MPI_Barrier(MPI_COMM_WORLD) ;
 						double t1 = MPI_Wtime() ;
 						// end MPI comm
 
@@ -302,6 +304,7 @@ Rtn_code TestCase_Comm::run(void)
 						}
 
 						// start MPI_Sendrecv
+						MPI_Barrier(MPI_COMM_WORLD) ;
 						double t0 = MPI_Wtime() ;
 
 						printDebug(LIGHT_DEBUG, " idSend ", idSend) ;
@@ -309,6 +312,7 @@ Rtn_code TestCase_Comm::run(void)
 
 						gridSrc.sendRecvWithMPI(gridDest, idSend, idRecv, nGridPoint) ;
 
+						MPI_Barrier(MPI_COMM_WORLD) ;
 						double t1 = MPI_Wtime() ;
 						// end MPI comm
 
@@ -422,8 +426,10 @@ Rtn_code TestCase_Comm::run(void)
 
 		for (Myint itry = 0; itry < ntry; itry++)
 		{
+			MPI_Barrier(MPI_COMM_WORLD) ;
 			double t0 = MPI_Wtime() ;
 			Ugrid.exchangeHalos(MPI_COMM_MODE_SENDRECV) ;
+			MPI_Barrier(MPI_COMM_WORLD) ;
 			double t1 = MPI_Wtime() ;
 
 			double testCase_time = t1-t0 ;

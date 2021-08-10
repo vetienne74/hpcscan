@@ -3,6 +3,8 @@
 // This grid is activated with command line option -testMode CUDA_Optim
 // Derived class from Grid_Cuda
 // CUDA implementation (target GPU)
+//
+// See implementation details in grid_Cuda_Optim.cpp
 //-------------------------------------------------------------------------------------------------------
 
 #ifndef HPCSCAN_GRID_CUDA_OPTIM_H_
@@ -31,19 +33,24 @@ public:
 	// print info
 	virtual void info(void) ;
 
-	// compute FD_D2 along N1
-	virtual Rtn_code FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
-
-	// compute FD_D2 along N2
-	virtual Rtn_code FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
-
-	// compute FD_D2 along N3
-	virtual Rtn_code FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
-
 	// compute FD_LAPLACIAN
 	virtual Rtn_code FD_LAPLACIAN(Point_type pType, const Grid&, Myint fdOrder) ;
 
+	// compute pressure with FD
+	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;
+
 protected:
+
+	// GPU block size - 3D block - (number of threads per block is gpuFDBlkSize1 x gpuFDBlkSize2 x 1)
+	Myint gpuFDBlkSize1 ;
+	Myint gpuFDBlkSize2 ;
+	Myint gpuFDBlkSize3 ;
+	Myint maxFDBlkSize3 ;
+
+	// GPU grid size - 3D grid - (number of blocks per grid)
+	Myint gpuFDGridSize1 ;
+	Myint gpuFDGridSize2 ;
+	Myint gpuFDGridSize3 ;
 
 } ;
 

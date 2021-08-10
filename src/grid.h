@@ -8,6 +8,8 @@
 //
 // Handle all grid data in hpcscan and all operations performed on grids
 //
+// Details of the grid structure and indexes is provided in grid.cpp
+//
 //-------------------------------------------------------------------------------------------------------
 
 // ####################################################################################
@@ -127,7 +129,7 @@ public:
 	void defineUnitGrid() ;
 
 	// exchange halos with MPI
-	Rtn_code exchangeHalos(MPI_comm_mode_type) ;
+	virtual Rtn_code exchangeHalos(MPI_comm_mode_type) ;
 
 	// exchange one halo with MPI
 	virtual Rtn_code exchangeHalo(MPI_comm_mode_type, Point_type pointType) ;
@@ -205,6 +207,7 @@ protected:
 	Myint64 n1Inner, n2Inner, n3Inner ;
 
 	// grid indexes (local)
+	Myint i1OffsetStart, i1OffsetEnd, i2OffsetStart, i2OffsetEnd, i3OffsetStart, i3OffsetEnd ;
 	Myint i1Halo1Start , i1Halo1End , i2Halo1Start , i2Halo1End , i3Halo1Start , i3Halo1End ;
 	Myint i1Halo2Start , i1Halo2End , i2Halo2Start , i2Halo2End , i3Halo2Start , i3Halo2End ;
 	Myint i1Layer1Start, i1Layer1End, i2Layer1Start, i2Layer1End, i3Layer1Start, i3Layer1End ;
@@ -224,11 +227,17 @@ protected:
 	// MPI data type used to exchanges halos
 	MPI_Datatype i1HaloDataType, i2HaloDataType, i3HaloDataType ;
 
-	// grid padding
+	// grid padding along axis 1, 2 and 3
+	// add points at the end of each axis
 	virtual void padGridn1(void) ;
 	virtual void padGridn2(void) ;
 	virtual void padGridn3(void) ;
 
+	// grid offset along axis 1, 2 and 3
+	// add points at the beginning of each axis
+	virtual void offsetGridn1(void) ;
+	virtual void offsetGridn2(void) ;
+	virtual void offsetGridn3(void) ;
 } ;
 
 } // namespace hpcscan
