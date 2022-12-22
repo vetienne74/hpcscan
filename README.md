@@ -254,6 +254,7 @@ Operating system | Compiler | MPI | Host | Device | Test modes
 |----------------|----------|-----|------|------------|----------
 Ubuntu 22.04.1 LTS | g++ (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0 | mpirun (Open MPI) 4.1.2 | Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz **(Intel Kaby Lake)** | - |  Baseline, CacheBlk
 Red Hat 8.5.0-10 | NEC nc++ (NCC) 4.0.0 | NEC MPI 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA 20B-P **(NEC Vector Engine)** | Baseline, CacheBlk, NEC, NEC_SCA
+Red Hat 8.5.0-10 | Intel oneAPI DPC++/C++ Compiler 2022.1.0 | Intel MPI Version 2021.6 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | - | Baseline, CacheBlk
 SUSE Linux Enterprise Server 15 | Intel icpc (ICC) 19.0.5.281 20190815 | - | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - |  - |
 Red Hat 4.8.5-39 | Intel icpc version 19.1.2.254 | - | Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz **(Intel Cascade Lake)** | - |  - 
 Ubuntu 20.04.1 LTS |  <li> gcc version 9.3.0 </li> <li> NVIDIA nvcc release 11.3, V11.3.109 </li> | - | Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz **(Intel Ice Lake)** | GP108M [GeForce MX330] **(NVIDIA GPU)** | - 
