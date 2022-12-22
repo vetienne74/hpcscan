@@ -41,12 +41,13 @@
 Contact: Vincent Etienne / Email: vetienne@rocketmail.com
 
 Contributors (chronological order)
-* Vincent Etienne (Saudi Aramco)
+* Vincent Etienne (NEC)
 * Suha Kayum (Saudi Aramco)
-* Marcin Rogowski (KAUST)
+* Marcin Rogowski (King Adbullah University of Science and Technology)
 * Laurent Gatineau (NEC)
 * Philippe Thierry (Intel)
-* Fabrice Dupros (ARM)
+* Fabrice Dupros (ARM) 
+* Hugo Barreiro (University of Reims Champagne-Ardenne)
 
 # Overview
 
@@ -57,7 +58,7 @@ hpcscan is a tool for **benchmarking algorithms/kernels** that are found in many
 It features several categories of test cases aiming to measure memory, computation and communication bandwidths.
 
 * Entirely written in C++
-* Simple code struture based on individual test cases
+* Simple code structure based on individual test cases
 * Easy to add new test cases
 * Design centered on a unique class that handles all operations on multi-dimension (1, 2 \& 3D) Cartesian grids
 * Hybrid OpenMP/MPI parallelism
@@ -147,6 +148,7 @@ Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-du
 FD_D2        | **Finite-difference (second derivatives in space) computations bandwidth** <ul><li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_1^2} \: (V)"> (for grid dim. 1, 2 or 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_2^2} \: (V)"> (for grid dim. 2 or 3) </li>  <li> <img src="https://render.githubusercontent.com/render/math?math=U={\partial^2}/{\partial x_3^2} \: (V)"> (for grid dim. 3) </li> <li> <img src="https://render.githubusercontent.com/render/math?math=U= \Delta (V)"> (for grid dim 2 or 3) </li> </ul> | <p> Available FD stencil orders: 2, 4, 6, 8, 10, 12, 14 and 16 <br> Accuracy is checked against multi-dimensional sine function <br> Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of periods in the sine function <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
 Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Max. diff. between grids U and V </li> <li> L1 norm between U and V </li> <li> Sum of abs(U) </li> <li> Sum of abs(U-V) </li> <li> Max. of U </li> <li> Min. of U </li> <li> Complex grid manipulation (wavefield update in propagator) U = 2 x V - U + C x L </li> <li> Boundary condition (free surface) at all edges of U </li> </ul> | <p>Operations on grids include manipulation of multi-dimensional indexes and specific portions of the grids (for instance, excluding halos) <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
 Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p> Conversely to Test Case Grid, operations are done on continuous memory arrays <br> This test case is similar to the Stream benchmark <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
+Modeling | **Acoustic wave modeling bandwidth** <p> Same features as for test case Propa except <ul> <li> Velocity model is read from file </li> <li> Source is a Ricker wavelet </li> <li> Ouput seismic traces and snapshots </li> </ul> | There is no accuray checking for this test case
 Propa        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> <img src="https://render.githubusercontent.com/render/math?math={\partial^2}/{\partial t^2} (P)=c^2 \: \Delta (P)"> </li> <li> Domain size is 1 m in every dimension </li> <li> c is constant and equals to 1 m/s </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against the multi-dimensional analytical solution (Eigen modes) of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of Eigen modes <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
 Template     | Test case template | Used to create new test cases
 Util         | Utility tests to check internal functions | Reserved for developpers
@@ -238,7 +240,7 @@ This script runs a set a light test cases and should complete within few minutes
 
 You should get in the ouptput report (displayed on the terminal)
 
-* All tests marked as PASSED (631 tests passed for each test mode enabled)
+* All tests marked as PASSED (661 tests passed for each test mode enabled)
 * No test marked as FAILED
 
 Check the summary at the end of report to have a quick look on this.
@@ -391,7 +393,7 @@ FD\_D2 | Assess FD spatial derivative computation bandwidth | Analyse effect of 
 Propa | Find optimal configuration for the wave propagator | Explore range of parameters
 Propa | Scalability analysis of wave propagator on multiple nodes | Analyse effect of the FD stencil order
 
-:arrow_right: **Performance measurements and scripts to reproduce results** obtained on the supercomputer Shaheen II at KAUST can be found in [./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf](./misc/hpcscanPerfShaheen/hpcscanPerfShaheen.pdf)
+:arrow_right: **Performance measurements and scripts to reproduce results** obtained on various architectures are available in [./misc/hpcscanPerfSlides/hpcscanPerfSlides.pdf](./misc/hpcscanPerfSlides/hpcscanPerfSlides.pdf)
 
 # Customization
 
