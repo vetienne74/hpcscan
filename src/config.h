@@ -35,6 +35,9 @@ public:
 	// cache block sizes
 	Myint cb1, cb2, cb3 ;
 
+	// grid spacing (m)
+	Myfloat64 d1, d2, d3 ;
+
 	// debug log file
 	ofstream debugLogFile ;
 
@@ -48,10 +51,10 @@ public:
 	string dpcppSelect ;
 
 	// fd order
-	Myint fdOrder ;
+	Myint fdOrder ;	
 
-	// grid sampling
-	Myfloat64 h ;
+	// maximum frequency (Hz) to be computed
+	Myfloat64 freqMax ;
 
 	// GPU block size in 1 dimension (number of threads per block)
 	Myint gpuBlkSize ;
@@ -68,7 +71,10 @@ public:
 	Myint gpuGridSize ;
 
 	// time step increment (time in sec.) between update of hardware counters
-	Myfloat64 hwCounterDt ;
+	Myfloat64 hwCounterDt ;	
+
+	// name of model vp file
+	string modelVpFile ;
 
 	// inner domain size
 	Myint n1, n2, n3 ;

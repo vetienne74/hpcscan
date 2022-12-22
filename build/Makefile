@@ -71,17 +71,18 @@ endif
 #=====================#
 
 # cpp standard objects
-CPP_OBJ = config.o grid.o grid_CacheBlk.o grid_Factory.o \
+CPP_OBJ = config.o data_Acquisition.o data_Acquisition_Factory.o grid.o grid_CacheBlk.o grid_Factory.o \
 	hardware_Factory.o hardware.o \
 	main.o output_report.o propagator_Factory.o propagator_Ac2.o propagator_Ac2SplitComp.o \
 	table_Results.o testCase.o testCase_Comm.o testCase_FD_D2.o testCase_Grid.o \
-	testCase_Propa.o testCase_Memory.o testCase_Template.o testCase_Util.o
+	testCase_Matrix.o testCase_Memory.o testCase_Modeling.o testCase_Propa.o testCase_Template.o \
+	testCase_Util.o
 
 # cpp OpenACC objects
 CPP_OPENACC_OBJ = grid_OpenAcc.o
 
 # Cuda objects
-CUDA_OBJ = grid_Cuda.o grid_Cuda_Optim.o grid_Cuda_Ref.o hardware_Cuda.o
+CUDA_OBJ = grid_Cuda.o grid_Cuda_Optim.o grid_Cuda_Ref.o hardware_Cuda.o data_Acquisition_Cuda.o
 
 # DPC++ objects
 DPCPP_OBJ = grid_DPCPP.o hardware_DPCPP.o
@@ -90,7 +91,7 @@ DPCPP_OBJ = grid_DPCPP.o hardware_DPCPP.o
 HIP_OBJ = grid_Hip.o grid_Hip_Optim.o
 
 # NEC objects
-CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o hardware_NEC.o
+CPP_NEC_OBJ = grid_NEC.o grid_NEC_SCA.o hardware_NEC.o data_Acquisition_NEC.o
 
 # OpenACC objects
 CPP_OPENACC_OBJ = grid_OpenAcc.o

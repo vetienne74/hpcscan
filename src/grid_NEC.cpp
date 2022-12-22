@@ -11,11 +11,19 @@
 #include <cfloat>  // for FLT_MAX ;
 #include <cmath>   // for fabs
 #include <cstddef> // for NULL
+#include <fcntl.h> // for C open file operations
 #include <fstream>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h> // for C read/write file operations
+
 
 #include "mpi.h"
 #include <sca.h>
+#ifdef _FTRACE
+#include <ftrace.h>
+#endif
 
 #include "config.h"
 #include "constant.h"
@@ -3204,6 +3212,427 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 	}
 
 	printDebug(FULL_DEBUG, "Out Grid_NEC::computePressureWithFD") ;
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_NEC::write(string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_NEC::write");
+
+	// each proc write its own file
+
+	if (Config::Instance()->writeGrid)
+	{
+		Myint nb_wrote;
+		double t0 = MPI_Wtime() ;
+
+		// write grid in binary format
+		string fileName_bin = fileName + ".proc" + to_string(myMpiRank) + ".grid.bin" ;
+		printInfo(MASTER, "* NEC::write on disk\t", fileName_bin.c_str());
+		printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_bin.c_str());
+		
+		int out_file;
+		out_file = open(fileName_bin.c_str(), O_WRONLY | O_APPEND | O_CREAT, 0644);
+		if(out_file == -1){
+			printError("IN Grid_NEC::write, error while opening file") ;
+			return(RTN_CODE_KO) ;
+		}
+
+		nb_wrote=::write(out_file, grid_3d, npoint * sizeof(Myfloat));
+		if(nb_wrote < 0){
+			printError("IN Grid_NEC::write, error while writing") ;
+			return(RTN_CODE_KO) ;
+
+		}
+
+		close(out_file);
+
+		// write grid info
+		string fileName_info = fileName + ".proc" + to_string(myMpiRank) + ".grid.info" ;
+		printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_info.c_str());
+		ofstream out_file2(fileName_info) ;
+		out_file2 << this->n1 << "\n" ;
+		out_file2 << this->n2 << "\n" ;
+		out_file2 << this->n3 << "\n" ;
+		out_file2.close() ;
+
+		double t1 = MPI_Wtime() ;
+		grid_write_time = t1-t0;
+		printInfo(MASTER, "* time to write (s)", t1-t0) ;
+	}
+	else
+	{
+		grid_write_time = 0.0;
+	}
+	printDebug(LIGHT_DEBUG, "OUT Grid_NEC::write");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_NEC::write(Point_type pointType, string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_NEC::write");
+
+	// each proc write its own file
+
+	if (Config::Instance()->writeGrid)
+	{		
+		// particular case ALL_POINT
+		if (pointType == ALL_POINTS)
+		{
+			this->write(fileName);
+		}
+		else
+		{
+			double t0 = MPI_Wtime() ;
+
+			// write grid in binary format
+			string fileName_bin = fileName + ".proc" + to_string(myMpiRank) + ".grid.bin";
+			printInfo(MASTER, "* write on disk NEC_C:write\t", fileName_bin.c_str());
+			printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_bin.c_str());
+			
+			int out_file;
+			out_file = open(fileName_bin.c_str(), O_WRONLY | O_APPEND | O_CREAT, 0644);
+			if(out_file == -1){
+				printError("IN Grid_NEC::write, error while opening file for writing") ;
+				return(RTN_CODE_KO) ;
+			}
+
+			// get index range of desired points
+			Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End;
+			getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+			//#pragma omp parallel for collapse(2)
+			Myint64 n1Write = i1End - i1Start + 1;
+			Myint64 n2Write = i2End - i2Start + 1;
+			Myint64 n3Write = i3End - i3Start + 1;
+			ssize_t nb_wrote = 0;
+			for (Myint64 i3 = i3Start; i3 <= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2 <= i2End; i2++)
+				{
+					// read file and fill grid along n1
+					Myint64 i1 = i1Start;
+					Myint64 idxGrid = i1 + i2 * n1 + i3 * n2 * n1;
+					Myint64 idxFile = 1;
+
+					nb_wrote=::write(out_file, &grid_3d[idxGrid], n1Write * sizeof(Myfloat));
+					if(nb_wrote < 0){
+						printError("IN Grid_NEC::write, Error while writing") ;
+						return(RTN_CODE_KO) ;
+					}
+				}
+			}
+
+			close(out_file);
+
+			// write grid info
+			string fileName_info = fileName + ".proc" + to_string(myMpiRank) + ".grid.info";
+			printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_info.c_str());
+			ofstream out_file2(fileName_info);
+			out_file2 << n1Write << "\n";
+			out_file2 << n2Write << "\n";
+			out_file2 << n3Write << "\n";
+			out_file2.close();
+
+			double t1 = MPI_Wtime();
+			grid_write_time = t1 - t0;
+			printInfo(MASTER, "* time to write (s)", grid_write_time);
+		}
+	}
+	else
+	{
+		grid_write_time = 0.0;
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_NEC::write");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_NEC::read_all_at_once_then_loop(Point_type pointType, string fileName)
+{
+	//read all inside file overthrust
+	
+	printDebug(LIGHT_DEBUG, "IN Grid_NEC::read_all_at_once");
+	printInfo(MASTER, "* read on disk\t", fileName.c_str());
+	printDebug(LIGHT_DEBUG, "* read on disk\t", fileName.c_str());
+	
+	// open file
+	int out_file;
+	out_file= open(fileName.c_str(),O_RDONLY);
+	if(out_file < 0){
+		printError("IN Grid_NEC::read_all_at_once_then_loop, Error while opening file") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	// get index range of desired points
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End;
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+	Myint64 nRead = i1End - i1Start + 1 ;
+
+	// read all VPModel in one array
+	int read_nb=0;
+	int file_end_byte=0;
+
+	file_end_byte=lseek(out_file,0,SEEK_END);
+	Myfloat * all_modelVP = new Myfloat[file_end_byte/sizeof(Myfloat)];
+	read_nb = pread(out_file, all_modelVP, file_end_byte ,0);
+	if(read_nb == -1){
+		printError("IN Grid_NEC::read_all_at_once_then_loop, Reading file failed") ;
+		return(RTN_CODE_KO) ;
+	}
+	
+	//#pragma omp parallel for collapse(2)
+	for (Myint64 i3 = i3Start; i3 <= i3End; i3++)
+	{
+		for (Myint64 i2 = i2Start; i2 <= i2End; i2++)
+		{
+			// file is already read, copy data into grid_3d
+			Myint64 i2file = i2-i2Start;	
+			Myint64 i3file = i3-i3Start;			
+			Myint64 i1 = i1Start ;
+			Myint64 idxGrid = i1 + i2 * n1 + i3 * n2 * n1;
+
+			Myint64 idxModelVP = (i1OffsetGlobInner + 
+			Config::Instance()->n1 * (i2OffsetGlobInner + i2file) + 
+			Config::Instance()->n1 * Config::Instance()->n2 * (i3OffsetGlobInner + i3file));  
+			
+			for(i1 = 0; i1 < nRead; i1++)
+				grid_3d[idxGrid+i1] = all_modelVP[idxModelVP+i1];
+		}
+	}
+	delete[] all_modelVP;
+	close(out_file);
+	printDebug(LIGHT_DEBUG, "OUT Grid_NEC::read_all_at_once");
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_NEC::read_line_by_line(Point_type pointType, string fileName)
+{
+	
+	printDebug(LIGHT_DEBUG, "IN Grid_NEC::read_line_by_line");
+	// open file in binary format
+	printInfo(MASTER, "* read on disk\t", fileName.c_str());
+	printDebug(LIGHT_DEBUG, "* read on disk\t", fileName.c_str());
+	
+	int out_file;
+	out_file= open(fileName.c_str(),O_RDONLY);
+	if(out_file < 0){
+		printError("IN Grid_NEC::read_line_by_line, error while opening file") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	// get index range of desired points
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End;
+	getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+	//#pragma omp parallel for collapse(2)
+	Myint64 nRead = i1End - i1Start + 1 ;
+
+	#ifdef _FTRACE
+	ftrace_region_begin("lecture complete");
+	#endif
+	for (Myint64 i3 = i3Start; i3 <= i3End; i3++)
+	{
+		for (Myint64 i2 = i2Start; i2 <= i2End; i2++)
+		{
+			// read file and fill grid along n1
+			Myint64 i2file = i2-i2Start;
+			Myint64 i3file = i3-i3Start;
+			Myint64 i1 = i1Start ;
+			Myint64 idxGrid = i1 + i2 * n1 + i3 * n2 * n1;
+			Myint64 myOffset = sizeof(Myfloat)*
+			(i1OffsetGlobInner + 
+			Config::Instance()->n1 * (i2OffsetGlobInner + i2file) + 
+			Config::Instance()->n1 * Config::Instance()->n2 * (i3OffsetGlobInner + i3file));
+			
+			#ifdef _FTRACE
+			ftrace_region_begin("read function time");
+			#endif
+					
+			int read_nb=0;
+			read_nb = pread(out_file, &grid_3d[idxGrid], nRead * sizeof(Myfloat) ,myOffset);
+			if(read_nb == -1){
+				printError("IN Grid_NEC::read_line_by_line, Reading file failed") ;
+				return(RTN_CODE_KO) ;
+			}
+
+			#ifdef _FTRACE
+			ftrace_region_end("read function time");
+			#endif
+		}
+	}	
+	// close file
+	close(out_file);
+
+	#ifdef _FTRACE
+	ftrace_region_end("lecture complete");
+	#endif
+	printDebug(LIGHT_DEBUG, "OUT Grid_NEC::read_line_by_line");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_NEC::read_plane_by_plane(Point_type pointType, string fileName)
+{
+	// read plane by plane IN 3D ONLY!!
+	printDebug(LIGHT_DEBUG, "IN Grid_NEC::read_plane_by_plane");
+
+	double t0 = MPI_Wtime();
+	i_o_pread_time = 0 ;
+
+	if(dim == DIM3){
+
+		printInfo(MASTER, "* read on disk\t", fileName.c_str());
+		printDebug(LIGHT_DEBUG, "* read on disk\t", fileName.c_str());
+		
+		double t0_open_time = MPI_Wtime();
+		int out_file;
+		out_file = open(fileName.c_str(),O_RDONLY);
+		if(out_file == -1){
+			printError("IN Grid_NEC::read_plane_by_plane, error while opening file") ;
+			return(RTN_CODE_KO) ;
+		}
+
+		double t1_open_time = MPI_Wtime();
+		i_o_pread_time += t1_open_time - t0_open_time;
+
+		// get index range of desired points
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End;
+		getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End); //innerpoint
+
+		//#pragma omp parallel for collapse(2)
+		Myint64 n1Read = i1End - i1Start + 1 ; //=n1InnerLocal
+		Myint64 nRead = n1Inner * n2Inner ; //points in a plane
+
+		Myfloat * plane1_modelVP = new Myfloat[nRead];
+		for(int i=0; i<nRead; i++)
+			plane1_modelVP[i]=0;
+
+		Myint64 read_nb=0;
+
+		for (Myint64 i3 = i3Start; i3 <= i3End; i3++)
+		{
+			Myint64 myOffset = sizeof(Myfloat) * (i3-i3Start + i3OffsetGlobInner) * nRead ;
+
+			double t0_pread_time = MPI_Wtime();
+
+			read_nb = pread(out_file, plane1_modelVP, nRead * sizeof(Myfloat), myOffset);
+			if(read_nb < 0){
+				printError("IN Grid_NEC::read_plane_by_plane, error while reading file") ;
+				return(RTN_CODE_KO) ;
+			}
+
+			double t1_pread_time = MPI_Wtime();
+			i_o_pread_time += t1_pread_time - t0_pread_time ;
+
+			for (Myint64 i2 = i2Start; i2 <= i2End; i2++)
+			{
+				// file is already read, copy data into grid_3d
+				Myint i2file = i2-i2Start;
+				Myint i1 = i1Start ;
+				Myint i1File = i1 - i1Start;
+				Myint64 idxGrid = i1 + i2 * n1 + i3 * n2 * n1;
+
+				Myint64 idxModelVP = (i1OffsetGlobInner + i1File +
+				n1Inner * (i2OffsetGlobInner + i2file));
+				
+				for(Myint64 i1plane = 0; i1plane < n1Read; i1plane++)
+					grid_3d[idxGrid + i1plane] = plane1_modelVP[idxModelVP + i1plane];
+			}
+		}
+		// close file
+		delete[] plane1_modelVP;
+		double t0_close_time = MPI_Wtime() ;
+		close(out_file);
+		double t1_close_time = MPI_Wtime() ;
+		i_o_pread_time += t1_close_time - t0_close_time;
+	}
+	else{
+		printInfo(MASTER, "Cannot read plane by plane because grid dim != 3 !!\n Reading line by line instead");
+		double t0_read_line_time = MPI_Wtime();
+		read_line_by_line(pointType, fileName);
+		double t1_read_line_time = MPI_Wtime();
+		i_o_pread_time += t1_read_line_time - t0_read_line_time;
+
+	}
+	printDebug(LIGHT_DEBUG, "OUT Grid_NEC::read_plane_by_plane");
+	return(RTN_CODE_OK);
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_NEC::read(string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_NEC::read");
+	double t0 = MPI_Wtime() ;
+	int nb_read=0;
+
+	// read grid in binary format
+	printInfo(MASTER, "* read on disk\t", fileName.c_str());
+	printDebug(LIGHT_DEBUG, "* read on disk\t", fileName.c_str());
+	
+	int out_file;
+	out_file = open(fileName.c_str(), O_RDONLY);
+	if(out_file < 0){
+		printError("IN Grid_NEC::read, error while Error while opening file") ;
+		return(RTN_CODE_KO) ;
+	}
+	nb_read = ::read(out_file,grid_3d,npoint * sizeof(Myfloat));
+	if(nb_read <0){
+		printError("IN Grid_NEC::read, error while Error while reading") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	close(out_file);
+
+	double t1 = MPI_Wtime();
+	double readTime = t1 - t0 ;
+	printInfo(MASTER, "* read time (s)\t", readTime);
+	printInfo(MASTER, "* read bwth (GB/s)", npoint * sizeof(Myfloat) / readTime / 1e9);
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_NEC::read");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_NEC::read(Point_type pointType, string fileName)
+{
+	#ifdef _FTRACE
+	ftrace_region_begin("all read");
+	#endif
+	printDebug(LIGHT_DEBUG, "IN Grid_NEC::read");
+	double t0 = MPI_Wtime() ;
+
+	// particular case ALL_POINT
+	if (pointType == ALL_POINTS)
+	{
+		this->read(fileName);
+	}
+	else
+	{
+		read_plane_by_plane(pointType,fileName);
+	}	
+
+	double t1 = MPI_Wtime();
+	double readTime = t1 - t0 ;
+	printInfo(MASTER, "* read time (s)\t", readTime);
+	printInfo(MASTER, "* read bwth (GB/s)", npoint * sizeof(Myfloat) / readTime / 1e9);
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_NEC::read");
+	#ifdef _FTRACE
+	ftrace_region_end("all read");
+	#endif
 	return(RTN_CODE_OK) ;
 }
 

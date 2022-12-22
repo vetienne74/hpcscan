@@ -51,7 +51,22 @@ public:
 	virtual void info(void) ;
 
 	// write grid on disk
-	virtual void write(string) ;
+	virtual Rtn_code write(string) ;
+
+	// write appropriate part of the local grid on disk
+	// each proc writes its own part in a separated file
+	virtual Rtn_code write(Point_type pointType, string) ;
+
+	// write appropriate part of the global grid on disk 
+	// each proc writes its own part in a global file
+	// NOTE: only point type INNER_POINTS is supported in this version
+	virtual Rtn_code writeGlobal(Point_type pointType, string file_name, Myint n_iter) ;	
+
+	// read grid values from disk
+	virtual Rtn_code read(string) ;
+
+	// read grid values from disk and fill appropriate part of the grid
+	virtual Rtn_code read(Point_type pointType, string) ;
 
 	// L1 error between this grid and another
 	virtual Myfloat L1Err(Point_type pointType, const Grid& gridIn) const ;
@@ -69,6 +84,10 @@ public:
 	// get min and max in grid
 	virtual Myfloat getMin(Point_type) ;
 	virtual Myfloat getMax(Point_type) ;
+
+	// collective (all MPI process) get min and max in grid
+	virtual Myfloat allProcGetMin(Point_type) ;
+	virtual Myfloat allProcGetMax(Point_type) ;
 
 	// get sum of abs grid points
 	virtual Myfloat getSumAbs(Point_type) const ;
@@ -134,6 +153,9 @@ public:
 	// exchange one halo with MPI
 	virtual Rtn_code exchangeHalo(MPI_comm_mode_type, Point_type pointType) ;
 
+	// exchange all halos with MPI
+	virtual Rtn_code myExchangeAll_halos();
+
 	// apply boundary condition
 	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;
 
@@ -177,6 +199,26 @@ public:
 	// get number of points in the stencil for operator LAPLACIAN
 	Myint getPtPerStencilFD_LAPLACIAN(Myint fdOrder) ;
 
+	// get Offset in regard of global grid
+	Myint getOffsetGlobal(Axis_type axis) ;
+
+	// check if global points given are part of local grid
+	bool isInMyDomain(Myint64 i1,Myint64 i2, Myint64 i3) ;
+
+	// get Global point from local point
+	Myint64 localToGlobal(Axis_type axis, Myint64 i1) ;
+
+	// get Local point from global point
+	Myint64 globalToLocal(Axis_type axis, Myint64 i1) ;
+
+	// get index from grid globally
+	Rtn_code getGridIndexGlobal(Point_type PointType, Myint64* i1Start, Myint64* i1End,
+				Myint64* i2Start, Myint64* i2End, Myint64* i3Start, Myint64* i3End);
+
+	// get number of points in global grid
+	Myint64 getGlobalnPoints(Axis_type axis);
+
+
 	// Space dimension
 	Dim_type dim ;
 
@@ -198,14 +240,21 @@ public:
 	// grid mode
 	string gridMode ;
 
-protected:
+	// inner points of Global grid
+	Myint64 n1Inner, n2Inner, n3Inner ;
 
 	// array size (points)
 	Myint64 npoint ;
 
-	// inner points
-	Myint64 n1Inner, n2Inner, n3Inner ;
+	//time measure
+	double grid_writeGlobal_time;
+	double grid_write_time;
+	double i_o_pread_time;
 
+protected:
+
+	
+	
 	// grid indexes (local)
 	Myint i1OffsetStart, i1OffsetEnd, i2OffsetStart, i2OffsetEnd, i3OffsetStart, i3OffsetEnd ;
 	Myint i1Halo1Start , i1Halo1End , i2Halo1Start , i2Halo1End , i3Halo1Start , i3Halo1End ;
@@ -218,14 +267,36 @@ protected:
 	// origin of local grid
 	Myfloat Orig1, Orig2, Orig3 ;
 
-	// grid offset (with respect to global grid)
-	Myint i1OffsetGlob, i2OffsetGlob, i3OffsetGlob ;
+	// grid offset using inner points (with respect to global grid)
+	Myint i1OffsetGlobInner, i2OffsetGlobInner, i3OffsetGlobInner ;
+	
+	// grid offset using all points (with respect to global grid)
+	Myint i1OffsetGlobAllPoints, i2OffsetGlobAllPoints, i3OffsetGlobAllPoints ;
 
 	// proc id of neighbours (for subdomain decomposiiton)
 	Myint i1ProcIdStart, i1ProcIdEnd, i2ProcIdStart, i2ProcIdEnd, i3ProcIdStart, i3ProcIdEnd ;
 
-	// MPI data type used to exchanges halos
-	MPI_Datatype i1HaloDataType, i2HaloDataType, i3HaloDataType ;
+	// MPI data type used to exchanges halos (implementation 1)
+	MPI_Datatype i1HaloDataType, i2HaloDataType, i3HaloDataType;
+
+	// MPI data type used to exchanges halos (implementation 2)
+	MPI_Datatype  i1Halo1DataTypeSend , i1Halo2DataTypeSend,
+		i1Halo1DataTypeReceive , i1Halo2DataTypeReceive,
+
+		i2Halo1DataTypeSend , i2Halo2DataTypeSend,
+		i2Halo1DataTypeReceive , i2Halo2DataTypeReceive,
+
+		i3Halo1DataTypeSend , i3Halo2DataTypeSend,
+		i3Halo1DataTypeReceive , i3Halo2DataTypeReceive ;
+
+	// MPI Data type used to define INNER_POINT in local & global grid 
+	MPI_Datatype innerLocalGridType, innerGlobalGridType ;
+
+	// create MPI Type to manipulate Inner points in Global Grid	
+	MPI_Datatype createMpiTypeInnerGlobalGrid(void) ;
+
+	// create MPI Type to manipulate Inner points in Local Grid	
+	MPI_Datatype createMpiTypeInnerLocalGrid(void) ;
 
 	// grid padding along axis 1, 2 and 3
 	// add points at the end of each axis
@@ -238,6 +309,7 @@ protected:
 	virtual void offsetGridn1(void) ;
 	virtual void offsetGridn2(void) ;
 	virtual void offsetGridn3(void) ;
+
 } ;
 
 } // namespace hpcscan

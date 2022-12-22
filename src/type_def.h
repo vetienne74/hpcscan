@@ -73,11 +73,21 @@ enum {UNSPECIFIED = -1} ;
 // MPI comm. mode
 enum MPI_comm_mode_type {MPI_COMM_MODE_SENDRECV} ;
 
+// MPI tag
+enum Mpi_tag {SENDRECVI1HALO1, SENDRECVI1HALO2, SENDRECVI2HALO1, SENDRECVI2HALO2, SENDRECVI3HALO1, SENDRECVI3HALO2};
+
+
 // Boundary condition
 enum BoundCond_type {NO_BOUND_COND, BOUND_COND_ANTI_MIRROR} ;
 
 // Propagator initialization type
-enum PropaInit_type {EIGEN_MODE} ;
+enum PropaInit_type {EIGEN_MODE, MODELING} ;
+
+// Data acquisition type
+enum DataAcqui_type {ACQUI_BUILTIN} ;
+
+// Modeling type
+enum Modeling_type {FORWARD, ADJOINT} ;
 
 } // namespace hpcscan
 

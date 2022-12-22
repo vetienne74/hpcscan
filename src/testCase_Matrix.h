@@ -1,5 +1,5 @@
-#ifndef HPCSCAN_TESTCASE_MEMORY_H_
-#define HPCSCAN_TESTCASE_MEMORY_H_
+#ifndef HPCSCAN_TESTCASE_MATRIX_H_
+#define HPCSCAN_TESTCASE_MATRIX_H_
 
 #include <string>
 
@@ -10,10 +10,10 @@ using namespace std;
 namespace hpcscan
 {
 
-	class TestCase_Memory : protected TestCase
+	class TestCase_Matrix : protected TestCase
 	{
 	public:
-		TestCase_Memory();
+		TestCase_Matrix();
 		Rtn_code run(void);
 	};
 

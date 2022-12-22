@@ -68,6 +68,14 @@ public:
 	// compute pressure with FD
 	virtual Rtn_code computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fdOrder) ;
 
+	virtual Rtn_code read(string) ;
+	
+	virtual Rtn_code read(Point_type pointType, string) ;
+
+	virtual Rtn_code write(string fileName);
+
+	virtual Rtn_code write(Point_type pointType, string fileName);
+
 protected:
 
 	// Temporary 3D grid array
@@ -80,6 +88,15 @@ protected:
 	virtual void padGridn1(void) ;
 	virtual void padGridn2(void) ;
 	virtual void padGridn3(void) ;
+
+	//read all inside file overthrust
+	Rtn_code read_all_at_once_then_loop(Point_type pointType, string fileName);
+
+	//read inside file overthrust line by line
+	Rtn_code read_line_by_line(Point_type pointType, string fileName);
+
+	Rtn_code read_plane_by_plane(Point_type pointType, string fileName);
+
 
 } ;
 

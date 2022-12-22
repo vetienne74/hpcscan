@@ -91,7 +91,7 @@ Grid::Grid(Grid_type gridTypeIn)
 	i1ProcIdStart = MPI_PROC_NULL ;
 	i1ProcIdEnd   = MPI_PROC_NULL ;
 	d1            = 0 ;
-	i1OffsetGlob  = 0 ;
+	i1OffsetGlobInner  = 0 ;
 	Orig1         = 0 ;
 	n1            = 0 ;
 	i1HaloDataType = MPI_DATATYPE_NULL ;
@@ -113,7 +113,7 @@ Grid::Grid(Grid_type gridTypeIn)
 	i2ProcIdStart = MPI_PROC_NULL ;
 	i2ProcIdEnd   = MPI_PROC_NULL ;
 	d2            = 0 ;
-	i2OffsetGlob  = 0 ;
+	i2OffsetGlobInner  = 0 ;
 	Orig2         = 0 ;
 	n2            = 0 ;
 	i2HaloDataType = MPI_DATATYPE_NULL ;
@@ -135,7 +135,7 @@ Grid::Grid(Grid_type gridTypeIn)
 	i3ProcIdStart = MPI_PROC_NULL ;
 	i3ProcIdEnd   = MPI_PROC_NULL ;
 	d3            = 0 ;
-	i3OffsetGlob  = 0 ;
+	i3OffsetGlobInner  = 0 ;
 	Orig3         = 0 ;
 	n3            = 0 ;
 	i3HaloDataType = MPI_DATATYPE_NULL ;
@@ -192,7 +192,7 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 	i1ProcIdStart = MPI_PROC_NULL ;
 	i1ProcIdEnd   = MPI_PROC_NULL ;
 	d1            = 0 ;
-	i1OffsetGlob  = 0 ;
+	i1OffsetGlobInner  = 0 ;
 	Orig1         = 0 ;
 	n1            = 0 ;
 	i1HaloDataType = MPI_DATATYPE_NULL ;
@@ -214,7 +214,7 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 	i2ProcIdStart = MPI_PROC_NULL ;
 	i2ProcIdEnd   = MPI_PROC_NULL ;
 	d2            = 0 ;
-	i2OffsetGlob  = 0 ;
+	i2OffsetGlobInner  = 0 ;
 	Orig2         = 0 ;
 	n2            = 0 ;
 	i2HaloDataType = MPI_DATATYPE_NULL ;
@@ -236,7 +236,7 @@ Grid::Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
 	i3ProcIdStart = MPI_PROC_NULL ;
 	i3ProcIdEnd   = MPI_PROC_NULL ;
 	d3            = 0 ;
-	i3OffsetGlob  = 0 ;
+	i3OffsetGlobInner  = 0 ;
 	Orig3         = 0 ;
 	n3            = 0 ;
 	i3HaloDataType = MPI_DATATYPE_NULL ;
@@ -459,12 +459,13 @@ Rtn_code Grid::initializeGrid(void)
 	n1 = i1PadEnd + 1 ;
 
 	// spatial sampling
-	d1 = Config::Instance()->h ;
+	d1 = Config::Instance()->d1 ;
 
 	// global coordinate of the grid
-	i1OffsetGlob = subIdx1 * (Config::Instance()->n1 / Config::Instance()->nsub1) ;
-	printDebug(LIGHT_DEBUG, "i1OffsetGlob", i1OffsetGlob) ;
-	Orig1 = (i1OffsetGlob - i1InnerStart) * d1 ;
+	i1OffsetGlobInner = subIdx1 * (Config::Instance()->n1 / Config::Instance()->nsub1) ;
+	printDebug(LIGHT_DEBUG, "i1OffsetGlobInner", i1OffsetGlobInner) ;
+
+	Orig1 = (i1OffsetGlobInner - i1InnerStart) * d1 ;
 
 	//================================================================================
 	// initialize grid index axis 2
@@ -509,12 +510,13 @@ Rtn_code Grid::initializeGrid(void)
 		n2 = i2PadEnd + 1 ;
 
 		// spatial sampling
-		d2 = Config::Instance()->h ;
+		d2 = Config::Instance()->d2 ;
 
 		// global coordinate of the grid
-		i2OffsetGlob = subIdx2 * (Config::Instance()->n2 / Config::Instance()->nsub2) ;
-		printDebug(LIGHT_DEBUG, "i2OffsetGlob", i2OffsetGlob) ;
-		Orig2 = (i2OffsetGlob - i2InnerStart) * d2 ;
+		i2OffsetGlobInner = subIdx2 * (Config::Instance()->n2 / Config::Instance()->nsub2) ;
+		printDebug(LIGHT_DEBUG, "i2OffsetGlobInner", i2OffsetGlobInner) ;
+
+		Orig2 = (i2OffsetGlobInner - i2InnerStart) * d2 ;
 	}
 	else
 	{
@@ -565,12 +567,13 @@ Rtn_code Grid::initializeGrid(void)
 		n3 = i3PadEnd + 1 ;
 
 		// spatial sampling
-		d3 = Config::Instance()->h ;
+		d3 = Config::Instance()->d3 ;
 
 		// global coordinate of the grid
-		i3OffsetGlob = subIdx3 * (Config::Instance()->n3 / Config::Instance()->nsub3) ;
-		printDebug(LIGHT_DEBUG, "i3OffsetGlob", i3OffsetGlob) ;
-		Orig3 = (i3OffsetGlob - i3InnerStart) * d3 ;
+		i3OffsetGlobInner = subIdx3 * (Config::Instance()->n3 / Config::Instance()->nsub3) ;
+		printDebug(LIGHT_DEBUG, "i3OffsetGlobInner", i3OffsetGlobInner) ;
+
+		Orig3 = (i3OffsetGlobInner - i3InnerStart) * d3 ;
 	}
 	else
 	{
@@ -638,6 +641,189 @@ Rtn_code Grid::initializeGrid(void)
 		MPI_Type_create_hvector(haloWidth, 1, stride3, dataType2, &i3HaloDataType) ;
 		MPI_Type_commit(&i3HaloDataType) ;
 	}
+
+
+	printDebug(MID_DEBUG, "IN Grid::createSubarrays" ) ;
+
+	Myint n1InnerLocal, n2InnerLocal, n3InnerLocal ;
+	n1InnerLocal = i1InnerEnd - i1InnerStart + 1 ;
+	n2InnerLocal = i2InnerEnd - i2InnerStart + 1 ;
+	n3InnerLocal = i3InnerEnd - i3InnerStart + 1 ;
+
+	Myint grid_array[3] = { n1, n2, n3 } ;
+
+	{
+		// create i1Halo1DataType & i1Halo2DataType
+		// + 1 type for send +1 type for recv for each
+		
+		Myint n1PointsHalo, n2PointsHalo, n3PointsHalo ;
+		n1PointsHalo = haloWidth ;
+		n2PointsHalo = n2InnerLocal ;
+		n3PointsHalo = n3InnerLocal ;
+		
+		Myint i1Halo_subarray[3] = { n1PointsHalo, n2PointsHalo, n3PointsHalo } ;
+		
+		Myint i1Halo1_arrayStartSend[3] = { i1InnerStart, i2InnerStart, i3InnerStart } ;
+		Myint i1Halo2_arrayStartSend[3] = { i1Halo2Start - haloWidth , i2InnerStart, i3InnerStart } ;
+		
+		Myint i1Halo1_arrayStartRecv[3] = { i1Halo1Start, haloWidth, haloWidth } ;
+		Myint i1Halo2_arrayStartRecv[3] = { i1Halo2Start, haloWidth, haloWidth } ;
+		
+		if(dim <= DIM2){
+			i1Halo_subarray[2] = 0 ;
+			i1Halo1_arrayStartSend[2] = 0 ;
+			i1Halo2_arrayStartSend[2] = 0 ;
+			i1Halo1_arrayStartRecv[2] = 0 ;
+			i1Halo2_arrayStartRecv[2] = 0 ;
+		}
+		if(dim <= DIM1){
+			i1Halo_subarray[1] = 0 ;
+			i1Halo1_arrayStartSend[1] = 0 ;
+			i1Halo2_arrayStartSend[1] = 0 ;
+			i1Halo1_arrayStartRecv[1] = 0 ;
+			i1Halo2_arrayStartRecv[1] = 0 ;
+		}
+
+
+		printDebug(FULL_DEBUG, "i1Halo1_arrayStartSend[0] i1Halo2_arrayStartSend[0]" , i1Halo1_arrayStartSend[0], i1Halo2_arrayStartSend[0] ) ;
+		printDebug(FULL_DEBUG, "i1Halo1_arrayStartSend[1] i1Halo2_arrayStartSend[1]" , i1Halo1_arrayStartSend[1], i1Halo2_arrayStartSend[1] ) ;
+		printDebug(FULL_DEBUG, "i1Halo1_arrayStartSend[2] i1Halo2_arrayStartSend[2]" , i1Halo1_arrayStartSend[2], i1Halo2_arrayStartSend[2] ) ;
+		printDebug(FULL_DEBUG, "i1Halo1_arrayStartRecv[0] i1Halo2_arrayStartRecv[0]" , i1Halo1_arrayStartRecv[0], i1Halo2_arrayStartRecv[0] ) ;
+		printDebug(FULL_DEBUG, "i1Halo1_arrayStartRecv[1] i1Halo2_arrayStartRecv[1]" , i1Halo1_arrayStartRecv[1], i1Halo2_arrayStartRecv[1] ) ;
+		printDebug(FULL_DEBUG, "i1Halo1_arrayStartRecv[2] i1Halo2_arrayStartRecv[2]" , i1Halo1_arrayStartRecv[2], i1Halo2_arrayStartRecv[2] ) ;
+
+		printDebug(FULL_DEBUG, "i1Halo_subarray[0] grid_array[0]" , i1Halo_subarray[0], grid_array[0] ) ;
+		printDebug(FULL_DEBUG, "i1Halo_subarray[1] grid_array[1]" , i1Halo_subarray[1], grid_array[1] ) ;
+		printDebug(FULL_DEBUG, "i1Halo_subarray[2] grid_array[2]" , i1Halo_subarray[2], grid_array[2] ) ;
+		
+
+		MPI_Type_create_subarray(dim, grid_array, i1Halo_subarray, i1Halo1_arrayStartSend, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i1Halo1DataTypeSend ) ;
+		MPI_Type_create_subarray(dim, grid_array, i1Halo_subarray, i1Halo2_arrayStartSend, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i1Halo2DataTypeSend ) ;
+		MPI_Type_create_subarray(dim, grid_array, i1Halo_subarray, i1Halo1_arrayStartRecv, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i1Halo1DataTypeReceive ) ;
+		MPI_Type_create_subarray(dim, grid_array, i1Halo_subarray, i1Halo2_arrayStartRecv, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i1Halo2DataTypeReceive ) ;
+
+		MPI_Type_commit( &i1Halo1DataTypeSend ) ;
+		MPI_Type_commit( &i1Halo2DataTypeSend ) ;
+		MPI_Type_commit( &i1Halo1DataTypeReceive ) ;
+		MPI_Type_commit( &i1Halo2DataTypeReceive ) ;
+
+	}
+
+	{
+		// create i2Halo1DataType & i2Halo2DataType
+
+		Myint n1PointsHalo, n2PointsHalo, n3PointsHalo ;
+		n1PointsHalo = n1InnerLocal ;
+		n2PointsHalo = haloWidth ;
+		n3PointsHalo = n3InnerLocal ;
+
+		Myint i2Halo_subarray[3] = { n1PointsHalo, n2PointsHalo, n3PointsHalo } ;
+
+		Myint i2Halo1_arrayStartSend[3] = { i1InnerStart, i2InnerStart, i3InnerStart } ;
+		Myint i2Halo2_arrayStartSend[3] = { i1InnerStart, i2Halo2Start - haloWidth, i3InnerStart } ;
+
+		Myint i2Halo1_arrayStartRecv[3] = { haloWidth, i2Halo1Start, haloWidth } ;
+		Myint i2Halo2_arrayStartRecv[3] = { haloWidth, i2Halo2Start, haloWidth } ;
+
+		if(dim <= DIM2){
+			i2Halo_subarray[2] = 0 ;
+			i2Halo1_arrayStartSend[2] = 0 ;
+			i2Halo2_arrayStartSend[2] = 0 ;
+			i2Halo1_arrayStartRecv[2] = 0 ;
+			i2Halo2_arrayStartRecv[2] = 0 ;
+		}
+		if(dim <= DIM1){
+			i2Halo_subarray[1] = 0 ;
+			i2Halo1_arrayStartSend[1] = 0 ;
+			i2Halo2_arrayStartSend[1] = 0 ;
+			i2Halo1_arrayStartRecv[1] = 0 ;
+			i2Halo2_arrayStartRecv[1] = 0 ;
+		}
+
+		printDebug(FULL_DEBUG, "i2Halo1_arrayStartSend[0] i2Halo2_arrayStartSend[0]" , i2Halo1_arrayStartSend[0], i2Halo2_arrayStartSend[0] ) ;
+		printDebug(FULL_DEBUG, "i2Halo1_arrayStartSend[1] i2Halo2_arrayStartSend[1]" , i2Halo1_arrayStartSend[1], i2Halo2_arrayStartSend[1] ) ;
+		printDebug(FULL_DEBUG, "i2Halo1_arrayStartSend[2] i2Halo2_arrayStartSend[2]" , i2Halo1_arrayStartSend[2], i2Halo2_arrayStartSend[2] ) ;
+		printDebug(FULL_DEBUG, "i2Halo1_arrayStartRecv[0] i2Halo2_arrayStartRecv[0]" , i2Halo1_arrayStartRecv[0], i2Halo2_arrayStartRecv[0] ) ;
+		printDebug(FULL_DEBUG, "i2Halo1_arrayStartRecv[1] i2Halo2_arrayStartRecv[1]" , i2Halo1_arrayStartRecv[1], i2Halo2_arrayStartRecv[1] ) ;
+		printDebug(FULL_DEBUG, "i2Halo1_arrayStartRecv[2] i2Halo2_arrayStartRecv[2]" , i2Halo1_arrayStartRecv[2], i2Halo2_arrayStartRecv[2] ) ;
+
+		printDebug(FULL_DEBUG, "i2Halo_subarray[0] grid_array[0]" , i2Halo_subarray[0], grid_array[0] ) ;
+		printDebug(FULL_DEBUG, "i2Halo_subarray[1] grid_array[1]" , i2Halo_subarray[1], grid_array[1] ) ;
+		printDebug(FULL_DEBUG, "i2Halo_subarray[2] grid_array[2]" , i2Halo_subarray[2], grid_array[2] ) ;
+		
+
+		MPI_Type_create_subarray(dim, grid_array, i2Halo_subarray, i2Halo1_arrayStartSend, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i2Halo1DataTypeSend ) ;
+		MPI_Type_create_subarray(dim, grid_array, i2Halo_subarray, i2Halo2_arrayStartSend, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i2Halo2DataTypeSend ) ;
+		MPI_Type_create_subarray(dim, grid_array, i2Halo_subarray, i2Halo1_arrayStartRecv, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i2Halo1DataTypeReceive ) ;
+		MPI_Type_create_subarray(dim, grid_array, i2Halo_subarray, i2Halo2_arrayStartRecv, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i2Halo2DataTypeReceive ) ;
+
+		MPI_Type_commit( &i2Halo1DataTypeSend ) ;
+		MPI_Type_commit( &i2Halo2DataTypeSend ) ;
+		MPI_Type_commit( &i2Halo1DataTypeReceive ) ;
+		MPI_Type_commit( &i2Halo2DataTypeReceive ) ;
+	}
+
+	{
+		// create i3Halo1DataType & i3Halo2DataType
+
+		Myint n1PointsHalo, n2PointsHalo, n3PointsHalo ;
+		n1PointsHalo = n1InnerLocal ;
+		n2PointsHalo = n2InnerLocal ;
+		n3PointsHalo = haloWidth ;
+
+		Myint i3Halo_subarray[3] = { n1PointsHalo, n2PointsHalo, n3PointsHalo } ;
+
+		Myint i3Halo1_arrayStartSend[3] = { i1InnerStart, i2InnerStart, i3InnerStart } ;
+		Myint i3Halo2_arrayStartSend[3] = { i1InnerStart, i2InnerStart, i3Halo2Start - haloWidth } ;
+
+		Myint i3Halo1_arrayStartRecv[3] = { haloWidth, haloWidth, i3Halo1Start } ;
+		Myint i3Halo2_arrayStartRecv[3] = { haloWidth, haloWidth, i3Halo2Start } ;
+
+		if(dim <= DIM2){
+			i3Halo_subarray[2] = 0 ;
+			i3Halo1_arrayStartSend[2] = 0 ;
+			i3Halo2_arrayStartSend[2] = 0 ;
+			i3Halo1_arrayStartRecv[2] = 0 ;
+			i3Halo2_arrayStartRecv[2] = 0 ;
+		}
+		if(dim <= DIM1){
+			i3Halo_subarray[1] = 0 ;
+			i3Halo1_arrayStartSend[1] = 0 ;
+			i3Halo2_arrayStartSend[1] = 0 ;
+			i3Halo1_arrayStartRecv[1] = 0 ;
+			i3Halo2_arrayStartRecv[1] = 0 ;
+		}
+
+		printDebug(FULL_DEBUG, "i3Halo1_arrayStartSend[0] i3Halo2_arrayStartSend[0]" , i3Halo1_arrayStartSend[0], i3Halo2_arrayStartSend[0] ) ;
+		printDebug(FULL_DEBUG, "i3Halo1_arrayStartSend[1] i3Halo2_arrayStartSend[1]" , i3Halo1_arrayStartSend[1], i3Halo2_arrayStartSend[1] ) ;
+		printDebug(FULL_DEBUG, "i3Halo1_arrayStartSend[2] i3Halo2_arrayStartSend[2]" , i3Halo1_arrayStartSend[2], i3Halo2_arrayStartSend[2] ) ;
+		printDebug(FULL_DEBUG, "i3Halo1_arrayStartRecv[0] i3Halo2_arrayStartRecv[0]" , i3Halo1_arrayStartRecv[0], i3Halo2_arrayStartRecv[0] ) ;
+		printDebug(FULL_DEBUG, "i3Halo1_arrayStartRecv[1] i3Halo2_arrayStartRecv[1]" , i3Halo1_arrayStartRecv[1], i3Halo2_arrayStartRecv[1] ) ;
+		printDebug(FULL_DEBUG, "i3Halo1_arrayStartRecv[2] i3Halo2_arrayStartRecv[2]" , i3Halo1_arrayStartRecv[2], i3Halo2_arrayStartRecv[2] ) ;
+
+		printDebug(FULL_DEBUG, "i3Halo_subarray[0] grid_array[0]" , i3Halo_subarray[0], grid_array[0] ) ;
+		printDebug(FULL_DEBUG, "i3Halo_subarray[1] grid_array[1]" , i3Halo_subarray[1], grid_array[1] ) ;
+		printDebug(FULL_DEBUG, "i3Halo_subarray[2] grid_array[2]" , i3Halo_subarray[2], grid_array[2] ) ;
+		
+		MPI_Type_create_subarray(dim, grid_array, i3Halo_subarray, i3Halo1_arrayStartSend, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i3Halo1DataTypeSend ) ;
+		MPI_Type_create_subarray(dim, grid_array, i3Halo_subarray, i3Halo2_arrayStartSend, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i3Halo2DataTypeSend ) ;
+		MPI_Type_create_subarray(dim, grid_array, i3Halo_subarray, i3Halo1_arrayStartRecv, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i3Halo1DataTypeReceive ) ;
+		MPI_Type_create_subarray(dim, grid_array, i3Halo_subarray, i3Halo2_arrayStartRecv, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &i3Halo2DataTypeReceive ) ;
+
+		MPI_Type_commit( &i3Halo1DataTypeSend ) ;
+		MPI_Type_commit( &i3Halo2DataTypeSend ) ;
+		MPI_Type_commit( &i3Halo1DataTypeReceive ) ;
+		MPI_Type_commit( &i3Halo2DataTypeReceive ) ;
+
+	}
+
+	// create a type for local grid
+	innerLocalGridType = createMpiTypeInnerLocalGrid();
+
+	// create a type for global grid
+	innerGlobalGridType = createMpiTypeInnerGlobalGrid();
+
+	printDebug(MID_DEBUG, "OUT Grid::createSubarrays" ) ;
 
 	// allocate grid
 	//--------------
@@ -1056,35 +1242,407 @@ void Grid::info(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid::write(string file_name)
+Rtn_code Grid::write(string fileName)
 {
 	printDebug(LIGHT_DEBUG, "IN Grid::write");
 
-	// each proc write is own file
+	// each proc write its own file
 
 	if (Config::Instance()->writeGrid)
 	{
+		double t0 = MPI_Wtime() ;
+
 		// write grid in binary format
-		string file_name_bin = file_name + ".proc" + to_string(myMpiRank) + ".grid.bin" ;
-		printInfo(MASTER, "* write on disk\t", file_name_bin.c_str());
-		printDebug(LIGHT_DEBUG, "* write on disk\t", file_name_bin.c_str());
+		string fileName_bin = fileName + ".proc" + to_string(myMpiRank) + ".grid.bin" ;
+		printInfo(MASTER, "* write on disk\t", fileName_bin.c_str());
+		printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_bin.c_str());
 		ofstream out_file ;
-		out_file.open(file_name_bin.c_str(), ios::binary | ios::app) ;
+		out_file.open(fileName_bin.c_str(), ios::binary | ios::app) ;
 		assert(out_file.is_open());
 		out_file.write((char*) grid_3d, npoint * sizeof(Myfloat)) ;
 		out_file.close() ;
 
 		// write grid info
-		string file_name_info = file_name + ".proc" + to_string(myMpiRank) + ".grid.info" ;
-		printDebug(LIGHT_DEBUG, "* write on disk\t", file_name_info.c_str());
-		ofstream out_file2(file_name_info) ;
+		string fileName_info = fileName + ".proc" + to_string(myMpiRank) + ".grid.info" ;
+		printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_info.c_str());
+		ofstream out_file2(fileName_info) ;
 		out_file2 << this->n1 << "\n" ;
 		out_file2 << this->n2 << "\n" ;
 		out_file2 << this->n3 << "\n" ;
 		out_file2.close() ;
+
+		double t1 = MPI_Wtime() ;
+		grid_write_time = t1-t0;
+		printInfo(MASTER, "* time to write (s)", t1-t0) ;
+	}
+	else
+	{
+		grid_write_time = 0.0;
+	}
+	
+	printDebug(LIGHT_DEBUG, "OUT Grid::write");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::write(Point_type pointType, string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid::write");
+
+	// each proc write its own file
+
+	if (Config::Instance()->writeGrid)
+	{		
+		// particular case ALL_POINT
+		if (pointType == ALL_POINTS)
+		{
+			this->write(fileName);
+		}
+		else
+		{
+			double t0 = MPI_Wtime() ;
+
+			// write grid in binary format
+			string fileName_bin = fileName + ".proc" + to_string(myMpiRank) + ".grid.bin";
+			printInfo(MASTER, "* write on disk\t", fileName_bin.c_str());
+			printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_bin.c_str());
+			ofstream out_file;
+			out_file.open(fileName_bin.c_str(), ios::binary | ios::app);
+			assert(out_file.is_open());
+
+			// get index range of desired points
+			Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End;
+			getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+			//#pragma omp parallel for collapse(2)
+			Myint64 n1Write = i1End - i1Start + 1;
+			Myint64 n2Write = i2End - i2Start + 1;
+			Myint64 n3Write = i3End - i3Start + 1;
+			for (Myint64 i3 = i3Start; i3 <= i3End; i3++)
+			{
+				for (Myint64 i2 = i2Start; i2 <= i2End; i2++)
+				{
+					// read file and fill grid along n1
+					Myint64 i1 = i1Start;
+					Myint64 idxGrid = i1 + i2 * n1 + i3 * n2 * n1;
+					Myint64 idxFile = 1;
+
+					out_file.write((char *)&grid_3d[idxGrid], n1Write * sizeof(Myfloat));
+				}
+			}
+
+			//out_file.write((char *)grid_3d, npoint * sizeof(Myfloat));
+			out_file.close();
+
+			// write grid info
+			string fileName_info = fileName + ".proc" + to_string(myMpiRank) + ".grid.info";
+			printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_info.c_str());
+			ofstream out_file2(fileName_info);
+			out_file2 << n1Write << "\n";
+			out_file2 << n2Write << "\n";
+			out_file2 << n3Write << "\n";
+			out_file2.close();
+
+			double t1 = MPI_Wtime();
+			printInfo(MASTER, "* time to write (s)", t1 - t0);
+		}
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid::write");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::writeGlobal(Point_type pointType, string fileName, Myint num_iter)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid::writeGlobal");
+
+	// only INNER_POINTS are supported in this version
+	if (pointType != INNER_POINTS)
+	{
+		printError(" In Grid::writeGlobal, pointType != INNER_POINTS") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	// each proc writes its part in one global file
+
+	if (Config::Instance()->writeGrid)
+	{	
+		double t0 = MPI_Wtime() ;
+
+		// write grid in binary format
+		string fileName_bin = fileName + ".global.grid.bin" ;
+		printInfo(MASTER, "* write on disk\t", fileName_bin.c_str());
+		printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_bin.c_str());
+		int status;
+		MPI_File fd_file_bin;
+		MPI_Status mpi_statut;
+		MPI_Info info;
+		MPI_Info_create(&info);
+
+		status=MPI_File_open(MPI_COMM_WORLD, fileName_bin.c_str(), MPI_MODE_WRONLY + MPI_MODE_CREATE + MPI_MODE_APPEND, info, &fd_file_bin);
+		if(status != MPI_SUCCESS)
+		{
+			printError(" In Grid::writeGlobal, error in MPI_File_open") ;
+			return(RTN_CODE_KO) ;			
+		}
+
+		MPI_File_set_errhandler(fd_file_bin, MPI_ERRORS_ARE_FATAL);
+
+
+		// create a view to write the grid inside the file
+
+		long unsigned int initial_offset = sizeof(float) * n1Inner * n2Inner * n3Inner * num_iter;
+		
+		status = MPI_File_set_view(fd_file_bin, initial_offset , MPI_FLOAT, innerGlobalGridType, "native", info);
+		if(status != MPI_SUCCESS)
+		{
+			printError(" In Grid::writeGlobal, error in MPI_File_set_view") ;
+			return(RTN_CODE_KO) ;				
+		}
+		
+		// writing
+
+		status = MPI_File_write_all(fd_file_bin, grid_3d, 1, innerLocalGridType, &mpi_statut);
+		if(status != MPI_SUCCESS)
+		{
+			printError(" In Grid::writeGlobal, error in MPI_File_write_all") ;
+			return(RTN_CODE_KO) ;				
+		}
+
+		MPI_File_close(&fd_file_bin);
+
+
+		// write grid info
+		string fileName_info = fileName + ".global.grid.info" ;
+		printDebug(LIGHT_DEBUG, "* write on disk\t", fileName_info.c_str());
+	
+		if(myMpiRank == 0)
+		{
+			ofstream out_file2(fileName_info) ;
+			out_file2 << Config::Instance()->n1 << "\n" ;
+			out_file2 << Config::Instance()->n2 << "\n" ;
+			out_file2 << Config::Instance()->n3 << "\n" ;
+			out_file2.close() ;
+		}
+
+		double t1 = MPI_Wtime();
+		grid_writeGlobal_time = t1 - t0;
+		printInfo(MASTER, "* time to write (s)", grid_writeGlobal_time);
+	}
+	else
+	{
+		grid_writeGlobal_time = 0.0;
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Grid::writeGlobal");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+MPI_Datatype Grid::createMpiTypeInnerGlobalGrid()
+{
+	printDebug(LIGHT_DEBUG, "IN Grid::createMpiTypeInnerGlobalGrid");
+
+	Myint n1InnerLocal, n2InnerLocal, n3InnerLocal;
+	n1InnerLocal = i1InnerEnd - i1InnerStart + 1 ;
+	n2InnerLocal = i2InnerEnd - i2InnerStart + 1 ;
+	n3InnerLocal = i3InnerEnd - i3InnerStart + 1 ;
+
+	MPI_Datatype type_sous_grid_global;
+	Myint status;
+
+	// Order of indexes follows FORTRAN implementation ..
+	Myint profil_grid_global[3] = {(Myint)n1Inner,(Myint) n2Inner, (Myint)n3Inner};
+	Myint profil_sous_grid_global[3] = {(Myint) n1InnerLocal,(Myint) n2InnerLocal,(Myint) n3InnerLocal};
+	Myint coord_start_global[3] = {(Myint) i1OffsetGlobInner, (Myint) i2OffsetGlobInner, (Myint) i3OffsetGlobInner};
+
+	// if dimensions are smaller than DIM3 we make sure to give 0 to MPI
+	if(dim == DIM1)
+	{
+		profil_grid_global[1] = 0;
+		profil_grid_global[2] = 0;
+		profil_sous_grid_global[1] = 0;
+		profil_sous_grid_global[2] = 0;
+		coord_start_global[1] = 0;	
+		coord_start_global[2] = 0;				
+	}
+	else if(dim == DIM2)
+	{
+		profil_grid_global[2] = 0;
+		profil_sous_grid_global[2] = 0;
+		coord_start_global[2] = 0;								
+	}
+
+	// create mpi type
+	// .. hence MPI_ORDER_FORTRAN here
+	status=MPI_Type_create_subarray(dim, profil_grid_global, profil_sous_grid_global, 
+	coord_start_global, MPI_ORDER_FORTRAN, MPI_FLOAT, &type_sous_grid_global);
+	if(status != MPI_SUCCESS)
+	{		
+		printError("Grid::createMpiTypeInnerGlobalGrid, error in MPI_Type_create_subarray");		
+		MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+	}
+	
+	// commit mpi type
+	MPI_Type_commit(&type_sous_grid_global);
+	if(status != MPI_SUCCESS)
+	{
+		printError("Grid::createMpiTypeInnerGlobalGrid, error in MPI_Type_commit");		
+		MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Grid::createMpiTypeInnerGlobalGrid");
+	return type_sous_grid_global;
+}
+	
+//-------------------------------------------------------------------------------------------------------
+
+MPI_Datatype Grid::createMpiTypeInnerLocalGrid()
+{
+	printDebug(LIGHT_DEBUG, "IN Grid::createMpiTypeInnerLocalGrid");
+
+	Myint n1InnerLocal, n2InnerLocal, n3InnerLocal;
+	n1InnerLocal = i1InnerEnd - i1InnerStart + 1 ;
+	n2InnerLocal = i2InnerEnd - i2InnerStart + 1 ;
+	n3InnerLocal = i3InnerEnd - i3InnerStart + 1 ;
+
+	MPI_Datatype type_sous_grid_local;
+	Myint status;
+
+	// Order of indexes follows FORTRAN implementation ..
+	Myint profil_grid_local[3] = {n1, n2, n3};
+	Myint profil_sous_grid_local[3] = {(Myint) n1InnerLocal, (Myint) n2InnerLocal, (Myint) n3InnerLocal};
+	Myint coord_start[3] = {i1InnerStart, i2InnerStart, i3InnerStart};
+	
+	// if dimensions are smaller than DIM3 we make sure to give 0 to MPI
+	if(dim == DIM1)
+	{
+		profil_grid_local[1] = 0;
+		profil_grid_local[2] = 0;
+		profil_sous_grid_local[1] = 0;
+		profil_sous_grid_local[2] = 0;
+		coord_start[1] = 0;	
+		coord_start[2] = 0;				
+	}
+	else if(dim == DIM2)
+	{
+		profil_grid_local[2] = 0;
+		profil_sous_grid_local[2] = 0;
+		coord_start[2] = 0;								
+	}
+	
+	// create mpi type
+	// .. hence MPI_ORDER_FORTRAN here
+	status=MPI_Type_create_subarray(dim, profil_grid_local, profil_sous_grid_local, coord_start,
+		MPI_ORDER_FORTRAN, MPI_FLOAT, &type_sous_grid_local);
+	if(status != MPI_SUCCESS)
+	{
+		printError("Grid::createMpiTypeInnerLocalGrid, error in MPI_Type_create_subarray");		
+		MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+	}
+
+	// commit mpi type
+	status=MPI_Type_commit(&type_sous_grid_local);
+	if(status != MPI_SUCCESS)
+	{
+		printError("Grid::createMpiTypeInnerLocalGrid, error in MPI_Type_commit");	
+		MPI_Abort(MPI_COMM_WORLD,EXIT_FAILURE);
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Grid::createMpiTypeInnerLocalGrid");
+	return type_sous_grid_local;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::read(string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid::read");
+
+	double t0 = MPI_Wtime() ;
+
+	// read grid in binary format
+	printInfo(MASTER, "* read on disk\t", fileName.c_str());
+	printDebug(LIGHT_DEBUG, "* read on disk\t", fileName.c_str());
+	ifstream out_file;
+	out_file.open(fileName.c_str(), ios::binary);
+	assert(out_file.is_open());
+	out_file.read((char *)grid_3d, npoint * sizeof(Myfloat));
+	out_file.close();
+
+	double t1 = MPI_Wtime();
+	double readTime = t1 - t0 ;
+	printInfo(MASTER, "* read time (s)\t", readTime);
+	printInfo(MASTER, "* read bwth (GB/s)", npoint * sizeof(Myfloat) / readTime / 1e9);
+
+	printDebug(LIGHT_DEBUG, "OUT Grid::read");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::read(Point_type pointType, string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid::read");
+
+	double t0 = MPI_Wtime() ;
+
+	// particular case ALL_POINT
+	if (pointType == ALL_POINTS)
+	{
+		this->read(fileName);
+	}
+	else
+	{
+		// open file in binary format
+		printInfo(MASTER, "* read on disk\t", fileName.c_str());
+		printDebug(LIGHT_DEBUG, "* read on disk\t", fileName.c_str());
+		ifstream out_file;
+		out_file.open(fileName.c_str(), ios::binary);
+		assert(out_file.is_open());
+
+		// get index range of desired points
+		Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End;
+		getGridIndex(pointType, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End);
+
+		//#pragma omp parallel for collapse(2)
+		Myint64 nRead   = i1End - i1Start + 1 ;
+		for (Myint64 i3 = i3Start; i3 <= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2 <= i2End; i2++)
+			{
+				// read file and fill grid along n1
+				Myint64 i2file = i2-i2Start;	
+				Myint64 i3file = i3-i3Start;			
+				Myint64 i1 = i1Start ;
+				Myint64 idxGrid = i1 + i2 * n1 + i3 * n2 * n1;
+				Myint64 idxFile = 1 ;	
+				Myint64 myOffset = sizeof(Myfloat)*
+				(i1OffsetGlobInner + 
+				Config::Instance()->n1 * (i2OffsetGlobInner + i2file) + 
+				Config::Instance()->n1 * Config::Instance()->n2 * (i3OffsetGlobInner + i3file));  
+				
+				out_file.seekg(myOffset, out_file.beg);			
+
+				out_file.read((char *)&grid_3d[idxGrid], nRead * sizeof(Myfloat));
+			}
+		}
+
+		// close file
+		out_file.close();
+
+		double t1 = MPI_Wtime();
+		double readTime = t1 - t0 ;
+		printInfo(MASTER, "* read time (s)\t", readTime);
+		printInfo(MASTER, "* read bwth (GB/s)", npoint * sizeof(Myfloat) / readTime / 1e9);		
+	}	
+
+	printDebug(LIGHT_DEBUG, "OUT Grid::read");
+	return(RTN_CODE_OK) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1730,6 +2288,42 @@ Myfloat Grid::getMax(Point_type pointType)
 
 //-------------------------------------------------------------------------------------------------------
 
+Myfloat Grid::allProcGetMin(Point_type pointType)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid::allProcGetMin");
+
+	Myfloat minLoc, minGlob;
+	minLoc = getMin(pointType);
+
+	MPI_Allreduce(&minLoc, &minGlob, 1, MPI_MYFLOAT, MPI_MIN, MPI_COMM_WORLD);
+
+	printDebug(LIGHT_DEBUG, "Min val", minGlob);
+
+	printDebug(LIGHT_DEBUG, "OUT Grid::allProcGetMin");
+
+	return(minGlob);
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Myfloat Grid::allProcGetMax(Point_type pointType)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid::allProcGetMax");
+
+	Myfloat maxLoc, maxGlob;
+	maxLoc = getMax(pointType);
+
+	MPI_Allreduce(&maxLoc, &maxGlob, 1, MPI_MYFLOAT, MPI_MAX, MPI_COMM_WORLD);
+
+	printDebug(LIGHT_DEBUG, "Max val", maxGlob);
+
+	printDebug(LIGHT_DEBUG, "OUT Grid::allProcGetMax");
+
+	return(maxGlob);
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 Myint Grid::getFlopPerPtFD_D2(Myint fdOrder)
 {
 	printDebug(FULL_DEBUG, "IN Grid::getFlopPerPtFD_D2");
@@ -2010,6 +2604,13 @@ Rtn_code Grid::getGridIndex(Point_type pointType, Myint64* i1Start, Myint64* i1E
 		*i2End   = i2Halo2End ;
 		*i3Start = i3Halo1Start ;
 		*i3End   = i3Halo2End ;
+		// *i1Start = i1OffsetStart ;
+		// *i1End	 = i1PadEnd ;
+		// *i2Start = i2OffsetStart ;
+		// *i2End	 = i2PadEnd ;
+		// *i3Start = i3OffsetStart ;
+		// *i3End	 = i3PadEnd ;		
+
 	}
 	else if (pointType == MIDDLE_POINT)
 	{
@@ -3921,6 +4522,95 @@ Rtn_code Grid::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myint fd
 
 //-------------------------------------------------------------------------------------------------------
 
+Myint Grid::getOffsetGlobal(Axis_type axis)
+{
+	Myint return_value ;
+	if(axis == AXIS1)
+		return_value = i1OffsetGlobInner ;
+	if(axis == AXIS2)
+		return_value = i2OffsetGlobInner ;
+	if(axis == AXIS3)
+		return_value = i3OffsetGlobInner ;
+	
+	return return_value ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+bool Grid::isInMyDomain(Myint64 i1, Myint64 i2, Myint64 i3)
+{
+	// i1,i2,i3 are global
+	printDebug(FULL_DEBUG , " Global i1",i1) ;
+	printDebug(FULL_DEBUG , " Global i2",i2) ;
+	printDebug(FULL_DEBUG , " Global i3",i3) ;
+
+	if( i1OffsetGlobInner <= i1 && i1 <= i1OffsetGlobInner + i1InnerEnd - i1InnerStart  &&
+		i2OffsetGlobInner <= i2 && i2 <= i2OffsetGlobInner + i2InnerEnd - i2InnerStart  &&
+		i3OffsetGlobInner <= i3 && i3 <= i3OffsetGlobInner + i3InnerEnd - i3InnerStart  )
+		return true ;
+	
+	return false ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Myint64 Grid::localToGlobal(Axis_type axis, Myint64 i1)
+{
+	Myint64 val ;
+	if(axis == AXIS1)
+		val = i1 + i1OffsetGlobInner ;
+	if(axis == AXIS2)
+		val = i1 + i2OffsetGlobInner ;
+	if(axis == AXIS3)
+		val = i1 + i3OffsetGlobInner ;
+	return val ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::getGridIndexGlobal(Point_type PointType, Myint64* i1Start, Myint64* i1End,
+			Myint64* i2Start, Myint64* i2End, Myint64* i3Start, Myint64* i3End)
+{
+
+	getGridIndex(PointType, i1Start, i1End, i2Start, i2End, i3Start, i3End);
+	Myint64 i1StartGlobal, i1EndGlobal, i2StartGlobal, i2EndGlobal, i3StartGlobal, i3EndGlobal;
+
+	i1StartGlobal = localToGlobal(AXIS1, *i1Start);
+	i1EndGlobal   = localToGlobal(AXIS1, *i1End);
+	i2StartGlobal = localToGlobal(AXIS2, *i2Start);
+	i2EndGlobal   = localToGlobal(AXIS2, *i2End);
+	i3StartGlobal = localToGlobal(AXIS3, *i3Start);
+	i3EndGlobal   = localToGlobal(AXIS3, *i3End);
+
+	MPI_Allreduce(&i1StartGlobal, i1Start, 1, MPI_LONG, MPI_MIN, MPI_COMM_WORLD);
+	MPI_Allreduce(&i1EndGlobal, i1End, 1, MPI_LONG, MPI_MAX, MPI_COMM_WORLD);
+	MPI_Allreduce(&i2StartGlobal, i2Start, 1, MPI_LONG, MPI_MIN, MPI_COMM_WORLD);
+	MPI_Allreduce(&i2EndGlobal, i2End, 1, MPI_LONG, MPI_MAX, MPI_COMM_WORLD);
+	MPI_Allreduce(&i3StartGlobal, i3Start, 1, MPI_LONG, MPI_MIN, MPI_COMM_WORLD);
+	MPI_Allreduce(&i3EndGlobal, i3End, 1, MPI_LONG, MPI_MAX, MPI_COMM_WORLD);
+	
+	return(RTN_CODE_OK);
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Myint64 Grid::getGlobalnPoints(Axis_type axis)
+{
+	Myint nPoints ;
+
+	if(axis == AXIS1)
+		nPoints = n1Inner ;
+	if(axis == AXIS2)
+		nPoints = n2Inner ;
+	if(axis == AXIS3)
+		nPoints = n3Inner ;
+			
+	return (nPoints) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 Rtn_code Grid::sendWithMPI(Myint64 nGridPoint, Myint procDestId)
 {
 
@@ -3973,5 +4663,61 @@ Rtn_code Grid::sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idRecv,
 	printDebug(FULL_DEBUG, "Out Grid::sendRecvWithMPI") ;
 	return(RTN_CODE_OK) ;
 }
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::myExchangeAll_halos()
+{
+	// for each process, send to your neighbours your halo and receive yours from them
+	
+	MPI_Status status;
+	
+	//sendrecv AXIS1
+
+	//to neighbour Start i1Halo1
+	if(i1ProcIdStart != MPI_PROC_NULL)
+	MPI_Sendrecv(grid_3d, 1, i1Halo1DataTypeSend , i1ProcIdStart, SENDRECVI1HALO1, //tag=2
+		grid_3d, 1, i1Halo1DataTypeReceive, i1ProcIdStart, SENDRECVI1HALO2, //tag = 1
+		MPI_COMM_WORLD, &status);
+
+	//to neighbour End i1Halo2
+	if(i1ProcIdEnd != MPI_PROC_NULL)
+	MPI_Sendrecv(grid_3d, 1, i1Halo2DataTypeSend, i1ProcIdEnd, SENDRECVI1HALO2, //tag =1
+		grid_3d, 1, i1Halo2DataTypeReceive, i1ProcIdEnd, SENDRECVI1HALO1, //tag=2
+		MPI_COMM_WORLD, &status);
+
+	//sendrecv AXIS2
+	
+	//to neighbour Start i2Halo1
+	if(i2ProcIdStart != MPI_PROC_NULL)
+	MPI_Sendrecv(grid_3d, 1, i2Halo1DataTypeSend, i2ProcIdStart, SENDRECVI2HALO1,
+		grid_3d, 1, i2Halo1DataTypeReceive, i2ProcIdStart, SENDRECVI2HALO2,
+		MPI_COMM_WORLD, &status);
+	
+	//to neighbour End i2Halo2
+	if(i2ProcIdEnd != MPI_PROC_NULL)
+		MPI_Sendrecv(grid_3d,1, i2Halo2DataTypeSend, i2ProcIdEnd, SENDRECVI2HALO2,
+			grid_3d, 1, i2Halo2DataTypeReceive, i2ProcIdEnd, SENDRECVI2HALO1,
+			MPI_COMM_WORLD, &status);
+
+	//sendrecv AXIS3
+	
+	//to neighbour Start i3Halo1
+	if(i3ProcIdStart != MPI_PROC_NULL)
+	MPI_Sendrecv(grid_3d,1, i3Halo1DataTypeSend, i3ProcIdStart, SENDRECVI3HALO1,
+		grid_3d, 1, i3Halo1DataTypeReceive, i3ProcIdStart, SENDRECVI3HALO2,
+		MPI_COMM_WORLD, &status);
+	
+	//to neighbour End i3Halo2
+	if(i3ProcIdEnd != MPI_PROC_NULL)
+	MPI_Sendrecv(grid_3d,1, i3Halo2DataTypeSend, i3ProcIdEnd, SENDRECVI3HALO2,
+		grid_3d, 1, i3Halo2DataTypeReceive, i3ProcIdEnd, SENDRECVI3HALO1,
+		MPI_COMM_WORLD, &status);
+
+	
+	return (RTN_CODE_OK);
+}
+
+
 
 } // namespace hpcscan

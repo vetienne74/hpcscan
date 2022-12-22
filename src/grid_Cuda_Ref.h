@@ -41,7 +41,22 @@ public:
 	virtual void info(void) ;
 
 	// write grid on disk
-	virtual void write(string) ;
+	virtual Rtn_code write(string) ;
+
+	// write appropriate part of the local grid on disk
+	// each proc writes its own part in a separated file
+	virtual Rtn_code write(Point_type pointType, string) ;
+
+	// write appropriate part of the global grid on disk 
+	// each proc writes its own part in a global file
+	// NOTE: only point type INNER_POINTS is supported in this version
+	virtual Rtn_code writeGlobal(Point_type pointType, string fileName, Myint n_iter) ;	
+
+	// read grid values from disk
+	virtual Rtn_code read(string) ;
+
+	// read grid values from disk and fill appropriate part of the grid
+	virtual Rtn_code read(Point_type pointType, string) ;
 
 	// compute FD_D2 along N1
 	virtual Rtn_code FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;

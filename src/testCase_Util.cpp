@@ -8,6 +8,7 @@
 #include "testCase_Util.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cfloat>
 
 #include <mpi.h>
@@ -15,6 +16,7 @@
 
 #include "config.h"
 #include "constant.h"
+#include "data_Acquisition_Factory.h"
 #include "fdm.h"
 #include "global.h"
 #include "grid_Factory.h"
@@ -602,6 +604,238 @@ Rtn_code TestCase_Util::run(void)
 
 		auto fdOrder = Config::Instance()->fdOrder ;
 		checkFloatDiff(0.0, getSumFD_D2Coef(fdOrder), MAX_ERR_FLOAT) ;
+	}
+
+	{
+		//-------------------------------------
+		// check write and read grid from disk
+		// write GRID_GLOBAL ALL_POINTS
+		// read GRID_GLOBAL ALL_POINTS
+		//-------------------------------------
+		if (Config::Instance()->writeGrid)
+		{
+			print_blank();
+			string caseName = testCaseName + "WriteReadAllPointsGlobalGrid";
+			printInfo(MASTER, " * Case", caseName);
+
+			// create global grid and write on disk
+			auto gridGlobWrite2 = Grid_Factory::create(gridMode, GRID_GLOBAL);
+			Grid &gridGlobWrite = *gridGlobWrite2;
+			gridGlobWrite.initializeGrid();
+			gridGlobWrite.defineUnitGrid();
+			Myfloat amp = 999.0;
+			gridGlobWrite.fill(ALL_POINTS, FUNC_LINEAR, FUNC_LINEAR, FUNC_LINEAR, 0.0, 0.0, 0.0, amp);
+			gridGlobWrite.write(ALL_POINTS, caseName + "Out");
+
+			// read grid from disk
+			auto gridGlobRead2 = Grid_Factory::create(gridMode, GRID_GLOBAL);
+			Grid &gridGlobRead = *gridGlobRead2;
+			gridGlobRead.initializeGrid();
+			gridGlobRead.defineUnitGrid();
+			MPI_Barrier(MPI_COMM_WORLD) ;
+			gridGlobRead.read(ALL_POINTS, "UtilWriteReadAllPointsGlobalGridOut.proc0.grid.bin");
+
+			// check grids are identical
+			//checkAllProcGridL1Err(ALL_POINTS, gridGlobWrite, gridGlobRead, MAX_ERR_FLOAT);
+			checkGridL1Err(ALL_POINTS, gridGlobWrite, gridGlobRead, MAX_ERR_FLOAT);
+		}
+	}
+
+	{
+		//-------------------------------------
+		// check write and read grid from disk
+		// write GRID_GLOBAL INNER_POINTS
+		// read GRID_GLOBAL INNER_POINTS
+		//-------------------------------------
+		if (Config::Instance()->writeGrid)
+		{
+			print_blank();
+			string caseName = testCaseName + "WriteReadInnerPointsGlobalGrid";
+			printInfo(MASTER, " * Case", caseName);
+
+			// create global grid and write on disk
+			auto gridGlobWrite2 = Grid_Factory::create(gridMode, GRID_GLOBAL);
+			Grid &gridGlobWrite = *gridGlobWrite2;
+			gridGlobWrite.initializeGrid();
+			gridGlobWrite.defineUnitGrid();
+			Myfloat amp = 999.0;
+			gridGlobWrite.fill(INNER_POINTS, FUNC_LINEAR, FUNC_LINEAR, FUNC_LINEAR, 0.0, 0.0, 0.0, amp);
+			gridGlobWrite.write(INNER_POINTS, caseName + "Out");
+
+			// read grid from disk
+			auto gridGlobRead2 = Grid_Factory::create(gridMode, GRID_GLOBAL);
+			Grid &gridGlobRead = *gridGlobRead2;
+			gridGlobRead.initializeGrid();
+			gridGlobRead.defineUnitGrid();
+			MPI_Barrier(MPI_COMM_WORLD) ;
+			gridGlobRead.read(INNER_POINTS, "UtilWriteReadInnerPointsGlobalGridOut.proc0.grid.bin");
+
+			// check grids are identical
+			//checkAllProcGridL1Err(INNER_POINTS, gridGlobWrite, gridGlobRead, MAX_ERR_FLOAT);
+			checkGridL1Err(INNER_POINTS, gridGlobWrite, gridGlobRead, MAX_ERR_FLOAT);
+		}
+	}
+
+	{
+		//-------------------------------------
+		// check read grid from disk		
+		// read GRID_LOCAL INNER_POINTS
+		//-------------------------------------
+		if (Config::Instance()->writeGrid)
+		{
+			print_blank();
+			string caseName = testCaseName + "ReadInnerPointsLocalGrid";
+			printInfo(MASTER, " * Case", caseName);
+
+			// create local grid (reference grid)
+			auto gridLocRef2 = Grid_Factory::create(gridMode, GRID_LOCAL);
+			Grid &gridLocRef = *gridLocRef2;
+			gridLocRef.initializeGrid();
+			gridLocRef.defineUnitGrid();
+			Myfloat amp = 999.0;
+			gridLocRef.fill(INNER_POINTS, FUNC_LINEAR, FUNC_LINEAR, FUNC_LINEAR, 0.0, 0.0, 0.0, amp);
+			gridLocRef.write(INNER_POINTS, caseName + "Out");
+
+			// read grid from disk (output from previous test case)
+			auto gridLocRead2 = Grid_Factory::create(gridMode, GRID_LOCAL);
+			Grid &gridLocRead = *gridLocRead2;
+			gridLocRead.initializeGrid();
+			gridLocRead.defineUnitGrid();
+			MPI_Barrier(MPI_COMM_WORLD) ;
+			gridLocRead.read(INNER_POINTS, "UtilWriteReadInnerPointsGlobalGridOut.proc0.grid.bin");
+
+			// check grids are identical
+			checkAllProcGridL1Err(INNER_POINTS, gridLocRef, gridLocRead, MAX_ERR_FLOAT);
+		}
+	}
+
+	{
+		//-------------------------------------
+		// check write grid from disk		
+		// write GRID_LOCAL INNER_POINTS
+		//-------------------------------------
+		if (Config::Instance()->writeGrid)
+		{
+			print_blank();
+			string caseName = testCaseName + "WriteInnerPointsLocalGrid";
+			printInfo(MASTER, " * Case", caseName);
+
+			// create local grid
+			auto gridLocWrite2 = Grid_Factory::create(gridMode, GRID_LOCAL);
+			Grid &gridLocWrite = *gridLocWrite2;
+			gridLocWrite.initializeGrid();
+			gridLocWrite.defineUnitGrid();
+			Myfloat amp = 999.0;
+			gridLocWrite.fill(INNER_POINTS, FUNC_LINEAR, FUNC_LINEAR, FUNC_LINEAR, 0.0, 0.0, 0.0, amp);
+			
+			// write global grid
+			gridLocWrite.writeGlobal(INNER_POINTS, caseName + "Out", 0);
+
+			// read grid from disk
+			auto gridLocRead2 = Grid_Factory::create(gridMode, GRID_LOCAL);
+			Grid &gridLocRead = *gridLocRead2;
+			gridLocRead.initializeGrid();
+			gridLocRead.defineUnitGrid();
+			MPI_Barrier(MPI_COMM_WORLD) ;
+			gridLocRead.read(INNER_POINTS, "UtilWriteInnerPointsLocalGridOut.global.grid.bin");
+
+			// check grids are identical
+			checkAllProcGridL1Err(INNER_POINTS, gridLocWrite, gridLocRead, MAX_ERR_FLOAT);
+		}
+	}
+
+	//-------------------
+	// check Acquisition
+	//-------------------
+	if (Config::Instance()->writeGrid)
+	{		
+		print_blank();
+		string caseName = testCaseName + "Acquisition";
+		printInfo(MASTER, " * Case", caseName);
+
+		// create grid
+		auto grid2 = Grid_Factory::create(gridMode, GRID_LOCAL);
+		Grid &grid = *grid2;
+		grid.initializeGrid();
+		grid.defineUnitGrid();
+		Myfloat amp = 999.0;
+		grid.fill(INNER_POINTS, amp);
+
+		// create acquisition
+		auto acqui2 = DataAcquisition_Factory::create(gridMode) ;		
+		DataAcquisition &acqui = *acqui2 ;
+		Myint nt = Config::Instance()->nt ;
+		acqui.initialize(ACQUI_BUILTIN, grid, nt) ;
+
+		// loop over nt
+		for (Myint it=0; it<nt; it++)
+		{
+			// record trace
+			acqui.recordTrace(grid, FORWARD, it, 1.0) ;
+		}
+
+		// write traces
+		acqui.writeTrace(caseName);
+		MPI_Barrier(MPI_COMM_WORLD);
+
+		//------------------
+		// check file size
+		//------------------
+
+		if (myMpiRank == 0)
+		{
+
+			// get size of trace file
+			ifstream in_file;
+			string file_in = caseName + ".trace.bin";
+			in_file.open(file_in.c_str(), ios::binary);
+			assert(in_file.is_open());
+			in_file.seekg(0, ios_base::end);
+			Myint64 inFileSize = in_file.tellg();
+			
+
+			// read header
+			ifstream in_file2(caseName + ".trace.info");
+			assert(in_file2.is_open());
+			Myint n1, n2, n3;
+			in_file2 >> n1;
+			in_file2 >> n2;
+			in_file2 >> n3;
+			in_file2.close();
+			printDebug(MID_DEBUG, " Trace Header n1", n1);
+			printDebug(MID_DEBUG, " Trace Header n2", n2);
+			printDebug(MID_DEBUG, " Trace Header n3", n3);
+			Myint64 expectedFileSize = n1 * n2 * sizeof(Myfloat);
+
+			printInfo(MASTER, " File size on disk", inFileSize);
+			printInfo(MASTER, " File size from header", expectedFileSize);
+			checkIntegerDiff(inFileSize, expectedFileSize);
+
+			//---------------------------
+			// check content of the file
+			//---------------------------
+			in_file.seekg(0, ios_base::beg);
+			Myfloat* valInFile = new Myfloat[n1*n2*n3] ;
+			in_file.read((char *)valInFile, sizeof(Myfloat) * n1*n2*n3) ;
+			in_file.close();
+
+			// get max diff between values in file and expected values
+
+			Myfloat maxAbsErr = 0 ;
+			for (Myint64 i3 = 0; i3 < n3; i3++)
+			{
+				for (Myint64 i2 = 0; i2 < n2; i2++)
+				{
+					for (Myint64 i1 = 0; i1 < n1; i1++)
+					{
+						Myint64 ii = i1 + i2*n1 + i3*(n1*n2) ;
+						if (fabs(valInFile[ii] - amp) > maxAbsErr) maxAbsErr = fabs(valInFile[ii] - amp) ;
+					}
+				}
+			}
+			printDebug(MID_DEBUG, "maxErr", maxAbsErr) ;
+			checkFloatDiff(maxAbsErr, 0.0, MAX_ERR_FLOAT) ;
+		}
 	}
 
 	this->finalize() ;

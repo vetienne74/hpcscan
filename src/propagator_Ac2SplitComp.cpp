@@ -53,6 +53,10 @@ Rtn_code Propagator_Ac2SplitComp::initialize(PropaInit_type propaInitType)
 	{
 		laplaGrid->defineUnitGrid() ;
 	}
+	else if (propaInitType == MODELING){
+		// Nothing to do
+		// laplaGrid->defineUnitGrid() ; ?? maybe ??
+	}
 	else
 	{
 		printError("In Propagator_Ac2SplitComp::initialize, propaInitType not supported", propaInitType) ;

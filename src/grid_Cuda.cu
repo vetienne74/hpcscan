@@ -2116,23 +2116,84 @@ void Grid_Cuda::info(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-void Grid_Cuda::write(string file_name)
+Rtn_code Grid_Cuda::write(string fileName)
 {
-	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::write");
-
-	// each proc write is own file
+	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::write");	
 
 	if (Config::Instance()->writeGrid)
 	{
 		// copy grid from device to host
 		copyGridDeviceToHost(ALL_POINTS) ;
 
-		Grid::write(file_name) ;
+		Grid::write(fileName) ;
 	}
 
 	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::write");
+	return(RTN_CODE_OK) ;
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Cuda::write(Point_type pointType, string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::write");
+
+	if (Config::Instance()->writeGrid)
+	{
+		// copy grid from device to host
+		copyGridDeviceToHost(pointType) ;
+
+		Grid::write(pointType, fileName) ;
+	}
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::write");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Cuda::writeGlobal(Point_type pointType, string fileName, Myint num_iter)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::writeGlobal");
+
+	// copy grid from device to host
+	copyGridDeviceToHost(pointType);
+	
+	Grid::writeGlobal(pointType, fileName, num_iter) ;
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::writeGlobal");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Cuda::read(string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::read");
+
+	Grid::read(fileName) ;
+
+	// copy grid from host to device
+	copyGridHostToDevice(ALL_POINTS) ;
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::read");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid_Cuda::read(Point_type pointType, string fileName)
+{
+	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::read");
+
+	Grid::read(pointType, fileName) ;
+
+	// copy grid from host to device
+	copyGridHostToDevice(pointType) ;
+
+	printDebug(LIGHT_DEBUG, "OUT Grid_Cuda::read");
+	return(RTN_CODE_OK) ;
+}
 
 //-------------------------------------------------------------------------------------------------------
 

@@ -34,21 +34,25 @@ static const string    DEFAULT_BOUNDARY       = "FreeSurf" ;
 static const Myint     DEFAULT_CB1            = 9999 ;
 static const Myint     DEFAULT_CB2            = 4 ;
 static const Myint     DEFAULT_CB3            = 16 ;
+static const Myfloat64 DEFAULT_D1             = PI / 30 ;
+static const Myfloat64 DEFAULT_D2             = PI / 30 ;
+static const Myfloat64 DEFAULT_D3             = PI / 30 ;
 static const Dim_type  DEFAULT_DIM            = DIM3 ;
 static const string    DEFAULT_DPCPP_SELECTOR = "Host" ;
 static const Myfloat64 DEFAULT_DT             = 0.0 ; // stable dt will be used
 static const Myint     DEFAULT_FD_ORDER       = 8 ;
+static const Myfloat64 DEFAULT_FREQ_MAX       = 25.0 ; // for testCase Modeling
 static const Myint     DEFAULT_GPU_BLKSIZE    = 256 ;
 static const Myint     DEFAULT_GPU_BLKSIZE1   = 32 ;
 static const Myint     DEFAULT_GPU_BLKSIZE2   = 2 ;
 static const Myint     DEFAULT_GPU_BLKSIZE3   = 16 ;
 static const Myint     DEFAULT_GPU_GRIDSIZE   = 512 ;
 static const bool      DEFAULT_GPU_MPI_AWARE  = false ;
-static const Myfloat64 DEFAULT_H              = PI / 30 ;
 static const Myfloat64 DEFAULT_HW_COUNTER_DT  = 0 ; // no update hardware counters
 static const Myint     DEFAULT_INNER_N1       = 61 ;
 static const Myint     DEFAULT_INNER_N2       = 61 ;
 static const Myint     DEFAULT_INNER_N3       = 61 ;
+static const string    DEFAULT_MODEL_VP_FILE  = "UNSPECIFIED" ;
 static const Myint     DEFAULT_N1_ADD_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N2_ADD_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N3_ADD_PAD     = UNSPECIFIED ;
@@ -112,18 +116,22 @@ Config::Config(void)
 	cb1          = DEFAULT_CB1 ;
 	cb2          = DEFAULT_CB2 ;
 	cb3          = DEFAULT_CB3 ;
+	d1           = DEFAULT_D1 ;
+	d2           = DEFAULT_D2 ;
+	d3           = DEFAULT_D3 ;
 	dim          = DEFAULT_DIM ;
 	dt           = DEFAULT_DT ;
 	dpcppSelect  = DEFAULT_DPCPP_SELECTOR ;
 	fdOrder      = DEFAULT_FD_ORDER ;
+	freqMax      = DEFAULT_FREQ_MAX ;
 	gpuBlkSize   = DEFAULT_GPU_BLKSIZE ;
 	gpuBlkSize1  = DEFAULT_GPU_BLKSIZE1 ;
 	gpuBlkSize2  = DEFAULT_GPU_BLKSIZE2 ;
 	gpuBlkSize3  = DEFAULT_GPU_BLKSIZE3 ;
 	gpuGridSize  = DEFAULT_GPU_GRIDSIZE ;
-	gpuMpiAware  = DEFAULT_GPU_MPI_AWARE ;
-	h            = DEFAULT_H ;
-	hwCounterDt  = DEFAULT_HW_COUNTER_DT ;
+	gpuMpiAware  = DEFAULT_GPU_MPI_AWARE ;	
+	hwCounterDt  = DEFAULT_HW_COUNTER_DT ;	
+	modelVpFile  = DEFAULT_MODEL_VP_FILE ;
 	n1           = DEFAULT_INNER_N1 ;
 	n2           = DEFAULT_INNER_N2 ;
 	n3           = DEFAULT_INNER_N3 ;
@@ -178,83 +186,89 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 		else if ((argc == 1) || (string(argv[ii]) == "-help") || (string(argv[ii]) == "-h"))
 		{
 			printInfo(MASTER, " List of command line parameters:") ;
-			printInfo(MASTER, " -autoPad             = automatic grid padding on all axis") ;
+			printInfo(MASTER, " -autoPad              = automatic grid padding on all axis") ;
 			printInfo(MASTER, "     (if specified autoPad overrides all other padding options)") ;
-			printInfo(MASTER, " -boundary <string>   = boundary condition type") ;
-			printInfo(MASTER, "     FreeSurf         * Free surface (DEFAULT)") ;
-			printInfo(MASTER, "     None             * No boundary condition") ;
-			printInfo(MASTER, " -cb1 <int>           = cache block size axis 1 [grid pts]") ;
-			printInfo(MASTER, " -cb2 <int>           = cache block size axis 2 [grid pts]") ;
-			printInfo(MASTER, " -cb3 <int>           = cache block size axis 3 [grid pts}") ;
-			printInfo(MASTER, " -debug <OPT>         = debug trace [OPT=none/light/mid/full]") ;
-			printInfo(MASTER, " -dim <int>           = space dimension [1,2 or 3]") ;
-			printInfo(MASTER, " -dpcppSelect <char>  = device selector for DPC++") ;
-			printInfo(MASTER, "     Host             * Launch kernels on Host (DEFAULT)") ;
-			printInfo(MASTER, "     CPU              * Launch kernels on CPU") ;
-			printInfo(MASTER, "     GPU              * Launch kernels on GPU") ;
-			printInfo(MASTER, "     FPGA             * Launch kernels on FPGA") ;
-			printInfo(MASTER, " -dt <float>          = time step (s) for propagator") ;
-			printInfo(MASTER, " -fdOrder <int>       = spatial FD order [2,4,6,8,10,12,14 or 16]") ;
-			printInfo(MASTER, " -gpuBlkSize <int>    = GPU, no. of threads / 1D block ") ;
-			printInfo(MASTER, " -gpuBlkSize1 <int>   = GPU, no. of threads / 3D block axis 1") ;
-			printInfo(MASTER, " -gpuBlkSize2 <int>   = GPU, no. of threads / 3D block axis 2") ;
-			printInfo(MASTER, " -gpuBlkSize3 <int>   = GPU, no. of threads / 3D block axis 3") ;
-			printInfo(MASTER, " -gpuGridSize <int>   = GPU, no. of 1D blocks per grid") ;
-			printInfo(MASTER, " -gpuMpiAware         = use MPI GPU-aware library") ;
-			printInfo(MASTER, " -help or -h          = list of command line parameters") ;
-			printInfo(MASTER, " -hwCounterDt <float> = time (s) between hardware counter update (DEFAULT 0=no update)") ;
-			printInfo(MASTER, " -n1 <int>            = inner domain size axis 1 [grid pts]") ;
-			printInfo(MASTER, " -n2 <int>            = inner domain size axis 2 [grid pts]") ;
-			printInfo(MASTER, " -n3 <int>            = inner domain size axis 3 [grid pts]") ;
-			printInfo(MASTER, " -n1AddPad <int>      = add N points to grid at the end of axis 1") ;
-			printInfo(MASTER, " -n2AddPad <int>      = add N points to grid at the end of axis 2") ;
-			printInfo(MASTER, " -n3AddPad <int>      = add N points to grid at the end of axis 3") ;
-			printInfo(MASTER, " -n1MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N") ;
-			printInfo(MASTER, " -n2MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N") ;
-			printInfo(MASTER, " -n3MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N") ;
-			printInfo(MASTER, " -n1Offset <int>      = add N points to grid at the beginning of axis 1") ;
-			printInfo(MASTER, " -n2Offset <int>      = add N points to grid at the beginning of axis 2") ;
-			printInfo(MASTER, " -n3Offset <int>      = add N points to grid at the beginning of axis 3") ;
-			printInfo(MASTER, " -nsub1 <int>         = no. of subdomains axis 1") ;
-			printInfo(MASTER, " -nsub2 <int>         = no. of subdomains axis 2") ;
-			printInfo(MASTER, " -nsub3 <int>         = no. of subdomains axis 3") ;
-			printInfo(MASTER, " -nt <int>            = no. of time steps for propagator") ;
-			printInfo(MASTER, " -ntry <int>          = no. of tries for each testCase") ;
-			printInfo(MASTER, " -param1 <float>      = parameter 1 used in testCases") ;
-			printInfo(MASTER, " -param2 <float>      = parameter 2 used in testCases") ;
-			printInfo(MASTER, " -param3 <float>      = parameter 3 used in testCases") ;
-			printInfo(MASTER, " -param4 <float>      = parameter 4 used in testCases") ;
-			printInfo(MASTER, " -propagator <string> = propagator type") ;
-			printInfo(MASTER, "     Ac2Standard      * Acoustic 2nd Standard (DEFAULT)") ;
-			printInfo(MASTER, "     Ac2SplitComp     * Acoustic 2nd Separate Laplacian computation") ;
-			printInfo(MASTER, " -ratioCFL <float>    = ratio of stability dt for propagator") ;
-			printInfo(MASTER, " -snapDt <float>      = snaphots increment (time in sec.)") ;
+			printInfo(MASTER, " -boundary <string>    = boundary condition type") ;
+			printInfo(MASTER, "     FreeSurf          * Free surface (DEFAULT)") ;
+			printInfo(MASTER, "     None              * No boundary condition") ;
+			printInfo(MASTER, " -cb1 <int>            = cache block size axis 1 [grid pts]") ;
+			printInfo(MASTER, " -cb2 <int>            = cache block size axis 2 [grid pts]") ;
+			printInfo(MASTER, " -cb3 <int>            = cache block size axis 3 [grid pts}") ;
+			printInfo(MASTER, " -d1 <float>           = grid spacing (m) axis 1") ;
+			printInfo(MASTER, " -d2 <float>           = grid spacing (m) axis 2") ;
+			printInfo(MASTER, " -d3 <float>           = grid spacing (m) axis 3") ;
+			printInfo(MASTER, " -debug <OPT>          = debug trace [OPT=none/light/mid/full]") ;
+			printInfo(MASTER, " -dim <int>            = space dimension [1,2 or 3]") ;
+			printInfo(MASTER, " -dpcppSelect <string> = device selector for DPC++") ;
+			printInfo(MASTER, "     Host              * Launch kernels on Host (DEFAULT)") ;
+			printInfo(MASTER, "     CPU               * Launch kernels on CPU") ;
+			printInfo(MASTER, "     GPU               * Launch kernels on GPU") ;
+			printInfo(MASTER, "     FPGA              * Launch kernels on FPGA") ;
+			printInfo(MASTER, " -dt <float>           = time step (s) for propagator") ;
+			printInfo(MASTER, " -fdOrder <int>        = spatial FD order [2,4,6,8,10,12,14 or 16]") ;
+			printInfo(MASTER, " -freqMax <float>      = maximum frequency (Hz) for modeling") ;
+			printInfo(MASTER, " -gpuBlkSize <int>     = GPU, no. of threads / 1D block ") ;
+			printInfo(MASTER, " -gpuBlkSize1 <int>    = GPU, no. of threads / 3D block axis 1") ;
+			printInfo(MASTER, " -gpuBlkSize2 <int>    = GPU, no. of threads / 3D block axis 2") ;
+			printInfo(MASTER, " -gpuBlkSize3 <int>    = GPU, no. of threads / 3D block axis 3") ;
+			printInfo(MASTER, " -gpuGridSize <int>    = GPU, no. of 1D blocks per grid") ;
+			printInfo(MASTER, " -gpuMpiAware          = use MPI GPU-aware library") ;
+			printInfo(MASTER, " -help or -h           = list of command line parameters") ;
+			printInfo(MASTER, " -hwCounterDt <float>  = time (s) between hardware counter update (DEFAULT 0=no update)") ;			
+			printInfo(MASTER, " -modelVpFile <string> = path/name of Vp file (P-wave velocity m/s)") ;
+			printInfo(MASTER, " -n1 <int>             = inner domain size axis 1 [grid pts]") ;
+			printInfo(MASTER, " -n2 <int>             = inner domain size axis 2 [grid pts]") ;
+			printInfo(MASTER, " -n3 <int>             = inner domain size axis 3 [grid pts]") ;
+			printInfo(MASTER, " -n1AddPad <int>       = add N points to grid at the end of axis 1") ;
+			printInfo(MASTER, " -n2AddPad <int>       = add N points to grid at the end of axis 2") ;
+			printInfo(MASTER, " -n3AddPad <int>       = add N points to grid at the end of axis 3") ;
+			printInfo(MASTER, " -n1MulPad <int>       = add some points to grid at end of axis 1 to be multiple of N") ;
+			printInfo(MASTER, " -n2MulPad <int>       = add some points to grid at end of axis 1 to be multiple of N") ;
+			printInfo(MASTER, " -n3MulPad <int>       = add some points to grid at end of axis 1 to be multiple of N") ;
+			printInfo(MASTER, " -n1Offset <int>       = add N points to grid at the beginning of axis 1") ;
+			printInfo(MASTER, " -n2Offset <int>       = add N points to grid at the beginning of axis 2") ;
+			printInfo(MASTER, " -n3Offset <int>       = add N points to grid at the beginning of axis 3") ;
+			printInfo(MASTER, " -nsub1 <int>          = no. of subdomains axis 1") ;
+			printInfo(MASTER, " -nsub2 <int>          = no. of subdomains axis 2") ;
+			printInfo(MASTER, " -nsub3 <int>          = no. of subdomains axis 3") ;
+			printInfo(MASTER, " -nt <int>             = no. of time steps for propagator") ;
+			printInfo(MASTER, " -ntry <int>           = no. of tries for each testCase") ;
+			printInfo(MASTER, " -param1 <float>       = parameter 1 used in testCases") ;
+			printInfo(MASTER, " -param2 <float>       = parameter 2 used in testCases") ;
+			printInfo(MASTER, " -param3 <float>       = parameter 3 used in testCases") ;
+			printInfo(MASTER, " -param4 <float>       = parameter 4 used in testCases") ;
+			printInfo(MASTER, " -propagator <string>  = propagator type") ;
+			printInfo(MASTER, "     Ac2Standard       * Acoustic 2nd Standard (DEFAULT)") ;
+			printInfo(MASTER, "     Ac2SplitComp      * Acoustic 2nd Separate Laplacian computation") ;
+			printInfo(MASTER, " -ratioCFL <float>     = ratio of stability dt for propagator") ;
+			printInfo(MASTER, " -snapDt <float>       = snaphots increment (time in sec.)") ;
 			printInfo(MASTER, "     (if specified snapDt overrides snapInc)") ;
-			printInfo(MASTER, " -snapInc <int>       = snaphots increment (no. of time steps)") ;
-			printInfo(MASTER, " -testCase <string>   = run specific testCase by name") ;
-			printInfo(MASTER, "     All              * All test cases (DEFAULT)") ;
-			printInfo(MASTER, "     Comm             * MPI communication") ;
-			printInfo(MASTER, "     FD_D2            * Finite-difference computation") ;
-			printInfo(MASTER, "     Grid             * Grid operation") ;
-			printInfo(MASTER, "     Memory           * Memory") ;
-			printInfo(MASTER, "     Propa            * Propagator") ;
-			printInfo(MASTER, "     Util             * Utility for developers") ;
-			printInfo(MASTER, " -testMode <string>   = test mode") ;
-			printInfo(MASTER, "     Baseline         * Generic CPU reference implementation (DEFAULT test mode)") ;
-			printInfo(MASTER, "     CacheBlk         * Generic CPU optimized with cache blocking techniques") ;
-			printInfo(MASTER, "     CUDA             * NVIDIA GPU CUDA regular implementation") ;
-			printInfo(MASTER, "     CUDA_Opt         * NVIDIA GPU CUDA optimized implementation") ;
-			printInfo(MASTER, "     CUDA_ref         * NVIDIA GPU CUDA reference implementation (for developers)") ;
-			printInfo(MASTER, "     DPC++            * Intel CPU/GPU/FPGA regular DPC++ implementation") ;
-			printInfo(MASTER, "     HIP              * AMD GPU HIP regular implementation") ;
-			printInfo(MASTER, "     HIP_Opt          * AMD GPU HIP optimized implementation") ;
-			printInfo(MASTER, "     NEC              * NEC SX-Aurora with NEC compiler directives") ;
-			printInfo(MASTER, "     NEC_SCA          * NEC SX-Aurora with NEC Stencil Code Accelerator Library") ;
-//			printInfo(MASTER, "     OpenAcc          * GPU with OpenAcc without optimization") ;
-			printInfo(MASTER, " -tmax <float>        = max. time (s) for propagator") ;
+			printInfo(MASTER, " -snapInc <int>        = snaphots increment (no. of time steps)") ;
+			printInfo(MASTER, " -testCase <string>    = run specific testCase by name") ;
+			printInfo(MASTER, "     All               * All test cases (DEFAULT)") ;
+			printInfo(MASTER, "     Comm              * MPI communication") ;
+			printInfo(MASTER, "     FD_D2             * Finite-difference computation") ;
+			printInfo(MASTER, "     Grid              * Grid operation") ;
+			printInfo(MASTER, "     Memory            * Memory") ;
+			printInfo(MASTER, "     Modeling          * Modeling") ;
+			printInfo(MASTER, "     Propa             * Propagator") ;
+			printInfo(MASTER, "     Util              * Utility for developers") ;
+			printInfo(MASTER, " -testMode <string>    = test mode") ;
+			printInfo(MASTER, "     Baseline          * Generic CPU reference implementation (DEFAULT test mode)") ;
+			printInfo(MASTER, "     CacheBlk          * Generic CPU optimized with cache blocking techniques") ;
+			printInfo(MASTER, "     CUDA              * NVIDIA GPU CUDA regular implementation") ;
+			printInfo(MASTER, "     CUDA_Opt          * NVIDIA GPU CUDA optimized implementation") ;
+			printInfo(MASTER, "     CUDA_ref          * NVIDIA GPU CUDA reference implementation (for developers)") ;
+			printInfo(MASTER, "     DPC++             * Intel CPU/GPU/FPGA regular DPC++ implementation") ;
+			printInfo(MASTER, "     HIP               * AMD GPU HIP regular implementation") ;
+			printInfo(MASTER, "     HIP_Opt           * AMD GPU HIP optimized implementation") ;
+			printInfo(MASTER, "     NEC               * NEC SX-Aurora with NEC compiler directives") ;
+			printInfo(MASTER, "     NEC_SCA           * NEC SX-Aurora with NEC Stencil Code Accelerator Library") ;
+//			printInfo(MASTER, "     OpenAcc           * GPU with OpenAcc without optimization") ;
+			printInfo(MASTER, " -tmax <float>         = max. time (s) for propagator") ;
 			printInfo(MASTER, "     (if specified tmax overrides nt)") ;
-			printInfo(MASTER, " -version or -v       = print version information") ;
-			printInfo(MASTER, " -writeGrid           = write grids on disk") ;
+			printInfo(MASTER, " -version or -v        = print version information") ;
+			printInfo(MASTER, " -writeGrid            = write grids on disk") ;
 
 			// exit
 			return(RTN_CODE_EXIT);
@@ -346,6 +360,42 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 					printError(" cb3 should be > 0") ;
 					return(RTN_CODE_KO) ;
 				}
+			}
+
+			else if (string(argv[ii]) == "-d1")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -d1") ;
+					return(RTN_CODE_KO) ;
+				}
+				d1 = atof(argv[ii]);
+				printInfo(MASTER, " d1 (m)\t\t", d1) ;
+			}
+
+			else if (string(argv[ii]) == "-d2")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -d2") ;
+					return(RTN_CODE_KO) ;
+				}
+				d2 = atof(argv[ii]);
+				printInfo(MASTER, " d2 (m)\t\t", d2) ;
+			}
+
+			else if (string(argv[ii]) == "-d3")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -d3") ;
+					return(RTN_CODE_KO) ;
+				}
+				d3 = atof(argv[ii]);
+				printInfo(MASTER, " d3 (m)\t\t", d3) ;
 			}
 
 			else if (string(argv[ii]) == "-debug")
@@ -452,6 +502,18 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				}
 			}
 
+			else if (string(argv[ii]) == "-freqMax")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -freqMax") ;
+					return(RTN_CODE_KO) ;
+				}
+				freqMax = atof(argv[ii]);
+				printInfo(MASTER, " max. freq. (Hz)", freqMax) ;
+			}
+
 			else if (string(argv[ii]) == "-gpuBlkSize")
 			{
 				ii++ ;
@@ -553,6 +615,18 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				}
 				hwCounterDt = atof(argv[ii]);
 				printInfo(MASTER, " Dt hw counter (s)", hwCounterDt) ;
+			}
+
+			else if (string(argv[ii]) == "-modelVpFile")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -modelVpFile") ;
+					return(RTN_CODE_KO) ;
+				}
+				modelVpFile = argv[ii];
+				printInfo(MASTER, " model Vp file\t", modelVpFile) ;
 			}
 
 			else if (string(argv[ii]) == "-n1")

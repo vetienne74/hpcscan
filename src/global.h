@@ -5,6 +5,8 @@
 
 #include "type_def.h"
 
+#define BLOCK_WRITE_SIZE (1024*1024)
+
 namespace hpcscan {
 
 // debug level switch

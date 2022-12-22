@@ -44,7 +44,7 @@ Rtn_code TestCase_Propa::run(void)
 	Rtn_code rtnCode = propa->initialize(EIGEN_MODE) ;
 	if (rtnCode != RTN_CODE_OK)
 	{
-		printError("In TestCase_Propa::run, propa.initialize() not Ok") ;
+		printError("In TestCase_Propa::run, propa->initialize() not Ok") ;
 		return(RTN_CODE_OK) ;
 	}
 
@@ -106,6 +106,7 @@ Rtn_code TestCase_Propa::run(void)
 
 	Myfloat errTestCase, sum1, sum2 ;
 	Myint   ntCheck ;
+	double total_compute_time = 0;
 
 	for (Myint itry = 0; itry < ntry; itry++)
 	{
@@ -115,6 +116,7 @@ Rtn_code TestCase_Propa::run(void)
 
 		// start timer
 		double t0 = MPI_Wtime() ;
+		total_compute_time = 0;
 
 		for (Myint it = 0; it < nt; it++)
 		{
@@ -122,7 +124,13 @@ Rtn_code TestCase_Propa::run(void)
 			Myfloat * prc = prcGrid->grid_3d ;
 
 			// compute wavefield at next time step
+			double t0_compute = MPI_Wtime();
+
 			propa->computeWavefieldNextTimeStep(*prnGrid, *prcGrid) ;
+			
+			double t1_compute = MPI_Wtime();
+
+			total_compute_time += t1_compute - t0_compute;
 
 			// check testCase results
 			if (itry == 0)
@@ -180,16 +188,43 @@ Rtn_code TestCase_Propa::run(void)
 	printInfo(MASTER, " #Flop per point", nOpPerPoint) ;
 	printInfo(MASTER, " #Point in stencil", nPtPerStencil) ;
 
-	double timeInFD = testCase_time_best-testCase_time_com ;
+	// double timeInFD = testCase_time_best-testCase_time_com ;
+	double timeInFD = propa->compute_pressure_time;
 	propaGflop     = nt * nGridPointGlob/timeInFD/1.e9 * nOpPerPoint;
 	propaGpointEff = nt * nGridPointGlob/testCase_time_best/1.e9 ;
 	propaGpointFD  = nt * nGridPointGlob/timeInFD/1.e9 ;
 	propaGB        = nt * nGridPointGlob/timeInFD/1.e9 * nMemOpPerPoint * sizeof(Myfloat) ;
 
+	printInfo(MASTER, " Total compute time (s)", total_compute_time);
+	printInfo(MASTER, " Compute speed (GPts/s)", nt * nGridPointGlob / total_compute_time / 1.e9);
+
+	// i/o is = write grid (if asked) 
+	double i_o_time = prnGrid->grid_write_time;
+	printInfo(MASTER, "\n Total I/O time (s)", i_o_time);
+	
+	double MPI_COMM_time = propa->halo_comm_time ;
+	// communication is = exchange_halo (sendrecv)
+	printInfo(MASTER, " Total comm. time (s)", MPI_COMM_time);
+
+	// summarizing each steps
+	// printInfo(MASTER, "\n total Read model time ", propa->coef_read_total_time);
+	printInfo(MASTER, " Halo comm. time (s)", propa->halo_comm_time);
+	printInfo(MASTER, " Bound. cond. time (s)", propa->boundary_condition_time);
+	printInfo(MASTER, " Compute pres. time (s)", propa->compute_pressure_time);
+	// printInfo(MASTER, " Record trace time ", acqui.record_trace_time);
+	if(Config::Instance()->writeGrid)
+	{
+		// printInfo(MASTER, " Total write snapshotgrid time ", prnGrid->grid_writeGlobal_time);
+		printInfo(MASTER, " Total write coefGrid time ", propa->i_o_write_coefgrid_time);
+	}
+	// printInfo(MASTER, " Total write trace time ", acqui.total_timeWriteTrace);
+
+
 	printInfo(MASTER, " Best GFlop/s in FD" ,   propaGflop) ;
 	printInfo(MASTER, " Best Gpoint/s eff." ,   propaGpointEff) ;
 	printInfo(MASTER, " Best Gpoint/s in FD",   propaGpointFD) ;
 	printInfo(MASTER, " Best Apparent BW GB/s", propaGB) ;
+
 
 	if (nGridPointHaloGlob > 0)
 	{
@@ -209,7 +244,13 @@ Rtn_code TestCase_Propa::run(void)
 		<< testCase_time_best << " " << errTestCase << " "
 
 		// 16, 17, 18
-		<< propa->nt << " " << propa->dt << " " << propa->stableDt
+		<< propa->nt << " " << propa->dt << " " << propa->stableDt << " "
+
+		// 19, 20, 21
+		<< propa->halo_comm_time << " " << propa->boundary_condition_time << " " << propa->compute_pressure_time << " "
+
+		// 22, 23
+		<< total_compute_time << " " << nt * nGridPointGlob / total_compute_time / 1.e9
 
 		<< "\n" ;
 	}

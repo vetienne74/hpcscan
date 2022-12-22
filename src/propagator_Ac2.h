@@ -45,6 +45,9 @@ public:
 	// FD scheme order in space
 	Myint fdOrder ;
 
+	// Max frequency
+	Myfloat freqMax ;
+
 	// Number of time steps
 	Myint nt ;
 
@@ -58,14 +61,20 @@ public:
 	Myint snapInc ;
 
 	// Min and max velocity in model
-	Myfloat minVelocity, maxVelocity ;
-
-	// Max frequency
-	Myfloat maxFreq ;
+	Myfloat minVelocity, maxVelocity ;	
 
 	// Wave equation and kernel type
 	string propaWaveEq ;
 	string propaKernelType ;
+
+	// time measures
+	double halo_comm_time;
+	double boundary_condition_time;
+	double compute_pressure_time;
+	double coef_read_total_time;
+	double i_o_read_time;
+	double i_o_write_coefgrid_time;
+
 
 protected:
 

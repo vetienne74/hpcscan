@@ -40,17 +40,23 @@ $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util 
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 10 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 12 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 14 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 16 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -fdOrder 16 -writeGrid >> ${report_file} 
+sh clean_dir.sh
 
-$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub1 2 >> ${report_file}
+# multi process
+$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub1 2 -writeGrid >> ${report_file}
+sh clean_dir.sh
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub2 2 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub3 2 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 4 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub3 2 -nsub2 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 4 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub3 2 -nsub2 2 -writeGrid >> ${report_file}
+sh clean_dir.sh
 $HPCSCAN_MPI_INVOKER -n 4 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub3 2 -nsub1 2 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 4 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub3 2 -nsub1 2 -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 4 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub3 2 -nsub1 2 -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 -writeGrid >> ${report_file}
+sh clean_dir.sh
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub1 2 -dim 1 >> ${report_file}
 $HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub1 2 -dim 2 >> ${report_file}
-$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub2 2 -dim 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 2 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase Util -nsub2 2 -dim 2 -writeGrid >> ${report_file}
+sh clean_dir.sh
 
 #==========================================================================================================
 # test case Template
