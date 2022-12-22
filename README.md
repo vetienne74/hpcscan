@@ -253,6 +253,7 @@ hpcscan has been successfully tested on the hardware, operating systems and comp
 Operating system | Compiler | MPI | Host | Device | Test modes 
 |----------------|----------|-----|------|------------|----------
 Ubuntu 22.04.1 LTS | g++ (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0 | mpirun (Open MPI) 4.1.2 | Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz **(Intel Kaby Lake)** | - |  Baseline, CacheBlk
+Ubuntu 22.04.1 LTS | Intel icpc (ICC) 2021.7.0 20220726 | Intel MPI Version 2021.7 | Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz **(Intel Kaby Lake)** | - |  Baseline, CacheBlk
 Red Hat 8.5.0-10 | NEC nc++ (NCC) 4.0.0 | NEC MPI 3.1.0 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | NEC SX-Aurora TSUBASA 20B-P **(NEC Vector Engine)** | Baseline, CacheBlk, NEC, NEC_SCA
 Red Hat 8.5.0-10 | Intel oneAPI DPC++/C++ Compiler 2022.1.0 | Intel MPI Version 2021.6 | Intel(R) Xeon(R) Gold 6126 CPU @ 2.60GHz **(Intel Skylake)** | - | Baseline, CacheBlk
 SUSE Linux Enterprise Server 15 | Intel icpc (ICC) 19.0.5.281 20190815 | - | Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz **(Intel Haswell)** | - |  - |
