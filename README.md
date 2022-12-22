@@ -55,12 +55,11 @@ Contributors (chronological order)
 
 hpcscan is a tool for **benchmarking algorithms/kernels** that are found in many scientific applications on **various architectures/systems**.
 
-It features several categories of test cases aiming to measure memory, computation and communication bandwidths.
+It features several categories of test cases aiming to measure memory, computation and communication bandwidths along with electric energy consumption.
 
 * Entirely written in C++
 * Simple code structure based on individual test cases
 * Easy to add new test cases
-* Design centered on a unique class that handles all operations on multi-dimension (1, 2 \& 3D) Cartesian grids
 * Hybrid OpenMP/MPI parallelism
 * Support scalar and vector CPUs, GPUs and other accelerators (depending on compiler/architecture)
 * All configuration parameters on command line
@@ -72,7 +71,7 @@ It features several categories of test cases aiming to measure memory, computati
 
 ## Why another benchmark?
 
-There exist several benchmarks commonly used in the HPC community. Just to cite a few, the [Stream benchmark](https://www.cs.virginia.edu/stream/) and the [OSU Micro benchmarks](https://mvapich.cse.ohio-state.edu/benchmarks/), allow to measure the memory bandwidth and the interconnect bandwidth respectively.
+There exist several benchmarks commonly used in the HPC community. Just to cite a few, the [Stream benchmark](https://www.cs.virginia.edu/stream/), the [HPL benchmark](https://netlib.org/benchmark/hpl/) and the [OSU Micro benchmarks](https://mvapich.cse.ohio-state.edu/benchmarks/), allow to measure the memory bandwidth, the computation bandwidth and the interconnect bandwidth respectively.
 In general, these benchmarks target specific characteristics of HPC systems.
 However, it is **not straightforward to transpose these characteristics in the context of a given scientific application.**
 
@@ -105,7 +104,7 @@ hpcscan has been designed to address these issues :smiley:
 
 :ballot_box_with_check: **Multi-purpose** initiative with benefits at several levels: from computer science students eager to learn to seasoned numerical analysts willing to share their findings or to software engineers reusing kernels of interest to upgrade their applications. 
 
-:ballot_box_with_check: **On-going** effort at the first phase aiming to collect contributions to cover the current offer of HPC systems. More options and kernels will be added in a second phase.
+:ballot_box_with_check: **On-going** effort aiming to collect contributions to cover the current offer of HPC systems. More options and kernels will be added with time.
 
 ## What hpcscan is not
 
@@ -127,7 +126,7 @@ Version      | Description | Release date
 ------------ | ----------- | ------------
 v1.0         |  **Initial version with CPU and Vector Engine support** <li> Test cases: Comm, FD_D2, Grid, Memory and Propa </li> <li> FD orders: 2, 4, 8, 12 & 16 </li> <li> Test modes: Baseline, CacheBlk and NEC_SCA </li> | Nov 28, 2020
 v1.1         | **GPU support** <li> Added test modes CUDA and HIP </li> <li> Added test mode NEC </li> | May 22, 2021
-v1.2         | **Energy consumption and DPC++ support** <li> Access hardware counters to report energy (Watt) consumption </li> <li> Added FD orders: 6, 10 & 14 </li> <li> Added test mode DPC++</li> <li> Added test modes CUDA_Opt, CUDA_Ref and HIP_Opt </li> | Coming soon
+v1.2         | **Energy consumption** <li> Access hardware counters to report energy (Watt) consumption </li> <li> Added FD orders: 6, 10 & 14 </li> <li> Added test mode DPC++</li> <li> Added test modes CUDA_Opt, CUDA_Ref and HIP_Opt </li> | Coming soon
 
 # Main features
 
