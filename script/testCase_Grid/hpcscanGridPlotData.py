@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-#data = pd.read_csv("hpcscan.perf.Grid.log", sep=" ", header=None)
-#data = pd.read_csv("hpcscanGridShaheen.log", sep=" ", header=None)
-data = pd.read_csv("hpcscanGridProto27.log", sep=" ", header=None)
+data = pd.read_csv("hpcscan.perf.Grid.log", sep=" ", header=None)
+#data = pd.read_csv("hpcscanPerfGridProto27Baseline.log", sep=" ", header=None)
+#data = pd.read_csv("hpcscanPerfGridProto27NEC.log", sep=" ", header=None)
 
 print(data.shape)
 

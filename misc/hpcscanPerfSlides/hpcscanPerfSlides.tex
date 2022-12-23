@@ -198,11 +198,10 @@
 
   \begin{block}{\center Benchmark configuration}
     \begin{itemize}
-    \item Scalability on 1 node with 1 to 32 threads
-    \item Baseline kernel
+    \item Scalability on 1 node with 1 to max number of threads (cores) on the node
     \item Array size 4 GB
     \item Reproduce results with \texttt{./script/testCase\_Memory/hpcscanMemory.sh}
-    \item Total 10 configurations, Elapsed time about 4 minutes
+    \item Elapsed time less than 5 minutes
     \end{itemize}
   \end{block}
 }
@@ -211,6 +210,8 @@
 \frame{
   \frametitle{Test Case Memory - NEC SX-Aurora TSUBASA 20B \footnote{\scriptsize \textcolor{blue}{Results updated Dec 23, 2022}} }
 
+  \center{\bf TestMode Baseline}
+  
   \begin{figure}
     \begin{center}
       \includegraphics[width=1.0 \textwidth]{../../script/testCase_Memory/hpcscanPerfMemoryProto27.png}
@@ -238,15 +239,14 @@
 
   \begin{block}{\center Benchmark configuration}
     \begin{itemize}
-    \item 1 node with 32 threads
-    \item Baseline kernel
+    \item 1 node with max number of threads (cores) on the node
     \item 2 grid sizes
       \begin{itemize}
       \item \scriptsize Small size 500 MB (500 x 500 x 500 points)
       \item \scriptsize Medium size 4 GB (1000 x 1000 x 1000 points)
       \end{itemize}
     \item Reproduce results with \texttt{./script/testCase\_Grid/hpcscanGrid.sh}
-    \item Total 2 configurations, Elapsed time less than 1 minute
+    \item Elapsed time less than 5 minutes
     \end{itemize}
   \end{block}
   
@@ -254,16 +254,32 @@
 
 %-------------------------------------------------------------------------------------
 \frame{
-  \frametitle{Test Case Grid - NEC SX-Aurora TSUBASA XX \footnote{\scriptsize \textcolor{blue}{Results updated Dec XX, 2022}} }
+  \frametitle{Test Case Grid - NEC SX-Aurora TSUBASA 20B \footnote{\scriptsize \textcolor{blue}{Results updated Dec 23, 2022}} }
 
+  \center{\bf TestMode Baseline}
+  
   \begin{figure}
     \begin{center}
-      %\includegraphics[width=1.0 \textwidth]{../../script/testCase_Grid/hpcscanGridProto27.png}
-      \includegraphics[width=0.5 \textwidth]{./Images/InProgress.jpg}
+      \includegraphics[width=1.0 \textwidth]{../../script/testCase_Grid/hpcscanPerfGridProto27Baseline.png}
     \end{center}
   \end{figure}
 
-  ApplyBoundaryCondition performs at XXX/XXX GBytes (XX/XXX Gpoint/s)
+  ApplyBoundaryCondition performs at 317/538 GBytes (39.6/67.2 Gpoint/s)
+}
+
+%-------------------------------------------------------------------------------------
+\frame{
+  \frametitle{Test Case Grid - NEC SX-Aurora TSUBASA 20B \footnote{\scriptsize \textcolor{blue}{Results updated Dec 23, 2022}} }
+
+  \center{\bf TestMode NEC}
+  
+  \begin{figure}
+    \begin{center}
+      \includegraphics[width=1.0 \textwidth]{../../script/testCase_Grid/hpcscanPerfGridProto27NEC.png}
+    \end{center}
+  \end{figure}
+
+  ApplyBoundaryCondition performs at 3437/6502 GBytes (429/813 Gpoint/s)
 }
 
 %*************************************************************************************
