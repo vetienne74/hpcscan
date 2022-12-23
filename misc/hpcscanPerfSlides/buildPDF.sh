@@ -1,0 +1,2 @@
+pdflatex hpcscanPerfSlides.tex
+pdflatex hpcscanPerfSlides.tex
