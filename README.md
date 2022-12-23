@@ -57,7 +57,7 @@ hpcscan is a tool for **benchmarking algorithms/kernels** that are found in many
 
 It features several categories of test cases aiming to measure memory, computation and communication bandwidths along with electric energy consumption.
 
-* Entirely written in C++
+* Written in C++
 * Simple code structure based on individual test cases
 * Easy to add new test cases
 * Hybrid OpenMP/MPI parallelism
@@ -175,11 +175,13 @@ OpenAcc        | NVIDIA GPU      | Regular OpenACC implementation without optimi
 
 ## Basic requirements
 
+* Linux operating system
 * C++ compiler with OpenMP support
 * MPI library
 
 ## Optional requirements
 
+* python and Matlab to plot figures
 * NVIDIA CUDA compiler
 * Intel DPC++ compiler
 * AMD HIP compiler
