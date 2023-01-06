@@ -2,20 +2,16 @@
 script_template = 'templateScript.sh'
 
 n1Range=['500','600','700','800','900','1000']
-#n1Range=['500','600','700']
-#fdOrderRange=['4','8']
-fdOrderRange=['4','8','12']
-#tmax='2.0'
-tmax='0.1'
-snapDt='0.01'
+fdOrderRange=['4','6','8','10','12']
+tmax='1.0'
+snapDt='0.1'
 dt='0.0'
 nmode='130'
-dim='3'
-#dim='1'
-# number of tries
-ntry='4'
-ratioCFLRange=['1.0','0.5','0.1']
-testModeRange=['CacheBlk']
+#dim='3'
+dim='1'
+ntry='1'
+ratioCFLRange=['1.0','0.5','0.2','0.1']
+testModeRange=['NEC_SCA']
 propagatorRange=['Ac2Standard','Ac2SplitComp']
 
 #-----------------------------------------------------------------
@@ -32,8 +28,8 @@ for propagator in propagatorRange:
                     script_new = script_template.replace('template', new_name)                
 
                     # skip some unwanted config
-                    if propagator == 'Ac2Standard' and testMode == 'NEC_SCA':
-                        continue
+                    #if propagator == 'Ac2Standard' and testMode == 'NEC_SCA':
+                    #    continue
 
                     # open files
                     f2 = open(script_new, 'w')

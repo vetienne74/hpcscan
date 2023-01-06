@@ -3,6 +3,8 @@ export KMP_AFFINITY=granularity=fine,compact
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
 start_time=$(date)
+machine=`hostname`
+today=`date +%F`
 
 if [ -z "$1" ] 
 then
@@ -38,6 +40,9 @@ done
 end_time=$(date)
 tester=$(whoami)
 machine=$(hostname)
+
+cp hpcscan.hwCounter.Propa.log propa.hwCounter.${machine}.${today}.log
+cp hpcscan.perf.Propa.log propa.perf.${machine}.${today}.log
 
 echo "# Started  : " $start_time 
 echo "# Ended    : " $end_time
