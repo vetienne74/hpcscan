@@ -41,13 +41,13 @@
 Contact: Vincent Etienne / Email: vetienne@rocketmail.com
 
 Contributors (chronological order)
-* Vincent Etienne (NEC)
-* Suha Kayum (Saudi Aramco)
-* Marcin Rogowski (King Adbullah University of Science and Technology)
-* Laurent Gatineau (NEC)
-* Philippe Thierry (Intel)
-* Fabrice Dupros (ARM) 
-* Hugo Barreiro (University of Reims Champagne-Ardenne)
+* Vincent Etienne
+* Suha Kayum
+* Marcin Rogowski
+* Laurent Gatineau
+* Philippe Thierry
+* Fabrice Dupros 
+* Hugo Barreiro
 
 # Overview
 
