@@ -24,8 +24,9 @@
 #define HPCSCAN_GRID_H_
 
 #include <string>
+#include <cstdint>
 
-#include "mpi.h"
+#include <mpi.h>
 
 #include "type_def.h"
 
