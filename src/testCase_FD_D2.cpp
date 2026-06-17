@@ -1,6 +1,7 @@
 
 //-------------------------------------------------------------------------------------------------------
 // test cases to measure the finite-difference computation bandwidth
+// second derivative operator D2 (i.e. d2/dx2)
 // baseline kernel - no optimization
 //-------------------------------------------------------------------------------------------------------
 

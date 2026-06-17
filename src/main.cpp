@@ -6,6 +6,7 @@
 #include "output_report.h"
 #include "testCase_Comm.h"
 #include "testCase_FD_D2.h"
+#include "testCase_FD_D1.h"
 #include "testCase_Grid.h"
 #include "testCase_Matrix.h"
 #include "testCase_Memory.h"
@@ -79,6 +80,12 @@ int main(int argc, char *argv[])
 	hpcscan::Myint numTestCase = 0;
 	{
 		hpcscan::TestCase_Comm testCase;
+		rtn_code = testCase.run();
+		if (rtn_code == hpcscan::RTN_CODE_OK)
+			numTestCase++;
+	}
+	{
+		hpcscan::TestCase_FD_D1 testCase;
 		rtn_code = testCase.run();
 		if (rtn_code == hpcscan::RTN_CODE_OK)
 			numTestCase++;

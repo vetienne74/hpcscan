@@ -1,9 +1,15 @@
 
 //-------------------------------------------------------------------------------------------------------
 // Definition of FD operators:
+//
 // - FD_D2_OX_N1 = 2nd derivative along N1 axis with stencil order X (for grids 1D, 2D and 3D)
 // - FD_D2_OX_N2 = 2nd derivative along N2 axis with stencil order X (for grids 2D and 3D)
 // - FD_D2_OX_N3 = 2nd derivative along N3 axis with stencil order X (for grids 3D)
+//
+// - FD_D1_OX_N1 = 1st derivative along N1 axis with stencil order X (for grids 1D, 2D and 3D)
+// - FD_D1_OX_N2 = 1st derivative along N2 axis with stencil order X (for grids 2D and 3D)
+// - FD_D1_OX_N3 = 1st derivative along N3 axis with stencil order X (for grids 3D)
+//
 //
 // All operators apply on 1d array (grid->3d_grid)
 //-------------------------------------------------------------------------------------------------------
