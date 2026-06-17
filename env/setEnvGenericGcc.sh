@@ -1,11 +1,18 @@
 
-# Load needed modules
+# This is an generic script that needs to be sourced on your system prior to use hpcscan:
+# - compilation with gcc
+# - execution only on CPU
+
+# Add below the modules that needed to be loaded for compilation on your system
+# module load xxx/xxx
 
 # MPI config
-export HPCSCAN_MPI_INVOKER='mpirun --oversubscribe'
+#export HPCSCAN_MPI_INVOKER='mpirun --oversubscribe'
+export HPCSCAN_MPI_INVOKER='mpirun'
 
 # OpenMP config
-export HPCSCAN_NTHREADS=2
+# define the number of threads to be used
+export HPCSCAN_NTHREADS=16
 export KMP_AFFINITY=granularity=fine,compact
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
