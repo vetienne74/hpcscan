@@ -160,16 +160,25 @@ public:
 	// apply boundary condition
 	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;
 
-	// compute FD_D2 along N1
+	// compute FD_D2 (centered second derivative) along N1
 	virtual Rtn_code FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
 
-	// compute FD_D2 along N2
+	// compute FD_D1 (staggered first derivative) along N1
+	virtual Rtn_code FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
+
+	// compute FD_D2 (centered second derivative) along N2
 	virtual Rtn_code FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
 
-	// compute FD_D2 along N3
+	// compute FD_D1 (staggered first derivative) along N2
+	virtual Rtn_code FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
+
+	// compute FD_D2 (centered second derivative) along N3
 	virtual Rtn_code FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
 
-	// compute FD_LAPLACIAN
+	// compute FD_D1 (staggered first derivative) along N3
+	virtual Rtn_code FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
+
+	// compute FD_LAPLACIAN (centered Laplacian)
 	virtual Rtn_code FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrder) ;
 
 	// update pressure

@@ -3303,6 +3303,175 @@ Rtn_code Grid::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 
 //-------------------------------------------------------------------------------------------------------
 
+Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid::FD_D1_N1");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D1_N1, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * const w = Wgrid.grid_3d ;
+	Myfloat * const u = this->grid_3d ;
+
+	// compute FD along N1
+	if (fdOrder == 2)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 4)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O6_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 8)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O10_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 12)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O14_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 16)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+
+	printDebug(MID_DEBUG, "OUT Grid::FD_D1_N1");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 Rtn_code Grid::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 {
 	printDebug(MID_DEBUG, "IN Grid::FD_D2_N2");
@@ -3472,6 +3641,175 @@ Rtn_code Grid::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 
 //-------------------------------------------------------------------------------------------------------
 
+Rtn_code Grid::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid::FD_D1_N2");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D1_N2, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * const w = Wgrid.grid_3d ;
+	Myfloat * const u = this->grid_3d ;
+
+	// compute FD along N2
+	if (fdOrder == 2)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 4)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O6_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 8)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O10_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 12)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O14_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 16)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N2(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+
+	printDebug(MID_DEBUG, "OUT Grid::FD_D1_N2");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 Rtn_code Grid::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 {
 	printDebug(MID_DEBUG, "IN Grid::FD_D2_N3");
@@ -3636,6 +3974,175 @@ Rtn_code Grid::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 	}
 
 	printDebug(MID_DEBUG, "OUT Grid::FD_D2_N3");
+	return(RTN_CODE_OK) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Rtn_code Grid::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
+{
+	printDebug(MID_DEBUG, "IN Grid::FD_D1_N3");
+
+	// check grids are same size
+	if (this->sameSize(Wgrid) != true)
+	{
+		printError("Grid::FD_D1_N3, grids have not same size") ;
+		return(RTN_CODE_KO) ;
+	}
+
+	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
+
+	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
+	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
+	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+
+	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+
+	Myfloat * const w = Wgrid.grid_3d ;
+	Myfloat * const u = this->grid_3d ;
+
+	// compute FD along N3
+	if (fdOrder == 2)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O2_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 4)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O4_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 6)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O6_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 8)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O8_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 10)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O10_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 12)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O12_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 14)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O14_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+	else if (fdOrder == 16)
+	{
+#pragma omp parallel for collapse(2)
+		for (Myint64 i3 = i3Start; i3<= i3End; i3++)
+		{
+			for (Myint64 i2 = i2Start; i2<= i2End; i2++)
+			{
+#pragma omp simd
+				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
+				{
+					w[i1+i2*n1+i3*n1*n2] =
+							FD_D2_O16_N3(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+				}
+
+			}
+		}
+	}
+
+	printDebug(MID_DEBUG, "OUT Grid::FD_D1_N3");
 	return(RTN_CODE_OK) ;
 }
 
