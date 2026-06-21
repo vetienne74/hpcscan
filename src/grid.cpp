@@ -3391,7 +3391,7 @@ Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
+							FD_D1_O8_N1(u, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) ;
 				}
 
 			}

@@ -105,15 +105,15 @@ Rtn_code TestCase_FD_D1::run(void)
 		//====================================================
 		// W = d2(U)/dx1x1
 		// reference solution:
-		// -a1^2 * sin(a1*x1) * sin(a2*x2) * sin(a3*x3) * a4
+		// a1 * cos(a1*x1) * sin(a2*x2) * sin(a3*x3) * a4
 		//====================================================
 
 		print_blank() ;
 		string caseName = testCaseName + "Axis1" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
-		Myfloat64 ampRef = - a1 * a1 * a4 ;
-		Rgrid.fill(ALL_POINTS, FUNC_SINE, FUNC_SINE, FUNC_SINE, a1, a2, a3, ampRef) ;
+		Myfloat64 ampRef = a1 * a4 ;
+		Rgrid.fill(ALL_POINTS, FUNC_COSINE, FUNC_SINE, FUNC_SINE, a1, a2, a3, ampRef) ;
 		Rgrid.write(testCaseName+"R") ;
 
 		testCase_time_best = FLT_MAX ;

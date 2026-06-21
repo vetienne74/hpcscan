@@ -26,8 +26,6 @@ namespace hpcscan {
 
 //=============================================== 1st differential ==========================================================
 
-// NOTE: 1st differentials are not yet used in this version, for future use cases
-
 // -------------------------------------%%%%%%%%%%% D1 FD space O8 %%%%%%%%%%%%%%-------------------------------------
 const Myfloat FD_D1_O8_A1   =  1225./1024. ;
 const Myfloat FD_D1_O8_A2   = -245./3072. ;
