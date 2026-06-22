@@ -247,7 +247,8 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -testCase <string>    = run specific testCase by name") ;
 			printInfo(MASTER, "     All               * All test cases (DEFAULT)") ;
 			printInfo(MASTER, "     Comm              * MPI communication") ;
-			printInfo(MASTER, "     FD_D2             * Finite-difference computation") ;
+			printInfo(MASTER, "     FD_D1             * Finite-difference (1st derivative) computation") ;
+			printInfo(MASTER, "     FD_D2             * Finite-difference (2nd derivative) computation") ;
 			printInfo(MASTER, "     Grid              * Grid operation") ;
 			printInfo(MASTER, "     Memory            * Memory") ;
 			printInfo(MASTER, "     Modeling          * Modeling") ;

@@ -113,6 +113,7 @@ Rtn_code TestCase_FD_D1::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Myfloat64 ampRef = a1 * a4 ;
+		// shift reference grid
 		Rgrid.fill(ALL_POINTS, FUNC_COSINE, FUNC_SINE, FUNC_SINE, a1, a2, a3, ampRef) ;
 		Rgrid.write(testCaseName+"R") ;
 
@@ -184,15 +185,16 @@ Rtn_code TestCase_FD_D1::run(void)
 		//====================================================
 		// W = d2(U)/dx2x2
 		// reference solution:
-		// -a2^2 * sin(a1*x1) * sin(a2*x2) * sin(a3*x3) * a4
+		// a2 * sin(a1*x1) * cos(a2*x2) * sin(a3*x3) * a4
 		//====================================================
 
 		print_blank() ;
 		string caseName = testCaseName + "Axis2" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
-		Myfloat64 ampRef = - a2 * a2 * a4 ;
-		Rgrid.fill(ALL_POINTS, FUNC_SINE, FUNC_SINE, FUNC_SINE, a1, a2, a3, ampRef) ;
+		Myfloat64 ampRef = a2 * a4 ;
+		// shift reference grid
+		Rgrid.fill(ALL_POINTS, FUNC_SINE, FUNC_COSINE, FUNC_SINE, a1, a2, a3, ampRef) ;
 		Rgrid.write(testCaseName+"R") ;
 
 		testCase_time_best = FLT_MAX ;
@@ -262,15 +264,16 @@ Rtn_code TestCase_FD_D1::run(void)
 		//====================================================
 		// W = d2(U)/dx3x3
 		// reference solution:
-		// -a3^2 * sin(a1*x1) * sin(a2*x2) * sin(a3*x3) * a4
+		// a3 * sin(a1*x1) * sin(a2*x2) * cos(a3*x3) * a4
 		//====================================================
 
 		print_blank() ;
 		string caseName = testCaseName + "Axis3" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
-		Myfloat64 ampRef = - a3 * a3 * a4 ;
-		Rgrid.fill(ALL_POINTS, FUNC_SINE, FUNC_SINE, FUNC_SINE, a1, a2, a3, ampRef) ;
+		Myfloat64 ampRef = a3 * a4 ;
+		// shift reference grid
+		Rgrid.fill(ALL_POINTS, FUNC_SINE, FUNC_SINE, FUNC_COSINE, a1, a2, a3, ampRef) ;
 		Rgrid.write(testCaseName+"R") ;
 
 		testCase_time_best = FLT_MAX ;
