@@ -3420,7 +3420,7 @@ Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O4_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O4_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3437,7 +3437,7 @@ Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O6_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O6_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3471,7 +3471,7 @@ Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O10_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O10_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3754,7 +3754,7 @@ Rtn_code Grid::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O4_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O4_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3771,7 +3771,7 @@ Rtn_code Grid::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O6_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O6_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3805,7 +3805,7 @@ Rtn_code Grid::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O10_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O10_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -4089,7 +4089,7 @@ Rtn_code Grid::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O4_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O4_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -4106,7 +4106,7 @@ Rtn_code Grid::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O6_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O6_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -4140,7 +4140,7 @@ Rtn_code Grid::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O10_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O10_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}

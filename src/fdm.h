@@ -26,6 +26,10 @@ namespace hpcscan {
 
 //=============================================== 1st differential ==========================================================
 
+// First derivative with staggered FD scheme
+// For O2: D1(U[i]) = ( U[i] - U[i-1] ) / h
+// ==> evaluation of D1 at position i-1/2 (shifted by -h/2)
+
 //-------------------------------------%%%%%%%%%%% D1 FD space O2 %%%%%%%%%%%%%%------------------------------------
 const Myfloat FD_D1_O2_A1   =  1.0 ;
 const Myint   FD_D1_O2_NOP  = 2 ;
@@ -33,14 +37,55 @@ const Myint   FD_D1_O2_NOP  = 2 ;
 #define FD_D1_O2_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
 		((U[i1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1]) * inv_d1)
 
-//#define FD_D1_O2_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
-//		((U[i1+1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1]) * inv_d1 / 2.0)
-
 #define FD_D1_O2_N2(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
 		((U[i1 + (i2)  *n1 + i3*n2*n1] - U[i1 + (i2-1)*n1 + i3*n2*n1]) * inv_d2)
 
 #define FD_D1_O2_N3(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
 		((U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1]) * inv_d3)
+
+// -------------------------------------%%%%%%%%%%% D1 FD space O4 %%%%%%%%%%%%%%-------------------------------------
+const Myfloat FD_D1_O4_A1   = 9./8. ;
+const Myfloat FD_D1_O4_A2   = -1./24. ;
+const Myint   FD_D1_O4_NOP  = 6 ;
+
+#define FD_D1_O4_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O4_A1         * (U[i1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O4_A2 * (U[i1+1 + i2*n1 + i3*n2*n1] - U[i1-2 + i2*n1 + i3*n2*n1])) \
+				* inv_d1)
+
+#define FD_D1_O4_N2(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O4_A1         * (U[i1 + (i2)  *n1 + i3*n2*n1] - U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+				+ FD_D1_O4_A2 * (U[i1 + (i2+1)*n1 + i3*n2*n1] - U[i1 + (i2-2)*n1 + i3*n2*n1])) \
+				* inv_d2)
+
+#define FD_D1_O4_N3(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O4_A1         * (U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+				+ FD_D1_O4_A2 * (U[i1 + i2*n1 + (i3+1)*n2*n1] - U[i1 + i2*n1 + (i3-2)*n2*n1])) \
+				* inv_d3)
+
+// -------------------------------------%%%%%%%%%%% D1 FD space O6 %%%%%%%%%%%%%%-------------------------------------
+const Myfloat FD_D1_O6_A1   =  75./64. ;
+const Myfloat FD_D1_O6_A2   = -25./384. ;
+const Myfloat FD_D1_O6_A3   =  3./640. ;
+const Myint   FD_D1_O6_NOP  = 9 ;
+
+#define FD_D1_O6_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O6_A1         * (U[i1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O6_A2 * (U[i1+1 + i2*n1 + i3*n2*n1] - U[i1-2 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O6_A3 * (U[i1+2 + i2*n1 + i3*n2*n1] - U[i1-3 + i2*n1 + i3*n2*n1])) \
+				* inv_d1)
+
+#define FD_D1_O6_N2(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O6_A1         * (U[i1 + (i2)  *n1 + i3*n2*n1] - U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+				+ FD_D1_O6_A2 * (U[i1 + (i2+1)*n1 + i3*n2*n1] - U[i1 + (i2-2)*n1 + i3*n2*n1])  \
+				+ FD_D1_O6_A3 * (U[i1 + (i2+2)*n1 + i3*n2*n1] - U[i1 + (i2-3)*n1 + i3*n2*n1])) \
+				* inv_d2)
+
+#define FD_D1_O6_N3(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O6_A1         * (U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+				+ FD_D1_O6_A2 * (U[i1 + i2*n1 + (i3+1)*n2*n1] - U[i1 + i2*n1 + (i3-2)*n2*n1])  \
+				+ FD_D1_O6_A3 * (U[i1 + i2*n1 + (i3+2)*n2*n1] - U[i1 + i2*n1 + (i3-3)*n2*n1])) \
+				* inv_d3)
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O8 %%%%%%%%%%%%%%-------------------------------------
 const Myfloat FD_D1_O8_A1   =  1225./1024. ;
@@ -70,7 +115,43 @@ const Myint   FD_D1_O8_NOP  = 12 ;
 				+ FD_D1_O8_A4 * (U[i1 + i2*n1 + (i3+3)*n2*n1] - U[i1 + i2*n1 + (i3-4)*n2*n1])) \
 				* inv_d3)
 
+// -------------------------------------%%%%%%%%%%% D1 FD space O10 %%%%%%%%%%%%%%-------------------------------------
+const Myfloat FD_D1_O10_A1   =  19845./16384. ;
+const Myfloat FD_D1_O10_A2   = -735./8192. ;
+const Myfloat FD_D1_O10_A3   =  567./40960. ;
+const Myfloat FD_D1_O10_A4   = -405./229376. ;
+const Myfloat FD_D1_O10_A5   =  35./294912. ;
+const Myint   FD_D1_O10_NOP  = 15 ;
+
+#define FD_D1_O10_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O10_A1         * (U[i1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O10_A2 * (U[i1+1 + i2*n1 + i3*n2*n1] - U[i1-2 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O10_A3 * (U[i1+2 + i2*n1 + i3*n2*n1] - U[i1-3 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O10_A4 * (U[i1+3 + i2*n1 + i3*n2*n1] - U[i1-4 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O10_A5 * (U[i1+4 + i2*n1 + i3*n2*n1] - U[i1-5 + i2*n1 + i3*n2*n1])) \
+				* inv_d1)
+
+#define FD_D1_O10_N2(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O10_A1         * (U[i1 + (i2)  *n1 + i3*n2*n1] - U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+				+ FD_D1_O10_A2 * (U[i1 + (i2+1)*n1 + i3*n2*n1] - U[i1 + (i2-2)*n1 + i3*n2*n1])  \
+				+ FD_D1_O10_A3 * (U[i1 + (i2+2)*n1 + i3*n2*n1] - U[i1 + (i2-3)*n1 + i3*n2*n1])  \
+				+ FD_D1_O10_A4 * (U[i1 + (i2+3)*n1 + i3*n2*n1] - U[i1 + (i2-4)*n1 + i3*n2*n1])  \
+				+ FD_D1_O10_A5 * (U[i1 + (i2+4)*n1 + i3*n2*n1] - U[i1 + (i2-5)*n1 + i3*n2*n1])) \
+				* inv_d2)
+
+#define FD_D1_O10_N3(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O10_A1         * (U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+				+ FD_D1_O10_A2 * (U[i1 + i2*n1 + (i3+1)*n2*n1] - U[i1 + i2*n1 + (i3-2)*n2*n1])  \
+				+ FD_D1_O10_A3 * (U[i1 + i2*n1 + (i3+2)*n2*n1] - U[i1 + i2*n1 + (i3-3)*n2*n1])  \
+				+ FD_D1_O10_A4 * (U[i1 + i2*n1 + (i3+3)*n2*n1] - U[i1 + i2*n1 + (i3-4)*n2*n1])  \
+				+ FD_D1_O10_A5 * (U[i1 + i2*n1 + (i3+4)*n2*n1] - U[i1 + i2*n1 + (i3-5)*n2*n1])) \
+				* inv_d3)
+
 //-=============================================== 2nd differential ==========================================================
+
+// Second derivative with centered FD scheme
+// For O2 D2(U[i]) = ( U[i-1] -2U[i] + U[i+1] ) / (h*h)
+// ==> evaluation of D2 at position i
 
 //-------------------------------------%%%%%%%%%%% D2 FD space O2 %%%%%%%%%%%%%%------------------------------------
 const Myfloat FD_D2_O2_A0   = -2.0 ;
