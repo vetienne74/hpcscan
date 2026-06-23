@@ -1936,20 +1936,69 @@ void Grid::defineUnitGrid(void)
 	if (dim >= DIM2) d2 = extentGrid / (Config::Instance()->n2-1) ;
 	if (dim >= DIM3) d3 = extentGrid / (Config::Instance()->n3-1) ;
 
-	// reset origin of grid
-	Orig1 = Orig1 * d1/d1Old ;
-	if (dim >= DIM2) Orig2 = Orig2 * d2/d2Old ;
-	if (dim >= DIM3) Orig3 = Orig3 * d3/d3Old ;
-
 	printDebug(LIGHT_DEBUG, "d1" , d1);
 	printDebug(LIGHT_DEBUG, "d2" , d2);
 	printDebug(LIGHT_DEBUG, "d3" , d3);
 
-	printDebug(LIGHT_DEBUG, "Orig1" , Orig1);
-	printDebug(LIGHT_DEBUG, "Orig2" , Orig2);
-	printDebug(LIGHT_DEBUG, "Orig3" , Orig3);
+	// reset origin of grid
+	Myfloat Orig1New = 0.0 , Orig2New = 0.0 , Orig3New = 0.0 ;
+	Orig1New = Orig1 * d1/d1Old ;
+	if (dim >= DIM2) Orig2New = Orig2 * d2/d2Old ;
+	if (dim >= DIM3) Orig3New = Orig3 * d3/d3Old ;
+
+	resetOriginGrid(Orig1New, Orig2New, Orig3New) ;	
 
 	printDebug(FULL_DEBUG, "OUT Grid::defineUnitGrid");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+// reset grid origin coordinates
+// set Orig1, Orig2, Orig3
+
+void Grid::resetOriginGrid(Myfloat Orig1In, Myfloat Orig2In, Myfloat Orig3In)
+{
+	printDebug(MID_DEBUG, "IN Grid::resetOriginGrid");
+
+	printDebug(MID_DEBUG, "Old Orig1" , Orig1);
+	printDebug(MID_DEBUG, "Old Orig2" , Orig2);
+	printDebug(MID_DEBUG, "Old Orig3" , Orig3);
+
+	// reset origin of grid
+	Orig1 = Orig1In ;
+	if (dim >= DIM2) Orig2 = Orig2In ;
+	if (dim >= DIM3) Orig3 = Orig3In ;	
+
+	printDebug(MID_DEBUG, "New Orig1" , Orig1);
+	printDebug(MID_DEBUG, "New Orig2" , Orig2);
+	printDebug(MID_DEBUG, "New Orig3" , Orig3);
+
+	printDebug(MID_DEBUG, "OUT Grid::resetOriginGrid");
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+// shift grid origin coordinates
+// shift Orig1, Orig2, Orig3
+
+void Grid::shiftOriginGrid(Myfloat Shift1In, Myfloat Shift2In, Myfloat Shift3In)
+{
+	printDebug(MID_DEBUG, "IN Grid::shiftOriginGrid");
+
+	printDebug(MID_DEBUG, "Old Orig1" , Orig1);
+	printDebug(MID_DEBUG, "Old Orig2" , Orig2);
+	printDebug(MID_DEBUG, "Old Orig3" , Orig3);
+
+	// shift origin of grid
+	Orig1 = Orig1 + Shift1In ;
+	Orig2 = Orig2 + Shift2In ;
+	Orig3 = Orig3 + Shift3In ;
+
+	printDebug(MID_DEBUG, "New Orig1" , Orig1);
+	printDebug(MID_DEBUG, "New Orig2" , Orig2);
+	printDebug(MID_DEBUG, "New Orig3" , Orig3);
+
+	printDebug(MID_DEBUG, "OUT Grid::shiftOriginGrid");
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -2437,6 +2486,22 @@ Myfloat Grid::getMaxCoord(Axis_type axisType)
 
 //-------------------------------------------------------------------------------------------------------
 
+Myfloat64 Grid::getSpaceSampling(Axis_type axisType)
+{
+	printDebug(MID_DEBUG, "IN Grid::getSpaceSampling");
+
+	Myfloat64 spaceSampling = 0.0 ;
+	if (axisType == AXIS1) spaceSampling = d1 ;
+	else if (axisType == AXIS2) spaceSampling = d2 ;
+	else if (axisType == AXIS3) spaceSampling = d3 ;	
+
+	printDebug(MID_DEBUG, "OUT Grid::getSpaceSampling");
+
+	return(spaceSampling) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 Myfloat Grid::getMinSpaceSampling()
 {
 	printDebug(MID_DEBUG, "IN Grid::getMinSpaceSampling");
@@ -2444,6 +2509,8 @@ Myfloat Grid::getMinSpaceSampling()
 	Myfloat minSpaceSampling = d1 ;
 	if (dim >= DIM2) minSpaceSampling = min((double) minSpaceSampling, d2) ;
 	if (dim >= DIM3) minSpaceSampling = min((double) minSpaceSampling, d3) ;
+
+	printDebug(MID_DEBUG, "OUT Grid::getMinSpaceSampling");
 
 	return(minSpaceSampling) ;
 }
@@ -3336,7 +3403,7 @@ Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O2_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O2_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3670,7 +3737,7 @@ Rtn_code Grid::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O2_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O2_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -4005,7 +4072,7 @@ Rtn_code Grid::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O2_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O2_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}

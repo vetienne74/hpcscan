@@ -26,6 +26,22 @@ namespace hpcscan {
 
 //=============================================== 1st differential ==========================================================
 
+//-------------------------------------%%%%%%%%%%% D1 FD space O2 %%%%%%%%%%%%%%------------------------------------
+const Myfloat FD_D1_O2_A1   =  1.0 ;
+const Myint   FD_D1_O2_NOP  = 2 ;
+
+#define FD_D1_O2_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((U[i1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1]) * inv_d1)
+
+//#define FD_D1_O2_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+//		((U[i1+1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1]) * inv_d1 / 2.0)
+
+#define FD_D1_O2_N2(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((U[i1 + (i2)  *n1 + i3*n2*n1] - U[i1 + (i2-1)*n1 + i3*n2*n1]) * inv_d2)
+
+#define FD_D1_O2_N3(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1]) * inv_d3)
+
 // -------------------------------------%%%%%%%%%%% D1 FD space O8 %%%%%%%%%%%%%%-------------------------------------
 const Myfloat FD_D1_O8_A1   =  1225./1024. ;
 const Myfloat FD_D1_O8_A2   = -245./3072. ;

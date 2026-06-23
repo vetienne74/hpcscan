@@ -40,7 +40,8 @@ public:
 	Grid(Grid_type) ;
 
 	// constructor
-	Grid(Grid_type, Dim_type, Myint64, Myint64, Myint64) ;
+	Grid(Grid_type gridTypeIn, Dim_type dimTypeIn,
+		Myint64 n1InnerIn, Myint64 n2InnerIn, Myint64 n3InnerIn) ;
 
 	// destructor
 	~Grid(void) ;
@@ -114,6 +115,9 @@ public:
 	// get max coordinates
 	Myfloat getMaxCoord(Axis_type) ;
 
+	// get spatial sampling for a given axis
+	Myfloat64 getSpaceSampling(Axis_type axisType) ;
+
 	// get min spatial sampling
 	Myfloat getMinSpaceSampling(void) ;
 
@@ -147,6 +151,12 @@ public:
 
 	// define unit grid
 	void defineUnitGrid() ;
+
+	// reset grid origin (coordinates)
+	void resetOriginGrid(Myfloat Orig1In, Myfloat Orig2In, Myfloat Orig3In) ;
+
+	// shift grid origin (coordinates)
+	void shiftOriginGrid(Myfloat Shift1, Myfloat Shift2, Myfloat Shift3) ;
 
 	// exchange halos with MPI
 	virtual Rtn_code exchangeHalos(MPI_comm_mode_type) ;
@@ -262,8 +272,6 @@ public:
 	double i_o_pread_time;
 
 protected:
-
-	
 	
 	// grid indexes (local)
 	Myint i1OffsetStart, i1OffsetEnd, i2OffsetStart, i2OffsetEnd, i3OffsetStart, i3OffsetEnd ;
@@ -275,7 +283,7 @@ protected:
 	Myint i1PadStart   , i1PadEnd   , i2PadStart   , i2PadEnd   , i3PadStart   , i3PadEnd ;
 
 	// origin of local grid
-	Myfloat Orig1, Orig2, Orig3 ;
+	Myfloat64 Orig1, Orig2, Orig3 ;
 
 	// grid offset using inner points (with respect to global grid)
 	Myint i1OffsetGlobInner, i2OffsetGlobInner, i3OffsetGlobInner ;

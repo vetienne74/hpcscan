@@ -113,7 +113,9 @@ Rtn_code TestCase_FD_D1::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Myfloat64 ampRef = a1 * a4 ;
-		// shift reference grid
+		// shift reference grid by -d1/2.0 along x1
+		Myfloat d1 = Rgrid.getSpaceSampling(AXIS1) ;
+		Rgrid.shiftOriginGrid(-d1/2.0, 0.0, 0.0) ;		
 		Rgrid.fill(ALL_POINTS, FUNC_COSINE, FUNC_SINE, FUNC_SINE, a1, a2, a3, ampRef) ;
 		Rgrid.write(testCaseName+"R") ;
 
@@ -193,7 +195,12 @@ Rtn_code TestCase_FD_D1::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Myfloat64 ampRef = a2 * a4 ;
-		// shift reference grid
+		// shift back reference grid by +d1/2.0 along x1
+		Myfloat d1 = Rgrid.getSpaceSampling(AXIS1) ;
+		Rgrid.shiftOriginGrid(+d1/2.0, 0.0, 0.0) ;	
+		// shift reference grid by -d2/2.0 along x2
+		Myfloat d2 = Rgrid.getSpaceSampling(AXIS2) ;
+		Rgrid.shiftOriginGrid(0.0, -d2/2.0, 0.0) ;	
 		Rgrid.fill(ALL_POINTS, FUNC_SINE, FUNC_COSINE, FUNC_SINE, a1, a2, a3, ampRef) ;
 		Rgrid.write(testCaseName+"R") ;
 
@@ -272,7 +279,12 @@ Rtn_code TestCase_FD_D1::run(void)
 		printInfo(MASTER, " * Case", caseName) ;
 
 		Myfloat64 ampRef = a3 * a4 ;
-		// shift reference grid
+		// shift back reference grid by +d2/2.0 along x2
+		Myfloat d2 = Rgrid.getSpaceSampling(AXIS2) ;
+		Rgrid.shiftOriginGrid(0.0, +d2/2.0,0.0) ;	
+		// shift reference grid by -d3/2.0 along x3
+		Myfloat d3 = Rgrid.getSpaceSampling(AXIS3) ;
+		Rgrid.shiftOriginGrid(0.0, 0.0, -d3/2.0) ;	
 		Rgrid.fill(ALL_POINTS, FUNC_SINE, FUNC_SINE, FUNC_COSINE, a1, a2, a3, ampRef) ;
 		Rgrid.write(testCaseName+"R") ;
 
