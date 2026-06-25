@@ -2373,6 +2373,23 @@ Myfloat Grid::allProcGetMax(Point_type pointType)
 
 //-------------------------------------------------------------------------------------------------------
 
+Myint Grid::getFlopPerPtFD_D1(Myint fdOrder)
+{
+	printDebug(FULL_DEBUG, "IN Grid::getFlopPerPtFD_D1");
+
+	Myint nOpDer = getFD_D1nMathOp(fdOrder) ;
+	Myint val= UNSPECIFIED ;
+
+	if (dim ==DIM1) val = nOpDer ;
+	else if (dim == DIM2) val = nOpDer ;
+	else if (dim == DIM3) val = nOpDer ;
+
+	printDebug(FULL_DEBUG, "OUT Grid::getFlopPerPtFD_D1");
+	return(val) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 Myint Grid::getFlopPerPtFD_D2(Myint fdOrder)
 {
 	printDebug(FULL_DEBUG, "IN Grid::getFlopPerPtFD_D2");
@@ -2403,6 +2420,19 @@ Myint Grid::getFlopPerPtFD_LAPLACIAN(Myint fdOrder)
 	else if (dim == DIM3) val = 3*nOpDer + 2 ; // + 2 ADD
 
 	printDebug(FULL_DEBUG, "OUT Grid::getFlopPerPtFD_LAPLACIAN");
+	return(val) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+Myint Grid::getPtPerStencilFD_D1(Myint fdOrder)
+{
+	printDebug(FULL_DEBUG, "IN Grid::getPtPerStencilFD_D1");
+
+	Myint nHsDer = fdOrder / 2 ; // half stencil length
+	Myint val = nHsDer * 2 ;
+
+	printDebug(FULL_DEBUG, "OUT Grid::getPtPerStencilFD_D1");
 	return(val) ;
 }
 
@@ -3488,7 +3518,7 @@ Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O12_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O12_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3505,7 +3535,7 @@ Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O14_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O14_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3522,7 +3552,7 @@ Rtn_code Grid::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O16_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O16_N1(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3822,7 +3852,7 @@ Rtn_code Grid::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O12_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O12_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3839,7 +3869,7 @@ Rtn_code Grid::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O14_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O14_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -3856,7 +3886,7 @@ Rtn_code Grid::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O16_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O16_N2(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -4157,7 +4187,7 @@ Rtn_code Grid::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O12_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O12_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -4174,7 +4204,7 @@ Rtn_code Grid::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O14_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O14_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}
@@ -4191,7 +4221,7 @@ Rtn_code Grid::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 				for (Myint64 i1 = i1Start; i1<= i1End; i1++)
 				{
 					w[i1+i2*n1+i3*n1*n2] =
-							FD_D2_O16_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
+							FD_D1_O16_N3(u, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) ;
 				}
 
 			}

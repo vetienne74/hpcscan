@@ -207,11 +207,17 @@ public:
 	// send and receive grid with MPI_Sendrecv
 	virtual Rtn_code sendRecvWithMPI(const Grid& gridDest, Myint idSend, Myint idRecv, Myint64 nGridPoint) ;
 
+	// get number of FLOP per point for operator FD_D1
+	Myint getFlopPerPtFD_D1(Myint fdOrder) ;
+
 	// get number of FLOP per point for operator FD_D2
 	Myint getFlopPerPtFD_D2(Myint fdOrder) ;
 
 	// get number of FLOP per point for operator LAPLACIAN
 	Myint getFlopPerPtFD_LAPLACIAN(Myint fdOrder) ;
+
+	// get number of points in the stencil for operator FD_D1
+	Myint getPtPerStencilFD_D1(Myint fdOrder) ;
 
 	// get number of points in the stencil for operator FD_D2
 	Myint getPtPerStencilFD_D2(Myint fdOrder) ;

@@ -147,6 +147,126 @@ const Myint   FD_D1_O10_NOP  = 15 ;
 				+ FD_D1_O10_A5 * (U[i1 + i2*n1 + (i3+4)*n2*n1] - U[i1 + i2*n1 + (i3-5)*n2*n1])) \
 				* inv_d3)
 
+// -------------------------------------%%%%%%%%%%% D1 FD space O12 %%%%%%%%%%%%%%-------------------------------------
+const Myfloat FD_D1_O12_A1   =  160083./131072. ;
+const Myfloat FD_D1_O12_A2   = -12705./131072. ;
+const Myfloat FD_D1_O12_A3   =  22869./1310720. ;
+const Myfloat FD_D1_O12_A4   = -5445./1835008. ;
+const Myfloat FD_D1_O12_A5   =  847./2359296. ;
+const Myfloat FD_D1_O12_A6   = -63./2883584. ;
+const Myint   FD_D1_O12_NOP  = 18 ;
+
+#define FD_D1_O12_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O12_A1         * (U[i1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A2 * (U[i1+1 + i2*n1 + i3*n2*n1] - U[i1-2 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A3 * (U[i1+2 + i2*n1 + i3*n2*n1] - U[i1-3 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A4 * (U[i1+3 + i2*n1 + i3*n2*n1] - U[i1-4 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A5 * (U[i1+4 + i2*n1 + i3*n2*n1] - U[i1-5 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A6 * (U[i1+5 + i2*n1 + i3*n2*n1] - U[i1-6 + i2*n1 + i3*n2*n1])) \
+				* inv_d1)
+
+#define FD_D1_O12_N2(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O12_A1         * (U[i1 + (i2)  *n1 + i3*n2*n1] - U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A2 * (U[i1 + (i2+1)*n1 + i3*n2*n1] - U[i1 + (i2-2)*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A3 * (U[i1 + (i2+2)*n1 + i3*n2*n1] - U[i1 + (i2-3)*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A4 * (U[i1 + (i2+3)*n1 + i3*n2*n1] - U[i1 + (i2-4)*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A5 * (U[i1 + (i2+4)*n1 + i3*n2*n1] - U[i1 + (i2-5)*n1 + i3*n2*n1])  \
+				+ FD_D1_O12_A6 * (U[i1 + (i2+5)*n1 + i3*n2*n1] - U[i1 + (i2-6)*n1 + i3*n2*n1])) \
+				* inv_d2)
+
+#define FD_D1_O12_N3(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O12_A1         * (U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+				+ FD_D1_O12_A2 * (U[i1 + i2*n1 + (i3+1)*n2*n1] - U[i1 + i2*n1 + (i3-2)*n2*n1])  \
+				+ FD_D1_O12_A3 * (U[i1 + i2*n1 + (i3+2)*n2*n1] - U[i1 + i2*n1 + (i3-3)*n2*n1])  \
+				+ FD_D1_O12_A4 * (U[i1 + i2*n1 + (i3+3)*n2*n1] - U[i1 + i2*n1 + (i3-4)*n2*n1])  \
+				+ FD_D1_O12_A5 * (U[i1 + i2*n1 + (i3+4)*n2*n1] - U[i1 + i2*n1 + (i3-5)*n2*n1])  \
+				+ FD_D1_O12_A6 * (U[i1 + i2*n1 + (i3+5)*n2*n1] - U[i1 + i2*n1 + (i3-6)*n2*n1])) \
+				* inv_d3)
+
+// -------------------------------------%%%%%%%%%%% D1 FD space O14 %%%%%%%%%%%%%%-------------------------------------
+const Myfloat FD_D1_O14_A1   =  1288287./1048576. ;
+const Myfloat FD_D1_O14_A2   = -429429./4194304. ;
+const Myfloat FD_D1_O14_A3   =  429429./20971520. ;
+const Myfloat FD_D1_O14_A4   = -61347./14680064. ;
+const Myfloat FD_D1_O14_A5   =  13013./18874368. ;
+const Myfloat FD_D1_O14_A6   = -3549./46137344. ;
+const Myfloat FD_D1_O14_A7   =  231./54525952. ;
+const Myint   FD_D1_O14_NOP  = 21 ;
+
+#define FD_D1_O14_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O14_A1         * (U[i1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A2 * (U[i1+1 + i2*n1 + i3*n2*n1] - U[i1-2 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A3 * (U[i1+2 + i2*n1 + i3*n2*n1] - U[i1-3 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A4 * (U[i1+3 + i2*n1 + i3*n2*n1] - U[i1-4 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A5 * (U[i1+4 + i2*n1 + i3*n2*n1] - U[i1-5 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A6 * (U[i1+5 + i2*n1 + i3*n2*n1] - U[i1-6 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A7 * (U[i1+6 + i2*n1 + i3*n2*n1] - U[i1-7 + i2*n1 + i3*n2*n1])) \
+				* inv_d1)
+
+#define FD_D1_O14_N2(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O14_A1         * (U[i1 + (i2)  *n1 + i3*n2*n1] - U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A2 * (U[i1 + (i2+1)*n1 + i3*n2*n1] - U[i1 + (i2-2)*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A3 * (U[i1 + (i2+2)*n1 + i3*n2*n1] - U[i1 + (i2-3)*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A4 * (U[i1 + (i2+3)*n1 + i3*n2*n1] - U[i1 + (i2-4)*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A5 * (U[i1 + (i2+4)*n1 + i3*n2*n1] - U[i1 + (i2-5)*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A6 * (U[i1 + (i2+5)*n1 + i3*n2*n1] - U[i1 + (i2-6)*n1 + i3*n2*n1])  \
+				+ FD_D1_O14_A7 * (U[i1 + (i2+6)*n1 + i3*n2*n1] - U[i1 + (i2-7)*n1 + i3*n2*n1])) \
+				* inv_d2)
+
+#define FD_D1_O14_N3(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O14_A1         * (U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+				+ FD_D1_O14_A2 * (U[i1 + i2*n1 + (i3+1)*n2*n1] - U[i1 + i2*n1 + (i3-2)*n2*n1])  \
+				+ FD_D1_O14_A3 * (U[i1 + i2*n1 + (i3+2)*n2*n1] - U[i1 + i2*n1 + (i3-3)*n2*n1])  \
+				+ FD_D1_O14_A4 * (U[i1 + i2*n1 + (i3+3)*n2*n1] - U[i1 + i2*n1 + (i3-4)*n2*n1])  \
+				+ FD_D1_O14_A5 * (U[i1 + i2*n1 + (i3+4)*n2*n1] - U[i1 + i2*n1 + (i3-5)*n2*n1])  \
+				+ FD_D1_O14_A6 * (U[i1 + i2*n1 + (i3+5)*n2*n1] - U[i1 + i2*n1 + (i3-6)*n2*n1])  \
+				+ FD_D1_O14_A7 * (U[i1 + i2*n1 + (i3+6)*n2*n1] - U[i1 + i2*n1 + (i3-7)*n2*n1])) \
+				* inv_d3)
+
+// -------------------------------------%%%%%%%%%%% D1 FD space O16 %%%%%%%%%%%%%%-------------------------------------
+const Myfloat FD_D1_O16_A1   =  41409225./33554432. ; 
+const Myfloat FD_D1_O16_A2   = -3578575./33554432. ; 
+const Myfloat FD_D1_O16_A3   =  3864861./167772160. ; 
+const Myfloat FD_D1_O16_A4   = -1254825./234881024. ; 
+const Myfloat FD_D1_O16_A5   =  325325./301989888. ; 
+const Myfloat FD_D1_O16_A6   = -61425./369098752. ; 
+const Myfloat FD_D1_O16_A7   =  7425./436207616. ; 
+const Myfloat FD_D1_O16_A8   = -143./167772160. ; 
+const Myint   FD_D1_O16_NOP  = 24 ;
+
+#define FD_D1_O16_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O16_A1         * (U[i1   + i2*n1 + i3*n2*n1] - U[i1-1 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A2 * (U[i1+1 + i2*n1 + i3*n2*n1] - U[i1-2 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A3 * (U[i1+2 + i2*n1 + i3*n2*n1] - U[i1-3 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A4 * (U[i1+3 + i2*n1 + i3*n2*n1] - U[i1-4 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A5 * (U[i1+4 + i2*n1 + i3*n2*n1] - U[i1-5 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A6 * (U[i1+5 + i2*n1 + i3*n2*n1] - U[i1-6 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A7 * (U[i1+6 + i2*n1 + i3*n2*n1] - U[i1-7 + i2*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A8 * (U[i1+7 + i2*n1 + i3*n2*n1] - U[i1-8 + i2*n1 + i3*n2*n1])) \
+				* inv_d1)
+
+#define FD_D1_O16_N2(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O16_A1         * (U[i1 + (i2)  *n1 + i3*n2*n1] - U[i1 + (i2-1)*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A2 * (U[i1 + (i2+1)*n1 + i3*n2*n1] - U[i1 + (i2-2)*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A3 * (U[i1 + (i2+2)*n1 + i3*n2*n1] - U[i1 + (i2-3)*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A4 * (U[i1 + (i2+3)*n1 + i3*n2*n1] - U[i1 + (i2-4)*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A5 * (U[i1 + (i2+4)*n1 + i3*n2*n1] - U[i1 + (i2-5)*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A6 * (U[i1 + (i2+5)*n1 + i3*n2*n1] - U[i1 + (i2-6)*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A7 * (U[i1 + (i2+6)*n1 + i3*n2*n1] - U[i1 + (i2-7)*n1 + i3*n2*n1])  \
+				+ FD_D1_O16_A8 * (U[i1 + (i2+7)*n1 + i3*n2*n1] - U[i1 + (i2-8)*n1 + i3*n2*n1])) \
+				* inv_d2)
+
+#define FD_D1_O16_N3(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
+		((FD_D1_O16_A1         * (U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1])  \
+				+ FD_D1_O16_A2 * (U[i1 + i2*n1 + (i3+1)*n2*n1] - U[i1 + i2*n1 + (i3-2)*n2*n1])  \
+				+ FD_D1_O16_A3 * (U[i1 + i2*n1 + (i3+2)*n2*n1] - U[i1 + i2*n1 + (i3-3)*n2*n1])  \
+				+ FD_D1_O16_A4 * (U[i1 + i2*n1 + (i3+3)*n2*n1] - U[i1 + i2*n1 + (i3-4)*n2*n1])  \
+				+ FD_D1_O16_A5 * (U[i1 + i2*n1 + (i3+4)*n2*n1] - U[i1 + i2*n1 + (i3-5)*n2*n1])  \
+				+ FD_D1_O16_A6 * (U[i1 + i2*n1 + (i3+5)*n2*n1] - U[i1 + i2*n1 + (i3-6)*n2*n1])  \
+				+ FD_D1_O16_A7 * (U[i1 + i2*n1 + (i3+6)*n2*n1] - U[i1 + i2*n1 + (i3-7)*n2*n1])  \
+				+ FD_D1_O16_A8 * (U[i1 + i2*n1 + (i3+7)*n2*n1] - U[i1 + i2*n1 + (i3-8)*n2*n1])) \
+				* inv_d3)
+
 //-=============================================== 2nd differential ==========================================================
 
 // Second derivative with centered FD scheme
@@ -552,7 +672,51 @@ static Myint getFD_D2haloWidth(Myint fdOrder)
 
 //-------------------------------------------------------------------------------------------------------
 // get number of mathematical operations for a given FD order
-// for derivative computations along one axis
+// for FD_D1 derivative computations along one axis
+//
+static Myint getFD_D1nMathOp(Myint fdOrder)
+{
+	Myint nMathOp = UNSPECIFIED ;
+
+	if (fdOrder == 2)
+	{
+		nMathOp = FD_D1_O2_NOP ;
+	}
+	else if (fdOrder == 4)
+	{
+		nMathOp = FD_D1_O4_NOP ;
+	}
+	else if (fdOrder == 6)
+	{
+		nMathOp = FD_D1_O6_NOP ;
+	}
+	else if (fdOrder == 8)
+	{
+		nMathOp = FD_D1_O8_NOP ;
+	}
+	else if (fdOrder == 10)
+	{
+		nMathOp = FD_D1_O10_NOP ;
+	}
+	else if (fdOrder == 12)
+	{
+		nMathOp = FD_D1_O12_NOP ;
+	}
+	else if (fdOrder == 14)
+	{
+		nMathOp = FD_D1_O14_NOP ;
+	}
+	else if (fdOrder == 16)
+	{
+		nMathOp = FD_D1_O16_NOP ;
+	}
+
+	return(nMathOp) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+// get number of mathematical operations for a given FD order
+// for FD_D2 derivative computations along one axis
 //
 static Myint getFD_D2nMathOp(Myint fdOrder)
 {
@@ -593,7 +757,6 @@ static Myint getFD_D2nMathOp(Myint fdOrder)
 
 	return(nMathOp) ;
 }
-
 
 } // namespace hpcscan
 

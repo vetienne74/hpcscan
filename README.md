@@ -126,7 +126,7 @@ Version      | Description | Release date
 ------------ | ----------- | ------------
 v1.0         |  **Initial version with CPU and Vector Engine support** <li> Test cases: Comm, FD_D2, Grid, Memory and Propa </li> <li> FD orders: 2, 4, 8, 12 & 16 </li> <li> Test modes: Baseline, CacheBlk and NEC_SCA </li> | Nov 28, 2020
 v1.1         | **GPU support** <li> Added test modes CUDA and HIP </li> <li> Added test mode NEC </li> | May 22, 2021
-v1.2         | **Energy consumption** <li> Access hardware counters to report energy (Watt) consumption </li> <li> Added FD orders: 6, 10 & 14 </li> <li> Added test mode DPC++</li> <li> Added test modes CUDA_Opt, CUDA_Ref and HIP_Opt </li> | Coming soon
+v1.2         | **Energy consumption** <li> Access hardware counters to report energy (Watt) consumption </li> <li> Added FD orders: 6, 10 & 14 </li> <li> Added test case: FD_D1 </li> <li> Added test mode DPC++</li> <li> Added test modes CUDA_Opt, CUDA_Ref and HIP_Opt </li> | Q4 2026
 
 # Main features
 
@@ -241,7 +241,7 @@ This script runs a set a light test cases and should complete within few minutes
 
 You should get in the ouptput report (displayed on the terminal)
 
-* All tests marked as PASSED (661 tests passed for each test mode enabled)
+* All tests marked as PASSED (709 tests passed for each test mode enabled)
 * No test marked as FAILED
 
 Check the summary at the end of report to have a quick look on this.

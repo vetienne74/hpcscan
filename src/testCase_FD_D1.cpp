@@ -153,11 +153,9 @@ Rtn_code TestCase_FD_D1::run(void)
 				checkGridL1Err(INNER_POINTS, Wgrid, Rgrid, maxErr) ;
 			}
 		}
-
-		//TODO Myint nOpPerPoint   = Ugrid.getFlopPerPtFD_D1(fdOrder) ;
-		//TODO Myint nPtPerStencil = Ugrid.getPtPerStencilFD_D1(fdOrder) ;
-		Myint nOpPerPoint   = Ugrid.getFlopPerPtFD_D2(fdOrder) ;
-		Myint nPtPerStencil = Ugrid.getPtPerStencilFD_D2(fdOrder) ;
+		
+		Myint nOpPerPoint   = Ugrid.getFlopPerPtFD_D1(fdOrder) ;
+		Myint nPtPerStencil = Ugrid.getPtPerStencilFD_D1(fdOrder) ;
 
         Myint nMemOpPerPoint = nPtPerStencil + 1 ; // + 1 store
 		printInfo(MASTER, " #Flop per point", nOpPerPoint) ;
@@ -238,11 +236,9 @@ Rtn_code TestCase_FD_D1::run(void)
 				checkGridL1Err(INNER_POINTS, Wgrid, Rgrid, maxErr) ;
 			}
 		}
-
-		//TODO Myint nOpPerPoint   = Ugrid.getFlopPerPtFD_D1(fdOrder) ;
-		//TODO Myint nPtPerStencil = Ugrid.getPtPerStencilFD_D1(fdOrder) ;
-		Myint nOpPerPoint   = Ugrid.getFlopPerPtFD_D2(fdOrder) ;
-		Myint nPtPerStencil = Ugrid.getPtPerStencilFD_D2(fdOrder) ;
+		
+		Myint nOpPerPoint   = Ugrid.getFlopPerPtFD_D1(fdOrder) ;
+		Myint nPtPerStencil = Ugrid.getPtPerStencilFD_D1(fdOrder) ;
         Myint nMemOpPerPoint = nPtPerStencil + 1 ; // + 1 store
 		printInfo(MASTER, " #Flop per point", nOpPerPoint) ;
 		printInfo(MASTER, " #Point in stencil", nPtPerStencil) ;
@@ -322,11 +318,9 @@ Rtn_code TestCase_FD_D1::run(void)
 				checkGridL1Err(INNER_POINTS, Wgrid, Rgrid, maxErr) ;
 			}
 		}
-
-		//TODO Myint nOpPerPoint    = Ugrid.getFlopPerPtFD_D1(fdOrder) ;
-		//TODO Myint nPtPerStencil  = Ugrid.getPtPerStencilFD_D1(fdOrder) ;
-        Myint nOpPerPoint    = Ugrid.getFlopPerPtFD_D2(fdOrder) ;
-		Myint nPtPerStencil  = Ugrid.getPtPerStencilFD_D2(fdOrder) ;
+		
+        Myint nOpPerPoint    = Ugrid.getFlopPerPtFD_D1(fdOrder) ;
+		Myint nPtPerStencil  = Ugrid.getPtPerStencilFD_D1(fdOrder) ;
 		Myint nMemOpPerPoint = nPtPerStencil + 1 ; // + 1 store
 		printInfo(MASTER, " #Flop per point", nOpPerPoint) ;
 		printInfo(MASTER, " #Point in stencil", nPtPerStencil) ;
