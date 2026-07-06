@@ -103,6 +103,7 @@ Rtn_code TestCase_FD_D2::run(void)
 	if (Config::Instance()->dim >= DIM1)
 	{
 		//====================================================
+		// 2nd derivative along axis x1
 		// W = d2(U)/dx1x1
 		// reference solution:
 		// -a1^2 * sin(a1*x1) * sin(a2*x2) * sin(a3*x3) * a4
@@ -179,6 +180,7 @@ Rtn_code TestCase_FD_D2::run(void)
 	if (Config::Instance()->dim >= DIM2)
 	{
 		//====================================================
+		// 2nd derivative along axis x2
 		// W = d2(U)/dx2x2
 		// reference solution:
 		// -a2^2 * sin(a1*x1) * sin(a2*x2) * sin(a3*x3) * a4
@@ -255,6 +257,7 @@ Rtn_code TestCase_FD_D2::run(void)
 	if (Config::Instance()->dim >= DIM3)
 	{
 		//====================================================
+		// 2nd derivative along axis x3
 		// W = d2(U)/dx3x3
 		// reference solution:
 		// -a3^2 * sin(a1*x1) * sin(a2*x2) * sin(a3*x3) * a4
@@ -330,6 +333,7 @@ Rtn_code TestCase_FD_D2::run(void)
 
 	{
 		//===========================================================
+		// Laplacian (some of 2nd derivatives along all axis)
 		// W = Laplacian(U)
 		//===========================================================
 

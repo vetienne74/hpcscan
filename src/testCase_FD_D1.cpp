@@ -103,7 +103,8 @@ Rtn_code TestCase_FD_D1::run(void)
 	if (Config::Instance()->dim >= DIM1)
 	{
 		//====================================================
-		// W = d2(U)/dx1x1
+		// 1st derivative along axis x1
+		// W = d(U)/dx1
 		// reference solution:
 		// a1 * cos(a1*x1) * sin(a2*x2) * sin(a3*x3) * a4
 		//====================================================
@@ -183,7 +184,8 @@ Rtn_code TestCase_FD_D1::run(void)
 	if (Config::Instance()->dim >= DIM2)
 	{
 		//====================================================
-		// W = d2(U)/dx2x2
+		// 1st derivative along axis x2
+		// W = d(U)/dx2
 		// reference solution:
 		// a2 * sin(a1*x1) * cos(a2*x2) * sin(a3*x3) * a4
 		//====================================================
@@ -265,7 +267,8 @@ Rtn_code TestCase_FD_D1::run(void)
 	if (Config::Instance()->dim >= DIM3)
 	{
 		//====================================================
-		// W = d2(U)/dx3x3
+		// 1st derivative along axis x3
+		// W = d(U)/dx3
 		// reference solution:
 		// a3 * sin(a1*x1) * sin(a2*x2) * cos(a3*x3) * a4
 		//====================================================
@@ -342,6 +345,25 @@ Rtn_code TestCase_FD_D1::run(void)
 			printInfo(MASTER, " MPI Comm. BW GB/s", Myfloat(nGridPointHaloGlob/testCase_time_com
 					/ 1.e9 * sizeof(Myfloat))) ;
 		}
+	}
+
+	// log perf
+	if (myMpiRank == 0)
+	{
+		perfLogFile
+		// 10, 11, 12, 13
+		<< D1Axis1Gflop << " " << D1Axis1GpointFD << " " << D1Axis1GpointEff << " " << D1Axis1GB << " "
+		// 14, 15, 16, 17
+		<< D1Axis2Gflop << " " << D1Axis2GpointFD << " " << D1Axis2GpointEff << " " << D1Axis2GB << " "
+		// 18, 19, 20, 21
+		<< D1Axis3Gflop << " " << D1Axis3GpointFD << " " << D1Axis3GpointEff << " " << D1Axis3GB << " "
+		// 22, 23, 24, 25
+		//<< D1LaplaGflop << " " << D1LaplaGpointFD << " " << D1LaplaGpointEff << " " << D1LaplaGB << " "
+		<< D1Axis1Gflop << " " << D1Axis1GpointFD << " " << D1Axis1GpointEff << " " << D1Axis1GB << " "
+		
+		// cache block sizes
+		<< Config::Instance()->cb1 << " " << Config::Instance()->cb2 << " " << Config::Instance()->cb3
+		<< "\n" ;
 	}
 
 	this->finalize() ;
