@@ -36,7 +36,7 @@ figure('Position',[100 100 1200 600])
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % plot n1,n2,n3,Laplacian GB/s and ratio GB/s vs Max BW
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for iarch = [1]
+for iarch = [1 2]
     
     switch iarch
         case 1
@@ -51,13 +51,13 @@ for iarch = [1]
             HLINE = '\hline' ;
             
         case 2
-            FILE = 'XXX' ;
+            FILE = 'hpcscanPerfFD_D2CacheBlk' ;
             ARCH = 'CPU' ;
             MODE = 'CacheBlk' ;
             COLORPLOT = 'b' ;
             WIDTHPLOT = 1.0 ;
             STYLEPLOT = '-' ;
-            BW   = 281 ;
+            BW   = 44 ;
             FLOP = 9999 ;
             HLINE = '\hline' ;
             
