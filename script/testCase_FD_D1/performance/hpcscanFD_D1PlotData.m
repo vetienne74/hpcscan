@@ -163,7 +163,8 @@ for iarch = [1 2]
     text(1,  125, 0, 'Derivative axis 1') ;
     text(10, 125, 0, 'Derivative axis 2') ;
     text(19, 125, 0, 'Derivative axis 3') ;
-    text(28, 125, 0, 'Laplacian') ;
+    %text(28, 125, 0, 'Laplacian') ;
+    text(28, 125, 0, 'Average') ;
     
     % ration mem BW / peak
     subplot(2,1,2); hold on

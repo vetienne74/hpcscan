@@ -33,6 +33,15 @@ public:
 	// print info
 	virtual void info(void) ;
 
+	// compute FD_D1 along N1
+	virtual Rtn_code FD_D1_N1(Point_type pType, const Grid&, Myint fdOrder) ;
+
+	// compute FD_D1 along N2
+	virtual Rtn_code FD_D1_N2(Point_type pType, const Grid&, Myint fdOrder) ;
+
+	// compute FD_D1 along N3
+	virtual Rtn_code FD_D1_N3(Point_type pType, const Grid&, Myint fdOrder) ;
+
 	// compute FD_D2 along N1
 	virtual Rtn_code FD_D2_N1(Point_type pType, const Grid&, Myint fdOrder) ;
 

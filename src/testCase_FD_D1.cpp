@@ -359,8 +359,12 @@ Rtn_code TestCase_FD_D1::run(void)
 		<< D1Axis3Gflop << " " << D1Axis3GpointFD << " " << D1Axis3GpointEff << " " << D1Axis3GB << " "
 		// 22, 23, 24, 25
 		//<< D1LaplaGflop << " " << D1LaplaGpointFD << " " << D1LaplaGpointEff << " " << D1LaplaGB << " "
-		<< D1Axis1Gflop << " " << D1Axis1GpointFD << " " << D1Axis1GpointEff << " " << D1Axis1GB << " "
-		
+		// temporary, output average instead of real measurements
+		<< (D1Axis1Gflop + D1Axis2Gflop + D1Axis3Gflop) / 3.0 << " " 
+		<< (D1Axis1GpointFD + D1Axis2GpointFD + D1Axis3GpointFD) / 3.0 << " " 
+		<< (D1Axis1GpointEff + D1Axis2GpointEff + D1Axis3GpointEff) / 3.0 << " " 
+		<< (D1Axis1GB + D1Axis2GB + D1Axis3GB) / 3.0 << " "
+
 		// cache block sizes
 		<< Config::Instance()->cb1 << " " << Config::Instance()->cb2 << " " << Config::Instance()->cb3
 		<< "\n" ;
