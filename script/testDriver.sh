@@ -174,31 +174,31 @@ $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${tes
 $HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 16 -dim 3 >> ${report_file}
 
 # 3D all orders with -autoPad
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 2  -dim 3 -autoPad >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 4  -dim 3 -autoPad >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 6  -dim 3 -autoPad >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 8  -dim 3 -autoPad >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 10 -dim 3 -autoPad >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 12 -dim 3 -autoPad >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 14 -dim 3 -autoPad >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 16 -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 2  -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 4  -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 6  -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 8  -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 10 -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 12 -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 14 -dim 3 -autoPad >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 16 -dim 3 -autoPad >> ${report_file}
 
 # custom grid size
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 16 -dim 3 -n1 27 -n2 36 -n3 41 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -fdOrder 16 -dim 3 -n1 27 -n2 36 -n3 41 >> ${report_file}
 
 # Padding
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1MulPad 5 -n2MulPad 5 -n3MulPad 5 >> ${report_file}
 
 # Offset
 # do not apply -n3Offset (some kernels do not support it)
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1Offset 1 -n2Offset 2 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1Offset 1 -n2Offset 2 >> ${report_file}
 
 # Offset + Padding
 # do not apply -n3Offset (some kernels do not support it)
-#$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1Offset 1 -n2Offset 2 \
-#		     -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
+$HPCSCAN_MPI_INVOKER -n 1 ../bin/hpcscan -ntry 1 -testMode ${tM} -testCase ${testCase} -n1Offset 1 -n2Offset 2 \
+		     -n1AddPad 5 -n2AddPad 5 -n3AddPad 5 >> ${report_file}
 
 #==========================================================================================================
 # test case Grid
