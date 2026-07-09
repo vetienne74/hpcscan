@@ -67,7 +67,7 @@ Rtn_code TestCase::initialize(void)
 			string file_name = "hpcscan.perf." + testCaseName + ".log";
 			perfLogFile.open(file_name, ios::app) ;
 
-			// all strings first
+			// all data in string format first			
 			perfLogFile << Config::Instance()->hostName << " " ;
 			perfLogFile << Config::Instance()->testCaseName << " " ;
 			perfLogFile << Config::Instance()->testMode << " " ;

@@ -11,7 +11,8 @@ nmode='130'
 dim='1'
 ntry='1'
 ratioCFLRange=['1.0','0.5','0.2','0.1']
-testModeRange=['NEC_SCA']
+#testModeRange=['NEC_SCA']
+testModeRange=['Baseline']
 propagatorRange=['Ac2Standard','Ac2SplitComp']
 
 #-----------------------------------------------------------------

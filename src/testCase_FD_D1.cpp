@@ -2,7 +2,6 @@
 //-------------------------------------------------------------------------------------------------------
 // test cases to measure the finite-difference computation bandwidth
 // first derivatice operator D1 (i.e. d/dx)
-// baseline kernel - no optimization
 //-------------------------------------------------------------------------------------------------------
 
 #include "testCase_FD_D1.h"
@@ -48,6 +47,11 @@ Rtn_code TestCase_FD_D1::run(void)
 	Wgrid.initializeGrid() ;
 	Rgrid.initializeGrid() ;
 
+	// test with unit grids
+	Ugrid.defineUnitGrid() ;
+	Wgrid.defineUnitGrid() ;
+	Rgrid.defineUnitGrid() ;
+
 	Ugrid.info() ;
 
 	// Number of points exchanged in Halos
@@ -58,9 +62,9 @@ Rtn_code TestCase_FD_D1::run(void)
 	printInfo(MASTER, " Halos Com Global (Pts)", nGridPointHaloGlob) ;
 	printInfo(MASTER, " Halos Com Global (MB)", Myfloat(nGridPointHaloGlob*sizeof(Myfloat)/1.e6)) ;
 
-	const Myfloat64 a1 = Config::Instance()->param1 ;
-	const Myfloat64 a2 = Config::Instance()->param2 ;
-	const Myfloat64 a3 = Config::Instance()->param3 ;
+	const Myfloat64 a1 = PI * Config::Instance()->param1 ;
+	const Myfloat64 a2 = PI * Config::Instance()->param2 ;
+	const Myfloat64 a3 = PI * Config::Instance()->param3 ;
 	const Myfloat64 a4 = Config::Instance()->param4 ;
 
 	//............................................
@@ -72,8 +76,6 @@ Rtn_code TestCase_FD_D1::run(void)
 
 	Myfloat * const u = Ugrid.grid_3d ;
 	Myfloat * const w = Wgrid.grid_3d ;
-
-	double testCase_time_best, testCase_time_com ;
 
 	Myint ntry = Config::Instance()->ntry ;
 
@@ -99,6 +101,10 @@ Rtn_code TestCase_FD_D1::run(void)
 	Myfloat D1Axis1GpointEff=0, D1Axis2GpointEff=0, D1Axis3GpointEff=0 ;
 	Myfloat D1Axis1GpointFD=0, D1Axis2GpointFD=0, D1Axis3GpointFD=0 ;
 	Myfloat D1Axis1GB=0, D1Axis2GB=0, D1Axis3GB=0 ;
+
+	double testCase_time_best, testCase_time_com ;
+	double D1Axis1BestTime, D1Axis2BestTime, D1Axis3BestTime ;
+	Myfloat D1Axis1Error, D1Axis2Error, D1Axis3Error ;
 
 	if (Config::Instance()->dim >= DIM1)
 	{
@@ -152,6 +158,7 @@ Rtn_code TestCase_FD_D1::run(void)
 			{
 				Wgrid.write(caseName+"W") ;
 				checkGridL1Err(INNER_POINTS, Wgrid, Rgrid, maxErr) ;
+				D1Axis1Error = Wgrid.L1Err(INNER_POINTS, Rgrid) ;
 			}
 		}
 		
@@ -167,6 +174,7 @@ Rtn_code TestCase_FD_D1::run(void)
 		D1Axis1GpointEff = nGridPointGlob/testCase_time_best/1.e9 ;
 		D1Axis1GpointFD  = nGridPointGlob/timeInFD/1.e9 ;
 		D1Axis1GB        = nGridPointGlob/timeInFD/1.e9 * nMemOpPerPoint * sizeof(Myfloat) ;
+		D1Axis1BestTime  = testCase_time_best ;
 
 		printInfo(MASTER, " Best GFlop/s in FD" ,   D1Axis1Gflop) ;
 		printInfo(MASTER, " Best Gpoint/s eff." ,   D1Axis1GpointEff) ;
@@ -236,6 +244,7 @@ Rtn_code TestCase_FD_D1::run(void)
 			{
 				Wgrid.write(caseName+"W") ;
 				checkGridL1Err(INNER_POINTS, Wgrid, Rgrid, maxErr) ;
+				D1Axis2Error = Wgrid.L1Err(INNER_POINTS, Rgrid) ;
 			}
 		}
 		
@@ -250,6 +259,7 @@ Rtn_code TestCase_FD_D1::run(void)
 		D1Axis2GpointEff = nGridPointGlob/testCase_time_best/1.e9 ;
 		D1Axis2GpointFD  = nGridPointGlob/timeInFD/1.e9 ;
 		D1Axis2GB        = nGridPointGlob/timeInFD/1.e9 * nMemOpPerPoint * sizeof(Myfloat) ;
+		D1Axis2BestTime  = testCase_time_best ;
 
 		printInfo(MASTER, " Best GFlop/s in FD" ,   D1Axis2Gflop) ;
 		printInfo(MASTER, " Best Gpoint/s eff." ,   D1Axis2GpointEff) ;
@@ -319,6 +329,7 @@ Rtn_code TestCase_FD_D1::run(void)
 			{
 				Wgrid.write(caseName+"W") ;
 				checkGridL1Err(INNER_POINTS, Wgrid, Rgrid, maxErr) ;
+				D1Axis3Error = Wgrid.L1Err(INNER_POINTS, Rgrid) ;
 			}
 		}
 		
@@ -333,6 +344,7 @@ Rtn_code TestCase_FD_D1::run(void)
 		D1Axis3GpointEff = nGridPointGlob/testCase_time_best/1.e9 ;
 		D1Axis3GpointFD  = nGridPointGlob/timeInFD/1.e9 ;
 		D1Axis3GB        = nGridPointGlob/timeInFD/1.e9 * nMemOpPerPoint * sizeof(Myfloat) ;
+		D1Axis3BestTime  = testCase_time_best ;
 
 		printInfo(MASTER, " Best GFlop/s in FD" ,   D1Axis3Gflop) ;
 		printInfo(MASTER, " Best Gpoint/s eff." ,   D1Axis3GpointEff) ;
@@ -353,11 +365,17 @@ Rtn_code TestCase_FD_D1::run(void)
 		perfLogFile
 		// 10, 11, 12, 13
 		<< D1Axis1Gflop << " " << D1Axis1GpointFD << " " << D1Axis1GpointEff << " " << D1Axis1GB << " "
-		// 14, 15, 16, 17
+		// 14, 15
+		<< D1Axis1BestTime << " " << D1Axis1Error << " "
+		// 16, 17, 18, 19
 		<< D1Axis2Gflop << " " << D1Axis2GpointFD << " " << D1Axis2GpointEff << " " << D1Axis2GB << " "
-		// 18, 19, 20, 21
-		<< D1Axis3Gflop << " " << D1Axis3GpointFD << " " << D1Axis3GpointEff << " " << D1Axis3GB << " "
+		// 20, 21
+		<< D1Axis2BestTime << " " << D1Axis2Error << " "
 		// 22, 23, 24, 25
+		<< D1Axis3Gflop << " " << D1Axis3GpointFD << " " << D1Axis3GpointEff << " " << D1Axis3GB << " "
+		// 26, 27
+		<< D1Axis3BestTime << " " << D1Axis3Error << " "
+		// 28, 29, 30, 31
 		//<< D1LaplaGflop << " " << D1LaplaGpointFD << " " << D1LaplaGpointEff << " " << D1LaplaGB << " "
 		// temporary, output average instead of real measurements
 		<< (D1Axis1Gflop + D1Axis2Gflop + D1Axis3Gflop) / 3.0 << " " 
@@ -366,6 +384,7 @@ Rtn_code TestCase_FD_D1::run(void)
 		<< (D1Axis1GB + D1Axis2GB + D1Axis3GB) / 3.0 << " "
 
 		// cache block sizes
+		// 32, 33, 34
 		<< Config::Instance()->cb1 << " " << Config::Instance()->cb2 << " " << Config::Instance()->cb3
 		<< "\n" ;
 	}
