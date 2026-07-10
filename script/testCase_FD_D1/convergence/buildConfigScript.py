@@ -2,8 +2,8 @@
 script_template = 'templateScript.sh'
 
 n1Range=['200','250','300','350','400','500','600','700','800','900','1000']
-fdOrderRange=['2','4','6','8']
-nmode='130'
+fdOrderRange=['2','4','6','8','10','12','14','16']
+nmode='150'
 dim='3'
 #dim='1'
 ntry='1'
