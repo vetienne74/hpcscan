@@ -10,10 +10,10 @@ ORD = 1 ;
 FILE = sprintf('hpcscan.perf.FD_D%i', ORD) ;
 
 % derivative (1=x1, 2=x2, 3=x3, 4=sum/Laplacian)
-DER = 3 ;
+DER = 1 ;
 
 % define target error
-maxAllowedError = 0.01 ;
+maxAllowedError = 0.001 ;
 
 % define hardware memory bandwith
 memBwdth = 44.0 ;
@@ -25,6 +25,9 @@ minGPoint  = 0.0 ;
 maxGPoint  = 5.0 ;
 minGByte   = 0.0 ;
 maxGByte   = 200.0 ;
+minTime    = 0.001 ;
+maxTime    = 10.0 ;
+
 
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;
 val = importdata(pathFile) ;
@@ -119,6 +122,7 @@ ax.XScale='log'
 ax.YScale='log'
 
 ylim([minErrPlot maxErrPlot])
+xlim([minTime maxTime])
 
 %----------------------
 % plot Error versus N1
@@ -242,5 +246,6 @@ figName = sprintf('%s-%s.jpg', FILE, DER_AXIS) ;
 print(figName, '-djpeg')
 
 fprintf('Error min %g - max %g\n', min(valError(:)), max(valError(:)))
+fprintf('Time min %g - max %g\n',  min(valTime(:)), max(valTime(:)))
 
 % END

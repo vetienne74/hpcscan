@@ -411,7 +411,7 @@ const Myint   FD_D2_O10_NOP  = 17 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 12 %%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O12_A0   = -2598./871. ;
+const Myfloat FD_D2_O12_A0   = -5369./1800. ;
 const Myfloat FD_D2_O12_A1   =  12./7.;
 const Myfloat FD_D2_O12_A2   = -15./56. ;
 const Myfloat FD_D2_O12_A3   =  10./189.;
@@ -495,14 +495,14 @@ const Myint   FD_D2_O14_NOP  = 23 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 16 %%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O16_A0   = -1671./547. ;
+const Myfloat FD_D2_O16_A0   = -1077749./352800. ;
 const Myfloat FD_D2_O16_A1   =  16./9. ;
 const Myfloat FD_D2_O16_A2   = -14./45. ;
 const Myfloat FD_D2_O16_A3   =  112./1485.;
 const Myfloat FD_D2_O16_A4   = -7./396. ;
-const Myfloat FD_D2_O16_A5   =  65./18673. ;
+const Myfloat FD_D2_O16_A5   =  112./32175. ;
 const Myfloat FD_D2_O16_A6   = -2./3861.;
-const Myfloat FD_D2_O16_A7   =  5./98536.;
+const Myfloat FD_D2_O16_A7   =  16./315315.;
 const Myfloat FD_D2_O16_A8   = -1./411840. ;
 const Myint   FD_D2_O16_NOP  = 26 ;
 
@@ -543,25 +543,138 @@ const Myint   FD_D2_O16_NOP  = 26 ;
 				* inv2_d3)
 
 //-------------------------------------------------------------------------------------------------------
-// return vector of FD coefficients
+// return vector of FD D1 coefficients
+//
+static vector<Myfloat> getFD_D1coefVector(Myint fdOrder)
+{
+	vector<Myfloat> FD_coef ;
+
+	if (fdOrder == 2)
+	{
+		FD_coef.push_back(-FD_D1_O2_A1) ;
+		FD_coef.push_back(FD_D1_O2_A1) ;
+	}
+	else if (fdOrder == 4)
+	{
+		FD_coef.push_back(-FD_D1_O4_A2) ;
+		FD_coef.push_back(-FD_D1_O4_A1) ;
+		FD_coef.push_back(FD_D1_O4_A1) ;
+		FD_coef.push_back(FD_D1_O4_A2) ;
+	}
+	else if (fdOrder == 6)
+	{
+		FD_coef.push_back(-FD_D1_O6_A3) ;
+		FD_coef.push_back(-FD_D1_O6_A2) ;
+		FD_coef.push_back(-FD_D1_O6_A1) ;
+		FD_coef.push_back(FD_D1_O6_A1) ;
+		FD_coef.push_back(FD_D1_O6_A2) ;
+		FD_coef.push_back(FD_D1_O6_A3) ;
+	}
+	else if (fdOrder == 8)
+	{		
+		FD_coef.push_back(-FD_D1_O8_A4) ;
+		FD_coef.push_back(-FD_D1_O8_A3) ;
+		FD_coef.push_back(-FD_D1_O8_A2) ;
+		FD_coef.push_back(-FD_D1_O8_A1) ;
+		FD_coef.push_back(FD_D1_O8_A1) ;
+		FD_coef.push_back(FD_D1_O8_A2) ;
+		FD_coef.push_back(FD_D1_O8_A3) ;
+		FD_coef.push_back(FD_D1_O8_A4) ;
+	}
+	else if (fdOrder == 10)
+	{		
+		FD_coef.push_back(-FD_D1_O10_A5) ;
+		FD_coef.push_back(-FD_D1_O10_A4) ;
+		FD_coef.push_back(-FD_D1_O10_A3) ;
+		FD_coef.push_back(-FD_D1_O10_A2) ;
+		FD_coef.push_back(-FD_D1_O10_A1) ;
+		FD_coef.push_back(FD_D1_O10_A1) ;
+		FD_coef.push_back(FD_D1_O10_A2) ;
+		FD_coef.push_back(FD_D1_O10_A3) ;
+		FD_coef.push_back(FD_D1_O10_A4) ;
+		FD_coef.push_back(FD_D1_O10_A5) ;
+	}
+	else if (fdOrder == 12)
+	{		
+		FD_coef.push_back(-FD_D1_O12_A6) ;
+		FD_coef.push_back(-FD_D1_O12_A5) ;
+		FD_coef.push_back(-FD_D1_O12_A4) ;
+		FD_coef.push_back(-FD_D1_O12_A3) ;
+		FD_coef.push_back(-FD_D1_O12_A2) ;
+		FD_coef.push_back(-FD_D1_O12_A1) ;
+		FD_coef.push_back(FD_D1_O12_A1) ;
+		FD_coef.push_back(FD_D1_O12_A2) ;
+		FD_coef.push_back(FD_D1_O12_A3) ;
+		FD_coef.push_back(FD_D1_O12_A4) ;
+		FD_coef.push_back(FD_D1_O12_A5) ;
+		FD_coef.push_back(FD_D1_O12_A6) ;
+	}
+	else if (fdOrder == 14)
+	{		
+		FD_coef.push_back(-FD_D1_O14_A7) ;
+		FD_coef.push_back(-FD_D1_O14_A6) ;
+		FD_coef.push_back(-FD_D1_O14_A5) ;
+		FD_coef.push_back(-FD_D1_O14_A4) ;
+		FD_coef.push_back(-FD_D1_O14_A3) ;
+		FD_coef.push_back(-FD_D1_O14_A2) ;
+		FD_coef.push_back(-FD_D1_O14_A1) ;
+		FD_coef.push_back(FD_D1_O14_A1) ;
+		FD_coef.push_back(FD_D1_O14_A2) ;
+		FD_coef.push_back(FD_D1_O14_A3) ;
+		FD_coef.push_back(FD_D1_O14_A4) ;
+		FD_coef.push_back(FD_D1_O14_A5) ;
+		FD_coef.push_back(FD_D1_O14_A6) ;
+		FD_coef.push_back(FD_D1_O14_A7) ;
+	}
+	else if (fdOrder == 16)
+	{		
+		FD_coef.push_back(-FD_D1_O16_A8) ;
+		FD_coef.push_back(-FD_D1_O16_A7) ;
+		FD_coef.push_back(-FD_D1_O16_A6) ;
+		FD_coef.push_back(-FD_D1_O16_A5) ;
+		FD_coef.push_back(-FD_D1_O16_A4) ;
+		FD_coef.push_back(-FD_D1_O16_A3) ;
+		FD_coef.push_back(-FD_D1_O16_A2) ;
+		FD_coef.push_back(-FD_D1_O16_A1) ;
+		FD_coef.push_back(FD_D1_O16_A1) ;
+		FD_coef.push_back(FD_D1_O16_A2) ;
+		FD_coef.push_back(FD_D1_O16_A3) ;
+		FD_coef.push_back(FD_D1_O16_A4) ;
+		FD_coef.push_back(FD_D1_O16_A5) ;
+		FD_coef.push_back(FD_D1_O16_A6) ;
+		FD_coef.push_back(FD_D1_O16_A7) ;
+		FD_coef.push_back(FD_D1_O16_A8) ;
+	}
+
+	return FD_coef ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+// return vector of FD D2 coefficients
 //
 static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 {
 	vector<Myfloat> FD_coef ;
 
 	if (fdOrder == 2)
-	{
+	{		
+		FD_coef.push_back(FD_D2_O2_A1) ;
 		FD_coef.push_back(FD_D2_O2_A0) ;
 		FD_coef.push_back(FD_D2_O2_A1) ;
 	}
 	else if (fdOrder == 4)
 	{
+		FD_coef.push_back(FD_D2_O4_A2) ;
+		FD_coef.push_back(FD_D2_O4_A1) ;
 		FD_coef.push_back(FD_D2_O4_A0) ;
 		FD_coef.push_back(FD_D2_O4_A1) ;
 		FD_coef.push_back(FD_D2_O4_A2) ;
 	}
 	else if (fdOrder == 6)
 	{
+		FD_coef.push_back(FD_D2_O6_A3) ;
+		FD_coef.push_back(FD_D2_O6_A2) ;
+		FD_coef.push_back(FD_D2_O6_A1) ;
 		FD_coef.push_back(FD_D2_O6_A0) ;
 		FD_coef.push_back(FD_D2_O6_A1) ;
 		FD_coef.push_back(FD_D2_O6_A2) ;
@@ -569,6 +682,10 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 	}
 	else if (fdOrder == 8)
 	{
+		FD_coef.push_back(FD_D2_O8_A4) ;
+		FD_coef.push_back(FD_D2_O8_A3) ;
+		FD_coef.push_back(FD_D2_O8_A2) ;
+		FD_coef.push_back(FD_D2_O8_A1) ;
 		FD_coef.push_back(FD_D2_O8_A0) ;
 		FD_coef.push_back(FD_D2_O8_A1) ;
 		FD_coef.push_back(FD_D2_O8_A2) ;
@@ -577,6 +694,11 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 	}
 	else if (fdOrder == 10)
 	{
+		FD_coef.push_back(FD_D2_O10_A5) ;
+		FD_coef.push_back(FD_D2_O10_A4) ;
+		FD_coef.push_back(FD_D2_O10_A3) ;
+		FD_coef.push_back(FD_D2_O10_A2) ;
+		FD_coef.push_back(FD_D2_O10_A1) ;
 		FD_coef.push_back(FD_D2_O10_A0) ;
 		FD_coef.push_back(FD_D2_O10_A1) ;
 		FD_coef.push_back(FD_D2_O10_A2) ;
@@ -586,6 +708,12 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 	}
 	else if (fdOrder == 12)
 	{
+		FD_coef.push_back(FD_D2_O12_A6) ;
+		FD_coef.push_back(FD_D2_O12_A5) ;
+		FD_coef.push_back(FD_D2_O12_A4) ;
+		FD_coef.push_back(FD_D2_O12_A3) ;
+		FD_coef.push_back(FD_D2_O12_A2) ;
+		FD_coef.push_back(FD_D2_O12_A1) ;
 		FD_coef.push_back(FD_D2_O12_A0) ;
 		FD_coef.push_back(FD_D2_O12_A1) ;
 		FD_coef.push_back(FD_D2_O12_A2) ;
@@ -596,6 +724,13 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 	}
 	else if (fdOrder == 14)
 	{
+		FD_coef.push_back(FD_D2_O14_A7) ;
+		FD_coef.push_back(FD_D2_O14_A6) ;
+		FD_coef.push_back(FD_D2_O14_A5) ;
+		FD_coef.push_back(FD_D2_O14_A4) ;
+		FD_coef.push_back(FD_D2_O14_A3) ;
+		FD_coef.push_back(FD_D2_O14_A2) ;
+		FD_coef.push_back(FD_D2_O14_A1) ;
 		FD_coef.push_back(FD_D2_O14_A0) ;
 		FD_coef.push_back(FD_D2_O14_A1) ;
 		FD_coef.push_back(FD_D2_O14_A2) ;
@@ -607,6 +742,14 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 	}
 	else if (fdOrder == 16)
 	{
+		FD_coef.push_back(FD_D2_O16_A8) ;
+		FD_coef.push_back(FD_D2_O16_A7) ;
+		FD_coef.push_back(FD_D2_O16_A6) ;
+		FD_coef.push_back(FD_D2_O16_A5) ;
+		FD_coef.push_back(FD_D2_O16_A4) ;
+		FD_coef.push_back(FD_D2_O16_A3) ;
+		FD_coef.push_back(FD_D2_O16_A2) ;
+		FD_coef.push_back(FD_D2_O16_A1) ;
 		FD_coef.push_back(FD_D2_O16_A0) ;
 		FD_coef.push_back(FD_D2_O16_A1) ;
 		FD_coef.push_back(FD_D2_O16_A2) ;
@@ -627,34 +770,51 @@ static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
 //
 static Myfloat64 getSumAbsFD_D2Coef(Myint fdOrder)
 {
-	Myfloat64 sumCoef = UNSPECIFIED ;
+	Myfloat64 sumCoef = 0.0 ;
 
 	auto FD_coef = getFD_D2coefVector(fdOrder) ;
 
 	for (Myint ii = 0; ii < FD_coef.size(); ii++)
 	{
-		if (ii == 0) sumCoef = fabs(FD_coef[ii]) ;
-		else sumCoef += TWO * fabs(FD_coef[ii]) ;
+		sumCoef += fabs(FD_coef[ii]) ;		
 	}
 
 	return(sumCoef) ;
 }
 
 //-------------------------------------------------------------------------------------------------------
-// compute sum FD coefficients
+// compute sum of FD D1 coefficients
+// this is used for validation purpose only (in testCase_Util)
+// this sum is expected to be equal to 0
+//
+static Myfloat64 getSumFD_D1Coef(Myint fdOrder)
+{
+	Myfloat64 sumCoef = 0.0 ;
+
+	auto FD_coef = getFD_D1coefVector(fdOrder) ;
+
+	for (Myint ii = 0; ii < FD_coef.size(); ii++)
+	{
+		sumCoef += FD_coef[ii] ;
+	}
+
+	return(sumCoef) ;
+}
+
+//-------------------------------------------------------------------------------------------------------
+// compute sum of FD D2 coefficients
 // this is used for validation purpose only (in testCase_Util)
 // this sum is expected to be equal to 0
 //
 static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
 {
-	Myfloat64 sumCoef = UNSPECIFIED ;
+	Myfloat64 sumCoef = 0.0 ;
 
 	auto FD_coef = getFD_D2coefVector(fdOrder) ;
 
 	for (Myint ii = 0; ii < FD_coef.size(); ii++)
 	{
-		if (ii == 0) sumCoef = FD_coef[ii] ;
-		else sumCoef += TWO * FD_coef[ii] ;
+		sumCoef += FD_coef[ii] ;
 	}
 
 	return(sumCoef) ;
@@ -665,8 +825,9 @@ static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
 //
 static Myint getFD_D2haloWidth(Myint fdOrder)
 {
-	auto FD_coef = getFD_D2coefVector(fdOrder) ;
-	Myint haloWidth = FD_coef.size() - 1 ;
+	//auto FD_coef = getFD_D2coefVector(fdOrder) ;
+	//Myint haloWidth = FD_coef.size() - 1 ;
+	Myint haloWidth = fdOrder / 2 ;
 	return haloWidth  ;
 }
 

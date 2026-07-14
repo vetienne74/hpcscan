@@ -63,7 +63,7 @@ It features several categories of test cases aiming to measure memory, computati
 * Hybrid OpenMP/MPI parallelism
 * Support scalar and vector CPUs, GPUs and other accelerators (depending on compiler/architecture)
 * All configuration parameters on command line
-* Support single and double precision computation
+* Support single precision (FP32)and double precision (FP64) computation
 * Compilation with standard Makefile
 * No external librairies
 * Follows [C++ Google style code](https://google.github.io/styleguide/cppguide.html)
@@ -216,9 +216,9 @@ Executable can be found in `./bin/hpcscan`
 
 :bell: If hpcscan environment has not been set (see [Environment script (mandatory)](#environment-script-mandatory)), compilation will abort.
 
-By default, hpcscan is compiled in single in precision
+By default, hpcscan is compiled in single precision (FP32)
 
-To compile in double precision: `make precision=double`
+To compile in double precision (FP64): `make precision=double`
 
 ## Enabled test modes
 
@@ -238,14 +238,12 @@ To check that hpcscan has correctly been built and works fine, go to `./script` 
 
 [Display command output](misc/fileForReadme/runValidationTests.txt)
 
-This script runs a set a light test cases and should complete within few minutes (even on a laptop).
+This script runs a set a light test cases for each test mode enabled (takes few minutes even on a laptop).
 
-You should get in the ouptput report (displayed on the terminal)
+Check the summary of the output report (displayed on the terminal) the following:
 
-* All tests marked as PASSED (751 tests passed for each test mode enabled)
+* All tests marked as PASSED (768 tests passed for each test mode enabled)
 * No test marked as FAILED
-
-Check the summary at the end of report to have a quick look on this.
 
 :bell: These tests are intended for validation purpose only, they do not allow for performance measurements.
 

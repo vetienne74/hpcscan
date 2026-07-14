@@ -594,12 +594,25 @@ Rtn_code TestCase_Util::run(void)
 	}
 
 	{
-		//----------------------------------
-		// check FD coefficients
-		// Sum of coef should be equal to 0
-		//----------------------------------
+		//----------------------------------------
+		// check FD D1 coefficients
+		// Sum of coef should be very clode to 0
+		//----------------------------------------
 		print_blank() ;
-		string caseName = testCaseName + "FDcoef" ;
+		string caseName = testCaseName + "FD_D1_coef" ;
+		printInfo(MASTER, " * Case", caseName) ;
+
+		auto fdOrder = Config::Instance()->fdOrder ;
+		checkFloatDiff(0.0, getSumFD_D1Coef(fdOrder), MAX_ERR_FLOAT) ;
+	}
+
+	{
+		//----------------------------------------
+		// check FD D2 coefficients
+		// Sum of coef should be very clode to 0
+		//----------------------------------------
+		print_blank() ;
+		string caseName = testCaseName + "FD_D2_coef" ;
 		printInfo(MASTER, " * Case", caseName) ;
 
 		auto fdOrder = Config::Instance()->fdOrder ;
