@@ -13,7 +13,7 @@ FILE = sprintf('hpcscan.perf.FD_D%i', ORD) ;
 DER = 1 ;
 
 % define target error
-maxAllowedError = 0.001 ;
+maxAllowedError = 0.01 ;
 
 % define hardware memory bandwith
 memBwdth = 44.0 ;
@@ -30,6 +30,7 @@ maxTime    = 10.0 ;
 
 
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;
+%pathFile = sprintf('%s/%s.log.fp64', DIR, FILE) ;
 val = importdata(pathFile) ;
 
 valOrder    = val.data(:,9) ;

@@ -63,7 +63,7 @@ It features several categories of test cases aiming to measure memory, computati
 * Hybrid OpenMP/MPI parallelism
 * Support scalar and vector CPUs, GPUs and other accelerators (depending on compiler/architecture)
 * All configuration parameters on command line
-* Support single precision (FP32)and double precision (FP64) computation
+* Support single precision (FP32) and double precision (FP64) computation
 * Compilation with standard Makefile
 * No external librairies
 * Follows [C++ Google style code](https://google.github.io/styleguide/cppguide.html)

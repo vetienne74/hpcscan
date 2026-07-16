@@ -262,7 +262,7 @@ Rtn_code Grid::initializeGrid(void)
 
 	Myint nlayer = Config::Instance()->nlayer ;
 
-	haloWidth = getFD_D2haloWidth(Config::Instance()->fdOrder) ;
+	haloWidth = getFD_haloWidth(Config::Instance()->fdOrder) ;
 	if (haloWidth == UNSPECIFIED)
 	{
 		printError(" In Grid::initializeGrid, haloWidth = UNSPECIFIED") ;
@@ -1394,9 +1394,9 @@ Rtn_code Grid::writeGlobal(Point_type pointType, string fileName, Myint num_iter
 
 		// create a view to write the grid inside the file
 
-		long unsigned int initial_offset = sizeof(float) * n1Inner * n2Inner * n3Inner * num_iter;
+		long unsigned int initial_offset = sizeof(Myfloat) * n1Inner * n2Inner * n3Inner * num_iter;
 		
-		status = MPI_File_set_view(fd_file_bin, initial_offset , MPI_FLOAT, innerGlobalGridType, "native", info);
+		status = MPI_File_set_view(fd_file_bin, initial_offset , MPI_MYFLOAT, innerGlobalGridType, "native", info);
 		if(status != MPI_SUCCESS)
 		{
 			printError(" In Grid::writeGlobal, error in MPI_File_set_view") ;
@@ -1480,7 +1480,7 @@ MPI_Datatype Grid::createMpiTypeInnerGlobalGrid()
 	// create mpi type
 	// .. hence MPI_ORDER_FORTRAN here
 	status=MPI_Type_create_subarray(dim, profil_grid_global, profil_sous_grid_global, 
-	coord_start_global, MPI_ORDER_FORTRAN, MPI_FLOAT, &type_sous_grid_global);
+	coord_start_global, MPI_ORDER_FORTRAN, MPI_MYFLOAT, &type_sous_grid_global);
 	if(status != MPI_SUCCESS)
 	{		
 		printError("Grid::createMpiTypeInnerGlobalGrid, error in MPI_Type_create_subarray");		
@@ -1538,7 +1538,7 @@ MPI_Datatype Grid::createMpiTypeInnerLocalGrid()
 	// create mpi type
 	// .. hence MPI_ORDER_FORTRAN here
 	status=MPI_Type_create_subarray(dim, profil_grid_local, profil_sous_grid_local, coord_start,
-		MPI_ORDER_FORTRAN, MPI_FLOAT, &type_sous_grid_local);
+		MPI_ORDER_FORTRAN, MPI_MYFLOAT, &type_sous_grid_local);
 	if(status != MPI_SUCCESS)
 	{
 		printError("Grid::createMpiTypeInnerLocalGrid, error in MPI_Type_create_subarray");		

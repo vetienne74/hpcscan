@@ -823,10 +823,8 @@ static Myfloat64 getSumFD_D2Coef(Myint fdOrder)
 //-------------------------------------------------------------------------------------------------------
 // get halo width associated with a given FD order
 //
-static Myint getFD_D2haloWidth(Myint fdOrder)
-{
-	//auto FD_coef = getFD_D2coefVector(fdOrder) ;
-	//Myint haloWidth = FD_coef.size() - 1 ;
+static Myint getFD_haloWidth(Myint fdOrder)
+{	
 	Myint haloWidth = fdOrder / 2 ;
 	return haloWidth  ;
 }

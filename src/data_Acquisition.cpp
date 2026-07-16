@@ -410,7 +410,7 @@ Rtn_code DataAcquisition::writeTrace(string fileName)
         all_trace_temp[i]=0;
 
     t0_Gatherv_time = MPI_Wtime();
-    MPI_Gatherv(trace, nSampleInTraceLoc, MPI_FLOAT, all_trace_temp, tab_recv_count, tab_displacement, MPI_FLOAT, 0, MPI_COMM_WORLD);
+    MPI_Gatherv(trace, nSampleInTraceLoc, MPI_MYFLOAT, all_trace_temp, tab_recv_count, tab_displacement, MPI_MYFLOAT, 0, MPI_COMM_WORLD);
     t1_Gatherv_time = MPI_Wtime();
     trace_gather_time += t1_Gatherv_time - t0_Gatherv_time;
     
@@ -424,7 +424,7 @@ Rtn_code DataAcquisition::writeTrace(string fileName)
         // copy data at correct location
         Myint n_wrote=0;
         for(Myint i = 0 ; i< nRec; i++){
-            memcpy(&all_traces[AllIdxrecglob[i]*nt], &all_trace_temp[n_wrote], nt * sizeof(float));
+            memcpy(&all_traces[AllIdxrecglob[i]*nt], &all_trace_temp[n_wrote], nt * sizeof(Myfloat));
             n_wrote += nt;
         }
 
