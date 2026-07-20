@@ -46,11 +46,18 @@ Rtn_code print_header_of_output_report(void)
 		printInfo(MASTER, " Host name", Config::Instance()->hostName) ;
 		printInfo(MASTER, " User name", Config::Instance()->userName) ;
 
-		// single or double precision
-#ifdef _DOUBLE_PRECISION_
-		printInfo(MASTER, " Computation", "DOUBLE PRECISION") ;
+		// storage float format
+#ifdef _STORAGE_FP64_
+		printInfo(MASTER, " Storage", "FP64") ;
 #else
-		printInfo(MASTER, " Computation", "SINGLE PRECISION") ;
+		printInfo(MASTER, " Storage", "FP32") ;
+#endif
+
+		// compute float format
+#ifdef _COMPUTE_FP64_
+		printInfo(MASTER, " Compute", "FP64") ;
+#else
+		printInfo(MASTER, " Compute", "FP32") ;
 #endif
 
 		printInfo(MASTER, " Mode Baseline", "ENABLED") ;

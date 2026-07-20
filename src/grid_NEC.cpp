@@ -31,7 +31,7 @@
 #include "global.h"
 #include "output_report.h"
 
-#ifdef _DOUBLE_PRECISION_
+#ifdef _STORAGE_FP64_
 #define sca_utility_optimize_leading sca_utility_optimize_leading_d
 #else
 #define sca_utility_optimize_leading sca_utility_optimize_leading_s
@@ -133,7 +133,7 @@ Rtn_code Grid_NEC::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 	Myfloat * const u = this->grid_3d ;
 
 	// compute FD along N1
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 	// if (flag_packed_stencil)
 	if (flag_packed_stencil)
 	{
@@ -424,7 +424,7 @@ Rtn_code Grid_NEC::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 	Myfloat * const u = this->grid_3d ;
 
 	// compute FD along N2
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 	// if (flag_packed_stencil)
 	if (flag_packed_stencil)
 	{
@@ -731,7 +731,7 @@ Rtn_code Grid_NEC::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOrder)
 	Myfloat * const u = this->grid_3d ;
 
 	// compute FD along N3
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 	// if (flag_packed_stencil)
 	if (flag_packed_stencil)
 	{
@@ -1039,7 +1039,7 @@ Rtn_code Grid_NEC::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint fdOrd
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
 
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 	// if (flag_packed_stencil)
 	if (flag_packed_stencil)
 	{
@@ -1926,7 +1926,7 @@ Rtn_code Grid_NEC::initializeGrid(void)
 
 	Grid::initializeGrid() ;
 
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	Myfloat * const u = this->grid_3d ;
 	Myint nlayer = Config::Instance()->nlayer ;	
@@ -2190,7 +2190,7 @@ Rtn_code Grid_NEC::updatePressure(Point_type pType, const Grid& prcGrid,
 	Myfloat * lapla = laplaGrid.grid_3d ;
 	Myfloat * coef  = coefGrid.grid_3d ;
 
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 	if (flag_packed_stencil)
 	{
 #pragma omp parallel for
@@ -2257,7 +2257,7 @@ Rtn_code Grid_NEC::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn, Myin
 	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
 	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
 
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 	// if (flag_packed_stencil)
 	if (flag_packed_stencil)
 	{

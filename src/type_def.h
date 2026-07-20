@@ -11,14 +11,24 @@ namespace hpcscan {
 //
 //--------------------------------------------------
 
-// Basic types
-#ifdef _DOUBLE_PRECISION_
+// float format for data storage
+#ifdef _STORAGE_FP64_
 typedef double Myfloat ;
 #define MPI_MYFLOAT MPI_DOUBLE
 #else
 typedef float Myfloat ;
 #define MPI_MYFLOAT MPI_FLOAT
 #endif
+
+// float format for compute operations
+#ifdef _COMPUTE_FP64_
+typedef double Myfloat2 ;
+#define MPI_MYFLOAT2 MPI_DOUBLE
+#else
+typedef float Myfloat2 ;
+#define MPI_MYFLOAT2 MPI_FLOAT
+#endif
+
 #define MPI_MYFLOAT64 MPI_DOUBLE
 
 typedef int        Myint ;

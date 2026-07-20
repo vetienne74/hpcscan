@@ -21,7 +21,10 @@ export report_file=runValidationTests.${machine}.${tester}.out
 sh clean_dir.sh
 rm -f ${report_file}
 
-echo "\n========================================================================"
+# display hpcscan header
+../bin/hpcscan -v
+
+echo "========================================================================"
 echo "                         START VALIDATION TESTS"
 echo "========================================================================\n"
 start_time=$(date)

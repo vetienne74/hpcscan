@@ -11,7 +11,7 @@ namespace hpcscan {
 
 const Myfloat64 PI = 3.1415926535897 ;
 
-#ifdef _DOUBLE_PRECISION_
+#ifdef _STORAGE_FP64_
 const Myfloat MAX_ERR_FLOAT = 1.e-11 ;
 #else
 const Myfloat MAX_ERR_FLOAT = 1.e-5 ;

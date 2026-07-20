@@ -218,7 +218,7 @@ Executable can be found in `./bin/hpcscan`
 
 By default, hpcscan is compiled in single precision (FP32)
 
-To compile in double precision (FP64): `make precision=double`
+To compile in double precision (FP64): `make storage=fp64`
 
 ## Enabled test modes
 

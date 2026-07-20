@@ -23,13 +23,13 @@
 #include "global.h"
 #include "output_report.h"
 
-#ifdef _DOUBLE_PRECISION_
+#ifdef _STORAGE_FP64_
 #define sca_utility_optimize_leading sca_utility_optimize_leading_d
 #else
 #define sca_utility_optimize_leading sca_utility_optimize_leading_s
 #endif
 
-#ifdef _DOUBLE_PRECISION_
+#ifdef _STORAGE_FP64_
 #define sca_stencil_create sca_stencil_create_d
 #define sca_stencil_set_factor sca_stencil_set_factor_d
 #define sca_stencil_set_input_array sca_stencil_set_input_array_d

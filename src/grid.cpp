@@ -852,7 +852,7 @@ void Grid::padGridn1(void)
 		Myint nTot = i1Halo2End + 1 ;
 		if (nTot%2)
 		{
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 			i1PadStart = i1Halo2End + 1 ;
 			i1PadEnd   = i1Halo2End + 1 ;
 #else
@@ -989,7 +989,7 @@ void Grid::offsetGridn1(void)
 		// needed only in single precision
 		if (haloWidth%2 == 1)
 		{
-#ifndef _DOUBLE_PRECISION_
+#ifndef _STORAGE_FP64_
 			offset = 1 ;
 #else
 			offset = 0 ;
