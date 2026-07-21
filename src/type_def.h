@@ -11,31 +11,39 @@ namespace hpcscan {
 //
 //--------------------------------------------------
 
+typedef int        Myint ;
+typedef int        Myint32 ;
+typedef long int   Myint64 ;
+typedef _Float16   Myfloat16 ;
+typedef float      Myfloat32 ;
+typedef double     Myfloat64 ;
+
 // float format for data storage
 #ifdef _STORAGE_FP64_
-typedef double Myfloat ;
+typedef Myfloat64 Myfloat ;
 #define MPI_MYFLOAT MPI_DOUBLE
+#elifdef _STORAGE_FP16_
+typedef Myfloat16 Myfloat ;
+#define MPI_MYFLOAT MPI_REAL16
 #else
-typedef float Myfloat ;
+typedef Myfloat32 Myfloat ;
 #define MPI_MYFLOAT MPI_FLOAT
 #endif
 
 // float format for compute operations
 #ifdef _COMPUTE_FP64_
-typedef double Myfloat2 ;
+typedef Myfloat64 Myfloat2 ;
 #define MPI_MYFLOAT2 MPI_DOUBLE
+#elifdef _COMPUTE_FP16_
+typedef Myfloat16 Myfloat2 ;
+#define MPI_MYFLOAT2 MPI_REAL16
 #else
-typedef float Myfloat2 ;
+typedef Myfloat32 Myfloat2 ;
 #define MPI_MYFLOAT2 MPI_FLOAT
 #endif
 
 #define MPI_MYFLOAT64 MPI_DOUBLE
 
-typedef int        Myint ;
-typedef int        Myint32 ;
-typedef long int   Myint64 ;
-typedef float      Myfloat32 ;
-typedef double     Myfloat64 ;
 
 // used to store hardware counters
 typedef struct

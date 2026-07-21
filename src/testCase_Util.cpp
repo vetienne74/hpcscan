@@ -834,7 +834,7 @@ Rtn_code TestCase_Util::run(void)
 
 			// get max diff between values in file and expected values
 
-			Myfloat maxAbsErr = 0 ;
+			Myfloat64 maxAbsErr = 0 ;
 			for (Myint64 i3 = 0; i3 < n3; i3++)
 			{
 				for (Myint64 i2 = 0; i2 < n2; i2++)
@@ -842,7 +842,7 @@ Rtn_code TestCase_Util::run(void)
 					for (Myint64 i1 = 0; i1 < n1; i1++)
 					{
 						Myint64 ii = i1 + i2*n1 + i3*(n1*n2) ;
-						if (fabs(valInFile[ii] - amp) > maxAbsErr) maxAbsErr = fabs(valInFile[ii] - amp) ;
+						if (fabs((Myfloat64) valInFile[ii] - amp) > maxAbsErr) maxAbsErr = fabs((Myfloat64) valInFile[ii] - amp) ;
 					}
 				}
 			}

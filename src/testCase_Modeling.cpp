@@ -95,7 +95,7 @@ namespace hpcscan
 		Myint nOpPerPoint = prcGrid->getFlopPerPtFD_LAPLACIAN(fdOrder) + 4; // + 1 ADD + 1 SUB + 2 MUL
 
 		// for perf log
-		Myfloat propaGflop = 0, propaGpointEff = 0, propaGpointFD = 0, propaGB = 0;
+		Myfloat32 propaGflop = 0, propaGpointEff = 0, propaGpointFD = 0, propaGB = 0;
 
 		// initialize data acquisition		
 		auto acqui2 = DataAcquisition_Factory::create(Config::Instance()->testMode) ;		
@@ -108,7 +108,7 @@ namespace hpcscan
 
 		testCase_time_best = FLT_MAX;
 
-		Myfloat errTestCase;
+		Myfloat32 errTestCase;
 		Myint ntCheck;
 		Myint n_iter_snap=0;
 		double total_compute_time = 0;
@@ -246,7 +246,7 @@ namespace hpcscan
 			<< testCase_time_best << " " << errTestCase << " "
 
 			// 16, 17, 18
-			<< propa->nt << " " << propa->dt << " " << propa->stableDt << " "
+			<< propa->nt << " " << (Myfloat32) propa->dt << " " << (Myfloat32) propa->stableDt << " "
 
 			// 19, 20, 21 (main loop)
 			<< propa->halo_comm_time << " " << propa->boundary_condition_time << " " << propa->compute_pressure_time << " "

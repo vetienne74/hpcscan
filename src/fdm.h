@@ -31,7 +31,7 @@ namespace hpcscan {
 // ==> evaluation of D1 at position i-1/2 (shifted by -h/2)
 
 //-------------------------------------%%%%%%%%%%% D1 FD space O2 %%%%%%%%%%%%%%------------------------------------
-const Myfloat FD_D1_O2_A1   =  1.0 ;
+const Myfloat2 FD_D1_O2_A1   =  1.0 ;
 const Myint   FD_D1_O2_NOP  = 2 ;
 
 #define FD_D1_O2_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -44,8 +44,8 @@ const Myint   FD_D1_O2_NOP  = 2 ;
 		((U[i1 + i2*n1 + (i3)  *n2*n1] - U[i1 + i2*n1 + (i3-1)*n2*n1]) * inv_d3)
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O4 %%%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D1_O4_A1   = 9./8. ;
-const Myfloat FD_D1_O4_A2   = -1./24. ;
+const Myfloat2 FD_D1_O4_A1   = 9./8. ;
+const Myfloat2 FD_D1_O4_A2   = -1./24. ;
 const Myint   FD_D1_O4_NOP  = 6 ;
 
 #define FD_D1_O4_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -64,9 +64,9 @@ const Myint   FD_D1_O4_NOP  = 6 ;
 				* inv_d3)
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O6 %%%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D1_O6_A1   =  75./64. ;
-const Myfloat FD_D1_O6_A2   = -25./384. ;
-const Myfloat FD_D1_O6_A3   =  3./640. ;
+const Myfloat2 FD_D1_O6_A1   =  75./64. ;
+const Myfloat2 FD_D1_O6_A2   = -25./384. ;
+const Myfloat2 FD_D1_O6_A3   =  3./640. ;
 const Myint   FD_D1_O6_NOP  = 9 ;
 
 #define FD_D1_O6_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -88,10 +88,10 @@ const Myint   FD_D1_O6_NOP  = 9 ;
 				* inv_d3)
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O8 %%%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D1_O8_A1   =  1225./1024. ;
-const Myfloat FD_D1_O8_A2   = -245./3072. ;
-const Myfloat FD_D1_O8_A3   =  49./5120. ;
-const Myfloat FD_D1_O8_A4   = -5./7168. ;
+const Myfloat2 FD_D1_O8_A1   =  1225./1024. ;
+const Myfloat2 FD_D1_O8_A2   = -245./3072. ;
+const Myfloat2 FD_D1_O8_A3   =  49./5120. ;
+const Myfloat2 FD_D1_O8_A4   = -5./7168. ;
 const Myint   FD_D1_O8_NOP  = 12 ;
 
 #define FD_D1_O8_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -116,11 +116,11 @@ const Myint   FD_D1_O8_NOP  = 12 ;
 				* inv_d3)
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O10 %%%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D1_O10_A1   =  19845./16384. ;
-const Myfloat FD_D1_O10_A2   = -735./8192. ;
-const Myfloat FD_D1_O10_A3   =  567./40960. ;
-const Myfloat FD_D1_O10_A4   = -405./229376. ;
-const Myfloat FD_D1_O10_A5   =  35./294912. ;
+const Myfloat2 FD_D1_O10_A1   =  19845./16384. ;
+const Myfloat2 FD_D1_O10_A2   = -735./8192. ;
+const Myfloat2 FD_D1_O10_A3   =  567./40960. ;
+const Myfloat2 FD_D1_O10_A4   = -405./229376. ;
+const Myfloat2 FD_D1_O10_A5   =  35./294912. ;
 const Myint   FD_D1_O10_NOP  = 15 ;
 
 #define FD_D1_O10_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -148,12 +148,12 @@ const Myint   FD_D1_O10_NOP  = 15 ;
 				* inv_d3)
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O12 %%%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D1_O12_A1   =  160083./131072. ;
-const Myfloat FD_D1_O12_A2   = -12705./131072. ;
-const Myfloat FD_D1_O12_A3   =  22869./1310720. ;
-const Myfloat FD_D1_O12_A4   = -5445./1835008. ;
-const Myfloat FD_D1_O12_A5   =  847./2359296. ;
-const Myfloat FD_D1_O12_A6   = -63./2883584. ;
+const Myfloat2 FD_D1_O12_A1   =  160083./131072. ;
+const Myfloat2 FD_D1_O12_A2   = -12705./131072. ;
+const Myfloat2 FD_D1_O12_A3   =  22869./1310720. ;
+const Myfloat2 FD_D1_O12_A4   = -5445./1835008. ;
+const Myfloat2 FD_D1_O12_A5   =  847./2359296. ;
+const Myfloat2 FD_D1_O12_A6   = -63./2883584. ;
 const Myint   FD_D1_O12_NOP  = 18 ;
 
 #define FD_D1_O12_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -184,13 +184,13 @@ const Myint   FD_D1_O12_NOP  = 18 ;
 				* inv_d3)
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O14 %%%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D1_O14_A1   =  1288287./1048576. ;
-const Myfloat FD_D1_O14_A2   = -429429./4194304. ;
-const Myfloat FD_D1_O14_A3   =  429429./20971520. ;
-const Myfloat FD_D1_O14_A4   = -61347./14680064. ;
-const Myfloat FD_D1_O14_A5   =  13013./18874368. ;
-const Myfloat FD_D1_O14_A6   = -3549./46137344. ;
-const Myfloat FD_D1_O14_A7   =  231./54525952. ;
+const Myfloat2 FD_D1_O14_A1   =  1288287./1048576. ;
+const Myfloat2 FD_D1_O14_A2   = -429429./4194304. ;
+const Myfloat2 FD_D1_O14_A3   =  429429./20971520. ;
+const Myfloat2 FD_D1_O14_A4   = -61347./14680064. ;
+const Myfloat2 FD_D1_O14_A5   =  13013./18874368. ;
+const Myfloat2 FD_D1_O14_A6   = -3549./46137344. ;
+const Myfloat2 FD_D1_O14_A7   =  231./54525952. ;
 const Myint   FD_D1_O14_NOP  = 21 ;
 
 #define FD_D1_O14_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -224,14 +224,14 @@ const Myint   FD_D1_O14_NOP  = 21 ;
 				* inv_d3)
 
 // -------------------------------------%%%%%%%%%%% D1 FD space O16 %%%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D1_O16_A1   =  41409225./33554432. ; 
-const Myfloat FD_D1_O16_A2   = -3578575./33554432. ; 
-const Myfloat FD_D1_O16_A3   =  3864861./167772160. ; 
-const Myfloat FD_D1_O16_A4   = -1254825./234881024. ; 
-const Myfloat FD_D1_O16_A5   =  325325./301989888. ; 
-const Myfloat FD_D1_O16_A6   = -61425./369098752. ; 
-const Myfloat FD_D1_O16_A7   =  7425./436207616. ; 
-const Myfloat FD_D1_O16_A8   = -143./167772160. ; 
+const Myfloat2 FD_D1_O16_A1   =  41409225./33554432. ; 
+const Myfloat2 FD_D1_O16_A2   = -3578575./33554432. ; 
+const Myfloat2 FD_D1_O16_A3   =  3864861./167772160. ; 
+const Myfloat2 FD_D1_O16_A4   = -1254825./234881024. ; 
+const Myfloat2 FD_D1_O16_A5   =  325325./301989888. ; 
+const Myfloat2 FD_D1_O16_A6   = -61425./369098752. ; 
+const Myfloat2 FD_D1_O16_A7   =  7425./436207616. ; 
+const Myfloat2 FD_D1_O16_A8   = -143./167772160. ; 
 const Myint   FD_D1_O16_NOP  = 24 ;
 
 #define FD_D1_O16_N1(U, i1, i2, i3, inv_d1, inv_d2, inv_d3, n1, n2, n3) \
@@ -274,8 +274,8 @@ const Myint   FD_D1_O16_NOP  = 24 ;
 // ==> evaluation of D2 at position i
 
 //-------------------------------------%%%%%%%%%%% D2 FD space O2 %%%%%%%%%%%%%%------------------------------------
-const Myfloat FD_D2_O2_A0   = -2.0 ;
-const Myfloat FD_D2_O2_A1   =  1.0 ;
+const Myfloat2 FD_D2_O2_A0   = -2.0 ;
+const Myfloat2 FD_D2_O2_A1   =  1.0 ;
 const Myint   FD_D2_O2_NOP  = 4 ;
 
 #define FD_D2_O2_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -291,9 +291,9 @@ const Myint   FD_D2_O2_NOP  = 4 ;
 				+ U[i1 + i2*n1 + (i3+1)*n2*n1] + U[i1 + i2*n1 + (i3-1)*n2*n1]) * inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space O4 %%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O4_A0   = -5./2. ;
-const Myfloat FD_D2_O4_A1   =  4./3. ;
-const Myfloat FD_D2_O4_A2   = -1./12. ;
+const Myfloat2 FD_D2_O4_A0   = -5./2. ;
+const Myfloat2 FD_D2_O4_A1   =  4./3. ;
+const Myfloat2 FD_D2_O4_A2   = -1./12. ;
 const Myint   FD_D2_O4_NOP  = 8 ;
 
 #define FD_D2_O4_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -315,10 +315,10 @@ const Myint   FD_D2_O4_NOP  = 8 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space O6 %%%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O6_A0   = -49./18. ;
-const Myfloat FD_D2_O6_A1   =  3./2. ;
-const Myfloat FD_D2_O6_A2   = -3./20. ;
-const Myfloat FD_D2_O6_A3   =  1./90. ;
+const Myfloat2 FD_D2_O6_A0   = -49./18. ;
+const Myfloat2 FD_D2_O6_A1   =  3./2. ;
+const Myfloat2 FD_D2_O6_A2   = -3./20. ;
+const Myfloat2 FD_D2_O6_A3   =  1./90. ;
 const Myint   FD_D2_O6_NOP  = 11 ;
 
 #define FD_D2_O6_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -343,11 +343,11 @@ const Myint   FD_D2_O6_NOP  = 11 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space O8 %%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O8_A0   = -205./72. ;
-const Myfloat FD_D2_O8_A1   =  8./5. ;
-const Myfloat FD_D2_O8_A2   = -1/5. ;
-const Myfloat FD_D2_O8_A3   =  8./315. ;
-const Myfloat FD_D2_O8_A4   = -1/560. ;
+const Myfloat2 FD_D2_O8_A0   = -205./72. ;
+const Myfloat2 FD_D2_O8_A1   =  8./5. ;
+const Myfloat2 FD_D2_O8_A2   = -1/5. ;
+const Myfloat2 FD_D2_O8_A3   =  8./315. ;
+const Myfloat2 FD_D2_O8_A4   = -1/560. ;
 const Myint   FD_D2_O8_NOP  = 14 ;
 
 #define FD_D2_O8_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -375,12 +375,12 @@ const Myint   FD_D2_O8_NOP  = 14 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 10 %%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O10_A0   = -5269./1800. ;
-const Myfloat FD_D2_O10_A1   =  5./3. ;
-const Myfloat FD_D2_O10_A2   = -5./21. ;
-const Myfloat FD_D2_O10_A3   =  5./126. ;
-const Myfloat FD_D2_O10_A4   = -5./1008. ;
-const Myfloat FD_D2_O10_A5   =  1./3150. ;
+const Myfloat2 FD_D2_O10_A0   = -5269./1800. ;
+const Myfloat2 FD_D2_O10_A1   =  5./3. ;
+const Myfloat2 FD_D2_O10_A2   = -5./21. ;
+const Myfloat2 FD_D2_O10_A3   =  5./126. ;
+const Myfloat2 FD_D2_O10_A4   = -5./1008. ;
+const Myfloat2 FD_D2_O10_A5   =  1./3150. ;
 const Myint   FD_D2_O10_NOP  = 17 ;
 
 #define FD_D2_O10_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -411,13 +411,13 @@ const Myint   FD_D2_O10_NOP  = 17 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 12 %%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O12_A0   = -5369./1800. ;
-const Myfloat FD_D2_O12_A1   =  12./7.;
-const Myfloat FD_D2_O12_A2   = -15./56. ;
-const Myfloat FD_D2_O12_A3   =  10./189.;
-const Myfloat FD_D2_O12_A4   = -1./112. ;
-const Myfloat FD_D2_O12_A5   =  2./1925.;
-const Myfloat FD_D2_O12_A6   = -1./16632. ;
+const Myfloat2 FD_D2_O12_A0   = -5369./1800. ;
+const Myfloat2 FD_D2_O12_A1   =  12./7.;
+const Myfloat2 FD_D2_O12_A2   = -15./56. ;
+const Myfloat2 FD_D2_O12_A3   =  10./189.;
+const Myfloat2 FD_D2_O12_A4   = -1./112. ;
+const Myfloat2 FD_D2_O12_A5   =  2./1925.;
+const Myfloat2 FD_D2_O12_A6   = -1./16632. ;
 const Myint   FD_D2_O12_NOP  = 20 ;
 
 #define FD_D2_O12_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -451,14 +451,14 @@ const Myint   FD_D2_O12_NOP  = 20 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 14 %%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O14_A0   = -266681./88200. ;
-const Myfloat FD_D2_O14_A1   =  7./4.;
-const Myfloat FD_D2_O14_A2   = -7./24. ;
-const Myfloat FD_D2_O14_A3   =  7./108.;
-const Myfloat FD_D2_O14_A4   = -7./528. ;
-const Myfloat FD_D2_O14_A5   =  7./3300.;
-const Myfloat FD_D2_O14_A6   = -7./30888. ;
-const Myfloat FD_D2_O14_A7   =  1./84084. ;
+const Myfloat2 FD_D2_O14_A0   = -266681./88200. ;
+const Myfloat2 FD_D2_O14_A1   =  7./4.;
+const Myfloat2 FD_D2_O14_A2   = -7./24. ;
+const Myfloat2 FD_D2_O14_A3   =  7./108.;
+const Myfloat2 FD_D2_O14_A4   = -7./528. ;
+const Myfloat2 FD_D2_O14_A5   =  7./3300.;
+const Myfloat2 FD_D2_O14_A6   = -7./30888. ;
+const Myfloat2 FD_D2_O14_A7   =  1./84084. ;
 const Myint   FD_D2_O14_NOP  = 23 ;
 
 #define FD_D2_O14_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -495,15 +495,15 @@ const Myint   FD_D2_O14_NOP  = 23 ;
 				* inv2_d3)
 
 // -------------------------------------%%%%%%%%%%%% D2 FD space 16 %%%%%%%%%%%%-------------------------------------
-const Myfloat FD_D2_O16_A0   = -1077749./352800. ;
-const Myfloat FD_D2_O16_A1   =  16./9. ;
-const Myfloat FD_D2_O16_A2   = -14./45. ;
-const Myfloat FD_D2_O16_A3   =  112./1485.;
-const Myfloat FD_D2_O16_A4   = -7./396. ;
-const Myfloat FD_D2_O16_A5   =  112./32175. ;
-const Myfloat FD_D2_O16_A6   = -2./3861.;
-const Myfloat FD_D2_O16_A7   =  16./315315.;
-const Myfloat FD_D2_O16_A8   = -1./411840. ;
+const Myfloat2 FD_D2_O16_A0   = -1077749./352800. ;
+const Myfloat2 FD_D2_O16_A1   =  16./9. ;
+const Myfloat2 FD_D2_O16_A2   = -14./45. ;
+const Myfloat2 FD_D2_O16_A3   =  112./1485.;
+const Myfloat2 FD_D2_O16_A4   = -7./396. ;
+const Myfloat2 FD_D2_O16_A5   =  112./32175. ;
+const Myfloat2 FD_D2_O16_A6   = -2./3861.;
+const Myfloat2 FD_D2_O16_A7   =  16./315315.;
+const Myfloat2 FD_D2_O16_A8   = -1./411840. ;
 const Myint   FD_D2_O16_NOP  = 26 ;
 
 #define FD_D2_O16_N1(U, i1, i2, i3, inv2_d1, inv2_d2, inv2_d3, n1, n2, n3) \
@@ -545,9 +545,9 @@ const Myint   FD_D2_O16_NOP  = 26 ;
 //-------------------------------------------------------------------------------------------------------
 // return vector of FD D1 coefficients
 //
-static vector<Myfloat> getFD_D1coefVector(Myint fdOrder)
+static vector<Myfloat2> getFD_D1coefVector(Myint fdOrder)
 {
-	vector<Myfloat> FD_coef ;
+	vector<Myfloat2> FD_coef ;
 
 	if (fdOrder == 2)
 	{
@@ -652,9 +652,9 @@ static vector<Myfloat> getFD_D1coefVector(Myint fdOrder)
 //-------------------------------------------------------------------------------------------------------
 // return vector of FD D2 coefficients
 //
-static vector<Myfloat> getFD_D2coefVector(Myint fdOrder)
+static vector<Myfloat2> getFD_D2coefVector(Myint fdOrder)
 {
-	vector<Myfloat> FD_coef ;
+	vector<Myfloat2> FD_coef ;
 
 	if (fdOrder == 2)
 	{		
@@ -776,7 +776,7 @@ static Myfloat64 getSumAbsFD_D2Coef(Myint fdOrder)
 
 	for (Myint ii = 0; ii < FD_coef.size(); ii++)
 	{
-		sumCoef += fabs(FD_coef[ii]) ;		
+		sumCoef += fabs((Myfloat64) FD_coef[ii]) ;		
 	}
 
 	return(sumCoef) ;

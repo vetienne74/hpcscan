@@ -96,7 +96,7 @@ Rtn_code TestCase_Propa::run(void)
 	Myint nOpPerPoint    = prcGrid->getFlopPerPtFD_LAPLACIAN(fdOrder) + 4 ; // + 1 ADD + 1 SUB + 2 MUL
 
 	// for perf log
-	Myfloat propaGflop=0, propaGpointEff=0, propaGpointFD=0, propaGB=0 ;
+	Myfloat32 propaGflop=0, propaGpointEff=0, propaGpointFD=0, propaGB=0 ;
 
 	print_blank() ;
 	string caseName = testCaseName + "EigenMode" ;
@@ -104,7 +104,7 @@ Rtn_code TestCase_Propa::run(void)
 
 	testCase_time_best = FLT_MAX ;
 
-	Myfloat errTestCase, sum1, sum2 ;
+	Myfloat32 errTestCase, sum1, sum2 ;
 	Myint   ntCheck ;
 	double total_compute_time = 0;
 
@@ -244,7 +244,7 @@ Rtn_code TestCase_Propa::run(void)
 		<< testCase_time_best << " " << errTestCase << " "
 
 		// 16, 17, 18
-		<< propa->nt << " " << propa->dt << " " << propa->stableDt << " "
+		<< propa->nt << " " << (Myfloat32) propa->dt << " " << (Myfloat32) propa->stableDt << " "
 
 		// 19, 20, 21
 		<< propa->halo_comm_time << " " << propa->boundary_condition_time << " " << propa->compute_pressure_time << " "

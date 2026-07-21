@@ -10,13 +10,16 @@ ORD = 2 ;
 FILE = sprintf('hpcscan.perf.FD_D%i', ORD) ;
 
 % derivative (1=x1, 2=x2, 3=x3, 4=sum/Laplacian)
-DER = 4 ;
+DER = 1 ;
 
 % define target error
 maxAllowedError = 0.01 ;
 
 % define hardware memory bandwith
 memBwdth = 44.0 ;
+
+% number of wavelengths
+NMODE = 150 ;
 
 % min and max for plot
 minErrPlot = 1.0e-8 ;
@@ -29,8 +32,8 @@ minTime    = 0.001 ;
 maxTime    = 10.0 ;
 
 
-%pathFile = sprintf('%s/%s.log.fp64', DIR, FILE) ;
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;
+%pathFile = sprintf('%s/%s.log.fp16.fp16', DIR, FILE) ;
 val = importdata(pathFile) ;
 
 valOrder    = val.data(:,9) ;
@@ -68,10 +71,9 @@ end
 sizeVal = size(val.data) ;
 nConfig = sizeVal(1)
 
-
 figure('Position',[100 100 1100 900])
 
-maxErrX(1:nConfig) = val.data(:,6) ;
+maxErrX(1:nConfig) = valN(:) ;
 maxErrY(1:nConfig) = maxAllowedError ;
 
 %------------------------
@@ -125,13 +127,15 @@ ax.YScale='log'
 ylim([minErrPlot maxErrPlot])
 xlim([minTime maxTime])
 
-%----------------------
-% plot Error versus N1
-%----------------------
+%---------------------------------------
+% plot Error versus npoint / wavelength
+%---------------------------------------
+
+nlambda = NMODE / 2 ;
 
 subplot(2,2,1)
 hold on; grid on;
-xlabel('N')
+xlabel('# points / wavelength')
 ylabel('L1 Error')
 title('L1 Error vs N', 'FontSize', 12)
 
@@ -150,16 +154,16 @@ for ii=1:nConfig
         colorB = 0 ;
     end
     
-    plot(valN(ii), valError(ii), 'sw', 'MarkerEdgeColor', [colorR colorG colorB] , ...
+    plot(valN(ii)/nlambda, valError(ii), 'sw', 'MarkerEdgeColor', [colorR colorG colorB] , ...
         'MarkerFaceColor', [colorR colorG colorB] , 'MarkerSize', 5, 'LineWidth', 2)   
 
 end
 
 % plot horizontal line with allowed error
-plot(maxErrX, maxErrY, '-k', 'LineWidth', 1.5)
+plot(maxErrX/nlambda, maxErrY, '-k', 'LineWidth', 1.5)
 
 % represent optimal config with a star
-plot(valN(iConfigOptimal), valError(iConfigOptimal), 'pw', 'MarkerEdgeColor', 'k', 'MarkerSize', 27, 'LineWidth', 1.5)
+plot(valN(iConfigOptimal)/nlambda, valError(iConfigOptimal), 'pw', 'MarkerEdgeColor', 'k', 'MarkerSize', 27, 'LineWidth', 1.5)
 
 ax=gca
 ax.XScale='log'

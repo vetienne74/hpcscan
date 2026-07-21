@@ -45,7 +45,7 @@ Rtn_code TestCase_Comm::run(void)
 
 	// for perf logging
 	Table_Results *tabSend, *tabSendRecv ;
-	Myfloat HaloExchGB = 0, HaloExchGPoint = 0, HaloExchBestTime = 0, HaloExchSize = 0 ;
+	Myfloat32 HaloExchGB = 0, HaloExchGPoint = 0, HaloExchBestTime = 0, HaloExchSize = 0 ;
 
 	const string gridMode = Config::Instance()->testMode ;
 

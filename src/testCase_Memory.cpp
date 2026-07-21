@@ -60,9 +60,9 @@ namespace hpcscan
 		const Myint64 nGridPoint = Ugrid.getNumberOfGridPoint(GRID_GLOBAL, ALL_POINTS);
 
 		// for perf log
-		Myfloat FillGridGB = 0, FillGridGpoint = 0, CopyGridGB = 0, CopyGridGpoint = 0;
-		Myfloat AddGridGB = 0, AddGridGpoint = 0, MultiplyGridGB = 0, MultiplyGridGpoint = 0;
-		Myfloat AddUpdateGridGB = 0, AddUpdateGridGpoint = 0;
+		Myfloat32 FillGridGB = 0, FillGridGpoint = 0, CopyGridGB = 0, CopyGridGpoint = 0;
+		Myfloat32 AddGridGB = 0, AddGridGpoint = 0, MultiplyGridGB = 0, MultiplyGridGpoint = 0;
+		Myfloat32 AddUpdateGridGB = 0, AddUpdateGridGpoint = 0;
 
 		// one block per case
 		{

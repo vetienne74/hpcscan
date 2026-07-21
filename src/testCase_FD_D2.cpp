@@ -97,14 +97,14 @@ Rtn_code TestCase_FD_D2::run(void)
 	printInfo(MASTER, " Max allowed error", maxErr) ;
 
 	// for perf log
-	Myfloat D2Axis1Gflop=0, D2Axis2Gflop=0  , D2Axis3Gflop=0  , D2LaplaGflop=0 ;
-	Myfloat D2Axis1GpointEff=0, D2Axis2GpointEff=0, D2Axis3GpointEff=0, D2LaplaGpointEff=0 ;
-	Myfloat D2Axis1GpointFD=0, D2Axis2GpointFD=0, D2Axis3GpointFD=0, D2LaplaGpointFD=0 ;
-	Myfloat D2Axis1GB=0, D2Axis2GB=0, D2Axis3GB=0, D2LaplaGB=0 ;
+	Myfloat32 D2Axis1Gflop=0, D2Axis2Gflop=0  , D2Axis3Gflop=0  , D2LaplaGflop=0 ;
+	Myfloat32 D2Axis1GpointEff=0, D2Axis2GpointEff=0, D2Axis3GpointEff=0, D2LaplaGpointEff=0 ;
+	Myfloat32 D2Axis1GpointFD=0, D2Axis2GpointFD=0, D2Axis3GpointFD=0, D2LaplaGpointFD=0 ;
+	Myfloat32 D2Axis1GB=0, D2Axis2GB=0, D2Axis3GB=0, D2LaplaGB=0 ;
 
 	double testCase_time_best, testCase_time_com ;
 	double D2Axis1BestTime, D2Axis2BestTime, D2Axis3BestTime, D2LaplaBestTime ;
-	Myfloat D2Axis1Error, D2Axis2Error, D2Axis3Error, D2LaplaError ;
+	Myfloat32 D2Axis1Error, D2Axis2Error, D2Axis3Error, D2LaplaError ;
 
 	if (Config::Instance()->dim >= DIM1)
 	{

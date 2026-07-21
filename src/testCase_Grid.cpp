@@ -63,10 +63,10 @@ Rtn_code TestCase_Grid::run(void)
 	Myint ntry = Config::Instance()->ntry ;
 
 	// for perf log
-	Myfloat FillGB=0, FillGpoint=0, MaxErrGB=0, MaxErrGpoint=0, L1ErrGB=0, L1ErrGpoint=0 ;
-	Myfloat GetSumAbsGB=0, GetSumAbsGpoint=0, GetSumAbsDiffGB=0, GetSumAbsDiffGpoint=0 ;
-	Myfloat GetMaxGB=0, GetMaxGpoint=0, GetMinGB=0, GetMinGpoint=0 ;
-	Myfloat UpdatePressureGB=0, UpdatePressureGpoint=0, ApplyBoundaryConditionGB=0, ApplyBoundaryConditionGpoint=0 ;
+	Myfloat32 FillGB=0, FillGpoint=0, MaxErrGB=0, MaxErrGpoint=0, L1ErrGB=0, L1ErrGpoint=0 ;
+	Myfloat32 GetSumAbsGB=0, GetSumAbsGpoint=0, GetSumAbsDiffGB=0, GetSumAbsDiffGpoint=0 ;
+	Myfloat32 GetMaxGB=0, GetMaxGpoint=0, GetMinGB=0, GetMinGpoint=0 ;
+	Myfloat32 UpdatePressureGB=0, UpdatePressureGpoint=0, ApplyBoundaryConditionGB=0, ApplyBoundaryConditionGpoint=0 ;
 
 	{
 		//============================================

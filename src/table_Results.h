@@ -35,7 +35,7 @@ public:
 	Myint nVal ;
 
 	// table of values
-	Myfloat * val ;
+	Myfloat32 * val ;
 
 };
 

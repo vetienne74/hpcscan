@@ -14,6 +14,7 @@
 #include <unistd.h> // for C read/write file operations
 
 #include "config.h"
+#include "constant.h"
 #include "output_report.h"
 #include "global.h" 
 
@@ -264,7 +265,7 @@ Rtn_code DataAcquisition::initialize(DataAcqui_type acquiType, Grid& coefGrid, M
             printInfo(MASTER, " Trace file size (MB)", total_nSampleInTrace * sizeof(Myfloat) / 1e6);
             trace = new Myfloat[nSampleInTraceLoc];
             for(int i = 0 ; i < nSampleInTraceLoc; i++)
-                trace[i]=0.0;
+                trace[i] = ZERO ;
                 
         }
     }
@@ -291,12 +292,12 @@ Rtn_code DataAcquisition::appliSourceTerm(Grid &grid, Modeling_type modType, Myi
         if (nSrc != 0)
         {
             // compute amplitude of Ricker wavelet
-            Myfloat rickerFreq = Config::Instance()->freqMax / 2.5; // dominant frequency of Ricker
-            Myfloat da = M_PI * rickerFreq;
-            Myfloat t00 = 1.5 * sqrt(6.) / da;
-            Myfloat tt = it * dt;
-            Myfloat aa = M_PI * rickerFreq * (tt - t00);
-            Myfloat a2 = pow(aa, 2.);
+            Myfloat64 rickerFreq = Config::Instance()->freqMax / 2.5; // dominant frequency of Ricker
+            Myfloat64 da = M_PI * rickerFreq;
+            Myfloat64 t00 = 1.5 * sqrt(6.) / da;
+            Myfloat64 tt = it * dt;
+            Myfloat64 aa = M_PI * rickerFreq * (tt - t00);
+            Myfloat64 a2 = pow(aa, 2.);
             Myfloat srcTerm = (1. - 2. * a2) * exp(-a2);
 
             // apply source term

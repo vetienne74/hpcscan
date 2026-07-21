@@ -12,12 +12,16 @@ namespace hpcscan {
 const Myfloat64 PI = 3.1415926535897 ;
 
 #ifdef _STORAGE_FP64_
-const Myfloat MAX_ERR_FLOAT = 1.e-11 ;
+const Myfloat32 MAX_ERR_FLOAT = 1.e-11 ;
+#elifdef _STORAGE_FP16_
+const Myfloat32 MAX_ERR_FLOAT = 1.e-3 ;
 #else
-const Myfloat MAX_ERR_FLOAT = 1.e-5 ;
+const Myfloat32 MAX_ERR_FLOAT = 1.e-5 ;
 #endif
 
-const Myfloat TWO = 2.0 ;
+const Myfloat2 ZERO = 0.0 ;
+const Myfloat2 ONE  = 1.0 ;
+const Myfloat2 TWO  = 2.0 ;
 
 //-------------------------------------------------------------------------------------------------------
 // Grid modes

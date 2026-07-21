@@ -24,7 +24,7 @@ Table_Results::Table_Results(string tableNameIn, Myint nLineIn, Myint nColIn)
 	nVal      = nLine * nCol ;
 
 	// allocate table
-	val = new Myfloat[nLine*nCol] ;
+	val = new Myfloat32[nLine*nCol] ;
 
 	// initialize table
 	for (Myint ii=0; ii<nVal; ii++)

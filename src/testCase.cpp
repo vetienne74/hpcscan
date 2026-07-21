@@ -140,7 +140,7 @@ Rtn_code TestCase::checkGridL1Err(Point_type pointType, const Grid& gridIn, cons
 	printDebug(FULL_DEBUG, "In TestCase::checkGridL1Err") ;
 
 	// check L1 error
-	Myfloat L1Err = gridIn.L1Err(pointType, gridRef) ;
+	Myfloat64 L1Err = gridIn.L1Err(pointType, gridRef) ;
 	if ((!std::isnan(L1Err)) && (L1Err >= 0.0) && (L1Err < maxAllowed))
 	{
 		printInfo(MASTER, " Test PASSED / L1 err.", L1Err) ;
@@ -162,8 +162,8 @@ Rtn_code TestCase::checkAllProcGridL1Err(Point_type pointType, const Grid& gridI
 	printDebug(FULL_DEBUG, "In TestCase::checkAllProcGridL1Err") ;
 
 	// check L1 error
-	Myfloat L1ErrLoc = gridIn.L1Err(pointType, gridRef) ;
-	Myfloat L1Err ;
+	Myfloat64 L1ErrLoc = gridIn.L1Err(pointType, gridRef) ;
+	Myfloat64 L1Err ;
 
 	MPI_Reduce(&L1ErrLoc, &L1Err, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
 
@@ -188,8 +188,8 @@ Rtn_code TestCase::checkGridMaxErr(Point_type pointType, const Grid& gridIn, con
 	printDebug(FULL_DEBUG, "In TestCase::checkGridMaxErr") ;
 
 	// check Max error
-	Myfloat maxErrLoc = gridIn.maxErr(pointType, gridRef) ;
-	Myfloat maxErr ;
+	Myfloat64 maxErrLoc = gridIn.maxErr(pointType, gridRef) ;
+	Myfloat64 maxErr ;
 	MPI_Reduce(&maxErrLoc, &maxErr, 1, MPI_MYFLOAT, MPI_MAX, 0, MPI_COMM_WORLD);
 
 	if ((!std::isnan(maxErr)) && (maxErr >= 0.0) && (maxErr < maxAllowed))
@@ -213,7 +213,7 @@ Rtn_code TestCase::checkAllProcGridMaxErr(Point_type pointType, const Grid& grid
 	printDebug(FULL_DEBUG, "In TestCase::checkAllProcGridMaxErr") ;
 
 	// check Max error
-	Myfloat maxErr = gridIn.maxErr(pointType, gridRef) ;
+	Myfloat64 maxErr = gridIn.maxErr(pointType, gridRef) ;
 	if ((!std::isnan(maxErr)) && (maxErr >= 0.0) && (maxErr < maxAllowed))
 	{
 		printInfo(MASTER, " Test PASSED / Max err.", maxErr) ;
@@ -306,13 +306,13 @@ Myfloat TestCase::relErr(Myfloat val1, Myfloat val2)
 	Myfloat retVal ;
 	printDebug(LIGHT_DEBUG, "val1", val1) ;
 	printDebug(LIGHT_DEBUG, "val2", val2) ;
-	if (fabs(val2) > MAX_ERR_FLOAT)
+	if (fabs((Myfloat64) val2) > MAX_ERR_FLOAT)
 	{
-		retVal = fabs(val1 - val2) / fabs(val2) ;
+		retVal = fabs((Myfloat64) val1 - val2) / fabs((Myfloat64) val2) ;
 	}
 	else
 	{
-		retVal = fabs(val1 - val2) ;
+		retVal = fabs((Myfloat64) val1 - val2) ;
 	}
 	printDebug(LIGHT_DEBUG, "retVal", retVal) ;
 	printDebug(LIGHT_DEBUG, "Out TestCase::relErr") ;

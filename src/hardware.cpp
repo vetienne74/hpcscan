@@ -201,7 +201,7 @@ void Hardware::displayCounterStat(void)
 			printInfo(MASTER, " Stat. over period (s)", statTime) ;
 
 			// min. power
-			Myfloat minPower = +FLT_MAX ;
+			Myfloat32 minPower = +FLT_MAX ;
 			{
 
 				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
@@ -212,7 +212,7 @@ void Hardware::displayCounterStat(void)
 			}
 
 			// max. power
-			Myfloat maxPower = -FLT_MAX ;
+			Myfloat32 maxPower = -FLT_MAX ;
 			{
 				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
 				{
@@ -222,8 +222,8 @@ void Hardware::displayCounterStat(void)
 			}
 
 			// aver. power and consumption
-			Myfloat averPower = 0. ;
-			Myfloat wattHour  = 0. ;
+			Myfloat32 averPower = 0. ;
+			Myfloat32 wattHour  = 0. ;
 			{
 				for (Myint ii = 0; ii < hwCounterVec.size(); ii++)
 				{

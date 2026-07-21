@@ -98,9 +98,9 @@ Rtn_code Grid_CacheBlk::FD_D1_N1(Point_type pType, const Grid& Wgrid, Myint fdOr
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;	
+	const Myfloat2 inv_d1  = ONE / d1 ;
+	const Myfloat2 inv_d2  = ONE / d2 ;
+	const Myfloat2 inv_d3  = ONE / d3 ;	
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -388,9 +388,9 @@ Rtn_code Grid_CacheBlk::FD_D1_N2(Point_type pType, const Grid& Wgrid, Myint fdOr
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+	const Myfloat2 inv_d1  = ONE / d1 ;
+	const Myfloat2 inv_d2  = ONE / d2 ;
+	const Myfloat2 inv_d3  = ONE / d3 ;
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -677,9 +677,9 @@ Rtn_code Grid_CacheBlk::FD_D1_N3(Point_type pType, const Grid& Wgrid, Myint fdOr
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+	const Myfloat2 inv_d1  = ONE / d1 ;
+	const Myfloat2 inv_d2  = ONE / d2 ;
+	const Myfloat2 inv_d3  = ONE / d3 ;
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -966,13 +966,13 @@ Rtn_code Grid_CacheBlk::FD_D2_N1(Point_type pType, const Grid& Wgrid, Myint fdOr
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+	const Myfloat2 inv_d1  = ONE / d1 ;
+	const Myfloat2 inv_d2  = ONE / d2 ;
+	const Myfloat2 inv_d3  = ONE / d3 ;
 
-	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
-	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
-	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+	const Myfloat2 inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat2 inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat2 inv2_d3 = inv_d3 * inv_d3 ;
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -1260,13 +1260,13 @@ Rtn_code Grid_CacheBlk::FD_D2_N2(Point_type pType, const Grid& Wgrid, Myint fdOr
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+	const Myfloat2 inv_d1  = ONE / d1 ;
+	const Myfloat2 inv_d2  = ONE / d2 ;
+	const Myfloat2 inv_d3  = ONE / d3 ;
 
-	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
-	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
-	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+	const Myfloat2 inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat2 inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat2 inv2_d3 = inv_d3 * inv_d3 ;
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -1553,13 +1553,13 @@ Rtn_code Grid_CacheBlk::FD_D2_N3(Point_type pType, const Grid& Wgrid, Myint fdOr
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+	const Myfloat2 inv_d1  = ONE / d1 ;
+	const Myfloat2 inv_d2  = ONE / d2 ;
+	const Myfloat2 inv_d3  = ONE / d3 ;
 
-	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
-	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
-	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+	const Myfloat2 inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat2 inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat2 inv2_d3 = inv_d3 * inv_d3 ;
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -1846,13 +1846,13 @@ Rtn_code Grid_CacheBlk::FD_LAPLACIAN(Point_type pType, const Grid& Wgrid, Myint 
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+	const Myfloat2 inv_d1  = ONE / d1 ;
+	const Myfloat2 inv_d2  = ONE / d2 ;
+	const Myfloat2 inv_d3  = ONE / d3 ;
 
-	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
-	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
-	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+	const Myfloat2 inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat2 inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat2 inv2_d3 = inv_d3 * inv_d3 ;
 
 	Myfloat * const w = Wgrid.grid_3d ;
 	Myfloat * const u = this->grid_3d ;
@@ -2440,13 +2440,13 @@ Rtn_code Grid_CacheBlk::computePressureWithFD(Grid& prcGridIn, Grid& coefGridIn,
 	Myfloat * const prc  = prcGridIn.grid_3d ;
 	Myfloat * const coef = coefGridIn.grid_3d ;
 
-	const Myfloat inv_d1  = Myfloat(1.0) / d1 ;
-	const Myfloat inv_d2  = Myfloat(1.0) / d2 ;
-	const Myfloat inv_d3  = Myfloat(1.0) / d3 ;
+	const Myfloat2 inv_d1  = ONE / d1 ;
+	const Myfloat2 inv_d2  = ONE / d2 ;
+	const Myfloat2 inv_d3  = ONE / d3 ;
 
-	const Myfloat inv2_d1 = inv_d1 * inv_d1 ;
-	const Myfloat inv2_d2 = inv_d2 * inv_d2 ;
-	const Myfloat inv2_d3 = inv_d3 * inv_d3 ;
+	const Myfloat2 inv2_d1 = inv_d1 * inv_d1 ;
+	const Myfloat2 inv2_d2 = inv_d2 * inv_d2 ;
+	const Myfloat2 inv2_d3 = inv_d3 * inv_d3 ;
 
 	const Myint64 cb1 = Config::Instance()->cb1 ;
 	const Myint64 cb2 = Config::Instance()->cb2 ;

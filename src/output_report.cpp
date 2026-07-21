@@ -47,18 +47,28 @@ Rtn_code print_header_of_output_report(void)
 		printInfo(MASTER, " User name", Config::Instance()->userName) ;
 
 		// storage float format
+		string storageFormat ;
 #ifdef _STORAGE_FP64_
-		printInfo(MASTER, " Storage", "FP64") ;
+		storageFormat = "FP64" ;
+#elifdef _STORAGE_FP16_
+		storageFormat = "FP16" ;
 #else
-		printInfo(MASTER, " Storage", "FP32") ;
+		storageFormat = "FP32" ;		
 #endif
-
+		storageFormat += + " [" + to_string(sizeof(Myfloat)) + " Bytes]" ;
+		printInfo(MASTER, " Storage", storageFormat) ;
+		
 		// compute float format
+		string computeFormat ;
 #ifdef _COMPUTE_FP64_
-		printInfo(MASTER, " Compute", "FP64") ;
+		computeFormat = "FP64" ;
+#elifdef _COMPUTE_FP16_
+		computeFormat = "FP16" ;
 #else
-		printInfo(MASTER, " Compute", "FP32") ;
+		computeFormat = "FP32" ;
 #endif
+		computeFormat += + " [" + to_string(sizeof(Myfloat2)) + " Bytes]" ;
+		printInfo(MASTER, " Compute", computeFormat) ;
 
 		printInfo(MASTER, " Mode Baseline", "ENABLED") ;
 		printInfo(MASTER, " Mode CacheBlk", "ENABLED") ;
@@ -182,6 +192,16 @@ void printDebug(Debug_level debug_l, const char* text, Myint nb, Myint nb2)
 
 //-------------------------------------------------------------------------------------------------------
 
+void printDebug(Debug_level debug_l, const char* text, Myfloat16 nb)
+{
+	if (debug_l <= debug)
+	{
+		Config::Instance()->debugLogFile << text << " " << (float) nb << "\n" << flush ;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 void printDebug(Debug_level debug_l, const char* text, Myfloat32 nb)
 {
 	if (debug_l <= debug)
@@ -274,6 +294,16 @@ void printInfo(Display_type display_t, const char* text, Myint64 nb)
 	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
 	{
 		cout << text << "\t" << nb << "\n" << flush ;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void printInfo(Display_type display_t, const char* text, Myfloat16 nb)
+{
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
+	{
+		cout << text << "\t" << (float) nb << "\n" << flush ;
 	}
 }
 
