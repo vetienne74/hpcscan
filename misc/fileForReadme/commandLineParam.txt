@@ -1,78 +1,85 @@
  List of command line parameters:
- -autoPad             = automatic grid padding on all axis
+ -autoPad              = automatic grid padding on all axis
      (if specified autoPad overrides all other padding options)
- -boundary <string>   = boundary condition type
-     FreeSurf         * Free surface (DEFAULT)
-     None             * No boundary condition
- -cb1 <int>           = cache block size axis 1 [grid pts]
- -cb2 <int>           = cache block size axis 2 [grid pts]
- -cb3 <int>           = cache block size axis 3 [grid pts}
- -debug <OPT>         = debug trace [OPT=none/light/mid/full]
- -dim <int>           = space dimension [1,2 or 3]
- -dpcppSelect <char>  = device selector for DPC++
-     Host             * Launch kernels on Host (DEFAULT)
-     CPU              * Launch kernels on CPU
-     GPU              * Launch kernels on GPU
-     FPGA             * Launch kernels on FPGA
- -dt <float>          = time step (s) for propagator
- -fdOrder <int>       = spatial FD order [2,4,6,8,10,12,14 or 16]
- -gpuBlkSize <int>    = GPU, no. of threads / 1D block 
- -gpuBlkSize1 <int>   = GPU, no. of threads / 3D block axis 1
- -gpuBlkSize2 <int>   = GPU, no. of threads / 3D block axis 2
- -gpuBlkSize3 <int>   = GPU, no. of threads / 3D block axis 3
- -gpuGridSize <int>   = GPU, no. of 1D blocks per grid
- -gpuMpiAware         = use MPI GPU-aware library
- -help or -h          = list of command line parameters
- -hwCounterDt <float> = time (s) between hardware counter update (DEFAULT 0=no update)
- -n1 <int>            = inner domain size axis 1 [grid pts]
- -n2 <int>            = inner domain size axis 2 [grid pts]
- -n3 <int>            = inner domain size axis 3 [grid pts]
- -n1AddPad <int>      = add N points to grid at the end of axis 1
- -n2AddPad <int>      = add N points to grid at the end of axis 2
- -n3AddPad <int>      = add N points to grid at the end of axis 3
- -n1MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N
- -n2MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N
- -n3MulPad <int>      = add some points to grid at end of axis 1 to be multiple of N
- -n1Offset <int>      = add N points to grid at the beginning of axis 1
- -n2Offset <int>      = add N points to grid at the beginning of axis 2
- -n3Offset <int>      = add N points to grid at the beginning of axis 3
- -nsub1 <int>         = no. of subdomains axis 1
- -nsub2 <int>         = no. of subdomains axis 2
- -nsub3 <int>         = no. of subdomains axis 3
- -nt <int>            = no. of time steps for propagator
- -ntry <int>          = no. of tries for each testCase
- -param1 <float>      = parameter 1 used in testCases
- -param2 <float>      = parameter 2 used in testCases
- -param3 <float>      = parameter 3 used in testCases
- -param4 <float>      = parameter 4 used in testCases
- -propagator <string> = propagator type
-     Ac2Standard      * Acoustic 2nd Standard (DEFAULT)
-     Ac2SplitComp     * Acoustic 2nd Separate Laplacian computation
- -ratioCFL <float>    = ratio of stability dt for propagator
- -snapDt <float>      = snaphots increment (time in sec.)
+ -boundary <string>    = boundary condition type
+     FreeSurf          * Free surface (DEFAULT)
+     None              * No boundary condition
+ -cb1 <int>            = cache block size axis 1 [grid pts]
+ -cb2 <int>            = cache block size axis 2 [grid pts]
+ -cb3 <int>            = cache block size axis 3 [grid pts}
+ -d1 <float>           = grid spacing (m) axis 1
+ -d2 <float>           = grid spacing (m) axis 2
+ -d3 <float>           = grid spacing (m) axis 3
+ -debug <OPT>          = debug trace [OPT=none/light/mid/full]
+ -dim <int>            = space dimension [1,2 or 3]
+ -dpcppSelect <string> = device selector for DPC++
+     Host              * Launch kernels on Host (DEFAULT)
+     CPU               * Launch kernels on CPU
+     GPU               * Launch kernels on GPU
+     FPGA              * Launch kernels on FPGA
+ -dt <float>           = time step (s) for propagator
+ -fdOrder <int>        = spatial FD order [2,4,6,8,10,12,14 or 16]
+ -freqMax <float>      = maximum frequency (Hz) for modeling
+ -gpuBlkSize <int>     = GPU, no. of threads / 1D block 
+ -gpuBlkSize1 <int>    = GPU, no. of threads / 3D block axis 1
+ -gpuBlkSize2 <int>    = GPU, no. of threads / 3D block axis 2
+ -gpuBlkSize3 <int>    = GPU, no. of threads / 3D block axis 3
+ -gpuGridSize <int>    = GPU, no. of 1D blocks per grid
+ -gpuMpiAware          = use MPI GPU-aware library
+ -help or -h           = list of command line parameters
+ -hwCounterDt <float>  = time (s) between hardware counter update (DEFAULT 0=no update)
+ -modelVpFile <string> = path/name of Vp file (P-wave velocity m/s)
+ -n1 <int>             = inner domain size axis 1 [grid pts]
+ -n2 <int>             = inner domain size axis 2 [grid pts]
+ -n3 <int>             = inner domain size axis 3 [grid pts]
+ -n1AddPad <int>       = add N points to grid at the end of axis 1
+ -n2AddPad <int>       = add N points to grid at the end of axis 2
+ -n3AddPad <int>       = add N points to grid at the end of axis 3
+ -n1MulPad <int>       = add some points to grid at end of axis 1 to be multiple of N
+ -n2MulPad <int>       = add some points to grid at end of axis 1 to be multiple of N
+ -n3MulPad <int>       = add some points to grid at end of axis 1 to be multiple of N
+ -n1Offset <int>       = add N points to grid at the beginning of axis 1
+ -n2Offset <int>       = add N points to grid at the beginning of axis 2
+ -n3Offset <int>       = add N points to grid at the beginning of axis 3
+ -nsub1 <int>          = no. of subdomains axis 1
+ -nsub2 <int>          = no. of subdomains axis 2
+ -nsub3 <int>          = no. of subdomains axis 3
+ -nt <int>             = no. of time steps for propagator
+ -ntry <int>           = no. of tries for each testCase
+ -param1 <float>       = parameter 1 used in testCases
+ -param2 <float>       = parameter 2 used in testCases
+ -param3 <float>       = parameter 3 used in testCases
+ -param4 <float>       = parameter 4 used in testCases
+ -propagator <string>  = propagator type
+     Ac2Standard       * Acoustic 2nd Standard (DEFAULT)
+     Ac2SplitComp      * Acoustic 2nd Separate Laplacian computation
+ -ratioCFL <float>     = ratio of stability dt for propagator
+ -snapDt <float>       = snaphots increment (time in sec.)
      (if specified snapDt overrides snapInc)
- -snapInc <int>       = snaphots increment (no. of time steps)
- -testCase <string>   = run specific testCase by name
-     All              * All test cases (DEFAULT)
-     Comm             * MPI communication
-     FD_D2            * Finite-difference computation
-     Grid             * Grid operation
-     Memory           * Memory
-     Propa            * Propagator
-     Util             * Utility for developers
- -testMode <string>   = test mode
-     Baseline         * Generic CPU reference implementation (DEFAULT test mode)
-     CacheBlk         * Generic CPU optimized with cache blocking techniques
-     CUDA             * NVIDIA GPU CUDA regular implementation
-     CUDA_Opt         * NVIDIA GPU CUDA optimized implementation
-     CUDA_ref         * NVIDIA GPU CUDA reference implementation (for developers)
-     DPC++            * Intel CPU/GPU/FPGA regular DPC++ implementation
-     HIP              * AMD GPU HIP regular implementation
-     HIP_Opt          * AMD GPU HIP optimized implementation
-     NEC              * NEC SX-Aurora with NEC compiler directives
-     NEC_SCA          * NEC SX-Aurora with NEC Stencil Code Accelerator Library
- -tmax <float>        = max. time (s) for propagator
+ -snapInc <int>        = snaphots increment (no. of time steps)
+ -testCase <string>    = run specific testCase by name
+     All               * All test cases (DEFAULT)
+     Comm              * MPI communication
+     FD_D1             * Finite-difference (1st derivative) computation
+     FD_D2             * Finite-difference (2nd derivative) computation
+     Grid              * Grid operation
+     Memory            * Memory
+     Modeling          * Modeling
+     Propa             * Propagator
+     Util              * Utility for developers
+ -testMode <string>    = test mode
+     Baseline          * Generic CPU reference implementation (DEFAULT test mode)
+     CacheBlk          * Generic CPU optimized with cache blocking techniques
+     CUDA              * NVIDIA GPU CUDA regular implementation
+     CUDA_Opt          * NVIDIA GPU CUDA optimized implementation
+     CUDA_ref          * NVIDIA GPU CUDA reference implementation (for developers)
+     DPC++             * Intel CPU/GPU/FPGA regular DPC++ implementation
+     HIP               * AMD GPU HIP regular implementation
+     HIP_Opt           * AMD GPU HIP optimized implementation
+     NEC               * NEC SX-Aurora with NEC compiler directives
+     NEC_SCA           * NEC SX-Aurora with NEC Stencil Code Accelerator Library
+ -tmax <float>         = max. time (s) for propagator
      (if specified tmax overrides nt)
- -version or -v       = print version information
- -writeGrid           = write grids on disk
+ -version or -v        = print version information
+ -writeGrid            = write grids on disk
 

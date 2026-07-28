@@ -1,18 +1,19 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 78966fd91a78e8a7c1d5d6a5540b69d862334871
-		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		Date:   Sun Jul 18 15:10:56 2021 +0300
+ Git version	commit 703de10f955ee73343490a4e30cb52d7120fcaf3
+		Author: vincent <vincent.etienne@algodoers.com>
+		Date:   Tue Jul 28 10:52:26 2026 +0200
 
- Host name	neptune
+ Host name	ouessant
  User name	vincent
- Computation	SINGLE PRECISION
+ Storage	FP32 [4 Bytes]
+ Compute	FP32 [4 Bytes]
  Mode Baseline	ENABLED
  Mode CacheBlk	ENABLED
- Mode CUDA	ENABLED
- Mode CUDA_Opt	ENABLED
- Mode CUDA_Ref	ENABLED
+ Mode CUDA	DISABLED
+ Mode CUDA_Opt	DISABLED
+ Mode CUDA_Ref	DISABLED
  Mode DPC++	DISABLED
  Mode HIP	DISABLED
  Mode HIP_Opt	DISABLED

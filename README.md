@@ -63,7 +63,7 @@ It features several categories of test cases aiming to measure memory, computati
 * Hybrid OpenMP/MPI parallelism
 * Support scalar and vector CPUs, GPUs and other accelerators (depending on compiler/architecture)
 * All configuration parameters on command line
-* Support single precision (FP32) and double precision (FP64) computation
+* Support double precision (FP64), single precision (FP32) and half precision (FP16) for data storage and/or for computation
 * Compilation with standard Makefile
 * No external librairies
 * Follows [C++ Google style code](https://google.github.io/styleguide/cppguide.html)
@@ -126,7 +126,7 @@ Version      | Description | Release date
 ------------ | ----------- | ------------
 v1.0         |  **Initial version with CPU and Vector Engine support** <li> Test cases: Comm, FD_D2, Grid, Memory and Propa </li> <li> FD orders: 2, 4, 8, 12 & 16 </li> <li> Test modes: Baseline, CacheBlk and NEC_SCA </li> | Nov 28, 2020
 v1.1         | **GPU support** <li> Added test modes CUDA and HIP </li> <li> Added test mode NEC </li> | May 22, 2021
-v1.2         | **Energy consumption** <li> Access hardware counters to report energy (Watt) consumption </li> <li> Added FD orders: 6, 10 & 14 </li> <li> Added test case: FD_D1 </li> <li> Added test mode DPC++</li> <li> Added test modes CUDA_Opt, CUDA_Ref and HIP_Opt </li> | Q4 2026
+v1.2         | **Energy consumption and half-precision support** <li> Access hardware counters to report energy (Watt) consumption </li> <li> Added FP16 support for storage and/or computation</li> <li> Added FD orders: 6, 10 & 14 </li> <li> Added test case: FD_D1 </li> <li> Added test mode DPC++</li> <li> Added test modes CUDA_Opt, CUDA_Ref and HIP_Opt </li> | Q4 2026
 
 # Main features
 
@@ -195,11 +195,11 @@ In order to compile and run hpcscan, you need to source one of the files in the 
 
 `cd ./env`
 
-Example to set up the environment for hpcscan with GCC and CUDA compilers:
+Example to set up the environment for hpcscan with GCC:
 
-`source ./setEnvNeptuneGccCuda.sh`
+`source ./setEnvGenericGcc.sh`
 
-[Display command output](misc/fileForReadme/setEnvNeptuneGccCuda.txt)
+[Display command output](misc/fileForReadme/setEnvGenericGcc.txt)
 
 :bell: **For a new system, you would need to create a file for your system** (take example from one of the existing files)
 
@@ -216,9 +216,11 @@ Executable can be found in `./bin/hpcscan`
 
 :bell: If hpcscan environment has not been set (see [Environment script (mandatory)](#environment-script-mandatory)), compilation will abort.
 
-By default, hpcscan is compiled in single precision (FP32)
+By default, hpcscan is compiled in single precision (FP32) for both data storage and computation. 
 
-To compile in double precision (FP64): `make storage=fp64`
+To specify specific formats: `make storage=OPT1 compute=OPT2`
+
+Where OPT1 defines the desired format for data storage: FP64, FP32 of FP16 are valid options. Similarly OPT2 defines the format to be used for computations. Example for FP16 data with FP32 computations : `make storage=FP16 compute=FP32`
 
 ## Enabled test modes
 

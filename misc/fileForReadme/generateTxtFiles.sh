@@ -1,7 +1,7 @@
 
 # set up hpcscan environment
 cd ../../env/
-. ./setEnvNeptuneGccCuda.sh | tee ../misc/fileForReadme/setEnvNeptuneGccCuda.txt
+. ./setEnvGenericGcc.sh | tee ../misc/fileForReadme/setEnvGenericGcc.txt
 cd -
 
 # build

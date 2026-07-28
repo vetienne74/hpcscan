@@ -7,18 +7,19 @@
 ================================================================================
 			 H P C S C A N - ver 1.2
 
- Git version	commit 78966fd91a78e8a7c1d5d6a5540b69d862334871
-		Author: Vincent Etienne <vincent.etienne@aramco.com>
-		Date:   Sun Jul 18 15:10:56 2021 +0300
+ Git version	commit 703de10f955ee73343490a4e30cb52d7120fcaf3
+		Author: vincent <vincent.etienne@algodoers.com>
+		Date:   Tue Jul 28 10:52:26 2026 +0200
 
- Host name	neptune
+ Host name	ouessant
  User name	vincent
- Computation	SINGLE PRECISION
+ Storage	FP32 [4 Bytes]
+ Compute	FP32 [4 Bytes]
  Mode Baseline	ENABLED
  Mode CacheBlk	ENABLED
- Mode CUDA	ENABLED
- Mode CUDA_Opt	ENABLED
- Mode CUDA_Ref	ENABLED
+ Mode CUDA	DISABLED
+ Mode CUDA_Opt	DISABLED
+ Mode CUDA_Ref	DISABLED
  Mode DPC++	DISABLED
  Mode HIP	DISABLED
  Mode HIP_Opt	DISABLED
@@ -33,7 +34,7 @@
  No. subdomains axis1	1
  No. subdomains axis2	1
  No. subdomains axis3	1
- OpenMP threads / MPI	2
+ OpenMP threads / MPI	16
  Number of tries	10
  FD space order		8
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -45,7 +46,7 @@
 
  Hardware information
  Target hardware:
- CPU (Host) type	Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz
+ CPU (Host) type	AMD Ryzen 9 7940HX with Radeon Graphics        
  Read power usage	NOT SUPPORTED
 --------------------------------------------------------------------------------
 
@@ -128,19 +129,28 @@
  Test PASSED
  #Flop per point	48
  #Point in stencil	25
- Best GFlop/s in FD	11.7784
- Best Gpoint/s eff.	0.245384
- Best Gpoint/s in FD	0.245384
- Best Apparent BW GB/s	28.4645
+ Total compute time (s)	0.0170423
+ Compute speed (GPts/s)	0.266373
+
+ Total I/O time (s)	0
+ Total comm. time (s)	6.734e-06
+ Halo comm. time (s)	6.734e-06
+ Bound. cond. time (s)	0.11217
+ Compute pres. time (s)	0.0579363
+ Best GFlop/s in FD	3.76106
+ Best Gpoint/s eff.	0.273129
+ Best Gpoint/s in FD	0.0783554
+ Best Apparent BW GB/s	9.08922
 
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  Hardware counters statistics
  No statistic available
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
- Case run time (s)	0.283085
+ Case run time (s)	0.181931
 --------------------------------------------------------------------------------
- Total run time (s)	0.284189
+ Number of test cases executed	1
+ Total run time (s)	0.182202
 
 ================================================================================
 			 HPCSCAN TERMINATED SUCCESSFULLY

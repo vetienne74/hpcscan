@@ -1,16 +1,41 @@
+================================================================================
+			 H P C S C A N - ver 1.2
+
+ Git version	commit 703de10f955ee73343490a4e30cb52d7120fcaf3
+		Author: vincent <vincent.etienne@algodoers.com>
+		Date:   Tue Jul 28 10:52:26 2026 +0200
+
+ Host name	ouessant
+ User name	vincent
+ Storage	FP32 [4 Bytes]
+ Compute	FP32 [4 Bytes]
+ Mode Baseline	ENABLED
+ Mode CacheBlk	ENABLED
+ Mode CUDA	DISABLED
+ Mode CUDA_Opt	DISABLED
+ Mode CUDA_Ref	DISABLED
+ Mode DPC++	DISABLED
+ Mode HIP	DISABLED
+ Mode HIP_Opt	DISABLED
+ Mode NEC	DISABLED
+ Mode NEC_SCA	DISABLED
+================================================================================
 
 ========================================================================
                          START VALIDATION TESTS
 ========================================================================
 
+--- All enabled testModes will be tested ---
+
 ------------------------------------------------------------------------
 Start testDriver.sh
 >>> Test Mode Baseline <<<
-Launch MPI with mpirun --oversubscribe
+Launch MPI with mpirun
 Running -testCase Util ...
 Running -testCase Template ...
 Running -testCase Memory ...
 Running -testCase FD_D2 ...
+Running -testCase FD_D1 ...
 Running -testCase Grid ...
 Running -testCase Comm ...
 Running -testCase Propa ...
@@ -19,71 +44,36 @@ End testDriver.sh
 ------------------------------------------------------------------------
 Start testDriver.sh
 >>> Test Mode CacheBlk <<<
-Launch MPI with mpirun --oversubscribe
+Launch MPI with mpirun
 Running -testCase Util ...
 Running -testCase Template ...
 Running -testCase Memory ...
 Running -testCase FD_D2 ...
+Running -testCase FD_D1 ...
 Running -testCase Grid ...
 Running -testCase Comm ...
 Running -testCase Propa ...
 End testDriver.sh
 ------------------------------------------------------------------------
-------------------------------------------------------------------------
-Start testDriver.sh
->>> Test Mode CUDA <<<
-Launch MPI with mpirun --oversubscribe
-Running -testCase Util ...
-Running -testCase Template ...
-Running -testCase Memory ...
-Running -testCase FD_D2 ...
-Running -testCase Grid ...
-Running -testCase Comm ...
-Running -testCase Propa ...
-End testDriver.sh
-------------------------------------------------------------------------
-------------------------------------------------------------------------
-Start testDriver.sh
->>> Test Mode CUDA_Opt <<<
-Launch MPI with mpirun --oversubscribe
-Running -testCase Util ...
-Running -testCase Template ...
-Running -testCase Memory ...
-Running -testCase FD_D2 ...
-Running -testCase Grid ...
-Running -testCase Comm ...
-Running -testCase Propa ...
-End testDriver.sh
-------------------------------------------------------------------------
-------------------------------------------------------------------------
-Start testDriver.sh
->>> Test Mode CUDA_Ref <<<
-Launch MPI with mpirun --oversubscribe
-Running -testCase Util ...
-Running -testCase Template ...
-Running -testCase Memory ...
-Running -testCase FD_D2 ...
-Running -testCase Grid ...
-Running -testCase Comm ...
-Running -testCase Propa ...
-End testDriver.sh
-------------------------------------------------------------------------
+SKIP testMode CUDA
+SKIP testMode CUDA_Opt
+SKIP testMode CUDA_Ref
 SKIP testMode DPC++
 SKIP testMode HIP
 SKIP testMode HIP_Opt
 SKIP testMode NEC
 SKIP testMode NEC_SCA
 
-# Started  :  Mon 19 Jul 2021 06:22:58 AM +03
-# Ended    :  Mon 19 Jul 2021 06:29:13 AM +03
-On machine :  neptune
+# Started  :  Tue Jul 28 10:55:10 AM CEST 2026
+# Ended    :  Tue Jul 28 11:27:51 AM CEST 2026
+On machine :  ouessant
 Done by    :  vincent
 * SUMMARY
-# PASSED  : 3155
+# PASSED  : 1536
 # FAILED  : 0
 # ERROR   : 0
 # WARNING : 0
-==> Results of tests are saved in runValidationTests.neptune.vincent.out
+==> Results of tests are saved in runValidationTests.ouessant.vincent.out
 
 ========================================================================
                          END VALIDATION TESTS
