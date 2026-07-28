@@ -1,0 +1,15 @@
+HPCscan set for ouessant with:
+- C++ Compiler
+g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+- No CUDA compiler set
+- No HIP compiler set
+- MPI library
+mpirun (Open MPI) 5.0.9
+
+Report bugs to https://www.open-mpi.org/community/help/
+- Number of OpenMP threads 16
+Ready to go!
