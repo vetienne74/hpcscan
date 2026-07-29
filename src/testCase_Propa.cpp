@@ -88,7 +88,7 @@ Rtn_code TestCase_Propa::run(void)
 	const Myfloat dt    = propa->dt ;
 	const Myint snapInc = propa->snapInc ;
 
-	const Myfloat maxErr = 2.e-2 ;
+	const Myfloat maxErr = 0.01 ;
 	printInfo(MASTER, " Max allowed error", maxErr) ;
 
 	Myint nPtPerStencil  = prcGrid->getPtPerStencilFD_LAPLACIAN(fdOrder) ;

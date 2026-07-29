@@ -1,19 +1,20 @@
 
 script_template = 'templateScript.sh'
 
-n1Range=['500','600','700','800','900','1000']
-fdOrderRange=['4','6','8','10','12']
+n1Range=['200','250','300','350','400','500','600','700','800','900','1000']
+fdOrderRange=['2','4','6','8','10','12','14','16']
 tmax='1.0'
 snapDt='0.1'
 dt='0.0'
-nmode='130'
+nmode='150'
 #dim='3'
 dim='1'
 ntry='1'
 ratioCFLRange=['1.0','0.5','0.2','0.1']
 #testModeRange=['NEC_SCA']
 testModeRange=['Baseline']
-propagatorRange=['Ac2Standard','Ac2SplitComp']
+#propagatorRange=['Ac2Standard','Ac2SplitComp']
+propagatorRange=['Ac2Standard']
 
 #-----------------------------------------------------------------
 configName='config'
