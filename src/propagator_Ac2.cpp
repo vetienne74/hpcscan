@@ -22,19 +22,25 @@
 //   note at each time step pn and pc are swapped
 //
 // * Eigen mode
-//   In a unit cube, with free surface boundary condition at all egdes,
+//   In a cube with velocity = 1 and with free surface boundary condition at all egdes,
 //   there exist an analytical solution:
 //
-//   In 1D: p = sin (pi x1 N1) . sin (pi gamma t)
-//          with gamma = N1
+//   In 1D: p = sin (pi x1 N1) . sin (omaga t)
+//          with omega = pi N1
 //
-//   In 2D: p = sin (pi x1 N1) . sin (pi x2 N2) . sin (pi Gamma t)
-//          with gamma = sqrt(N1^2 + N2^2)
+//   In 2D: p = sin (pi x1 N1) . sin (pi x2 N2) . sin (omega t)
+//          with omega = pi sqrt(N1^2 + N2^2)
 //
-//   In 3D: p = sin (pi x1 N1) . sin (pi x2 N2) . sin (pi x3 N3) . sin (pi Gamma t)
-//          with gamma = sqrt(N1^2 + N2^2 + N3^2)
+//   In 3D: p = sin (pi x1 N1) . sin (pi x2 N2) . sin (pi x3 N3) . sin (omega t)
+//          with omage = pi sqrt(N1^2 + N2^2 + N3^2)
 //
 //   N1, N2, N3 are the number of modes (integer >=1) along x1,x2 and x2 respectively
+//
+//   Notes: 
+//   - frequency = omega / 2 pi
+//   - number of wavelengths along x1 = N1 / 2
+//   - number of wavelengths along x2 = N2 / 2
+//   - number of wavelengths along x3 = N3 / 2
 //-------------------------------------------------------------------------------------------------------
 
 #include "propagator_Ac2.h"
@@ -124,15 +130,15 @@ namespace hpcscan
 		if (propaInitType == EIGEN_MODE)
 		{
 			// define unit grids
-			coefGrid->defineUnitGrid();
-			prnGrid->defineUnitGrid();
-			prcGrid->defineUnitGrid();
+			//coefGrid->defineUnitGrid();
+			//prnGrid->defineUnitGrid();
+			//prcGrid->defineUnitGrid();
 
 			//----------------
 			// Set Vp = 1 m/s
 			//----------------
 
-			const Myfloat Vp = 1.0;
+			const Myfloat Vp = 1.0 ;
 			minVelocity = Vp;
 			maxVelocity = Vp;
 		}
@@ -449,7 +455,10 @@ namespace hpcscan
 			const Myint nMode2 = ceil(Config::Instance()->param2);
 			const Myint nMode3 = ceil(Config::Instance()->param3);
 
-			Myfloat64 val1 = 0.0, val2 = 0.0, val3 = 0.0, val4 = 0.0, gamma = 0.0;
+			Myfloat64 val1 = 0.0, val2 = 0.0, val3 = 0.0, val4 = 0.0, omega = 0.0;
+
+			Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
+			gridIn.getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
 			//===========================================================
 			// 1D CASE
@@ -464,10 +473,10 @@ namespace hpcscan
 				}
 
 				// parameters
-				val1 = PI * nMode1;
+				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) ;
 				val2 = 1.0;
-				val3 = 1.0;
-				gamma = nMode1;
+				val3 = 1.0;				
+				omega = val1 ;
 			}
 
 			//===========================================================
@@ -490,10 +499,10 @@ namespace hpcscan
 				}
 
 				// initialize parameters
-				val1 = PI * nMode1;
-				val2 = PI * nMode2;
+				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) ;
+				val2 = PI * nMode2 / Myfloat64(i2End-i2Start) ;
 				val3 = 1.0;
-				gamma = sqrt(nMode1 * nMode1 + nMode2 * nMode2);
+				omega = sqrt(val1 * val1 + val2 * val2);				
 			}
 
 			//===========================================================
@@ -522,19 +531,19 @@ namespace hpcscan
 				}
 
 				// initialize parameters
-				val1 = PI * nMode1;
-				val2 = PI * nMode2;
-				val3 = PI * nMode3;
-				gamma = sqrt(nMode1 * nMode1 + nMode2 * nMode2 + nMode3 * nMode3);
+				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) ;
+				val2 = PI * nMode2 / Myfloat64(i2End-i2Start) ;
+				val3 = PI * nMode3 / Myfloat64(i3End-i3Start) ;
+				omega = sqrt(val1 * val1 + val2 * val2 + val3 * val3);				
 			}
 
 			// initialize at time = timeSec
-			val4 = sin(PI * timeSec * gamma);
+			val4 = sin(timeSec * omega);
 			gridIn.fill(ALL_POINTS, FUNC_SINE, FUNC_SINE, FUNC_SINE, val1, val2, val3, val4);
 
 			// set max frequency
 			// TO DO should be done once
-			freqMax = gamma / 2.0;
+			freqMax = omega / (2.0 * PI) ;
 		}
 		else
 		{

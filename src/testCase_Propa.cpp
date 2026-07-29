@@ -59,7 +59,7 @@ Rtn_code TestCase_Propa::run(void)
 	const string gridMode = Config::Instance()->testMode ;
 	auto refGrid = Grid_Factory::create(gridMode, GRID_LOCAL) ;
 	refGrid->initializeGrid() ;
-	refGrid->defineUnitGrid() ;
+	//refGrid->defineUnitGrid() ;
 
 	if (myMpiRank == 0) prnGrid->info() ;
 

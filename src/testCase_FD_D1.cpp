@@ -66,9 +66,9 @@ Rtn_code TestCase_FD_D1::run(void)
 	Myint64 i1Start, i1End, i2Start, i2End, i3Start, i3End ;
 	Ugrid.getGridIndex(INNER_POINTS, &i1Start, &i1End, &i2Start, &i2End, &i3Start, &i3End) ;
 
-	const Myfloat64 a1 = PI * Config::Instance()->param1 / Myfloat64(i1End-i1Start+1) ;
-	const Myfloat64 a2 = PI * Config::Instance()->param2 / Myfloat64(i2End-i2Start+1) ;
-	const Myfloat64 a3 = PI * Config::Instance()->param3 / Myfloat64(i3End-i3Start+1) ;	
+	const Myfloat64 a1 = PI * Config::Instance()->param1 / Myfloat64(i1End-i1Start) ;
+	const Myfloat64 a2 = PI * Config::Instance()->param2 / Myfloat64(i2End-i2Start) ;
+	const Myfloat64 a3 = PI * Config::Instance()->param3 / Myfloat64(i3End-i3Start) ;	
 	const Myfloat64 a4 = Config::Instance()->param4 ;
 
 	//............................................
