@@ -3,8 +3,8 @@ script_template = 'templateScript.sh'
 
 n1Range=['200','250','300','350','400','500','600','700','800','900','1000']
 fdOrderRange=['2','4','6','8','10','12','14','16']
-tmax='1.0'
-snapDt='0.1'
+tmax='10.0'
+snapDt='1.0'
 dt='0.0'
 nmode='150'
 #dim='3'

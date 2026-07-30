@@ -84,9 +84,9 @@ hpcscan has been designed to address these issues :smiley:
 
 :ballot_box_with_check: **Lightweight and portable** tool that can be easily deployed on a wide range of architectures including CPUs, GPUs and accelerators (see [Validated hardware, operating systems and compilers](#validated-hardware-operating-systems-and-compilers)). 
 
-:ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond getting accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. An example is shown below where several key parameters of an algorithm (a wave propagation kernel) are explored to find the optimum (in terms of computation speed vs accuracy) on the supercomputer Shaheen II at KAUST. See  [Performance benchmarks](#performance-benchmarks) for details on this test case as well as scripts to perform the analysis.
+:ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. An example is shown below with a FD D2 kernel where accuracy order and spatial sampling are explored to find the optimum (in terms of computation speed vs accuracy). See  [Performance benchmarks](#performance-benchmarks) for details on this test case as well as scripts to perform the analysis.
 
-<img src="./script/testCase_Propa/paramAnalysis/hpcscanPropaParamAnalysisShaheen.jpg" alt="hpcscanPropaParamAnalysisShaheen.jpg" width="1000" height="700"/>
+<img src="./script/testCase_FD_D2/convergence/archive/hpcscan.perf.FD_D2-Axis1.jpg" alt="hpcscan.perf.FD_D2-Axis1.jpg" width="1000" height="700"/>
 
 <font size="2"> **Top left:** Error between computed and analytical solutions versus N (grid size is NxNxN). Blue: FD 4th order, Pink: 8th order and Red: 12th order. Squares: standard propagator implementation, crosses: when the Laplacian operator is computed separately. </font>
 

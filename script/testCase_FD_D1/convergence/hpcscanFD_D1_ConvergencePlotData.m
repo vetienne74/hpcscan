@@ -18,7 +18,7 @@ maxAllowedError = 0.01 ;
 % define hardware memory bandwith
 memBwdth = 44.0 ;
 
-% number of wavelengths
+% number of modes
 NMODE = 150 ;
 
 % min and max for plot
@@ -139,7 +139,7 @@ xlabel('# points / wavelength')
 ylabel('L1 Error')
 title('L1 Error vs N', 'FontSize', 12)
 
-TITLE = sprintf('L1 Error vs N \n Derivative D%i - %s ', ORD, DER_AXIS)
+TITLE = sprintf('L1 Error vs spatial sampling \n Derivative D%i - %s ', ORD, DER_AXIS)
 title(TITLE, 'FontSize', 12)
 
 for ii=1:nConfig      

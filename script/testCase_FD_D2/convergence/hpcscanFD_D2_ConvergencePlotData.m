@@ -1,7 +1,7 @@
 
 close all ; clear all ;
 
-DIR  = '.' ;
+DIR  = './archive' ;
 
 % derivative order (1 or 2)
 ORD = 2 ;
@@ -18,7 +18,7 @@ maxAllowedError = 0.01 ;
 % define hardware memory bandwith
 memBwdth = 44.0 ;
 
-% number of wavelengths
+% number of modes
 NMODE = 150 ;
 
 % min and max for plot
@@ -32,8 +32,8 @@ minTime    = 0.001 ;
 maxTime    = 10.0 ;
 
 
-pathFile = sprintf('%s/%s.log', DIR, FILE) ;
-%pathFile = sprintf('%s/%s.log.fp16.fp16', DIR, FILE) ;
+%pathFile = sprintf('%s/%s.log', DIR, FILE) ;
+pathFile = sprintf('%s/%s.log.fp32', DIR, FILE) ;
 val = importdata(pathFile) ;
 
 valOrder    = val.data(:,9) ;
@@ -139,7 +139,7 @@ xlabel('# points / wavelength')
 ylabel('L1 Error')
 title('L1 Error vs N', 'FontSize', 12)
 
-TITLE = sprintf('L1 Error vs N \n Derivative D%i - %s ', ORD, DER_AXIS)
+TITLE = sprintf('L1 Error vs spatial samplig \n Derivative D%i - %s ', ORD, DER_AXIS)
 title(TITLE, 'FontSize', 12)
 
 for ii=1:nConfig      
