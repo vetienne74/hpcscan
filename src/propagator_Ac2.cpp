@@ -473,7 +473,7 @@ namespace hpcscan
 				}
 
 				// parameters
-				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) ;
+				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) / gridIn.getSpaceSampling(AXIS1) ;
 				val2 = 1.0;
 				val3 = 1.0;				
 				omega = val1 ;
@@ -499,8 +499,8 @@ namespace hpcscan
 				}
 
 				// initialize parameters
-				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) ;
-				val2 = PI * nMode2 / Myfloat64(i2End-i2Start) ;
+				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) / gridIn.getSpaceSampling(AXIS1) ;
+				val2 = PI * nMode2 / Myfloat64(i2End-i2Start) / gridIn.getSpaceSampling(AXIS2) ;
 				val3 = 1.0;
 				omega = sqrt(val1 * val1 + val2 * val2);				
 			}
@@ -531,9 +531,9 @@ namespace hpcscan
 				}
 
 				// initialize parameters
-				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) ;
-				val2 = PI * nMode2 / Myfloat64(i2End-i2Start) ;
-				val3 = PI * nMode3 / Myfloat64(i3End-i3Start) ;
+				val1 = PI * nMode1 / Myfloat64(i1End-i1Start) / gridIn.getSpaceSampling(AXIS1) ;
+				val2 = PI * nMode2 / Myfloat64(i2End-i2Start) / gridIn.getSpaceSampling(AXIS2) ;
+				val3 = PI * nMode3 / Myfloat64(i3End-i3Start) / gridIn.getSpaceSampling(AXIS3) ;
 				omega = sqrt(val1 * val1 + val2 * val2 + val3 * val3);				
 			}
 

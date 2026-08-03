@@ -7,6 +7,8 @@ DIR  = '.' ;
 %FILE = 'hpcscanPropaParamAnalysisShaheen' ;
 FILE = 'hpcscan.perf.Propa' ;
 
+iConfigOptimal = 1 
+
 % define target error
 maxAllowedError = 0.01 ;
 

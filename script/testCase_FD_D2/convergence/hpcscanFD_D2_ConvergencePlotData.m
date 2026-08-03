@@ -1,7 +1,7 @@
 
 close all ; clear all ;
 
-DIR  = './archive' ;
+DIR  = './' ;
 
 % derivative order (1 or 2)
 ORD = 2 ;
@@ -32,8 +32,8 @@ minTime    = 0.001 ;
 maxTime    = 10.0 ;
 
 
-%pathFile = sprintf('%s/%s.log', DIR, FILE) ;
-pathFile = sprintf('%s/%s.log.fp32', DIR, FILE) ;
+pathFile = sprintf('%s/%s.log', DIR, FILE) ;
+%pathFile = 'archive/FD_D2.perf.ouessant.2026-07-31.fp32.log' ;
 val = importdata(pathFile) ;
 
 valOrder    = val.data(:,9) ;
@@ -247,7 +247,7 @@ memBwdthY(1:nConfig) = memBwdth ;
 plot(memBwdthX, memBwdthY, '-k', 'LineWidth', 1.5)
 
 % save figure
-figName = sprintf('%s-%s.jpg', FILE, DER_AXIS) ;
+figName = sprintf('%s-%s.jpg', pathFile, DER_AXIS) ;
 print(figName, '-djpeg')
 
 fprintf('Error min %g - max %g\n', min(valError(:)), max(valError(:)))

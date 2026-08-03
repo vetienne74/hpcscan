@@ -41,8 +41,8 @@ end_time=$(date)
 tester=$(whoami)
 machine=$(hostname)
 
-cp hpcscan.hwCounter.Propa.log propa.hwCounter.${machine}.${today}.log
-cp hpcscan.perf.Propa.log propa.perf.${machine}.${today}.log
+#cp hpcscan.hwCounter.FD_D1.log FD_D1.hwCounter.${machine}.${today}.log
+cp hpcscan.perf.FD_D1.log FD_D1.perf.${machine}.${today}.log
 
 echo "# Started  : " $start_time 
 echo "# Ended    : " $end_time

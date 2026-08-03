@@ -1,9 +1,10 @@
 
 script_template = 'templateScript.sh'
 
-n1Range=['200','250','300','350','400','500','600','700','800','900','1000']
+n1Range=[200,250,300,350,400,500,600,700,800,900,1000]
 fdOrderRange=['2','4','6','8','10','12','14','16']
 nmode='150'
+xmax=1000
 dim='3'
 #dim='1'
 ntry='1'
@@ -30,11 +31,17 @@ for testMode in testModeRange:
             f2 = open(script_new, 'w')
             f1 = open(script_template, 'r')
 
+            # compute spatial sampling
+            d1 = xmax / (n1-1)
+
             # create new file
             for line in f1:
-                new_line = line.replace('_n1_', n1)
-                new_line = new_line.replace('_n2_', n1)
-                new_line = new_line.replace('_n3_', n1)
+                new_line = line.replace('_n1_', str(n1))
+                new_line = new_line.replace('_n2_', str(n1))
+                new_line = new_line.replace('_n3_', str(n1))
+                new_line = new_line.replace('_d1_', str(d1))
+                new_line = new_line.replace('_d2_', str(d1))
+                new_line = new_line.replace('_d3_', str(d1))
                 new_line = new_line.replace('_ntry_', ntry)
                 new_line = new_line.replace('_fdOrder_', fdOrder)
                 new_line = new_line.replace('_testMode_', testMode)
