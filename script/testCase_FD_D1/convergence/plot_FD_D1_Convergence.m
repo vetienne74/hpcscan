@@ -1,39 +1,40 @@
 
 close all ; clear all ;
 
-DIR  = '.' ;
-
-% derivative order (1 or 2)
-ORD = 1 ;
-
-% log file name without .log extension
-FILE = sprintf('hpcscan.perf.FD_D%i', ORD) ;
-
 % derivative (1=x1, 2=x2, 3=x3, 4=sum/Laplacian)
 DER = 1 ;
 
 % define target error
 maxAllowedError = 0.01 ;
 
-% define hardware memory bandwith
-memBwdth = 44.0 ;
+% set axis limits for graphs
+PLOT_MINMAX = 0 ; % 0=no minmax, 1=with minmax
 
-% number of modes
+if (PLOT_MINMAX == 1)
+    % min and max for plot
+    minErrPlot = 1.0e-8 ;
+    maxErrPlot = 1.0 ;
+    minGPoint  = 0.0 ;
+    maxGPoint  = 5.0 ;
+    minGByte   = 0.0 ;
+    maxGByte   = 200.0 ;
+    minTime    = 0.001 ;
+    maxTime    = 10.0 ;    
+    memBwdth = 44.0 ; % define hardware memory bandwith
+end
+
+% END OF USER INPUT PARAMETERS
+
+% number of modes defined in test case
 NMODE = 150 ;
 
-% min and max for plot
-minErrPlot = 1.0e-8 ;
-maxErrPlot = 1.0 ;
-minGPoint  = 0.0 ;
-maxGPoint  = 5.0 ;
-minGByte   = 0.0 ;
-maxGByte   = 200.0 ;
-minTime    = 0.001 ;
-maxTime    = 10.0 ;
+% derivative order (1 or 2)
+ORD = 1 ;
 
-
+% log file name without .log extension
+FILE = sprintf('hpcscan.perf.FD_D%i', ORD) ;
+DIR  = './' ;
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;
-%pathFile = sprintf('%s/%s.log.fp16.fp16', DIR, FILE) ;
 val = importdata(pathFile) ;
 
 valOrder    = val.data(:,9) ;
@@ -124,8 +125,10 @@ ax=gca
 ax.XScale='log'
 ax.YScale='log'
 
-ylim([minErrPlot maxErrPlot])
-xlim([minTime maxTime])
+if (PLOT_MINMAX == 1)
+    ylim([minErrPlot maxErrPlot])
+    xlim([minTime maxTime])
+end
 
 %---------------------------------------
 % plot Error versus npoint / wavelength
@@ -169,7 +172,9 @@ ax=gca
 ax.XScale='log'
 ax.YScale='log'
 
-ylim([minErrPlot maxErrPlot])
+if (PLOT_MINMAX == 1)
+    ylim([minErrPlot maxErrPlot])
+end
 
 %-----------------------
 % plot Gpoint versus N1
@@ -203,7 +208,10 @@ plot(valN(iConfigOptimal), valGpoint(iConfigOptimal), 'pw', 'MarkerEdgeColor', '
 ax=gca
 ax.XScale='log'
 %ax.YScale='log'
-ylim([minGPoint maxGPoint])
+
+if (PLOT_MINMAX == 1)
+    ylim([minGPoint maxGPoint])
+end
 
 %----------------------
 % plot Gbyte versus N1
@@ -238,19 +246,73 @@ ax=gca
 ax.XScale='log'
 %ax.YScale='log'
 
-ylim([minGByte maxGByte])
+if (PLOT_MINMAX == 1)
+    ylim([minGByte maxGByte])
 
-memBwdthX(1:nConfig) = val.data(:,6) ;
-memBwdthY(1:nConfig) = memBwdth ;
+    memBwdthX(1:nConfig) = val.data(:,6) ;
+    memBwdthY(1:nConfig) = memBwdth ;
 
-% plot horizontal line with hardware memory bandwdith
-plot(memBwdthX, memBwdthY, '-k', 'LineWidth', 1.5)
+    % plot horizontal line with hardware memory bandwdith
+    plot(memBwdthX, memBwdthY, '-k', 'LineWidth', 1.5)
+end
 
 % save figure
-figName = sprintf('%s-%s.jpg', FILE, DER_AXIS) ;
+figName = sprintf('%s-%s-4fig.jpg', pathFile, DER_AXIS) ;
+print(figName, '-djpeg')
+
+%---------------------------------------
+% Same but in another figure with 1 only plot
+% plot Error versus npoint / wavelength
+%---------------------------------------
+
+nlambda = NMODE / 2 ;
+
+figure
+hold on; grid on;
+xlabel('# points / wavelength')
+ylabel('L1 Error')
+title('L1 Error vs N', 'FontSize', 12)
+
+TITLE = sprintf('L1 Error vs spatial sampling \n Derivative D%i - %s ', ORD, DER_AXIS)
+title(TITLE, 'FontSize', 12)
+
+for ii=1:nConfig      
+
+    if (valOrder(ii) <= 8)
+        colorR = 0 ;
+        colorG = (valOrder(ii) - 1) / 7 ;
+        colorB = 1 - colorG;
+    else
+        colorR = (valOrder(ii) - 7) / 9 ;
+        colorG = 1 - colorR ;
+        colorB = 0 ;
+    end
+    
+    plot(valN(ii)/nlambda, valError(ii), 'sw', 'MarkerEdgeColor', [colorR colorG colorB] , ...
+        'MarkerFaceColor', [colorR colorG colorB] , 'MarkerSize', 5, 'LineWidth', 2)   
+
+end
+
+% plot horizontal line with allowed error
+plot(maxErrX/nlambda, maxErrY, '-k', 'LineWidth', 1.5)
+
+% represent optimal config with a star
+%plot(valN(iConfigOptimal)/nlambda, valError(iConfigOptimal), 'pw', 'MarkerEdgeColor', 'k', 'MarkerSize', 27, 'LineWidth', 1.5)
+
+ax=gca
+ax.XScale='log'
+ax.YScale='log'
+
+if (PLOT_MINMAX == 1)
+    ylim([minErrPlot maxErrPlot])
+end
+
+% save figure
+figName = sprintf('%s-%s.jpg', pathFile, DER_AXIS) ;
 print(figName, '-djpeg')
 
 fprintf('Error min %g - max %g\n', min(valError(:)), max(valError(:)))
 fprintf('Time min %g - max %g\n',  min(valTime(:)), max(valTime(:)))
+
 
 % END

@@ -88,7 +88,7 @@ hpcscan has been designed to address these issues :smiley:
 
 An example is shown below with a FD D2 kernel where accuracy order and spatial sampling are explored to find the optimum (in terms of computation speed vs accuracy). See  [Performance benchmarks](#performance-benchmarks) for details on this test case as well as scripts to perform the analysis.
 
-<img src="./script/testCase_FD_D2/convergence/archive/hpcscan.perf.FD_D2-Axis1.jpg" alt="hpcscan.perf.FD_D2-Axis1.jpg" width="1000" height="700"/>
+<img src="./script/testCase_FD_D2/convergence/archive/FD_D2.convergence.ouessant.2026-08-06.log-Laplacian-4fig.jpg" alt="hpcscan.perf.FD_D2-Axis1.jpg" width="1000" height="700"/>
 
 <font size="2"> **Top left:** FD D2 kernel. Error between computed and analytical solutions versus spatial sampling. FD accuracy orders from O2 (blue) to O16 (red) are shown. **Top right:** Error between computed and analytical solutions versus computation time. The black star points to the optimal configuration with an error below the target (1%) and shortest computation time. **Bottom left:** Kernel bandwidth in GPoint/s versus N. **Bottom right:** Kernel bandwidth in GBtye/s versus N. </font>
 
