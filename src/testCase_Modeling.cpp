@@ -202,16 +202,16 @@ namespace hpcscan
 		// i/o is = write grid (if asked) + writetrace (after gather) + read model (plane_by_plane)
 		double i_o_time = propa->i_o_read_time + acqui.trace_write_time 
 						+ prnGrid->grid_writeGlobal_time + propa->i_o_write_coefgrid_time;
-		printInfo(MASTER, "\n Total i/o time ", i_o_time);
+		printInfo(MASTER, "\n Total I/O time ", i_o_time);
 		
 		double MPI_COMM_time = propa->halo_comm_time + acqui.trace_gather_time;
 		// communication is = exchange_halo (sendrecv) + writeTrace (gather)
 		printInfo(MASTER, " Total communication time ", MPI_COMM_time);
 
 		// summarizing each steps
-		printInfo(MASTER, "\n total Read model time ", propa->coef_read_total_time);
-		printInfo(MASTER, " i_o Read model time ", propa->i_o_read_time);
-		printInfo(MASTER, " i_o Write trace time ", acqui.trace_write_time);
+		printInfo(MASTER, "\n Total Read model time ", propa->coef_read_total_time);
+		printInfo(MASTER, " I/O Read model time ", propa->i_o_read_time);
+		printInfo(MASTER, " I/O Write trace time ", acqui.trace_write_time);
 
 		printInfo(MASTER, " Halo communication time ", propa->halo_comm_time);
 		printInfo(MASTER, " Apply boundary condition time ", propa->boundary_condition_time);
@@ -224,7 +224,7 @@ namespace hpcscan
 		}
 		printInfo(MASTER, " Total write trace time ", acqui.total_timeWriteTrace);
 
-		printInfo(MASTER, " \nBest GFlop/s in FD", propaGflop);
+		printInfo(MASTER, "\n Best GFlop/s in FD", propaGflop);
 		printInfo(MASTER, " Best Gpoint/s eff.", propaGpointEff);
 		printInfo(MASTER, " Best Gpoint/s in FD", propaGpointFD);
 		printInfo(MASTER, " Best Apparent BW GB/s", propaGB);

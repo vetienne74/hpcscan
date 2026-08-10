@@ -40,14 +40,7 @@
 
 Contact: Vincent Etienne / Email: vetienne@rocketmail.com
 
-Contributors (chronological order)
-* Vincent Etienne
-* Suha Kayum
-* Marcin Rogowski
-* Laurent Gatineau
-* Philippe Thierry
-* Fabrice Dupros 
-* Hugo Barreiro
+Contributors (chronological order) : Vincent Etienne, Suha Kayum, Marcin Rogowski, Laurent Gatineau, Philippe Thierry, Fabrice Dupros, Hugo Barreiro
 
 # Overview
 
@@ -86,11 +79,11 @@ hpcscan has been designed to address these issues :smiley:
 
 :ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. 
 
-An example is shown below with a FD D2 kernel where accuracy order and spatial sampling are explored to find the optimum (in terms of computation speed vs accuracy). See  [Performance benchmarks](#performance-benchmarks) for details on this test case as well as scripts to perform the analysis.
+An example is shown below with a FD Laplacian kernel where accuracy order and spatial sampling are explored to find the optimum (in terms of computation speed vs accuracy). See  [Performance benchmarks](#performance-benchmarks) for details on this test case as well as scripts to perform the analysis.
 
 <img src="./script/testCase_FD_D2/convergence/archive/FD_D2.convergence.ouessant.2026-08-06.log-Laplacian-4fig.jpg" alt="hpcscan.perf.FD_D2-Axis1.jpg" width="1000" height="700"/>
 
-<font size="2"> **Top left:** FD D2 kernel. Error between computed and analytical solutions versus spatial sampling. FD accuracy orders from O2 (blue) to O16 (red) are shown. **Top right:** Error between computed and analytical solutions versus computation time. The black star points to the optimal configuration with an error below the target (1%) and shortest computation time. **Bottom left:** Kernel bandwidth in GPoint/s versus N. **Bottom right:** Kernel bandwidth in GBtye/s versus N. </font>
+<font size="2"> **Top left:** Error between computed and analytical solutions versus spatial sampling. FD accuracy orders from O2 (blue) to O16 (red) are shown. **Top right:** Error  versus computation time. The black star points to the optimal configuration with an error below the target (1%) and shortest computation time. **Bottom left:** Kernel bandwidth in GPoint/s versus N (grid size is N x N x N). **Bottom right:** Kernel bandwidth in GBtye/s. </font>
 
 :ballot_box_with_check: **Set of representative kernels** used in many scientific applications (see [List of test cases](#list-of-test-cases)). Without being too specific, the embedded kernels provide a way to capture the main traits of HPC architectures and identify their bottle-necks and strenghts. With this knowledge, one can re-design or update accordingly specific parts of an application to take full benefit of the target hardware.
 
