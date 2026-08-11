@@ -86,9 +86,9 @@ Rtn_code TestCase_Propa::run(void)
 	const Myint fdOrder = propa->fdOrder ;
 	const Myint nt      = propa->nt ;
 	const Myfloat dt    = propa->dt ;
-	const Myint snapInc = propa->snapInc ;
+	const Myint snapInc = propa->snapInc ;	
 
-	const Myfloat maxErr = 0.01 ;
+	const Myfloat64 maxErr = 0.01 ;
 	printInfo(MASTER, " Max allowed error", maxErr) ;
 
 	Myint nPtPerStencil  = prcGrid->getPtPerStencilFD_LAPLACIAN(fdOrder) ;
@@ -104,9 +104,17 @@ Rtn_code TestCase_Propa::run(void)
 
 	testCase_time_best = FLT_MAX ;
 
-	Myfloat32 errTestCase, sum1, sum2 ;
+	Myfloat64 errTestCase, sum1, sum2 ;
 	Myint   ntCheck ;
 	double total_compute_time = 0;
+
+	// open output file for timestep & error
+	ofstream errorLogFile ;
+	if (myMpiRank == 0)
+	{
+		string errorLogFile_name = "hpcscan.timestepError." + testCaseName + ".log";
+		errorLogFile.open(errorLogFile_name, ios::app) ;
+	}
 
 	for (Myint itry = 0; itry < ntry; itry++)
 	{
@@ -138,15 +146,21 @@ Rtn_code TestCase_Propa::run(void)
 				if (it%snapInc == 0)
 				{
 					// initialize R at t = it * dt
-					Myfloat timeSec = it * dt ;
-					printInfo(MASTER, " Check at time", timeSec) ;
+					Myfloat64 timeSec = it * dt ;
+					printInfo(MASTER, " Check at time", timeSec) ;					
 					propa->initializeGrid(*refGrid, EIGEN_MODE, timeSec) ;
 					refGrid->write(caseName+"Ref") ;
 					prnGrid->write(caseName+"Prn") ;
 
 					ntCheck++ ;
 					sum1 += prnGrid->getSumAbsDiff(INNER_POINTS, *refGrid) ;
-					sum2 += refGrid->getSumAbs(INNER_POINTS) ;
+					sum2 += refGrid->getSumAbs(INNER_POINTS) ;					
+					Myfloat64 errorTimestep = sum1 / sum2 ;
+					printInfo(MASTER, " L1 error", errorTimestep) ;
+					if (myMpiRank == 0)
+					{	
+						errorLogFile << it << " " << errorTimestep << endl ;
+					}
 				}
 			}
 
@@ -253,6 +267,11 @@ Rtn_code TestCase_Propa::run(void)
 		<< total_compute_time << " " << nt * nGridPointGlob / total_compute_time / 1.e9
 
 		<< "\n" ;
+	}
+
+	if (myMpiRank == 0)
+	{	
+		errorLogFile.close() ;
 	}
 
 	this->finalize() ;

@@ -52,10 +52,10 @@ public:
 	Myint nt ;
 
 	// Time steps
-	Myfloat dt, stableDt ;
+	Myfloat64 dt, stableDt ;
 
 	// Maximum time
-	Myfloat tmax ;
+	Myfloat64 tmax ;
 
 	// Snaphot increment (no. of time steps)
 	Myint snapInc ;

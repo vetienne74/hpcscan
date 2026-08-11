@@ -332,7 +332,7 @@ namespace hpcscan
 		printInfo(MASTER, " Time step (s)\t", dt);
 		printInfo(MASTER, " Ratio Eff. / Stable dt", dt / stableDt);
 
-		printInfo(MASTER, " Snapshot inc. (sec.)", (snapInc - 1) * dt);
+		printInfo(MASTER, " Snapshot inc. (sec.)", snapInc * dt);
 		printInfo(MASTER, " Snapshot inc. (steps)", snapInc);
 
 		printInfo(MASTER, "");

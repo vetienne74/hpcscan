@@ -2170,7 +2170,7 @@ Myfloat Grid::allProcL1Err(Point_type pointType, const Grid& gridIn) const
 
 //-------------------------------------------------------------------------------------------------------
 
-Myfloat Grid::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
+Myfloat64 Grid::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 {
 	printDebug(LIGHT_DEBUG, "IN Grid::getSumAbsDiff");
 
@@ -2226,7 +2226,7 @@ Myfloat Grid::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 
 //-------------------------------------------------------------------------------------------------------
 
-Myfloat Grid::getSumAbs(Point_type pointType) const
+Myfloat64 Grid::getSumAbs(Point_type pointType) const
 {
 	printDebug(LIGHT_DEBUG, "IN Grid::getSumAbs");
 
