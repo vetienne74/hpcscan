@@ -49,18 +49,14 @@ Contributors (chronological order) : Vincent Etienne, Suha Kayum, Marcin Rogowsk
 hpcscan is a tool for **benchmarking algorithms/kernels** that are found in many scientific applications on **various architectures/systems**.
 
 It features several categories of test cases aiming to measure memory, computation and communication bandwidths along with electric energy consumption.
-
-* Written in C++
-* Simple code structure based on individual test cases
-* Easy to add new test cases
+ 
+* All test cases are validated with embedded reference solutions
 * Hybrid OpenMP/MPI parallelism
 * Support scalar and vector CPUs, GPUs and other accelerators (depending on compiler/architecture)
-* All configuration parameters on command line
 * Support double precision (FP64), single precision (FP32) and half precision (FP16) for data storage and/or for computation
-* Compilation with standard Makefile
-* No external librairies
-* Follows [C++ Google style code](https://google.github.io/styleguide/cppguide.html)
-* All test cases are validated with embedded reference solutions
+* Written in C++ (following [C++ Google style code](https://google.github.io/styleguide/cppguide.html))
+  * Simple code structure based on individual test cases
+  * Customizable (new test cases can be added)
 
 ## Why another benchmark?
 
@@ -81,7 +77,7 @@ hpcscan has been designed to address these issues :smiley:
 
 An example is shown below with a FD Laplacian kernel where accuracy order and spatial sampling are explored to find the optimum (in terms of computation speed vs accuracy). See  [Performance benchmarks](#performance-benchmarks) for details on this test case as well as scripts to perform the analysis.
 
-<img src="./script/testCase_FD_D2/convergence/archive/FD_D2.convergence.ouessant.2026-08-06.log-Laplacian-4fig.jpg" alt="hpcscan.perf.FD_D2-Axis1.jpg" width="1000" height="700"/>
+<img src="./script/testCase_FD_D2/convergence/archive/FD_D2.convergence.ouessant.2026-08-06.log-Laplacian-4fig.jpg" width="1000" height="700"/>
 
 <font size="2"> **Top left:** Error between computed and analytical solutions versus spatial sampling. FD accuracy orders from O2 (blue) to O16 (red) are shown. **Top right:** Error  versus computation time. The black star points to the optimal configuration with an error below the target (1%) and shortest computation time. **Bottom left:** Kernel bandwidth in GPoint/s versus N (grid size is N x N x N). **Bottom right:** Kernel bandwidth in GBtye/s. </font>
 
@@ -132,9 +128,9 @@ v1.2         | **Energy consumption and half-precision support** <li> Access har
 
 Test case name | Description | Remark
 ------------ | ----------- | ------------
-Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes <br> Depending on the placement of MPI processes, intra-node or inter-node bandwidth can be measured <br> Width of halos depends on the selected FD stencil order <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** </p>
-FD_D1        | **Finite-difference (1st derivatives in space) computations bandwidth** <ul><li>  $U={\partial}/{\partial x_1} (V)$ </li> <li> $U={\partial}/{\partial x_2} (V)$ </li>  <li> $U={\partial}/{\partial x_3} (V)$ </li>  </ul> | <p> Available FD stencil orders: 2, 4, 6, 8, 10, 12, 14 and 16 <br> Accuracy checked against sine function <br> Accuracy depends on selected FD stencil order, spatial grid sampling and number of periods in the sine function <br> :arrow_right: **L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
-FD_D2        | **Finite-difference (2nd derivatives in space) computations bandwidth** <ul><li>  $U={\partial^2}/{\partial x_1^2} (V)$ </li> <li> $U={\partial^2}/{\partial x_2^2} (V)$ </li>  <li> $U={\partial^2}/{\partial x_3^2} (V)$ </li> <li> $U= \Delta (V)$ </li> </ul> | <p>  Same features as above </p> 
+Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes <br> Depending on the placement of MPI processes, intra-node or inter-node bandwidth can be measured <br> Width of halos depends on the selected FD stencil order <br> :arrow_right: **Measures GPoints/s and GBytes/s** </p>
+FD_D1        | **Finite-difference <br> 1st derivative <br> Error and computation bandwidth** <ul><li>  $U={\partial}/{\partial x_1} (V)$ </li> <li> $U={\partial}/{\partial x_2} (V)$ </li>  <li> $U={\partial}/{\partial x_3} (V)$ </li>  </ul> | <p>   Accuracy depends on the selected FD order (from to 2 to 16), grid sampling and number of periods in the sine function used to compute the derivative <br> :arrow_right: **Computes error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
+FD_D2        | **Finite-difference <br> 2nd derivative <br> Error and computation bandwidth** <ul><li>  $U={\partial^2}/{\partial x_1^2} (V)$ </li> <li> $U={\partial^2}/{\partial x_2^2} (V)$ </li>  <li> $U={\partial^2}/{\partial x_3^2} (V)$ </li> <li> $U= \Delta (V)$ </li> </ul> | <p>  Same features as above </p> 
 Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Max. diff. between grids U and V </li> <li> L1 norm between U and V </li> <li> Sum of abs(U) </li> <li> Sum of abs(U-V) </li> <li> Max. of U </li> <li> Min. of U </li> <li> Complex grid manipulation (wavefield update in propagator) U = 2 x V - U + C x L </li> <li> Boundary condition (free surface) at all edges of U </li> </ul> | <p>Operations on grids include manipulation of multi-dimensional indexes and specific portions of the grids (for instance, excluding halos) <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
 Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p> Conversely to Test Case Grid, operations are done on continuous memory arrays <br> This test case is similar to the Stream benchmark <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
 Modeling | **Acoustic wave modeling bandwidth** <p> Same features as for test case Propa except <ul> <li> Velocity model is read from file </li> <li> Source is a Ricker wavelet </li> <li> Ouput seismic traces and snapshots </li> </ul> | There is no accuray checking for this test case

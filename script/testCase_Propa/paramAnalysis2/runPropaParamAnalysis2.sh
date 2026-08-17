@@ -21,7 +21,7 @@ fi
 echo Launch MPI with $HPCSCAN_MPI_INVOKER
 
 # clean dir
-sh ./clean_dir.sh
+sh ./cleanDir.sh
 
 # build scripts
 python3 buildConfigScript.py
@@ -33,7 +33,7 @@ for scriptFile in $( ls ${list_file}); do
     #sh clean.sh
     
     echo '* Run hpcscan with' ${scriptFile}
-    sh ${scriptFile}
+    sh ${scriptFile}    
     
 done
 
@@ -44,7 +44,7 @@ machine=$(hostname)
 if [ -f hpcscan.hwCounter.Propa.log ]; then
     cp hpcscan.hwCounter.Propa.log propa.hwCounter.${machine}.${today}.log
 fi
-cp hpcscan.perf.Propa.log propa.paramAnalysis.${machine}.${today}.log
+cp hpcscan.timestepError.Propa.log propa.paramAnalysis2.${machine}.${today}.log
 
 echo "# Started  : " $start_time 
 echo "# Ended    : " $end_time
