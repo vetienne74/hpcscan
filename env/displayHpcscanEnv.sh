@@ -29,6 +29,7 @@ then
     echo - Mode Custom disabled
 else
     echo - Mode Custom enabled
+    echo Custom source files path: $HPCSCAN_CUSTOM_PATH
 fi
 
 echo - Number of OpenMP threads $HPCSCAN_NTHREADS

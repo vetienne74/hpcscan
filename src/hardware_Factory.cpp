@@ -52,6 +52,12 @@ shared_ptr<Hardware> Hardware_Factory::create(string gridMode)
 		retHardware = new Hardware(gridMode) ;
 #endif
 	}
+#ifdef __CUSTOM__
+	else if (gridMode.compare(GRID_MODE_CUSTOM) == 0)
+	{
+		retHardware = new Hardware(gridMode) ;
+	}
+#endif
 
 #ifdef __CUDA__
 	else if (gridMode.compare(GRID_MODE_CUDA) == 0)

@@ -28,6 +28,7 @@ const Myfloat2 TWO  = 2.0 ;
 //-------------------------------------------------------------------------------------------------------
 const string   GRID_MODE_BASELINE      = "Baseline" ;
 const string   GRID_MODE_CACHEBLK      = "CacheBlk" ;
+const string   GRID_MODE_CUSTOM        = "Custom" ;
 const string   GRID_MODE_CUDA          = "CUDA" ;
 const string   GRID_MODE_CUDA_OPTIM    = "CUDA_Opt" ;
 const string   GRID_MODE_CUDA_REF      = "CUDA_Ref" ;

@@ -32,7 +32,7 @@ export HPCSCAN_HIP=
 export HPCSCAN_HIP_FLAGCOMP=
 export HPCSCAN_HIP_LIB=
 
-# Custom mode, path to grid_Custom.cpp
+# Custom mode, path to your own grid_Custom.cpp
 export HPCSCAN_CUSTOM_PATH=
 
 # display Hpcscan settings

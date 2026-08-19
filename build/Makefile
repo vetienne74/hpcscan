@@ -27,7 +27,11 @@ BIN_DIR        = ../bin
 #       vpaths        #
 #=====================#
 
+ifneq ($(strip $(HPCSCAN_CUSTOM_PATH)),)
+VPATH = $(HPCSCAN_CUSTOM_PATH):$(SRC_DIR)
+else
 VPATH = $(SRC_DIR)
+endif
 
 #=====================#
 #       options       #
@@ -106,6 +110,11 @@ CPP_OBJ = config.o data_Acquisition.o data_Acquisition_Factory.o grid.o grid_Cac
 	testCase_Matrix.o testCase_Memory.o testCase_Modeling.o testCase_Propa.o testCase_Template.o \
 	testCase_Util.o
 
+# cpp custom mode
+ifneq ($(strip $(HPCSCAN_CUSTOM_PATH)),)
+CPP_OBJ += grid_Custom.o
+endif
+
 # cpp OpenACC objects
 CPP_OPENACC_OBJ = grid_OpenAcc.o
 
@@ -161,7 +170,7 @@ endif
 .hip.o:
 	$(HPCSCAN_HIP) -c $(HPCSCAN_HIP_FLAGCOMP) $<
 .cpp.o:
-	$(HPCSCAN_CPP) -c $(HPCSCAN_CPP_FLAGCOMP) $<
+	$(HPCSCAN_CPP) -c $(HPCSCAN_CPP_FLAGCOMP) -I $(INC_DIR) $<
 
 all: version hpcscan
 

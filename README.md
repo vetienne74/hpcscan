@@ -390,7 +390,7 @@ Propa | Scalability analysis of wave propagator on multiple nodes | Analyse effe
 
 # Customization
 
-hpcscan is built on a simple yet very flexible design heavily relying on inheritance feature of C++.
+hpcscan is based on a simple yet highly flexible design that relies heavily on the C++ inheritance mechanism.
 
 The main class is `Grid` (see [./src/grid.cpp](./src/grid.cpp)).
 This class handles all grid data in hpcscan and all operations performed on grids.
@@ -398,20 +398,18 @@ It implements the so-called Baseline mode and it is the reference implementation
 
 :bulb: All test cases, at some point, call methods of this class. Indeed, test cases (testCase_xxx.cpp) do not implement kernels.
 
-Now, let us say, you would like to specialize the implementation for a given architecture.
+Let us say, you would like to specialize the implementation for a given architecture.
 
-To do this, you would need to create a new class that derives from `Grid`.
-For instance, you will create `Grid_ArchXYZ.h` and `Grid_ArchXYZ.cpp` for your new class (you need to add the new source file in the Makefile as well).
-In this class, you may implement only few functions that are declared as `virtual` in `Grid`.
+In order to do this, you would need to create a new class that derives from `Grid`.
+Just copy the source files `grid_Custom.h` and `grid_Custom.cpp` to another location and re-implement the desired functions that are declared as `virtual` in `Grid`.
 
-:bulb: To allow hpcscan to use this new class, you need only to add it the 'grid factory' (see [./src/grid_Factory.cpp](./src/grid_Factory.cpp)).
-This is the only location of the code where all grids are referenced.
+:bulb: You can proceed step by step, implementing one function at a time, with the possibility to check the behavior of your implementation against the Baseline reference solution.
 
-By doing this, you may switch at execution time, to your new grid with the `-testMode <TESTMODE>` option where `TESTMODE` = ArchXYZ.
+Check the grids that are already implemented in hpcscan to get some concrete examples.
 
-:bulb: You can proceed little by little, implementing one function at a time, with the possibility to check the behavior of your implementation against the Baseline reference solution.
+:bulb: To allow hpcscan to use this new class, you need only to indicate the path to your new source files in the environment script (see [Environment script (mandatory)](#environment-script-mandatory)) using the environment variable `$HPCSCAN_CUSTOM_PATH`.
 
-Check the grids that are already implemented in hpcscan to get some examples.
+By doing this, you can switch at execution time, to your new grid with the `-testMode Custom`.
 
 # Have fun!
 

@@ -8,6 +8,9 @@
 
 #include "constant.h"
 #include "grid_CacheBlk.h"
+#ifdef __CUSTOM__
+#include "grid_Custom.h"
+#endif
 #ifdef __CUDA__
 #include "grid_Cuda.h"
 #include "grid_Cuda_Optim.h"
@@ -49,6 +52,13 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType)
 	{
 		retGrid = new Grid_CacheBlk(gridType) ;
 	}
+
+#ifdef __CUSTOM__
+	else if (gridMode.compare(GRID_MODE_CUSTOM) == 0)
+	{
+		retGrid = new Grid_Custom(gridType) ;
+	}
+#endif
 
 #ifdef __CUDA__
 	else if (gridMode.compare(GRID_MODE_CUDA) == 0)
@@ -135,6 +145,13 @@ shared_ptr<Grid> Grid_Factory::create(string gridMode, Grid_type gridType, Dim_t
 	{
 		retGrid = new Grid_CacheBlk(gridType, dim, n1, n2, n3) ;
 	}
+
+#ifdef __CUSTOM__
+	else if (gridMode.compare(GRID_MODE_CUSTOM) == 0)
+	{
+		retGrid = new Grid_Custom(gridType, dim, n1, n2, n3) ;
+	}
+#endif	
 
 #ifdef __CUDA__
 	else if (gridMode.compare(GRID_MODE_CUDA) == 0)
