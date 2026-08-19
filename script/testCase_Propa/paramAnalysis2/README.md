@@ -1,5 +1,5 @@
 
-**Parametric analysis of acoutic propagator**
+**Parametric analysis of acoustic propagator**
 
 Description
 * Propagator
@@ -25,4 +25,4 @@ Results visualization
 
 Example of results
 
-<img src="./Fig/error-FDO8-FP32-none.readme.jpg"/>
+<img src="./Fig/error-FDO8-FP32-none.readme.jpg" width="400" height="300"/>

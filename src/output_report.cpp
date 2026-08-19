@@ -78,23 +78,23 @@ Rtn_code print_header_of_output_report(void)
 		printInfo(MASTER, " Mode CUDA_Opt", "ENABLED") ;
 		printInfo(MASTER, " Mode CUDA_Ref", "ENABLED") ;
 #else
-		printInfo(MASTER, " Mode CUDA", "DISABLED") ;
-		printInfo(MASTER, " Mode CUDA_Opt", "DISABLED") ;
-		printInfo(MASTER, " Mode CUDA_Ref", "DISABLED") ;
+//		printInfo(MASTER, " Mode CUDA", "DISABLED") ;
+//		printInfo(MASTER, " Mode CUDA_Opt", "DISABLED") ;
+//		printInfo(MASTER, " Mode CUDA_Ref", "DISABLED") ;
 #endif
 
 #ifdef __DPCPP__
 		printInfo(MASTER, " Mode DPC++", "ENABLED") ;
 #else
-		printInfo(MASTER, " Mode DPC++", "DISABLED") ;
+//		printInfo(MASTER, " Mode DPC++", "DISABLED") ;
 #endif
 
 #ifdef __HIP__
 		printInfo(MASTER, " Mode HIP", "ENABLED") ;
 		printInfo(MASTER, " Mode HIP_Opt", "ENABLED") ;
 #else
-		printInfo(MASTER, " Mode HIP", "DISABLED") ;
-		printInfo(MASTER, " Mode HIP_Opt", "DISABLED") ;
+//		printInfo(MASTER, " Mode HIP", "DISABLED") ;
+//		printInfo(MASTER, " Mode HIP_Opt", "DISABLED") ;
 #endif
 
 //#ifdef __OPENACC__
@@ -107,8 +107,14 @@ Rtn_code print_header_of_output_report(void)
 		printInfo(MASTER, " Mode NEC", "ENABLED") ;
 		printInfo(MASTER, " Mode NEC_SCA", "ENABLED") ;
 #else
-		printInfo(MASTER, " Mode NEC", "DISABLED") ;
-		printInfo(MASTER, " Mode NEC_SCA", "DISABLED") ;
+//		printInfo(MASTER, " Mode NEC", "DISABLED") ;
+//		printInfo(MASTER, " Mode NEC_SCA", "DISABLED") ;
+#endif
+
+#ifdef __CUSTOM__
+		printInfo(MASTER, " Mode Custom", "ENABLED") ;
+#else
+//		printInfo(MASTER, " Mode Custom", "DISABLED") ;
 #endif
 		print_line1() ;
 	}
