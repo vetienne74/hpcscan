@@ -56,6 +56,30 @@ switch(icase)
         NAME2 = 'FP32-16' ;
         COLOR2 = '--r' ;
 
+    case 6
+        FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        NAME1 = 'FP32' ;
+        COLOR1 = '-k' ;
+        FILENAME2 = 'none' ;
+        NAME2 = 'none' ;
+        COLOR2 = '-r' ;
+
+    case 7
+        FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        NAME1 = 'FP32' ;
+        COLOR1 = '-k' ;
+        FILENAME2 = 'fp16.fp32.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        NAME2 = 'FP16-32' ;
+        COLOR2 = '-r' ;
+
+    case 8
+        FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        NAME1 = 'FP32' ;
+        COLOR1 = '-k' ;
+        FILENAME2 = 'custom_mp.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        NAME2 = 'BlockMP' ;
+        COLOR2 = '-b' ;
+
 end
 
 MIN_ERR = 1.e-8 ;

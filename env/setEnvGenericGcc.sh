@@ -34,6 +34,8 @@ export HPCSCAN_HIP_LIB=
 
 # Custom mode, path to your own grid_Custom.cpp
 export HPCSCAN_CUSTOM_PATH=
+# additionnal options for the compiler
+export HPCSCAN_CUSTOM_OPT=
 
 # display Hpcscan settings
 sh ./displayHpcscanEnv.sh
