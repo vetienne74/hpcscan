@@ -4,7 +4,7 @@ close all ;
 % plot error vs time step
 % input 1 or 2 log files
 
-icase = 0 ;
+icase = 8 ;
 
 switch(icase)
 
@@ -33,12 +33,12 @@ switch(icase)
         COLOR2 = '-b' ;
 
     case 3
-        FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
+        FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
         NAME1 = 'FP32' ;
         COLOR1 = '-b' ;
-        FILENAME2 = 'fp16.fp16.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
+        FILENAME2 = 'fp16.fp32.propa.paramAnalysis2.ouessant.2026-08-21.log' ;
         NAME2 = 'FP16-32' ;
-        COLOR2 = '-r' ;
+        COLOR2 = '--r' ;
 
     case 4
         FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
@@ -76,9 +76,17 @@ switch(icase)
         FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
         NAME1 = 'FP32' ;
         COLOR1 = '-k' ;
-        FILENAME2 = 'custom_mp.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        FILENAME2 = 'custom_mp.propa.paramAnalysis2.ouessant.2026-08-21.log' ;
         NAME2 = 'BlockMP' ;
-        COLOR2 = '-b' ;
+        COLOR2 = '--b' ;
+
+    case 9
+        FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        NAME1 = 'FP32' ;
+        COLOR1 = '-k' ;
+        FILENAME2 = 'fp32.fp16.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        NAME2 = 'FP32-16' ;
+        COLOR2 = '--r' ;
 
 end
 

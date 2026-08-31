@@ -15,8 +15,8 @@ dim='2'
 ntry='1'
 #ratioCFLRange=['1.0','0.5','0.2','0.1']
 ratioCFLRange=['1.0']
-#testModeRange=['Custom']
-testModeRange=['Baseline']
+testModeRange=['Custom']
+#testModeRange=['Baseline']
 #propagatorRange=['Ac2Standard','Ac2SplitComp']
 propagatorRange=['Ac2Standard']
 

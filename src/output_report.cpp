@@ -275,6 +275,16 @@ void printInfo(Display_type display_t, const char* text)
 
 //-------------------------------------------------------------------------------------------------------
 
+void printInfo(Display_type display_t, const char* text, uint32_t nb)
+{
+	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))
+	{
+		cout << text << "\t" << nb << "\n" << flush ;
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 void printInfo(Display_type display_t, const char* text, Myint nb)
 {
 	if ((display_t == ALL) || ((display_t == MASTER) && (myMpiRank == 0)))

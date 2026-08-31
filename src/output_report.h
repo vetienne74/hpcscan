@@ -2,6 +2,7 @@
 #define HPCSCAN_OUTPUT_REPORT_H_
 
 #include <string>
+#include <stdint.h>
 
 #include "type_def.h"
 
@@ -18,6 +19,7 @@ void print_line5(void) ;
 void print_blank(void) ;
 
 void printInfo(Display_type, const char*) ;
+void printInfo(Display_type, const char*, uint32_t) ;
 void printInfo(Display_type, const char*, Myint) ;
 void printInfo(Display_type, const char*, Myint, Myint) ;
 void printInfo(Display_type, const char*, Myint64) ;
