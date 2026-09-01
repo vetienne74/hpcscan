@@ -49,9 +49,9 @@ static const Myint     DEFAULT_GPU_BLKSIZE3   = 16 ;
 static const Myint     DEFAULT_GPU_GRIDSIZE   = 512 ;
 static const bool      DEFAULT_GPU_MPI_AWARE  = false ;
 static const Myfloat64 DEFAULT_HW_COUNTER_DT  = 0 ; // no update hardware counters
-static const Myint     DEFAULT_INNER_N1       = 61 ;
-static const Myint     DEFAULT_INNER_N2       = 61 ;
-static const Myint     DEFAULT_INNER_N3       = 61 ;
+static const Myint     DEFAULT_INNER_N1       = 64 ;
+static const Myint     DEFAULT_INNER_N2       = 64 ;
+static const Myint     DEFAULT_INNER_N3       = 64 ;
 static const string    DEFAULT_MODEL_VP_FILE  = "UNSPECIFIED" ;
 static const Myint     DEFAULT_N1_ADD_PAD     = UNSPECIFIED ;
 static const Myint     DEFAULT_N2_ADD_PAD     = UNSPECIFIED ;
@@ -197,7 +197,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, "     None              * No boundary condition") ;
 			printInfo(MASTER, " -cb1 <int>            = cache block size axis 1 [grid pts]") ;
 			printInfo(MASTER, " -cb2 <int>            = cache block size axis 2 [grid pts]") ;
-			printInfo(MASTER, " -cb3 <int>            = cache block size axis 3 [grid pts}") ;
+			printInfo(MASTER, " -cb3 <int>            = cache block size axis 3 [grid pts]") ;
 			printInfo(MASTER, " -d1 <float>           = grid spacing (m) axis 1") ;
 			printInfo(MASTER, " -d2 <float>           = grid spacing (m) axis 2") ;
 			printInfo(MASTER, " -d3 <float>           = grid spacing (m) axis 3") ;
@@ -237,6 +237,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -nsub3 <int>          = no. of subdomains axis 3") ;
 			printInfo(MASTER, " -nt <int>             = no. of time steps for propagator") ;
 			printInfo(MASTER, " -ntry <int>           = no. of tries for each testCase") ;
+			printInfo(MASTER, " -opt <int>            = option used for various purposes") ;
 			printInfo(MASTER, " -param1 <float>       = parameter 1 used in testCases") ;
 			printInfo(MASTER, " -param2 <float>       = parameter 2 used in testCases") ;
 			printInfo(MASTER, " -param3 <float>       = parameter 3 used in testCases") ;
@@ -261,6 +262,7 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 			printInfo(MASTER, " -testMode <string>    = test mode") ;
 			printInfo(MASTER, "     Baseline          * Generic CPU reference implementation (DEFAULT test mode)") ;
 			printInfo(MASTER, "     CacheBlk          * Generic CPU optimized with cache blocking techniques") ;
+			printInfo(MASTER, "     Custom            * Custom CPU implementation") ;
 			printInfo(MASTER, "     CUDA              * NVIDIA GPU CUDA regular implementation") ;
 			printInfo(MASTER, "     CUDA_Opt          * NVIDIA GPU CUDA optimized implementation") ;
 			printInfo(MASTER, "     CUDA_ref          * NVIDIA GPU CUDA reference implementation (for developers)") ;
@@ -620,6 +622,23 @@ Rtn_code Config::parse_argument(int argc, char* argv[])
 				}
 				hwCounterDt = atof(argv[ii]);
 				printInfo(MASTER, " Dt hw counter (s)", hwCounterDt) ;
+			}
+
+			else if (string(argv[ii]) == "-opt")
+			{
+				ii++ ;
+				if (ii >= argc)
+				{
+					printError(" parameter is needed after -opt") ;
+					return(RTN_CODE_KO) ;
+				}
+				opt = atoi(argv[ii]);
+				printInfo(MASTER, " opt\t\t", opt) ;
+				//if (opt <= 0)
+				//{
+				//	printError(" opt should be > 0") ;
+				//	return(RTN_CODE_KO) ;
+				//}
 			}
 
 			else if (string(argv[ii]) == "-modelVpFile")

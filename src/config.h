@@ -73,6 +73,9 @@ public:
 	// time step increment (time in sec.) between update of hardware counters
 	Myfloat64 hwCounterDt ;	
 
+	// option parameter used for various purposes
+	Myint opt ;
+
 	// name of model vp file
 	string modelVpFile ;
 
