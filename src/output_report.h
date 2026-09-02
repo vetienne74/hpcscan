@@ -52,6 +52,15 @@ void printError(const char* text, string) ;
 void printError(const char* text, Myint, Myint) ;
 void printError(const char* text1, const char* text2) ;
 
+// Define colors for display on the terminal
+const string RESET   = "\033[0m";
+const string RED     = "\033[31m";
+const string GREEN   = "\033[32m";
+const string YELLOW  = "\033[33m";
+const string BLUE    = "\033[34m";
+const string MAGENTA = "\033[35m";
+const string BOLD    = "\033[1m";
+
 } // namespace hpcscan
 
 #endif

@@ -377,96 +377,96 @@ void printInfo(Display_type display_t, string text, const char* text2)
 
 void printWarning(const char* text, Myint nb)
 {
-	cout << "\n" ;
+	cout << MAGENTA << "\n" ;
 	cout << LINE_REPORT_T3 ;
 	cout << "\n\t\t\t W A R N I N G \n" ;
 	cout << text << "\t" << nb << "\n\n" ;
 	cout << LINE_REPORT_T3 ;
-	cout << "\n" ;
+	cout << "\n" << RESET ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void printWarning(const char* text)
 {
-	cout << "\n" ;
+	cout << MAGENTA << "\n" ;
 	cout << LINE_REPORT_T3 ;
 	cout << "\n\t\t\t W A R N I N G \n" ;
 	cout << text << "\n\n" ;
 	cout << LINE_REPORT_T3 ;
-	cout << "\n" ;
+	cout << "\n" << RESET ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void printError(string* text)
 {
-	cout << "\n" ;
+	cout << RED << "\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
 	cout << *text << "\n\n" ;
 	cout << LINE_REPORT_T4 ;
-	cout << "\n" ;
+	cout << "\n" << RESET ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void printError(const char* text, Myint nb)
 {
-	cout << "\n" ;
+	cout << RED << "\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
 	cout << text << "\t" << nb << "\n\n" ;
 	cout << LINE_REPORT_T4 ;
-	cout << "\n" ;
+	cout << "\n" << RESET ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void printError(const char* text, string text2)
 {
-	cout << "\n" ;
+	cout << RED << "\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
 	cout << text << "\t" << text2 << "\n\n" ;
 	cout << LINE_REPORT_T4 ;
-	cout << "\n" ;
+	cout << "\n" << RESET ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void printError(const char* text, Myint nb1, Myint nb2)
 {
-	cout << "\n" ;
+	cout << RED << "\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
 	cout << text << "\t" << nb1 << "\t" << nb2 << "\n\n" ;
 	cout << LINE_REPORT_T4 ;
-	cout << "\n" ;
+	cout << "\n" << RESET ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void printError(const char* text)
 {
-	cout << "\n" ;
+	cout << RED << "\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
 	cout << text << "\n\n" ;
 	cout << LINE_REPORT_T4 ;
-	cout << "\n" ;
+	cout << "\n" << RESET ;
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void printError(const char* text1, const char* text2)
 {
-	cout << "\n" ;
+	cout << RED << "\n" ;
 	cout << LINE_REPORT_T4 ;
 	cout << "\n\t\t\t F A T A L    E R R O R\n\n" ;
 	cout << text1 << "\t" << text2 << "\n\n" ;
 	cout << LINE_REPORT_T4 ;
-	cout << "\n" ;
+	cout << "\n" << RESET ;
 }
 
 } // namespace hpcscan
