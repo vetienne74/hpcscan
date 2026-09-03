@@ -12,7 +12,7 @@ PLOT_MINMAX = 0 ; % 0=no minmax, 1=with minmax
 
 if (PLOT_MINMAX == 1)
     % min and max for plot
-    minErrPlot = 1.0e-8 ;
+    minErrPlot = 1.0e-13 ;
     maxErrPlot = 1.0 ;
     minGPoint  = 0.0 ;
     maxGPoint  = 5.0 ;
@@ -34,6 +34,8 @@ ORD = 1 ;
 % log file name without .log extension
 FILE = sprintf('hpcscan.perf.FD_D%i', ORD) ;
 DIR  = './' ;
+%FILE = 'fp32.FD_D1.convergence.ouessant.2026-09-03' ;
+%DIR  = './archive' ;
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;
 val = importdata(pathFile) ;
 
