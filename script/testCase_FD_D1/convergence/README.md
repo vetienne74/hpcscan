@@ -22,7 +22,9 @@ Results visualization
 Example of results
 
 With FP64
+
 <img src="./archive/fp64.FD_D1.convergence.ouessant.2026-09-03.log-Axis1-4fig.jpg" width="400" height="300"/>
 
 With FP32
+
 <img src="./archive/fp32.FD_D1.convergence.ouessant.2026-09-03.log-Axis1-4fig.jpg" width="400" height="300"/>

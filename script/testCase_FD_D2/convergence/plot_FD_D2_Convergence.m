@@ -8,7 +8,7 @@ DER = 4 ;
 maxAllowedError = 0.01 ;
 
 % set axis limits for graphs
-PLOT_MINMAX = 0 ; % 0=no minmax, 1=with minmax
+PLOT_MINMAX = 1 ; % 0=no minmax, 1=with minmax
 
 if (PLOT_MINMAX == 1)
     % min and max for plot
@@ -34,8 +34,8 @@ ORD = 2 ;
 % log file name without .log extension
 FILE = sprintf('hpcscan.perf.FD_D%i', ORD) ;
 DIR  = './' ;
-%FILE = 'fp32.FD_D2.convergence.ouessant.2026-09-02' ;
-%DIR  = './archive' ;
+FILE = 'fp16.fp32.FD_D2.convergence.ouessant.2026-09-02' ;
+DIR  = './archive' ;
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;
 val = importdata(pathFile) ;
 
