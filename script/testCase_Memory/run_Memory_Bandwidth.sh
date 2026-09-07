@@ -1,10 +1,12 @@
 
+start_time=$(date)
+machine=`hostname`
+today=`date +%F`
+
 # grid size
 n1=1000
 n2=1000
 n3=1000
-
-start_time=$(date)
 
 sh ../clean_dir.sh
 
@@ -31,9 +33,13 @@ do
 done
 
 end_time=$(date)
+tester=$(whoami)
+machine=$(hostname)
 
-echo '*** TEST ENDED ***'
+#cp hpcscan.hwCounter.Memory.log Memory.hwCounter.${machine}.${today}.log
+cp hpcscan.perf.Memory.log Memory.perf.${machine}.${today}.log
+
 echo "# Started  : " $start_time 
 echo "# Ended    : " $end_time
-echo "On machine : " `hostname`
-echo "Done by    : " `whoami`
+echo "On machine : " $machine
+echo "Done by    : " $tester
