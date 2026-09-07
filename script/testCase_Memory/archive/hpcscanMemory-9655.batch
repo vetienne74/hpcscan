@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=384
+#SBATCH --time=1:00:00
+#SBATCH --mem=0
+#SBATCH --partition=9655-1R6000-HDR
+#SBATCH -J hpcscan
+#SBATCH -o ./hpcscan-9655.out
+
+export OMP_DYNAMIC=false
+export OMP_NESTED=true
+export OMP_PLACES=cores
+export OMP_PROC_BIND=true
+export OMP_WAIT_POLICY=active
+
+source ../../env/setEnvMuncl02Gcc.sh
+export HPCSCAN_NTHREADS=96
+
+lscpu > lscpu.txt
+
+numactl -H
+
+# one socket
+numactl -C 0-95 sh ./run_Memory_Bandwidth.sh
+
+# two sockets
+#numactl -C 0-191 ./run_Memory_Bandwidth.sh
+
