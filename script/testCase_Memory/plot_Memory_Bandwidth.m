@@ -16,6 +16,7 @@ iAddUpdateGridGpoint = 19 ;
 DIR  = '.' ;
 % log file name with .log extension
 FILE = 'hpcscan.perf.Memory' ;
+FILE = './archive/Memory.perf.electra031.2026-09-07' ;
 TITLE = 'Test Case Memory / scalability ' ;
 
 pathFile = sprintf('%s/%s.log', DIR, FILE) ;

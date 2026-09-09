@@ -25,4 +25,4 @@ Results visualization
 
 Example of results
 
-<img src="./Fig/error-FDO8-FP32-none.readme.jpg" width="400" height="300"/>
+<img src="./archive/error-FP32-FP16-32.jpg" width="600"/>

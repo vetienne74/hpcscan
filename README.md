@@ -75,11 +75,11 @@ hpcscan has been designed to address these issues :smiley:
 
 :ballot_box_with_check: **Bridge** between HPC architectures and numerical analysis/computational sciences. Beyond accurate performance measurements, hpcscan allows to explore the behavior of numerical kernels and to seek for the optimal configuration on a given architecture. 
 
-An example is shown below with a FD Laplacian kernel where accuracy order and spatial sampling are explored to find the optimum (in terms of computation speed vs accuracy). See  [Performance benchmarks](#performance-benchmarks) for details on this test case as well as scripts to perform the analysis.
+An example is shown below with a Laplacian FD kernel where accuracy order and spatial sampling are explored to find the optimum (in terms of computation speed vs accuracy). See  [Performance benchmarks](#performance-benchmarks) for details on this test case.
 
 <img src="./script/testCase_FD_D2/convergence/archive/fp32.FD_D2.convergence.ouessant.2026-09-02.log-Laplacian-4fig.jpg" width="1000" height="700"/>
 
-<font size="2"> **Top left:** Error between computed and analytical solutions versus spatial sampling. FD accuracy orders from O2 (blue) to O16 (red) are shown. **Top right:** Error  versus computation time. The black star points to the optimal configuration with an error below the target (1%) and shortest computation time. **Bottom left:** Kernel bandwidth in GPoint/s versus N (grid size is N x N x N). **Bottom right:** Kernel bandwidth in GBtye/s. </font>
+<font size="2"> Analysis of Laplacian FD kernel. **Top left:** Error between computed and analytical solutions versus spatial sampling. FD accuracy orders from O2 (blue) to O16 (red) are shown. **Top right:** Error  versus computation time. The black star points to the optimal configuration with an error below the target (1%) and shortest computation time. **Bottom left:** Kernel bandwidth in GPoint/s versus N (grid size is N x N x N). **Bottom right:** Kernel bandwidth in GBtye/s. </font>
 
 :ballot_box_with_check: **Set of representative kernels** used in many scientific applications (see [List of test cases](#list-of-test-cases)). Without being too specific, the embedded kernels provide a way to capture the main traits of HPC architectures and identify their bottle-necks and strenghts. With this knowledge, one can re-design or update accordingly specific parts of an application to take full benefit of the target hardware.
 
@@ -128,15 +128,15 @@ v1.2         | **Energy consumption and half-precision support** <li> Access har
 
 Test case name | Description | Remark
 ------------ | ----------- | ------------
-Comm         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes <br> Depending on the placement of MPI processes, intra-node or inter-node bandwidth can be measured <br> Width of halos depends on the selected FD stencil order <br> :arrow_right: **Measures GPoints/s and GBytes/s** </p>
-FD_D1        | **Finite-difference - 1st derivative <br> Accuracy and computation bandwidth** <ul><li>  $U={\partial}/{\partial x_1} (V)$ </li> <li> $U={\partial}/{\partial x_2} (V)$ </li>  <li> $U={\partial}/{\partial x_3} (V)$ </li>  </ul> | <p>   Accuracy depends on the selected FD order (from to 2 to 16), grid sampling and number of periods in the sine function used to compute the derivative <br> :arrow_right: **Computes error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
-FD_D2        | **Finite-difference - 2nd derivative <br> Accuracy and computation bandwidth** <ul><li>  $U={\partial^2}/{\partial x_1^2} (V)$ </li> <li> $U={\partial^2}/{\partial x_2^2} (V)$ </li>  <li> $U={\partial^2}/{\partial x_3^2} (V)$ </li> <li> $U= \Delta (V)$ </li> </ul> | <p>  Same features as above </p> 
-Grid         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Min. and max. of U </li> <li> Max. diff. between U and V </li> <li> $\sum \|U\|$ and $\sum \|U-V\|$ </li>   <li> $\frac{\sum \|U-V\|}{\sum \|U\|}$ (L1 norm between U and V) </li> <li> Add and multiply (wavefield update in propagator) $W = 2 T - U + \alpha V$ </li> <li> Mirror boundary condition at all grid edges </li> </ul> | <p>Operations on grids include selection of specific portions of the grids (for instance, excluding halos) <br>  :arrow_right: **Measures GPoints/s and GBytes/s** <p>
-Memory       | **Memory operations bandwidth** <ul> <li> Fill array A with constant value </li> <li> Copy array A = B </li> <li> Add 2 arrays A = B + C </li> <li> Multiply 2 arrays A = B * C </li> <li> Add 2 arrays and update array A = A + B </li> </ul>| <p> Conversely to Test Case Grid, operations are done on continuous memory arrays <br> This test case is similar to the Stream benchmark <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
-Modeling | **Acoustic wave modeling bandwidth** <p> Same features as for test case Propa except <ul> <li> Velocity model is read from file </li> <li> Source is a Ricker wavelet </li> <li> Ouput seismic traces and snapshots </li> </ul> | There is no accuray checking for this test case
-Propa        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> ${\partial^2}/{\partial t^2} (P)=c^2 \Delta (P)$ </li> <li> Domain size is 1 m in every dimension </li> <li> c is constant and equals to 1 m/s </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against the multi-dimensional analytical solution (Eigen modes) of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of Eigen modes <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
-Template     | Test case template | Used to create new test cases
-Util         | Utility tests to check internal functions | Reserved for developpers
+`Comm`         | **MPI communications bandwidth** <ul><li>Uni-directional (Half-duplex with MPI_Send) proc1 -> proc2</li><li>Bi-directional (Full-duplex with MPI_Sendrecv) proc1 <-> proc2</li><li>Grid halos exchange (MPI_Sendrecv) all procs <-> all procs</li></ul> | <p>This case requires at least 2 MPI processes <br> Depending on the placement of MPI processes, intra-node or inter-node bandwidth can be measured <br> Width of halos depends on the selected FD stencil order <br> :arrow_right: **Measures GPoints/s and GBytes/s** </p>
+`FD_D1`        | **Finite-difference - 1st derivative <br> Accuracy and computation bandwidth** <ul><li>  $U={\partial}/{\partial x_1} (V)$ </li> <li> $U={\partial}/{\partial x_2} (V)$ </li>  <li> $U={\partial}/{\partial x_3} (V)$ </li>  </ul> | <p>   Accuracy depends on the selected FD order (from to 2 to 16), grid sampling and number of periods in the sine function used to compute the derivative <br> :arrow_right: **Computes error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
+`FD_D2`        | **Finite-difference - 2nd derivative <br> Accuracy and computation bandwidth** <ul><li>  $U={\partial^2}/{\partial x_1^2} (V)$ </li> <li> $U={\partial^2}/{\partial x_2^2} (V)$ </li>  <li> $U={\partial^2}/{\partial x_3^2} (V)$ </li> <li> $U= \Delta (V)$ </li> </ul> | <p>  Same features as above </p> 
+`Grid`         | **Grid operations bandwidth** <ul> <li> Fill grid U with constant value </li> <li> Min. and max. of U </li> <li> Max. diff. between U and V </li> <li> $\sum \|U\|$ and $\sum \|U-V\|$ </li>   <li> $\frac{\sum \|U-V\|}{\sum \|U\|}$ (L1 norm between U and V) </li> <li> Add and multiply (wavefield update in propagator) $W = 2 T - U + \alpha V$ </li> <li> Mirror boundary condition at all grid edges </li> </ul> | <p>Operations on grids include selection of specific portions of the grids (for instance, excluding halos) <br>  :arrow_right: **Measures GPoints/s and GBytes/s** <p>
+`Memory`       | **Memory operations bandwidth** <ul> <li> Fill array $A$ with constant value </li> <li> Copy array $A = B$ </li> <li> Add 2 arrays $A = B + C$ </li> <li> Multiply 2 arrays $A = B \times C$ </li> <li> Add 2 arrays and update array $A = A + B$ </li> </ul>| <p> Conversely to the `Grid` test case, operations are done on continuous memory arrays <br> This test case is similar to the Stream benchmark <br> :arrow_right: **Validation against reference grids filled with predefined values** <br> :arrow_right: **Measures GPoints/s and GBytes/s** <p>
+`Modeling` | **Acoustic wave modeling bandwidth** <p> Same features as for test case Propa except <ul> <li> Velocity model is read from file </li> <li> Source is a Ricker wavelet </li> <li> Ouput seismic traces and snapshots </li> </ul> | There is no accuray checking for this test case
+`Propa`        | **Acoustic wave propagator bandwidth** <ul> <li> 2nd order wave equation </li> <li> ${\partial^2}/{\partial t^2} (P)=c^2 \Delta (P)$ </li> <li> Domain size is 1 m in every dimension </li> <li> c is constant and equals to 1 m/s </li> <li> Free surface boundary condition is applied to all edges of the domain </li> <li> Wavefield is initialized at t=-dt and t=-2dt with a particular solution </li> </ul> | <p>Accuracy is checked against the multi-dimensional analytical solution (Eigen modes) of the wave equation<br>Number of modes can be parametrized differently in every dimension<br>Time step can be set arbitrarily or set to the stability condition<br>Dimension, grid size, and number of time steps can be set arbitrarily<br>Accuracy depends on the selected FD stencil order, the spatial grid sampling and the number of Eigen modes <br> :arrow_right: **Computes L1 Error against analytical solution** <br> :arrow_right: **Measures GPoints/s, GBytes/s and GFlop/s** </p> 
+`Template`     | Test case template | Used to create new test cases
+`Util`         | Utility tests to check internal functions | Reserved for developpers
 
 ## List of test modes
 
@@ -145,17 +145,18 @@ Activation of each test mode depends on the compilers defined in the hpscan envi
 
 Test mode name | Target hardware | Description | Remark
 -------------- | --------------- | ----------- | ------
-Baseline       | Generic CPU     | Standard implementation without optimization | :arrow_right: **This mode is the reference implementation** <br> **Default test mode.** Always enabled
-CacheBlk       | Generic CPU     | Optimized with cache blocking techniques | Always enabled
-CUDA           | NVIDIA GPU      | Regular CUDA implementation without optimization | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
-CUDA_Opt       | NVIDIA GPU      | Optimized CUDA implementation | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
-CUDA_Ref       | NVIDIA GPU      | Reference CUDA implementation (for developpers) | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
-DPC++          | Intel CPU/GPU/FPGA | Regular DPC++ implementation without optimization | Enabled when compiled with dpcpp (Intel OneAPI DPC++ compiler)
-HIP            | AMD GPU         | Regular HIP implementation without optimization | Enabled when compiled with hipcc (AMD HIP compiler)
-HIP_Opt        | AMD GPU         | Optimized HIP implementation | Enabled when compiled with hipcc (AMD HIP compiler)
-NEC            | NEC SX-Aurora   | With NEC compiler directives | Enabled when compiled with nc++ (NEC C++ compiler)
-NEC_SCA        | NEC SX-Aurora   | With NEC Library Stencil Code Accelerator | Enabled when compiled with nc++ (NEC C++ compiler)
-OpenAcc        | NVIDIA GPU      | Regular OpenACC implementation without optimization | Enabled when compiled with a C++ compiler that supports OpenACC **(not yet operational)**
+`Baseline`       | CPU     | Standard implementation without optimization | :arrow_right: **This mode is the reference implementation** <br> **Default test mode.** Always enabled
+`CacheBlk`       | CPU     | Optimized with cache blocking techniques | Always enabled
+`CUDA`           | NVIDIA GPU      | Regular CUDA implementation without optimization | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
+`CUDA_Opt`       | NVIDIA GPU      | Optimized CUDA implementation | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
+`CUDA_Ref`       | NVIDIA GPU      | Reference CUDA implementation (for developpers) | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
+`Custom`       | CPU     | Custom CPU implementation | Enabled if 
+`DPC++`          | Intel CPU/GPU/FPGA | Regular DPC++ implementation without optimization | Enabled when compiled with dpcpp (Intel OneAPI DPC++ compiler)
+`HIP`            | AMD GPU         | Regular HIP implementation without optimization | Enabled when compiled with hipcc (AMD HIP compiler)
+`HIP_Opt`        | AMD GPU         | Optimized HIP implementation | Enabled when compiled with hipcc (AMD HIP compiler)
+`NEC`            | NEC SX-Aurora   | With NEC compiler directives | Enabled when compiled with nc++ (NEC C++ compiler)
+`NEC_SCA`        | NEC SX-Aurora   | With NEC Library Stencil Code Accelerator | Enabled when compiled with nc++ (NEC C++ compiler)
+`OpenAcc`        | NVIDIA GPU      | Regular OpenACC implementation without optimization | Enabled when compiled with a C++ compiler that supports OpenACC **(not yet operational)**
 
 # Environment set-up
 
@@ -378,38 +379,37 @@ The benchmarks are independent and can be used as is or configured according to 
 
 Test case    | Objectives  | Remarks
 ------------ | ----------- | ------------
-Memory | Assess memory bandwidth | Scalability analysis on a single node
-Grid | Assess bandwidth of grid operations | Analyse effect of the grid size
-Comm | Assess inter-node communication bandwidth | Analyse effect of subdomain decomposition
-FD\_D1 | Assess FD 1st derivative computation bandwidth | Analyse effect of FD stencil order
-FD\_D2 | Assess FD 2nd derivative computation bandwidth | Analyse effect of FD stencil order
-Propa | Find optimal configuration for the wave propagator | Explore range of parameters
-Propa | Scalability analysis of wave propagator on multiple nodes | Analyse effect of the FD stencil order
+`Memory` | Assess memory bandwidth | Scalability analysis on a single node <br> `./script/testCase_Memory`
+`Grid` | Assess bandwidth of grid operations | Analyse effect of the grid size <br> `/script/testCase_Grid`
+`Comm` | Assess inter-node communication bandwidth | Analyse effect of subdomain decomposition <br> `/script/testCase_Comm`
+`FD_D1` | Assess FD 1st derivative computation bandwidth | Analyse effect of FD stencil order <br> `testCase_FD_D1/convergence`
+`FD_D2` | Assess FD 2nd derivative computation bandwidth | Analyse effect of FD stencil order <br> `testCase_FD_D2/convergence`
+`Propa` | Find optimal configuration for the wave propagator | Explore range of parameters <br> `script/testCase_Propa/paramAnalysis`
+`Propa` | Find optimal time steps for the wave propagator | Explore range of times steps <br> `script/testCase_Propa/paramAnalysis2`
+`Propa` | Scalability analysis of wave propagator on multiple nodes | Analyse effect of the FD stencil order <br> `script/testCase_Propa/strongWeakScalability`
 
 :arrow_right: **Performance measurements and scripts to reproduce results** obtained on various architectures are available in [./misc/hpcscanPerfSlides/hpcscanPerfSlides.pdf](./misc/hpcscanPerfSlides/hpcscanPerfSlides.pdf)
 
 # Customization
 
-hpcscan is based on a simple yet highly flexible design that relies heavily on the C++ inheritance mechanism.
+hpcscan is based on a simple, yet highly flexible design that relies heavily on the C++ inheritance mechanism.
 
 The main class is `Grid` (see [./src/grid.cpp](./src/grid.cpp)).
-This class handles all grid data in hpcscan and all operations performed on grids.
-It implements the so-called Baseline mode and it is the reference implementation. 
+This class handles all grid data and operations in hpcscan.
+It implements the so-called `Baseline` mode and it is the reference implementation. 
 
-:bulb: All test cases, at some point, call methods of this class. Indeed, test cases (testCase_xxx.cpp) do not implement kernels.
+:bulb: All test cases, at some point, call methods of this class. Indeed, test cases (`testCase_xxx.cpp`) do not implement kernels.
 
-Let us say, you would like to specialize the implementation for a given architecture.
-
-In order to do this, you would need to create a new class that derives from `Grid`.
+In order to specialize the implementation for a given architecture, you would need to create a new class that derives from `Grid`.
 Just copy the source files `grid_Custom.h` and `grid_Custom.cpp` to another location and re-implement the desired functions that are declared as `virtual` in `Grid`.
 
-:bulb: You can proceed step by step, implementing one function at a time, with the possibility to check the behavior of your implementation against the Baseline reference solution.
+:bulb: You can proceed step by step, implementing one function at a time, with the possibility to check the behavior of your implementation against the `Baseline` reference solution.
 
-Check the grids that are already implemented in hpcscan to get some concrete examples.
+Have a look the grids already implemented in hpcscan to get some concrete examples.
 
-:bulb: To allow hpcscan to use this new class, you need only to indicate the path to your new source files in the environment script (see [Environment script (mandatory)](#environment-script-mandatory)) using the environment variable `$HPCSCAN_CUSTOM_PATH`.
+:bulb: To use this new class, you need only to indicate the path to your new source files in the environment script (see [Environment script (mandatory)](#environment-script-mandatory)) using the environment variable `$HPCSCAN_CUSTOM_PATH`.
 
-By doing this, you can switch at execution time, to your new grid with the `-testMode Custom`.
+By doing this, you can switch at execution time to your new grid with the command line option `-testMode Custom`.
 
 # Have fun!
 

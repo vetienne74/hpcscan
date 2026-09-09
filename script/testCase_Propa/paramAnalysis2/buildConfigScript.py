@@ -10,13 +10,13 @@ snapDt='0.1'
 dt='0.1'
 nmode='150'
 xmax=1000
-#dim='3'
-dim='2'
+dim='3'
+#dim='1'
 ntry='1'
 #ratioCFLRange=['1.0','0.5','0.2','0.1']
 ratioCFLRange=['1.0']
-testModeRange=['Custom']
-#testModeRange=['Baseline']
+#testModeRange=['Custom']
+testModeRange=['CacheBlk']
 #propagatorRange=['Ac2Standard','Ac2SplitComp']
 propagatorRange=['Ac2Standard']
 

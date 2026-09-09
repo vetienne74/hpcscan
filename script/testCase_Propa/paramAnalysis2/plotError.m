@@ -4,7 +4,7 @@ close all ;
 % plot error vs time step
 % input 1 or 2 log files
 
-icase = 8 ;
+icase = 0 ;
 
 switch(icase)
 
@@ -25,18 +25,18 @@ switch(icase)
         COLOR2 = '-b' ;
 
     case 2
-        FILENAME1 = 'fp64.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
+        FILENAME1 = './archive/fp64.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
         NAME1 = 'FP64' ;
         COLOR1 = '-k' ;
-        FILENAME2 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
+        FILENAME2 = './archive/fp32.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
         NAME2 = 'FP32' ;
         COLOR2 = '-b' ;
 
     case 3
-        FILENAME1 = 'fp32.propa.paramAnalysis2.ouessant.2026-08-20.log' ;
+        FILENAME1 = './archive/fp32.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
         NAME1 = 'FP32' ;
         COLOR1 = '-b' ;
-        FILENAME2 = 'fp16.fp32.propa.paramAnalysis2.ouessant.2026-08-21.log' ;
+        FILENAME2 = './archive/fp16.fp32.propa.paramAnalysis2.ouessant.2026-08-13.log' ;
         NAME2 = 'FP16-32' ;
         COLOR2 = '--r' ;
 
@@ -140,5 +140,5 @@ if (~strcmp(NAME2, 'none'))
 end
 
 % save figure as jpeg picture
-FIG_NAME  = sprintf('Fig/error-%s-%s.jpg', NAME1, NAME2) ;
+FIG_NAME  = sprintf('error-%s-%s.jpg', NAME1, NAME2) ;
 print('-djpeg', FIG_NAME)
