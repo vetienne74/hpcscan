@@ -111,7 +111,7 @@ Version      | Description | Release date
 ------------ | ----------- | ------------
 v1.0         |  **Initial version with CPU and Vector Engine support** <li> Test cases: Comm, FD_D2, Grid, Memory and Propa </li> <li> FD orders: 2, 4, 8, 12 & 16 </li> <li> Test modes: Baseline, CacheBlk and NEC_SCA </li> | Nov 28, 2020
 v1.1         | **GPU support** <li> Added test modes CUDA and HIP </li> <li> Added test mode NEC </li> | May 22, 2021
-v1.2         | **Energy consumption and half-precision support** <li> Access hardware counters to report energy (Watt) consumption </li> <li> Added FP16 support for storage and/or computation</li> <li> Added FD orders: 6, 10 & 14 </li> <li> Added test case: FD_D1 </li> <li> Added test mode DPC++</li> <li> Added test modes CUDA_Opt, CUDA_Ref and HIP_Opt </li> | Q4 2026
+v1.2         | **Energy consumption and half-precision support** <li> Access hardware counters to report energy (Watt) consumption </li> <li> Added FP16 support for storage and/or computation</li> <li> Added FD orders: 6, 10 & 14 </li> <li> Added test case: FD_D1 </li> <li> Added test mode DPC++</li> <li> Added test modes CUDA_Opt, CUDA_Ref and HIP_Opt </li> | Planned for Q4 2026
 
 # Main features
 
@@ -150,7 +150,7 @@ Test mode name | Target hardware | Description | Remark
 `CUDA`           | NVIDIA GPU      | Regular CUDA implementation without optimization | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
 `CUDA_Opt`       | NVIDIA GPU      | Optimized CUDA implementation | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
 `CUDA_Ref`       | NVIDIA GPU      | Reference CUDA implementation (for developpers) | Enabled when compiled with nvcc (NVIDIA CUDA compiler)
-`Custom`       | CPU     | Custom CPU implementation | Enabled if 
+`Custom`       | CPU     | Custom CPU implementation | Enabled if `$HPCSCAN_CUSTOM_PATH` has been defined in the hpcscan environment script
 `DPC++`          | Intel CPU/GPU/FPGA | Regular DPC++ implementation without optimization | Enabled when compiled with dpcpp (Intel OneAPI DPC++ compiler)
 `HIP`            | AMD GPU         | Regular HIP implementation without optimization | Enabled when compiled with hipcc (AMD HIP compiler)
 `HIP_Opt`        | AMD GPU         | Optimized HIP implementation | Enabled when compiled with hipcc (AMD HIP compiler)
@@ -375,20 +375,20 @@ When activated, debug traces are written by each MPI proc in an ASCII file with 
 
 The benchmarks are independent and can be used as is or configured according to your system if needed.
 
-**Test cases description** 
+**Benchmarks description** 
 
-Test case    | Objectives  | Remarks
+Benchmark    | Objectives  | Remarks
 ------------ | ----------- | ------------
-`Memory` | Assess memory bandwidth | Scalability analysis on a single node <br> `./script/testCase_Memory`
-`Grid` | Assess bandwidth of grid operations | Analyse effect of the grid size <br> `/script/testCase_Grid`
-`Comm` | Assess inter-node communication bandwidth | Analyse effect of subdomain decomposition <br> `/script/testCase_Comm`
-`FD_D1` | Assess FD 1st derivative computation bandwidth | Analyse effect of FD stencil order <br> `testCase_FD_D1/convergence`
-`FD_D2` | Assess FD 2nd derivative computation bandwidth | Analyse effect of FD stencil order <br> `testCase_FD_D2/convergence`
-`Propa` | Find optimal configuration for the wave propagator | Explore range of parameters <br> `script/testCase_Propa/paramAnalysis`
-`Propa` | Find optimal time steps for the wave propagator | Explore range of times steps <br> `script/testCase_Propa/paramAnalysis2`
-`Propa` | Scalability analysis of wave propagator on multiple nodes | Analyse effect of the FD stencil order <br> `script/testCase_Propa/strongWeakScalability`
+`Memory` | Assess memory bandwidth | Scalability analysis on a single node <br> [./script/testCase_Memory](./script/testCase_Memory)
+`Grid` | Assess bandwidth of grid operations | Analyse effect of the grid size <br> [./script/testCase_Grid](./script/testCase_Grid)
+`Comm` | Assess inter-node communication bandwidth | Analyse effect of subdomain decomposition <br> [./script/testCase_Comm](./script/testCase_Comm)
+`FD_D1` | Assess FD 1st derivative computation bandwidth | Analyse effect of FD stencil order <br> [./script/testCase_FD_D1/convergence](./script/testCase_FD_D1/convergence)
+`FD_D2` | Assess FD 2nd derivative computation bandwidth | Analyse effect of FD stencil order <br> [./script/testCase_FD_D2/convergence](./script/testCase_FD_D2/convergence)
+`Propa` | Find optimal configuration for the wave propagator | Explore range of parameters <br> [./script/testCase_Propa/paramAnalysis](./script/testCase_Propa/paramAnalysis)
+`Propa` | Find optimal time steps for the wave propagator | Explore range of parameters <br> [./script/testCase_Propa/paramAnalysis2](./script/testCase_Propa/paramAnalysis2)
+`Propa` | Scalability analysis of wave propagator on multiple nodes | Analyse effect of the FD stencil order <br> [./script/testCase_Propa/strongWeakScalability](./script/testCase_Propa/strongWeakScalability)
 
-:arrow_right: **Performance measurements and scripts to reproduce results** obtained on various architectures are available in [./misc/hpcscanPerfSlides/hpcscanPerfSlides.pdf](./misc/hpcscanPerfSlides/hpcscanPerfSlides.pdf)
+:arrow_right: **Performance measurements and scripts to reproduce results** are detailed in the readme files for each benchmark.
 
 # Customization
 
