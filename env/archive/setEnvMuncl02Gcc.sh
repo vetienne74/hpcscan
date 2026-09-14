@@ -6,7 +6,7 @@ module load openmpi/gcc-15.2.0/5.0.9
 export HPCSCAN_MPI_INVOKER='mpirun --oversubscribe'
 
 # OpenMP config
-export HPCSCAN_NTHREADS=64
+export HPCSCAN_NTHREADS=96
 export KMP_AFFINITY=granularity=fine,compact
 export OMP_NUM_THREADS=$HPCSCAN_NTHREADS
 
@@ -25,6 +25,11 @@ export HPCSCAN_CUDA_LIB=
 export HPCSCAN_HIP=
 export HPCSCAN_HIP_FLAGCOMP=
 export HPCSCAN_HIP_LIB=
+
+# Custom mode, path to your own grid_Custom.cpp
+export HPCSCAN_CUSTOM_PATH=
+# additionnal options for the compiler
+export HPCSCAN_CUSTOM_OPT=
 
 # display Hpcscan settings
 sh ./displayHpcscanEnv.sh
