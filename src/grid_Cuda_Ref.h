@@ -122,10 +122,10 @@ public:
 	virtual Rtn_code applyBoundaryCondition(BoundCond_type boundCondType) ;
 
 	// get sum of abs grid points
-	virtual Myfloat getSumAbs(Point_type) const ;
+	virtual Myfloat64 getSumAbs(Point_type) const ;
 
 	// get sum of abs diff of grid points
-	virtual Myfloat getSumAbsDiff(Point_type, const Grid&) const;
+	virtual Myfloat64 getSumAbsDiff(Point_type, const Grid&) const;
 
 	// send grid with MPI_Send
 	virtual Rtn_code sendWithMPI(Myint64 nGridPoint, Myint procDestId) ;

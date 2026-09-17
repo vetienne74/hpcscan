@@ -34,5 +34,9 @@ fi
 
 echo - Number of OpenMP threads $HPCSCAN_NTHREADS
 
-echo Ready to go!
+echo - Linux version
+cat /etc/os-release | grep PRETTY_NAME
+#lsb_release -a
+
+echo '==> hpcscan is ready to go!'
 

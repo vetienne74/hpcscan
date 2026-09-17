@@ -3609,7 +3609,7 @@ Rtn_code Grid_Cuda::applyBoundaryCondition(BoundCond_type boundCondType)
 
 //-------------------------------------------------------------------------------------------------------
 
-Myfloat Grid_Cuda::getSumAbs(Point_type pointType) const
+Myfloat64 Grid_Cuda::getSumAbs(Point_type pointType) const
 {
 	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::getSumAbs");
 
@@ -3654,7 +3654,7 @@ Myfloat Grid_Cuda::getSumAbs(Point_type pointType) const
 
 //-------------------------------------------------------------------------------------------------------
 
-Myfloat Grid_Cuda::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
+Myfloat64 Grid_Cuda::getSumAbsDiff(Point_type pointType, const Grid& gridIn) const
 {
 
 	printDebug(LIGHT_DEBUG, "IN Grid_Cuda::getSumAbsDiff");
