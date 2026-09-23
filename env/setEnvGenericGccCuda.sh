@@ -24,7 +24,7 @@ export HPCSCAN_CPP_LIB=
 
 # CUDA compiler
 export HPCSCAN_CUDA=nvcc
-export HPCSCAN_CUDA_FLAGCOMP=
+export HPCSCAN_CUDA_FLAGCOMP='-arch=sm_89'
 export HPCSCAN_CUDA_LIB='-L/usr/local/cuda-12.8/lib64 -lcuda -lcudart -lnvidia-ml'
 
 # HIP compiler
