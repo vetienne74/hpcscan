@@ -1,0 +1,110 @@
+name: GPU Simulator
+
+# Optional, non-required check. The hosted runners have no GPU, so this builds
+# hpcscan with nvcc and runs a short subset of the validation cases (every case
+# is compared with its reference solution) on a simulated NVIDIA H100
+# (https://github.com/pantheongpu/pantheonsim). A simulator cannot reproduce
+# hardware-specific behavior or timing, so it complements real-GPU testing and
+# does not replace it.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "src/**"
+      - "build/Makefile"
+      - "env/setEnvGithubCiCuda.sh"
+      - "script/runSmokeTests.sh"
+      - ".github/workflows/gpu-sim.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validation:
+    name: Validation subset (CUDA 12.6 and simulated H100)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+
+      - name: Install OpenMPI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openmpi-bin libopenmpi-dev
+
+      - name: Set up the simulated GPU and CUDA toolkit
+        uses: pantheongpu/setup-pantheonsim@deff5781e8adfd83dec98dd5242dcbc96a564773 # v0.1.10
+        with:
+          gpu: nvidia/h100
+          cuda-toolkit: "12.6"
+
+      # CUDA 12.6 rather than 13.0: the sources read cudaDeviceProp.computeMode,
+      # which CUDA 13 removed.
+      # env/setEnvGithubCiCuda.sh builds PTX only (-arch=compute_90) against a
+      # shared CUDA runtime, as the simulator needs.
+      - name: Build
+        run: |
+          export CUDA_HOME=/usr/local/cuda-12.6
+          ls -l "$CUDA_HOME/include/nvml.h" "$CUDA_HOME"/lib64/stubs/libnvidia-ml.so
+          export PATH="$CUDA_HOME/bin:$PATH"
+          cd env
+          . ./setEnvGithubCiCuda.sh
+          cd ../build
+          make -j3
+
+      - name: Check the executable
+        run: |
+          ls -l bin/hpcscan
+          ldd bin/hpcscan | grep -i -E "cuda|nvidia|mpi" || true
+
+      # A short list of the validation cases, on one MPI rank. Only the CUDA
+      # mode is run: on an RTX 3080 Ti the same list passes in CUDA mode (100 of
+      # 100) but gives 4 FAILED in CUDA_Opt and 21 in CUDA_Ref, as it does here.
+      - name: Validation cases
+        run: |
+          export CUDA_HOME=/usr/local/cuda-12.6
+          export PATH="$CUDA_HOME/bin:$PATH"
+          export HPCSCAN_MPI_INVOKER=mpirun
+          cd script
+          status=0
+          for mode in CUDA; do
+            echo "::group::$mode"
+            start=$(date +%s)
+            vgpu run sh runSmokeTests.sh "$mode" || status=1
+            echo "$mode took $(( $(date +%s) - start )) s"
+            echo "::endgroup::"
+          done
+          echo "script exit status: $status"
+          echo "$status" > smoke.status
+
+      # The simulator can report an error and still exit 0, and hpcscan prints
+      # PASSED or FAILED per case. Fail on anything but a clean, complete run.
+      - name: Check the results
+        run: |
+          cd script
+          ls -l runSmokeTests.*.out
+          fail=0
+          for mode in CUDA; do
+            f=runSmokeTests.$mode.out
+            passed=$(grep -c "Test PASSED" "$f" || true)
+            failed=$(grep -c "Test FAILED" "$f" || true)
+            echo "$mode: $passed PASSED, $failed FAILED"
+            if [ "$failed" -ne 0 ]; then fail=1; fi
+            if [ "$passed" -lt "100" ]; then
+              echo "too few passed cases in $mode"; fail=1
+            fi
+            if grep -i -E "VirtualGPU error|no GPU found|no CUDA-capable|no device|skipp" "$f"; then
+              echo "device problem or skipped test in $mode"; fail=1
+            fi
+          done
+          if [ "$(cat smoke.status)" != "0" ]; then echo "a case exited non-zero"; fail=1; fi
+          exit $fail
